@@ -40,6 +40,7 @@ class Player:
         self.x += dx
         self.y += dy
 
+
     def is_alive(self):
         return self.health > 0
     
@@ -48,6 +49,18 @@ class Player:
             self.direction = direction
         else:
             raise ValueError("Invalid direction. Use 'up', 'down', 'left', or 'right'.")
+
+    def enemy_collison(self, enemy_list):
+        """Check if an enemy is nearby in a 3x3 around the player."""
+        directions = [(-1, -1), (-1, 0), (-1, 1),
+                (0, -1),          (0, 1),
+                (1, -1),  (1, 0), (1, 1)]
+        for dx, dy in directions:
+            x, y = self.x + dx, self.y + dy
+            for enemy in enemy_list:
+                if enemy.x == x and enemy.y == y:
+                    return True
+            return False
 
     def __str__(self):
         return f"Player(name={self.name}, health={self.health}"
