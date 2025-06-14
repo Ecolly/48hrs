@@ -9,8 +9,11 @@ class Player:
         self.level = level
         self.x = x # x coords are in 
         self.y = y
+        self.prevx = x #previous x and y coordanites, for animating
+        self.prevy = y 
         self.inventory = []
         self.direction = FaceDirection.DOWN  # Default direction
+        self.technique = 0
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
@@ -24,39 +27,30 @@ class Player:
         # self.experience = 0
 
     def get_screen_position(self):
-        return self.scale*(self.x*16-8), self.scale*(self.y*16-8)
+        return self.scale*(self.prevx*16-8), self.scale*(self.prevy*16-8)
+
+    def process_turn(self, current_entity_turn):
+        print("a")
+        if self.x != self.prevx:
+            self.prevx = self.prevx + (abs(self.x - self.prevx)/(self.x - self.prevx))/8
+        if self.y != self.prevy:
+            self.prevy = self.prevy + (abs(self.y - self.prevy)/(self.y - self.prevy))/8
+
+        #print(self.x, self.y, self.prevx, self.prevy)
+
+        if self.y == self.prevy and self.x == self.prevx:
+            return current_entity_turn + 1
+        else:
+            return current_entity_turn
+            
+
+
+
+
 
     def draw(self, batch, grid_entities1, animation_presets):
         base_x, base_y = self.get_screen_position()
         sprite = self.sprite
-
-
-        
-        #adjust rotation state (gross)
-
-        # rotation_adjustment = 0
-
-        # if self.direction == FaceDirection.DOWN:
-        #     rotation_adjustment = 0
-        # elif self.direction == FaceDirection.DOWN_RIGHT:
-        #     rotation_adjustment = 1
-        # elif self.direction == FaceDirection.RIGHT:
-        #     rotation_adjustment = 2
-        # elif self.direction == FaceDirection.UP_RIGHT:
-        #     rotation_adjustment = 3
-        # elif self.direction == FaceDirection.UP:
-        #     rotation_adjustment = 4
-        # elif self.direction == FaceDirection.UP_LEFT:
-        #     rotation_adjustment = 5
-        # elif self.direction == FaceDirection.LEFT:
-        #     rotation_adjustment = 6
-        # elif self.direction == FaceDirection.DOWN_LEFT:
-        #     rotation_adjustment = 7
-
-
-        # FaceDirection.
-
-    
 
         tex = pyglet.image.Texture.create(16, 16)
         #print(self.animtype)
@@ -102,6 +96,10 @@ class Player:
                 self.direction = FaceDirection.UP
             elif dy == -1:
                 self.direction = FaceDirection.DOWN
+        
+        
+
+
 
 
 

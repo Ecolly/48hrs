@@ -24,8 +24,8 @@ window = pyglet.window.Window()
 #pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
 #pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
-
-
+gamestate = 1
+current_entity_turn = -1
 
 
 sprite_font = pyglet.image.load('font.png')
@@ -194,12 +194,20 @@ def on_mouse_release(x, y, button, modifiers):
 
 
 
+#0 = main menu
+#1 = your turn in the game world
+#2 = turn is happening
+#3 = inventory?
+#4 = pause menu?
+
 global keypress_chk
 keypress_chk = 0
 
 @window.event
 def on_draw():
     global keypress_chk
+    global gamestate
+    global current_entity_turn
     window.clear()
 
     for button in all_buttons:
@@ -209,7 +217,18 @@ def on_draw():
     diry = 0
     dirx = 0
 
-    if keypress_chk == 0:
+    #if keypress_chk == 0:
+
+    if keys[pyglet.window.key.E] and keypress_chk == 0:
+        #enter inventory
+        if gamestate == 1:
+            keypress_chk = 1
+            #enter inventory
+        elif gamestate == 3:
+            keypress_chk = 1
+            #exit inventory
+    elif gamestate == 1:
+
         if keys[pyglet.window.key.W]:
             diry = 1
         elif keys[pyglet.window.key.S]:
@@ -220,15 +239,33 @@ def on_draw():
         elif keys[pyglet.window.key.A]:
             dirx = -1
     else:
-        if keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D]:
+        if gamestate == 2 or keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D] or keys[pyglet.window.key.E] or keys[pyglet.window.key.ESCAPE]:
             pass
         else:
             keypress_chk = 0
     
     if diry != 0 or dirx != 0:
-        #initiate start of a turn.
-        keypress_chk = 1
+        #keypress_chk = 1
         player.move(dirx, diry)
+        gamestate = 2
+        current_entity_turn = -1
+
+
+    if gamestate == 2:
+        if current_entity_turn == -1:
+            current_entity_turn = player.process_turn(current_entity_turn)
+        else:
+            gamestate = 1
+
+    # print(gamestate)
+    # print(current_entity_turn)
+    # print(player.x)
+    # print(player.y)
+    # print(player.prevx)
+    # print(player.prevy)
+    # print(keypress_chk)
+
+
 
     player.draw(batch, grid_entities1, animation_presets)
     batch.draw()
