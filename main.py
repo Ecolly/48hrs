@@ -109,8 +109,8 @@ player = Player(
     name = "Damien",
     health = 20,
     level = 1,
-    x = 2,
-    y = 2,
+    x = 30,
+    y = 30,
     sprite = create_sprite(grid_entities1, 20*8*8),
     spriteindex = 20*8*8,
     color = (255, 255, 255, 255),
@@ -258,23 +258,15 @@ def on_mouse_release(x, y, button, modifiers):
 
 
 
-
-bg_order = []
-i = 0
-while i < 32*16:
-    bg_order.append("q") #"filler" space that is not used by floors
-    i = i + 1
-
-bg_order[27*16 + 8] = "#"
-bg_order[26*16 + 8] = "o"
-bg_order[26*16 + 6] = "."
+bg_order = ["#", "o", "."]
+bg_tilekey = [26*16 + 8, 26*16 + 8, 26*16+6]
 
 floor = make_floor()
 fl_string = ""
 for s in floor.map_grid:
     for s2 in s:
         fl_string += s2
-bg = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(fl_string, grid_bg, bg_order, 60, "left"), 16, 16, 60))
+bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
 bg.scale = 3
 bg.z = 0
 
@@ -289,7 +281,6 @@ keypress_chk = 0
 
 @window.event
 def on_draw():
-    print(all_buttons)
     global keypress_chk
     global gamestate
     global current_entity_turn

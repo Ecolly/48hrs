@@ -29,6 +29,22 @@ def text_to_background(text, image_grid, letter_order, width, justify):
 
 
 
+
+def text_to_floor(text, image_grid, letter_order, letter_tile, width):
+    tile_list = []
+    for s in text:
+        id = letter_order.index(s)
+        tile_list.append(image_grid[letter_tile[id]])
+    return tile_list
+
+
+
+
+
+
+
+
+
 def text_to_tiles_wrapped(text, image_grid, letter_order, width, justify):
     # Create character-to-index mapping
     char_to_index = {char: i for i, char in enumerate(letter_order)}
@@ -110,7 +126,11 @@ def combine_tiles(tiles, tile_width, tile_height, total_width):
 
 def create_sprite(image_grid, index):
     tex = pyglet.image.Texture.create(16, 16)
+
     tex.blit_into(image_grid[index], 0, 0, 0)
+
+    tex.min_filter = pyglet.gl.GL_NEAREST
+    tex.mag_filter = pyglet.gl.GL_NEAREST
     return pyglet.sprite.Sprite(tex, x=0, y=0)
 
 

@@ -22,6 +22,8 @@ class Player:
         self.animframe = 0 #what frame of the animation it's on
         self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
         self.scale = 3
+
+
         # self.skills = []
         # self.equipment = {}
         # self.experience = 0
