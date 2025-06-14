@@ -57,11 +57,10 @@ class InteractiveObject:
     
     def is_mouse_over(self, mouse_x, mouse_y):
         """Check if a point is within this object's interactive bounds."""
-        
         base_x, base_y = self.get_screen_position()
-        print(mouse_x, mouse_y, base_x, base_y)
-        return (base_x <= mouse_x <= base_x + self.width and
-                base_y <= mouse_y <= base_y + self.height)
+        #print(mouse_x, mouse_y, base_x, base_y)
+        return (base_x <= mouse_x <= base_x + self.width*self.scale and
+                base_y <= mouse_y <= base_y + self.height*self.scale)
     
     def draw(self, batch):
         base_x, base_y = self.get_screen_position()
@@ -69,6 +68,7 @@ class InteractiveObject:
         for i, sprite in enumerate(self.sprites):
             sprite.x = base_x
             sprite.y = base_y
+            sprite.scale = self.scale
 
             if self.hovered == True:
                 if self.clicked == True:

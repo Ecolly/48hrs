@@ -1,18 +1,37 @@
-from face_direction import FaceDirection
+from game_classes.face_direction import *
 
 class Player:
-    def __init__(self, name, health, level, x=0, y=0):
+    def __init__(self, name, health, level, sprite, color, animtype, animframe, animmod, x, y):
         self.name = name
         self.health = health
         self.level = level
-        self.x = x
+        self.x = x # x coords are in 
         self.y = y
         self.inventory = []
         self.direction = FaceDirection.DOWN  # Default direction
         
+        self.sprite = sprite  # pyglet.sprite.Sprite
+        self.color = color #4 entry tuple for the sprite to be colored as; white is default
+        self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
+        self.animframe = 0 #what frame of the animation it's on
+        self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
+        self.scale = 2
         # self.skills = []
         # self.equipment = {}
         # self.experience = 0
+
+    def get_screen_position(self):
+        return self.x*16-8, self.y*16-8
+
+    def draw(self, batch):
+        base_x, base_y = self.get_screen_position()
+        sprite = self.sprite
+        sprite.x = base_x
+        sprite.y = base_y
+        sprite.scale = self.scale
+        sprite.color = self.color
+        sprite.batch = batch
+        sprite.z = 40
 
     def take_damage(self, amount):
         self.health = max(0, self.health - amount)

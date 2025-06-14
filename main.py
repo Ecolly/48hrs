@@ -7,6 +7,15 @@ import pyglet
 import math
 from image_handling import *
 from button_class import *
+from game_classes.player import *
+from game_classes.face_direction import *
+#from game_classes.enemy import *
+#from game_classes.item import *
+#from game_classes.map import *
+
+
+
+
 #from button_object import *
 #from shaders import *
 
@@ -19,22 +28,50 @@ window = pyglet.window.Window()
 
 
 
-sprite_sheet = pyglet.image.load('font.png')
-columns = sprite_sheet.width // 8
-rows = sprite_sheet.height // 8
+sprite_font = pyglet.image.load('font.png')
+columns_font = sprite_font.width // 8
+rows_font = sprite_font.height // 8
+grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
-image_grid = pyglet.image.ImageGrid(sprite_sheet, rows, columns)
+sprite_entities1 = pyglet.image.load('entities_level1.png')
+columns_entities1 = sprite_entities1.width // 16
+rows_entities1 = sprite_entities1.height // 16
+grid_entities1 = pyglet.image.ImageGrid(sprite_entities1, rows_entities1, columns_entities1)
+
+sprite_entities2 = pyglet.image.load('entities_level2.png')
+columns_entities2 = sprite_entities2.width // 16
+rows_entities2 = sprite_entities2.height // 16
+grid_entities2 = pyglet.image.ImageGrid(sprite_entities2, rows_entities2, columns_entities2)
+
+sprite_entities3 = pyglet.image.load('entities_level3.png')
+columns_entities3 = sprite_entities3.width // 16
+rows_entities3 = sprite_entities3.height // 16
+grid_entities3 = pyglet.image.ImageGrid(sprite_entities3, rows_entities3, columns_entities3)
+
+sprite_entities4 = pyglet.image.load('entities_level4.png')
+columns_entities4 = sprite_entities4.width // 16
+rows_entities4 = sprite_entities4.height // 16
+grid_entities4 = pyglet.image.ImageGrid(sprite_entities4, rows_entities4, columns_entities4)
+
+sprite_items = pyglet.image.load('items_and_fx.png')
+columns_items = sprite_items.width // 16
+rows_items = sprite_items.height // 16
+grid_items = pyglet.image.ImageGrid(sprite_items, rows_items, columns_items)
+
+sprite_bg = pyglet.image.load('bgtiles.png')
+columns_bg = sprite_bg.width // 16
+rows_bg = sprite_bg.height // 16
+grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
+
+
+
+
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
-# def pad_to_256(char_list):
-#      return char_list + [" "] * (256 - len(char_list))
-# letter_order = pad_to_256(letter_order)
-
-
 
 string_to_draw = "The quick brown fox jumpeeeeeeeeeeeed over the lazy dog. This is the story of a man named Stanley. Stanley worked for a company at an office where he sat in room 427. etc etc buttons"
-tiles_to_draw = text_to_tiles_wrapped(string_to_draw, image_grid, letter_order, 20, "center")
-bg_to_draw = text_to_background(string_to_draw, image_grid, letter_order, 20, "center")
+tiles_to_draw = text_to_tiles_wrapped(string_to_draw, grid_font, letter_order, 20, "center")
+bg_to_draw = text_to_background(string_to_draw, grid_font, letter_order, 20, "center")
 
 combined_image = combine_tiles(tiles_to_draw, 8, 8, 20)
 combined_image_2 = combine_tiles(bg_to_draw, 8, 8, 20)
@@ -60,24 +97,35 @@ my_object = InteractiveObject(
     custom_data={"label": "Click me!"}
 )
 
-#mysprite.scale = 2
-#mysprite.rotation = 45
-#mysprite.color = (0, 255, 255, 255)
+player = Player(
+    name = "Damien",
+    health = 20,
+    level = 1,
+    x = 2,
+    y = 2,
+    sprite = create_sprite(grid_entities1, 20*8*8),
+    color = (255, 255, 255, 255),
+    animtype = None,
+    animmod = None,
+    animframe = 0,
+)
+
+
+
+
+
+
 
 batch = pyglet.graphics.Batch()
-
-# background_group = pyglet.graphics.OrderedGroup(0) #for tiles
-# water_group = pyglet.graphics.OrderedGroup(10)
-# items_group = pyglet.graphics.OrderedGroup(20)
-# entities_group = pyglet.graphics.OrderedGroup(30)
-# sfx_group = pyglet.graphics.OrderedGroup(40)
-# textbg_group = pyglet.graphics.OrderedGroup(50)
-# text_group = pyglet.graphics.OrderedGroup(60)
 
 all_buttons = [my_object]
 
 mouse_x = 0
 mouse_y = 0
+
+
+
+
 
 @window.event
 def on_mouse_motion(x, y, dx, dy):
@@ -99,7 +147,7 @@ def on_mouse_press(x, y, button, modifiers):
                 button.clicked = True
             else:
                 pass
-    
+
 @window.event
 def on_mouse_release(x, y, button, modifiers):
     if pyglet.window.mouse.LEFT:
@@ -118,16 +166,31 @@ def on_mouse_release(x, y, button, modifiers):
                 pass
 
 @window.event
+def on_key_press(symbol, modifiers):
+    if symbol == pyglet.window.key.W:
+        player.y = player.y + 1
+        pass
+    elif symbol == pyglet.window.key.S:
+        player.y = player.y - 1
+        pass
+
+    if symbol == pyglet.window.key.A:
+        player.x = player.x - 1
+        pass
+    elif symbol == pyglet.window.key.D:
+        player.x = player.x + 1
+        pass
+
+@window.event
 def on_draw():
     window.clear()
 
     for button in all_buttons:
         button.hovered = button.is_mouse_over(mouse_x, mouse_y)
-        #if button.hovered == True:
-            
         button.draw(batch)
 
 
+    player.draw(batch)
     batch.draw()
     
 

@@ -17,6 +17,8 @@ def text_to_tiles(text, image_grid, letter_order):
         tile_list.append(tile)
     return tile_list
 
+
+
 def text_to_background(text, image_grid, letter_order, width, justify):
     output_txt = ""
     i = 0
@@ -103,3 +105,15 @@ def combine_tiles(tiles, tile_width, tile_height, total_width):
         y = (total_rows - 1 - row) * tile_height  # Pyglet's Y=0 is at bottom
         combined.blit_into(tile, x, y, 0)
     return combined
+
+
+
+def create_sprite(image_grid, index):
+    tex = pyglet.image.Texture.create(16, 16)
+    tex.blit_into(image_grid[index], 0, 0, 0)
+    return pyglet.sprite.Sprite(tex, x=0, y=0)
+
+
+
+
+
