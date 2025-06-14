@@ -68,6 +68,11 @@ class Map:
     def __str__(self):
         return '\n'.join(''.join(row) for row in self.map_grid)
     
+
+    # def check_surrounding_tiles(self, x, y):
+    #     """Check surrounding tiles for different texture"""
+    #     for i in 
+    
     # Connect rooms with corridors
     def center_of_room(self, room):
         x, y, width, height = room

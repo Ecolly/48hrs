@@ -1,0 +1,25 @@
+from enum import Enum, auto
+class WALL (Enum):
+    WALL_UP = auto()
+    WALL_DOWN = auto()
+    WALL_LEFT = auto()
+    WALL_RIGHT = auto()
+
+    WALL_UP_LEFT = auto()
+    WALL_UP_RIGHT = auto()
+    WALL_DOWN_LEFT = auto()
+    WALL_DOWN_RIGHT = auto()
+
+    WALL_UP_DOWN = auto()
+    WALL_UP_DOWN_LEFT = auto()
+    WALL_UP_DOWN_RIGHT = auto()
+
+    WALL_LEFT_RIGHT = auto()
+    WALL_LEFT_RIGHT_UP = auto()
+    WALL_LEFT_RIGHT_DOWN = auto()
+
+    WALL_LEFT_RIGHT_DOWN = auto()
+    WALL_NONE = auto()
+
+
+    
