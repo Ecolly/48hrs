@@ -29,8 +29,15 @@ class Player:
     def get_screen_position(self):
         return self.scale*(self.prevx*16-8), self.scale*(self.prevy*16-8)
 
+    def is_mouse_over(self, mouse_x, mouse_y):
+        """Check if a point is within this object's interactive bounds."""
+        base_x, base_y = self.get_screen_position()
+        #print(mouse_x, mouse_y, base_x, base_y)
+        return (base_x <= mouse_x <= base_x + self.width*self.scale and
+                base_y <= mouse_y <= base_y + self.height*self.scale)
+    
     def process_turn(self, current_entity_turn):
-        print("a")
+        #print("a")
         if self.x != self.prevx:
             self.prevx = self.prevx + (abs(self.x - self.prevx)/(self.x - self.prevx))/8
         if self.y != self.prevy:

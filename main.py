@@ -10,7 +10,7 @@ from button_class import *
 from game_classes.player import *
 from game_classes.face_direction import *
 #from game_classes.enemy import *
-#from game_classes.item import *
+from game_classes.item import *
 #from game_classes.map import *
 
 
@@ -84,23 +84,7 @@ combined_image_2 = combine_tiles(bg_to_draw, 8, 8, 20)
 mysprite = pyglet.sprite.Sprite(combined_image, x=0, y=0)
 mysprite2 = pyglet.sprite.Sprite(combined_image_2, x=0, y=0)
 
-my_object = InteractiveObject(
-    x=100,
-    y=200,
-    width=mysprite2.width,
-    height=mysprite2.height,
-    sprites=[mysprite2, mysprite],
-    colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
-    animtype = [0, 0],
-    animmod = [None, None],
-    text = [None, None],
-    alignment_x='center',
-    alignment_y='top',
-    depth=1,
-    obj_type="label",
-    draggable=True,
-    custom_data={"label": "Click me!"}
-)
+
 
 player = Player(
     name = "Damien",
@@ -117,6 +101,17 @@ player = Player(
 )
 
 
+item = Item(
+    name = "Kitchen Knife",
+    grid_items = grid_items,
+    x = 8,
+    y = 8,
+    inventory_slot = -1,
+    quantity = 1,
+)
+
+
+
 
 
 
@@ -124,7 +119,8 @@ player = Player(
 
 batch = pyglet.graphics.Batch()
 
-all_buttons = [my_object]
+all_buttons = []
+all_items = [item]
 
 mouse_x = 0
 mouse_y = 0
@@ -168,6 +164,55 @@ def on_mouse_release(x, y, button, modifiers):
         for button in all_buttons:
             button.clicked = False
             if button.hovered == True:
+
+                rclick_options = []
+                #check what's here, such as...
+                # 
+                #   a button (e.g. in the case of a menu)
+                #   a blank space near the player 
+                #   an item
+                #   an enemy
+                #   an exit
+                #   you
+                # 
+                #  
+                for item in all_items:
+                    if item.is_mouse_over(mouse_x, mouse_y):
+                        rclick_options.append("EXAMINE")
+                        if item.inventory_slot != -1:
+                            rclick_options.append("USE")
+                            rclick_options.append("THROW")
+
+
+                rclick_options.append("CANCEL")
+
+
+                my_object = InteractiveObject(
+    x=100,
+    y=200,
+    width=mysprite2.width,
+    height=mysprite2.height,
+    sprites=[mysprite2, mysprite],
+    colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
+    animtype = [0, 0],
+    animmod = [None, None],
+    text = [None, None],
+    alignment_x='center',
+    alignment_y='top',
+    depth=1,
+    obj_type="label",
+    draggable=True,
+    custom_data={"label": "Click me!"}
+)
+                
+
+
+
+
+
+
+
+
                 pass
             else:
                 pass
@@ -213,6 +258,10 @@ def on_draw():
     for button in all_buttons:
         button.hovered = button.is_mouse_over(mouse_x, mouse_y)
         button.draw(batch)
+
+    for item in all_items:
+        item.draw(batch)
+
 
     diry = 0
     dirx = 0
