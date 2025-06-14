@@ -1,4 +1,5 @@
 from player import Player
+from face_direction import FaceDirection
 
 class Enemy:
     def __init__(self, name, health=50, x=0, y=0, level=1):
@@ -15,12 +16,17 @@ class Enemy:
         return self.health > 0
     
     #TODO
-    def attack(self, player):
+    def attack(self, player:Player):
         # Implement attack logic here
         pass
-    def detect_player(self, player):
-        # Implement player detection logic here
-        pass 
+    
+    def can_see_player(self, player:Player, vision_range=5):
+        ex, ey = self.x, self.y
+        px, py = player.x, player.y
+        # Calculate the distance between the enemy and the player
+        # Using Euclidean distance for simplicity
+        distance = ((ex - px) ** 2 + (ey - py) ** 2) ** 0.5
+        return distance <= vision_range
 
 class Goblin(Enemy):
     def __init__(self, x=0, y=0, level=1):
