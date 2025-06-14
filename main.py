@@ -155,21 +155,21 @@ def on_mouse_motion(x, y, dx, dy):
     global mouse_x, mouse_y
     mouse_x, mouse_y = x, y
 
-@window.event
-def on_mouse_press(x, y, button, modifiers):
-    if button == pyglet.window.mouse.LEFT:
-        for button in all_buttons:
-            if button.hovered == True:
-                button.clicked = True
-            else:
-                #possibly delete the button
-                pass
-    elif button == pyglet.window.mouse.RIGHT:
-        for button in all_buttons:
-            if button.hovered == True:
-                button.clicked = True
-            else:
-                pass
+# @window.event
+# def on_mouse_press(x, y, button, modifiers):
+#     if button == pyglet.window.mouse.LEFT:
+#         for button in all_buttons:
+#             if button.hovered == True:
+#                 button.clicked = True
+#             else:
+#                 #possibly delete the button
+#                 pass
+#     elif button == pyglet.window.mouse.RIGHT:
+#         for button in all_buttons:
+#             if button.hovered == True:
+#                 button.clicked = True
+#             else:
+#                 pass
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
@@ -184,17 +184,32 @@ def on_mouse_release(x, y, button, modifiers):
                         for sprite in button2.sprites:
                             sprite.delete()
                             del sprite
+                        id = all_buttons.index(button2)
                         del button2
-                    all_buttons = []
-            else:
-                pass
+                        all_buttons[id] = -1
+            else: #this is the code to delete all buttons, basically
+                for sprite in button.sprites:
+                    sprite.delete()
+                    del sprite
+                id = all_buttons.index(button)
+                del button
+                all_buttons[id] = -1
     elif button == pyglet.window.mouse.RIGHT:
-        for button in all_buttons:
-            button.clicked = False
-            if button.hovered == True:
-                pass
-            else:
-                pass
+        for button in all_buttons: #duplicate code; this should be moved into a function for sure. gross. yucktonium.
+            for sprite in button.sprites:
+                sprite.delete()
+                del sprite
+            id = all_buttons.index(button)
+            del button
+            all_buttons[id] = -1
+            # button.clicked = False
+            # if button.hovered == True:
+            #     pass
+            # else:
+            #     pass
+
+
+        #get rclick options
         rclick_options = []
         #check what's here, such as...
         # 
@@ -250,19 +265,21 @@ keypress_chk = 0
 
 @window.event
 def on_draw():
+    print(all_buttons)
     global keypress_chk
     global gamestate
     global current_entity_turn
     window.clear()
 
     for button in all_buttons:
-        button.hovered = button.is_mouse_over(mouse_x, mouse_y)
-        button.draw(batch)
+        if button == -1:
+            all_buttons.remove(button)
+        else:
+            button.hovered = button.is_mouse_over(mouse_x, mouse_y)
+            button.draw(batch)
 
     # for item in floor_items:
     #     item.draw(batch)
-
-
     diry = 0
     dirx = 0
 
