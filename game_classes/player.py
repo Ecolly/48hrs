@@ -18,22 +18,50 @@ class Player:
         self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
         self.animframe = 0 #what frame of the animation it's on
         self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
-        self.scale = 2
+        self.scale = 3
         # self.skills = []
         # self.equipment = {}
         # self.experience = 0
 
     def get_screen_position(self):
-        return self.x*32-16, self.y*32-16
+        return self.scale*(self.x*16-8), self.scale*(self.y*16-8)
 
     def draw(self, batch, grid_entities1, animation_presets):
         base_x, base_y = self.get_screen_position()
         sprite = self.sprite
 
+
+        
+        #adjust rotation state (gross)
+
+        # rotation_adjustment = 0
+
+        # if self.direction == FaceDirection.DOWN:
+        #     rotation_adjustment = 0
+        # elif self.direction == FaceDirection.DOWN_RIGHT:
+        #     rotation_adjustment = 1
+        # elif self.direction == FaceDirection.RIGHT:
+        #     rotation_adjustment = 2
+        # elif self.direction == FaceDirection.UP_RIGHT:
+        #     rotation_adjustment = 3
+        # elif self.direction == FaceDirection.UP:
+        #     rotation_adjustment = 4
+        # elif self.direction == FaceDirection.UP_LEFT:
+        #     rotation_adjustment = 5
+        # elif self.direction == FaceDirection.LEFT:
+        #     rotation_adjustment = 6
+        # elif self.direction == FaceDirection.DOWN_LEFT:
+        #     rotation_adjustment = 7
+
+
+        # FaceDirection.
+
+    
+
         tex = pyglet.image.Texture.create(16, 16)
         #print(self.animtype)
         #print(self.animframe)
-        tex.blit_into(grid_entities1[self.spriteindex + animation_presets[self.animtype][math.floor(self.animframe)]], 0, 0, 0)
+        tex.blit_into(grid_entities1[self.spriteindex + (self.direction.value)*8 + animation_presets[self.animtype][math.floor(self.animframe)]], 0, 0, 0)
         sprite.image = tex
 
         self.animframe = self.animframe + self.animmod
@@ -53,6 +81,32 @@ class Player:
     def move(self, dx, dy): #Move relative to current position
         self.x += dx
         self.y += dy
+
+        #adjust rotation state (gross)
+        if dx == 1:
+            if dy == 1:
+                self.direction = FaceDirection.UP_RIGHT
+            elif dy == -1:
+                self.direction = FaceDirection.DOWN_RIGHT
+            else:
+                self.direction = FaceDirection.RIGHT
+        elif dx == -1:
+            if dy == 1:
+                self.direction = FaceDirection.UP_LEFT
+            elif dy == -1:
+                self.direction = FaceDirection.DOWN_LEFT
+            else:
+                self.direction = FaceDirection.LEFT
+        else:
+            if dy == 1:
+                self.direction = FaceDirection.UP
+            elif dy == -1:
+                self.direction = FaceDirection.DOWN
+
+
+
+
+
 
     def is_alive(self):
         return self.health > 0

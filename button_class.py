@@ -5,7 +5,7 @@ import math
 class InteractiveObject:
     def __init__(self, x, y, width, height, sprites, colors, animtype, animmod, text, obj_type, 
                  alignment_x='left', alignment_y='bottom',
-                 depth=0, draggable=False, rot=0, scale=2, **extras):
+                 depth=0, draggable=False, rot=0, scale=3, **extras):
         
         # Position and alignment
         self.x = x

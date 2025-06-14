@@ -129,7 +129,8 @@ all_buttons = [my_object]
 mouse_x = 0
 mouse_y = 0
 
-
+keys = pyglet.window.key.KeyStateHandler()
+window.push_handlers(keys)
 
 
 
@@ -171,30 +172,63 @@ def on_mouse_release(x, y, button, modifiers):
             else:
                 pass
 
-@window.event
-def on_key_press(symbol, modifiers):
-    if symbol == pyglet.window.key.W:
-        player.y = player.y + 1
-        pass
-    elif symbol == pyglet.window.key.S:
-        player.y = player.y - 1
-        pass
+# @window.event
+# def on_key_press(symbol, modifiers):
+#     diry = 0
+#     dirx = 0
 
-    if symbol == pyglet.window.key.A:
-        player.x = player.x - 1
-        pass
-    elif symbol == pyglet.window.key.D:
-        player.x = player.x + 1
-        pass
+#     if symbol == pyglet.window.key.W:
+#         diry = 1
+#     elif symbol == pyglet.window.key.S:
+#         diry = -1
+
+#     if symbol == pyglet.window.key.D:
+#         dirx = 1
+#     elif symbol == pyglet.window.key.A:
+#         dirx = -1
+    
+#     if diry != 0 or dirx != 0:
+#         #initiate start of a turn.
+#         player.move(dirx, diry)
+
+
+
+
+global keypress_chk
+keypress_chk = 0
 
 @window.event
 def on_draw():
+    global keypress_chk
     window.clear()
 
     for button in all_buttons:
         button.hovered = button.is_mouse_over(mouse_x, mouse_y)
         button.draw(batch)
 
+    diry = 0
+    dirx = 0
+
+    if keypress_chk == 0:
+        if keys[pyglet.window.key.W]:
+            diry = 1
+        elif keys[pyglet.window.key.S]:
+            diry = -1
+
+        if keys[pyglet.window.key.D]:
+            dirx = 1
+        elif keys[pyglet.window.key.A]:
+            dirx = -1
+    else:
+        if keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D]:
+            pass
+        else:
+            keypress_chk = 0
+    
+    if diry != 0 or dirx != 0:
+        #initiate start of a turn.
+        keypress_chk = 1
+        player.move(dirx, diry)
 
     player.draw(batch, grid_entities1, animation_presets)
     batch.draw()
