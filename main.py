@@ -11,7 +11,7 @@ from game_classes.player import *
 from game_classes.face_direction import *
 #from game_classes.enemy import *
 from game_classes.item import *
-#from game_classes.map import *
+from game_classes.map import *
 
 
 
@@ -254,6 +254,30 @@ def on_mouse_release(x, y, button, modifiers):
             all_buttons.append(option_obj)
 
 
+
+
+
+
+
+bg_order = []
+i = 0
+while i < 32*16:
+    bg_order.append("q") #"filler" space that is not used by floors
+    i = i + 1
+
+bg_order[27*16 + 8] = "#"
+bg_order[26*16 + 8] = "o"
+bg_order[26*16 + 6] = "."
+
+floor = make_floor()
+fl_string = ""
+for s in floor.map_grid:
+    for s2 in s:
+        fl_string += s2
+bg = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(fl_string, grid_bg, bg_order, 60, "left"), 16, 16, 60))
+bg.scale = 3
+bg.z = 0
+
 #0 = main menu
 #1 = your turn in the game world
 #2 = turn is happening
@@ -271,6 +295,8 @@ def on_draw():
     global current_entity_turn
     window.clear()
 
+    bg.batch = batch
+
     for button in all_buttons:
         if button == -1:
             all_buttons.remove(button)
@@ -278,12 +304,8 @@ def on_draw():
             button.hovered = button.is_mouse_over(mouse_x, mouse_y)
             button.draw(batch)
 
-    # for item in floor_items:
-    #     item.draw(batch)
     diry = 0
     dirx = 0
-
-    #if keypress_chk == 0:
 
     if keys[pyglet.window.key.E] and keypress_chk == 0:
         #enter inventory
@@ -323,48 +345,12 @@ def on_draw():
         else:
             gamestate = 1
 
-    # print(gamestate)
-    # print(current_entity_turn)
-    # print(player.x)
-    # print(player.y)
-    # print(player.prevx)
-    # print(player.prevy)
-    # print(keypress_chk)
-
-
-
     player.draw(batch, grid_entities1, animation_presets)
     batch.draw()
     
 
 
 
-
-    # texture = sprite_sheet.get_texture();
-    # pyglet.glEnable(texture.GL_TEXTURE_2D)        # typically target is GL_TEXTURE_2D
-    # pyglet.glBindTexture(texture.GL_TEXTURE_2D, texture.id)
-
-
-
-
-
-
-
-
-
-
-# In your input events:
-# @window.event
-# def on_mouse_press(x, y, button, modifiers):
-#     my_object.on_mouse_press(x, y, button, modifiers)
-
-# @window.event
-# def on_mouse_release(x, y, button, modifiers):
-#     my_object.on_mouse_release(x, y, button, modifiers)
-
-# @window.event
-# def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-#     my_object.on_mouse_drag(x, y, dx, dy, buttons, modifiers)
 
 pyglet.app.run()
 
