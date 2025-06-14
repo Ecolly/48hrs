@@ -19,7 +19,7 @@ from game_classes.map import *
 #from button_object import *
 #from shaders import *
 
-window = pyglet.window.Window()
+window = pyglet.window.Window(1152, 768)
 
 #pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
 #pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -295,6 +295,8 @@ def on_draw():
     global current_entity_turn
     window.clear()
 
+    bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
+    bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
     bg.batch = batch
 
     for button in all_buttons:
