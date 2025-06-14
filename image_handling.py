@@ -5,6 +5,7 @@
 
 
 import pyglet
+import math
 
 def text_to_tiles(text, image_grid, letter_order):
     # Create a mapping from character to its index in the tile grid
@@ -15,6 +16,16 @@ def text_to_tiles(text, image_grid, letter_order):
         tile = image_grid[index]
         tile_list.append(tile)
     return tile_list
+
+def text_to_background(text, image_grid, letter_order, width, justify):
+    output_txt = ""
+    i = 0
+    while i < width*math.floor(len(text)/width) + width:
+        output_txt = output_txt + "╬"   
+        i = i + 1
+    return text_to_tiles_wrapped(output_txt, image_grid, letter_order, width, justify)
+
+
 
 def text_to_tiles_wrapped(text, image_grid, letter_order, width, justify):
     # Create character-to-index mapping
