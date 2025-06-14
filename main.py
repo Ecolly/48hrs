@@ -74,15 +74,34 @@ animation_presets = [
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
 
-string_to_draw = "The quick brown fox jumpeeeeeeeeeeeed over the lazy dog. This is the story of a man named Stanley. Stanley worked for a company at an office where he sat in room 427. etc etc buttons"
-tiles_to_draw = text_to_tiles_wrapped(string_to_draw, grid_font, letter_order, 20, "center")
-bg_to_draw = text_to_background(string_to_draw, grid_font, letter_order, 20, "center")
 
-combined_image = combine_tiles(tiles_to_draw, 8, 8, 20)
-combined_image_2 = combine_tiles(bg_to_draw, 8, 8, 20)
+# string_to_draw = "The quick brown fox jumpeeeeeeeeeeeed over the lazy dog. This is the story of a man named Stanley. Stanley worked for a company at an office where he sat in room 427. etc etc buttons"
+# tiles_to_draw = text_to_tiles_wrapped(string_to_draw, grid_font, letter_order, 20, "center")
+# bg_to_draw = text_to_background(string_to_draw, grid_font, letter_order, 20, "center")
 
-mysprite = pyglet.sprite.Sprite(combined_image, x=0, y=0)
-mysprite2 = pyglet.sprite.Sprite(combined_image_2, x=0, y=0)
+# combined_image = combine_tiles(tiles_to_draw, 8, 8, 20)
+# combined_image_2 = combine_tiles(bg_to_draw, 8, 8, 20)
+
+# mysprite = pyglet.sprite.Sprite(combined_image, x=0, y=0)
+# mysprite2 = pyglet.sprite.Sprite(combined_image_2, x=0, y=0)
+
+# my_object = InteractiveObject(
+#     x=100,
+#     y=200,
+#     width=mysprite2.width,
+#     height=mysprite2.height,
+#     sprites=[mysprite2, mysprite],
+#     colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
+#     animtype = [None, None],
+#     animmod = [None, None],
+#     text = [None, None],
+#     alignment_x='center',
+#     alignment_y='top',
+#     depth=1,
+#     obj_type="label",
+#     draggable=True,
+#     custom_data={"label": "Click me!"}
+# )
 
 
 
@@ -128,7 +147,8 @@ mouse_y = 0
 keys = pyglet.window.key.KeyStateHandler()
 window.push_handlers(keys)
 
-
+mouse_state = pyglet.window.mouse.MouseStateHandler()
+window.push_handlers(mouse_state)
 
 @window.event
 def on_mouse_motion(x, y, dx, dy):
@@ -137,14 +157,14 @@ def on_mouse_motion(x, y, dx, dy):
 
 @window.event
 def on_mouse_press(x, y, button, modifiers):
-    if pyglet.window.mouse.LEFT:
+    if button == pyglet.window.mouse.LEFT:
         for button in all_buttons:
             if button.hovered == True:
                 button.clicked = True
             else:
                 #possibly delete the button
                 pass
-    elif pyglet.window.mouse.RIGHT:
+    elif button == pyglet.window.mouse.RIGHT:
         for button in all_buttons:
             if button.hovered == True:
                 button.clicked = True
@@ -153,69 +173,70 @@ def on_mouse_press(x, y, button, modifiers):
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
-    if pyglet.window.mouse.LEFT:
+    global all_buttons
+    if button == pyglet.window.mouse.LEFT:
+        
+        for button in all_buttons:
+            button.clicked = False
+            if button.hovered == True:
+                if button.type == "CANCEL":
+                    for button2 in all_buttons:
+                        for sprite in button2.sprites:
+                            sprite.delete()
+                            del sprite
+                        del button2
+                    all_buttons = []
+            else:
+                pass
+    elif button == pyglet.window.mouse.RIGHT:
         for button in all_buttons:
             button.clicked = False
             if button.hovered == True:
                 pass
             else:
                 pass
-    elif pyglet.window.mouse.RIGHT:
-        for button in all_buttons:
-            button.clicked = False
-            if button.hovered == True:
+        rclick_options = []
+        #check what's here, such as...
+        # 
+        #   a button (e.g. in the case of a menu)
+        #   a blank space near the player 
+        #   an item
+        #   an enemy
+        #   an exit
+        #   you
+        # 
+        #  
+        # for item in floor_items:
+        #     if item.is_mouse_over(mouse_x, mouse_y):
+        #         rclick_options.append("EXAMINE")
+        #         if item.inventory_slot != -1:
+        #             rclick_options.append("USE")
+        #             rclick_options.append("THROW")
 
-                rclick_options = []
-                #check what's here, such as...
-                # 
-                #   a button (e.g. in the case of a menu)
-                #   a blank space near the player 
-                #   an item
-                #   an enemy
-                #   an exit
-                #   you
-                # 
-                #  
-                for item in floor_items:
-                    if item.is_mouse_over(mouse_x, mouse_y):
-                        rclick_options.append("EXAMINE")
-                        if item.inventory_slot != -1:
-                            rclick_options.append("USE")
-                            rclick_options.append("THROW")
+        rclick_options.append("CANCEL")
 
-
-                rclick_options.append("CANCEL")
-
-
-                my_object = InteractiveObject(
-    x=100,
-    y=200,
-    width=mysprite2.width,
-    height=mysprite2.height,
-    sprites=[mysprite2, mysprite],
-    colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
-    animtype = [0, 0],
-    animmod = [None, None],
-    text = [None, None],
-    alignment_x='center',
-    alignment_y='top',
-    depth=1,
-    obj_type="label",
-    draggable=True,
-    custom_data={"label": "Click me!"}
-)
-                
-
-
-
-
-
-
-
-
-                pass
-            else:
-                pass
+        for option in rclick_options:
+            print("a")
+            spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
+            spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
+            option_obj = InteractiveObject(
+                x=mouse_x,
+                y=mouse_y,
+                width=spr2.width,
+                height=spr2.height,
+                sprites=[spr2, spr1],
+                colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
+                animtype = [0, 0],
+                animmod = [None, None],
+                text = [None, None],
+                alignment_x='left',
+                alignment_y='top',
+                depth=1,
+                obj_type=option,
+                draggable=True,
+                custom_data={"label": "Click me!"}
+            )
+            all_buttons.append(option_obj)
 
 
 #0 = main menu
@@ -238,8 +259,8 @@ def on_draw():
         button.hovered = button.is_mouse_over(mouse_x, mouse_y)
         button.draw(batch)
 
-    for item in floor_items:
-        item.draw(batch)
+    # for item in floor_items:
+    #     item.draw(batch)
 
 
     diry = 0
