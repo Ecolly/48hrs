@@ -1,5 +1,7 @@
 from game_classes.face_direction import *
 
+from game_classes.face_direction import *
+
 class Player:
     def __init__(self, name, health, level, sprite, color, animtype, animframe, animmod, x, y):
         self.name = name
@@ -21,7 +23,7 @@ class Player:
         # self.experience = 0
 
     def get_screen_position(self):
-        return self.x*16-8, self.y*16-8
+        return self.x*32-16, self.y*32-16
 
     def draw(self, batch):
         base_x, base_y = self.get_screen_position()
@@ -40,7 +42,6 @@ class Player:
         self.x += dx
         self.y += dy
 
-
     def is_alive(self):
         return self.health > 0
     
@@ -50,6 +51,9 @@ class Player:
         else:
             raise ValueError("Invalid direction. Use 'up', 'down', 'left', or 'right'.")
 
+    def __str__(self):
+        return f"Player(name={self.name}, health={self.health}"
+    
     def enemy_collison(self, enemy_list):
         """Check if an enemy is nearby in a 3x3 around the player."""
         directions = [(-1, -1), (-1, 0), (-1, 1),
