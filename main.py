@@ -15,6 +15,10 @@ window = pyglet.window.Window()
 #pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
 #pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
+
+
+
+
 sprite_sheet = pyglet.image.load('font.png')
 columns = sprite_sheet.width // 8
 rows = sprite_sheet.height // 8
@@ -35,14 +39,14 @@ bg_to_draw = text_to_background(string_to_draw, image_grid, letter_order, 20, "c
 combined_image = combine_tiles(tiles_to_draw, 8, 8, 20)
 combined_image_2 = combine_tiles(bg_to_draw, 8, 8, 20)
 
-mysprite = pyglet.sprite.Sprite(combined_image, x=50, y=50)
-mysprite2 = pyglet.sprite.Sprite(combined_image_2, x=50, y=50)
+mysprite = pyglet.sprite.Sprite(combined_image, x=0, y=0)
+mysprite2 = pyglet.sprite.Sprite(combined_image_2, x=0, y=0)
 
 my_object = InteractiveObject(
     x=100,
     y=200,
-    width=64,
-    height=16,
+    width=mysprite2.width,
+    height=mysprite2.height,
     sprites=[mysprite2, mysprite],
     colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
     animtype = [None, None],
@@ -70,13 +74,62 @@ batch = pyglet.graphics.Batch()
 # textbg_group = pyglet.graphics.OrderedGroup(50)
 # text_group = pyglet.graphics.OrderedGroup(60)
 
+all_buttons = [my_object]
+
+mouse_x = 0
+mouse_y = 0
+
+@window.event
+def on_mouse_motion(x, y, dx, dy):
+    global mouse_x, mouse_y
+    mouse_x, mouse_y = x, y
+
+@window.event
+def on_mouse_press(x, y, button, modifiers):
+    if pyglet.window.mouse.LEFT:
+        for button in all_buttons:
+            if button.hovered == True:
+                button.clicked = True
+            else:
+                #possibly delete the button
+                pass
+    elif pyglet.window.mouse.RIGHT:
+        for button in all_buttons:
+            if button.hovered == True:
+                button.clicked = True
+            else:
+                pass
+    
+@window.event
+def on_mouse_release(x, y, button, modifiers):
+    if pyglet.window.mouse.LEFT:
+        for button in all_buttons:
+            button.clicked = False
+            if button.hovered == True:
+                pass
+            else:
+                pass
+    elif pyglet.window.mouse.RIGHT:
+        for button in all_buttons:
+            button.clicked = False
+            if button.hovered == True:
+                pass
+            else:
+                pass
+
 @window.event
 def on_draw():
     window.clear()
-    my_object.draw(batch)
+
+    for button in all_buttons:
+        button.hovered = button.is_mouse_over(mouse_x, mouse_y)
+        #if button.hovered == True:
+            
+        button.draw(batch)
+
 
     batch.draw()
-    #
+    
 
 
 
