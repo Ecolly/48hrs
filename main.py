@@ -106,7 +106,6 @@ item = Item(
     grid_items = grid_items,
     x = 8,
     y = 8,
-    inventory_slot = -1,
     quantity = 1,
 )
 
@@ -120,7 +119,8 @@ item = Item(
 batch = pyglet.graphics.Batch()
 
 all_buttons = []
-all_items = [item]
+floor_items = [item]
+inventory_items = []
 
 mouse_x = 0
 mouse_y = 0
@@ -176,7 +176,7 @@ def on_mouse_release(x, y, button, modifiers):
                 #   you
                 # 
                 #  
-                for item in all_items:
+                for item in floor_items:
                     if item.is_mouse_over(mouse_x, mouse_y):
                         rclick_options.append("EXAMINE")
                         if item.inventory_slot != -1:
@@ -217,27 +217,6 @@ def on_mouse_release(x, y, button, modifiers):
             else:
                 pass
 
-# @window.event
-# def on_key_press(symbol, modifiers):
-#     diry = 0
-#     dirx = 0
-
-#     if symbol == pyglet.window.key.W:
-#         diry = 1
-#     elif symbol == pyglet.window.key.S:
-#         diry = -1
-
-#     if symbol == pyglet.window.key.D:
-#         dirx = 1
-#     elif symbol == pyglet.window.key.A:
-#         dirx = -1
-    
-#     if diry != 0 or dirx != 0:
-#         #initiate start of a turn.
-#         player.move(dirx, diry)
-
-
-
 
 #0 = main menu
 #1 = your turn in the game world
@@ -259,7 +238,7 @@ def on_draw():
         button.hovered = button.is_mouse_over(mouse_x, mouse_y)
         button.draw(batch)
 
-    for item in all_items:
+    for item in floor_items:
         item.draw(batch)
 
 

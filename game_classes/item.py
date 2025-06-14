@@ -8,8 +8,8 @@ def create_sprite_item(image_grid, index): #dumb. literally the same as the imag
 
 class Item:
     #very basics item class cause we dono what items there are
-    def __init__(self, name, grid_items, x, y, inventory_slot, quantity):
-        
+    def __init__(self, name, grid_items, x, y, quantity):
+
         item_names = ["Kitchen Knife", "Machete", "Scimitar", "Screwdriver", "Sickle"]
         item_fakenames = ["Kitchen Knife", "Machete", "Scimitar", "Screwdriver", "Sickle"]
         item_spritelocs = [29*10, 29*10+1, 29*10+2, 29*10+3, 29*10+4]
@@ -23,7 +23,6 @@ class Item:
         self.y = y
         self.prevx = x
         self.prevy = y
-        self.inventory_slot = inventory_slot
         self.quantity = quantity
         self.scale = 3
         self.is_usable = item_is_usable[self.index]
