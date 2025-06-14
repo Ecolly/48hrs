@@ -67,7 +67,7 @@ grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 animation_presets = [
     [0],
     [0, 1, 2, 1, 0, 3, 4, 3],
-    
+
 
 ]
 
@@ -91,7 +91,7 @@ my_object = InteractiveObject(
     height=mysprite2.height,
     sprites=[mysprite2, mysprite],
     colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
-    animtype = [None, None],
+    animtype = [0, 0],
     animmod = [None, None],
     text = [None, None],
     alignment_x='center',
@@ -109,9 +109,10 @@ player = Player(
     x = 2,
     y = 2,
     sprite = create_sprite(grid_entities1, 20*8*8),
+    spriteindex = 20*8*8,
     color = (255, 255, 255, 255),
-    animtype = None,
-    animmod = None,
+    animtype = 1,
+    animmod = 1/8,
     animframe = 0,
 )
 
@@ -195,7 +196,7 @@ def on_draw():
         button.draw(batch)
 
 
-    player.draw(batch)
+    player.draw(batch, grid_entities1, animation_presets)
     batch.draw()
     
 

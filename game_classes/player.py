@@ -1,9 +1,9 @@
 from game_classes.face_direction import *
-
-from game_classes.face_direction import *
+import pyglet
+import math
 
 class Player:
-    def __init__(self, name, health, level, sprite, color, animtype, animframe, animmod, x, y):
+    def __init__(self, name, health, level, sprite, spriteindex, color, animtype, animframe, animmod, x, y):
         self.name = name
         self.health = health
         self.level = level
@@ -13,6 +13,7 @@ class Player:
         self.direction = FaceDirection.DOWN  # Default direction
         
         self.sprite = sprite  # pyglet.sprite.Sprite
+        self.spriteindex = spriteindex #actual index of sprite on tilegrid
         self.color = color #4 entry tuple for the sprite to be colored as; white is default
         self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
         self.animframe = 0 #what frame of the animation it's on
@@ -25,9 +26,20 @@ class Player:
     def get_screen_position(self):
         return self.x*32-16, self.y*32-16
 
-    def draw(self, batch):
+    def draw(self, batch, grid_entities1, animation_presets):
         base_x, base_y = self.get_screen_position()
         sprite = self.sprite
+
+        tex = pyglet.image.Texture.create(16, 16)
+        #print(self.animtype)
+        #print(self.animframe)
+        tex.blit_into(grid_entities1[self.spriteindex + animation_presets[self.animtype][math.floor(self.animframe)]], 0, 0, 0)
+        sprite.image = tex
+
+        self.animframe = self.animframe + self.animmod
+        if self.animframe >= len(animation_presets[self.animtype]):
+            self.animframe = 0
+
         sprite.x = base_x
         sprite.y = base_y
         sprite.scale = self.scale
