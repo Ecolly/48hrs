@@ -4,23 +4,25 @@ from game_classes.enemy import*
 
 
 
-
-
-
 def make_floor():
     number_of_rooms = random.randint(5, 9)  # Random number of rooms between 5 and 10
     test_map = Map(60, 60, number_of_rooms, default_tile='#')
     test_map.check_generate_room(test_map.rooms)
     test_map.connect_rooms()
-    test_map.check_valid_tile()  # Populate valid tiles after room generation
-    test_map.create_stairs()
-    print(f"stairs{test_map.stairs}")
-    testmap2 = test_map.auto_tile_ascii()
-    print(testmap2)
+    test_map.check_valid_tile()
+    test_map.create_stairs() # Populate valid tiles after room generation
+    test_map.assign_spawnpoint()
+
+    if random.randint(0,1)==0:
+        test_map.auto_tile_ascii()
+        test_map.map_type = "Complex"
+        return test_map
+    print(test_map)
     return test_map
 
 class Map:
     def __init__(self, width, height, number_of_rooms, default_tile='#'):
+        self.map_type = "Simple"
         self.width = width
         self.height = height
         self.number_of_rooms = number_of_rooms
@@ -32,21 +34,22 @@ class Map:
         self.list_of_all_item_names = ["Iron Sword", "Chicken", "Strawberry", "Shield_1"]
         self.floor_items = []  # List to hold items on the floor
         self.all_enemies = []
+        self.spawnpoint = set()
         self.stairs = set() #stairs location on the map
         
     
     #set the room tiles to be '.' (empty space)
-    def generate_border(self, x, y, room_width, room_height):
+    def generate_room(self, x, y, room_width, room_height):
         for i in range(y, y + room_height):
             for j in range(x, x + room_width):
                 if 0 <= i < self.height and 0 <= j < self.width:
                     self.map_grid[i][j] = '.'
-    #set the room borders to be 'o' (empty space)
-    def generate_room(self, x, y, room_width, room_height):
-        for i in range(y-1, y + room_height+1):
-            for j in range(x-1, x + room_width+1):
-                if 0 <= i < self.height and 0 <= j < self.width:
-                    self.map_grid[i][j] = 'o'
+    # #set the room borders to be 'o' (empty space)
+    # def generate_room(self, x, y, room_width, room_height):
+    #     for i in range(y-1, y + room_height+1):
+    #         for j in range(x-1, x + room_width+1):
+    #             if 0 <= i < self.height and 0 <= j < self.width:
+    #                 self.map_grid[i][j] = 'o'
     
     #check if a room can be generated at the given coordinates
     #checks it against existing rooms list
@@ -82,7 +85,7 @@ class Map:
                 print(f"Room {rooms_created} generated at ({x}, {y}) with size ({width}, {height})")
                 # If no overlap, generate the room
                 self.generate_room(x, y, width, height)
-                self.generate_border(x, y, width, height)
+                #self.generate_border(x, y, width, height)
                 rooms.append(new_room)
             attempts += 1
 
@@ -104,21 +107,11 @@ class Map:
         self.map_grid[self.height -1 -y][x] = '@'
         self.stairs = (x,y)
 
-    # def pretti_fication(map_grid, x, y, target_char):
-    #     height = len(map_grid)
-    #     width = len(map_grid[0])
-    #     bitmask = 0
-    #     if y > 0 and map_grid[y-1][x] == target_char:      # Up
-    #         bitmask |= 1
-    #     if x < width-1 and map_grid[y][x+1] == target_char: # Right
-    #         bitmask |= 2
-    #     if y < height-1 and map_grid[y+1][x] == target_char: # Down
-    #         bitmask |= 4
-    #     if x > 0 and map_grid[y][x-1] == target_char:      # Left
-    #         bitmask |= 8
-    #     return bitmask
-
-    
+    def assign_spawnpoint(self):
+        random_location = random.choice(self.valid_entity_tiles)
+        y, x = random_location
+        self.spawnpoint = (x,y)
+        
     floor_items = []  # List to hold items on the floor
 
     def create_item(self, name, grid_items):
@@ -191,9 +184,7 @@ class Map:
                 self.map_grid[y][x2] = '.'
 
 
-
-
-    def auto_tile_ascii(self, target_char='o', bitmask_to_ascii=None):
+    def auto_tile_ascii(self, target_char='#', bitmask_to_ascii=None):
         if bitmask_to_ascii is None:
             bitmask_to_ascii = {
                 0: 'L',    # isolated
