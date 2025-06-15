@@ -111,7 +111,7 @@ class Enemy:
 
 
 
-    def process_turn(self):
+    def process_turn(self, all_enemies, player):
         #print("a")
         self.techniqueframe = self.techniqueframe + 1
 
@@ -128,18 +128,34 @@ class Enemy:
                 self.techniquefinished = 1
         elif self.technique == "hit":
             #animate the "hit movement"
-            self.prevx = self.prevx + round((abs(self.techniquex - self.prevx)/(self.techniquex - self.prevx + 0.01)))/4
-            self.prevy = self.prevy + round((abs(self.techniquey - self.prevy)/(self.techniquey - self.prevy + 0.01)))/4
+
+
+
+            quartic_eq = (-0.19*(0.25*self.techniqueframe)**4 + (0.25*self.techniqueframe)**3 - (0.25*self.techniqueframe)**2)/2.5
+            #print(quartic_eq)
+
+            self.prevx = self.x + round((abs(self.techniquex - self.x)/(self.techniquex - self.x + 0.01)))*quartic_eq
+            self.prevy = self.y + round((abs(self.techniquey - self.y)/(self.techniquey - self.y + 0.01)))*quartic_eq
 
 
             #if hit is finished, find entity at the target square and deduct hp
-            if self.techniqueframe == 4:
+            if self.techniqueframe == 16:
+                
+                for enemy in all_enemies:
+                    if enemy.x == self.techniquex and enemy.y == self.techniquey:
+                        enemy.health = enemy.health - 1
+                        break 
+                
+                if player.x == self.techniquex and player.y == self.techniquey:
+                    player.health = player.health - 1
+
                 self.prevx = self.x
                 self.prevy = self.y
-                self.techniquex = self.x - 6
-                self.techniquey = self.y - 6
+                self.techniquex = self.x
+                self.techniquey = self.y
                 self.technique = "move"
                 self.techniquefinished = 1
+
 
 
         else:
