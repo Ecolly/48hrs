@@ -1,4 +1,6 @@
 from game_classes.face_direction import FaceDirection
+from game_classes.techniques import*
+
 import pyglet
 import math
 import button_class
@@ -50,7 +52,7 @@ class Enemy:
         self.prevy = y 
         self.inventory = []
         self.direction = FaceDirection.DOWN  # Default direction
-        self.technique = "n/a"
+        self.technique = Technique.NA
         self.techniquex = 0
         self.techniquey = 0
         self.techniqueframe = 0
@@ -66,15 +68,19 @@ class Enemy:
         self.scale = 3
 
 
-    def do_AI(self, all_enemies, player):
+    def do_AI(self, all_enemies, player, game_map):
         if self.name == "FOX":
-            return "move", self.x, self.y+1
+            return Technique.MOVE, self.x, self.y+1
         elif self.name == "GOOSE":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
-                return "hit", player.x, player.y
+                return Technique.HIT, player.x, player.y
             else:
-                return "move", self.x + round(abs(player.x-self.x)/((player.x-self.x)+0.01)), self.y + round(abs(player.y-self.y)/((player.y-self.y)+0.01))
-    
+                new_x = self.x + round(abs(player.x - self.x) / ((player.x - self.x) + 0.01))
+                new_y = self.y + round(abs(player.y - self.y) / ((player.y - self.y) + 0.01))
+                if self.can_move_to(new_x, new_y, game_map):
+                    return Technique.MOVE, new_x, new_y    
+                else:
+                    return Technique.MOVE, new_x, new_y 
     
     def can_move_to(self, x, y, game_map):
         #Detect walls
@@ -86,11 +92,7 @@ class Enemy:
             return False
         else: 
             return True
-        
-        #Detect player
-        #Detect item (???)
-        pass
-
+    
     
 
 
@@ -131,7 +133,7 @@ class Enemy:
         #print("a")
         self.techniqueframe = self.techniqueframe + 1
 
-        if self.technique == "move":
+        if self.technique == Technique.MOVE:
             if self.techniquex != self.prevx:
                 self.prevx = self.prevx + round((abs(self.techniquex - self.prevx)/(self.techniquex - self.prevx+0.01)))/8
             if self.techniquey != self.prevy:
@@ -140,9 +142,9 @@ class Enemy:
             if self.techniquey == self.prevy and self.techniquex == self.prevx:
                 self.x = self.prevx
                 self.y = self.prevy
-                self.technique = "move"
+                self.technique = Technique.MOVE
                 self.techniquefinished = 1
-        elif self.technique == "hit":
+        elif self.technique == Technique.HIT:
             #animate the "hit movement"
 
 
@@ -171,13 +173,13 @@ class Enemy:
                 self.prevy = self.y
                 self.techniquex = self.x
                 self.techniquey = self.y
-                self.technique = "move"
+                self.technique = Technique.MOVE
                 self.techniquefinished = 1
 
 
 
         else:
-            self.technique = "move"
+            self.technique = Technique.MOVE
             self.techniquefinished = 1
 
 

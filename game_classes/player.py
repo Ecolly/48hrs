@@ -1,4 +1,5 @@
 from game_classes.face_direction import *
+from game_classes.techniques import*
 import pyglet
 import math
 from game_classes.map import Map
@@ -20,7 +21,7 @@ class Player:
         self.prevy = y 
         self.inventory = []
         self.direction = FaceDirection.DOWN  # Default direction
-        self.technique = "n/a"
+        self.technique = Technique.NA
         self.techniquex = 0
         self.techniquey = 0
         self.techniquefinished = 0
@@ -75,19 +76,19 @@ class Player:
 
     def process_turn(self, map: Map):
         #print("a")
-        if self.technique == "move":
+        if self.technique == Technique.MOVE:
             if self.x != self.prevx:
                 self.prevx = self.prevx + (abs(self.techniquex - self.prevx)/(self.techniquex - self.prevx))/8
             if self.y != self.prevy:
                 self.prevy = self.prevy + (abs(self.techniquey - self.prevy)/(self.techniquey - self.prevy))/8
 
             if self.y == self.prevy and self.x == self.prevx:
-                self.technique = "move"
+                self.technique = Technique.MOVE
                 self.techniquefinished = 1
                 self.pick_up_item(map.floor_items)
                 print(self.x, self.y)
         else:
-            self.technique = "move"
+            self.technique = Technique.MOVE
             self.techniquefinished = 1
 
     # returns True if the item is detected at the player's current position
@@ -117,7 +118,7 @@ class Player:
         self.x += dx
         self.y += dy
 
-        self.technique = "move"
+        self.technique = Technique.MOVE
         self.techniquex = self.x
         self.techniquey = self.y
         #adjust rotation state (gross)

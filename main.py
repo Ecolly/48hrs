@@ -9,6 +9,7 @@ from image_handling import *
 from button_class import *
 from game_classes.player import *
 from game_classes.face_direction import *
+from game_classes.techniques import *
 from game_classes.enemy import *
 #from game_classes.item import *
 from game_classes.map import *
@@ -294,7 +295,7 @@ def on_mouse_release(x, y, button, modifiers):
 
 
 
-
+#Map Initiation
 bg_order = ["#", "o", "."]
 bg_tilekey = [26*16 + 8, 26*16 + 8, 26*16+6]
 floor = make_floor()
@@ -302,6 +303,9 @@ floor.random_create_item(grid_items)
 floor.generate_enemies(grid_entities1)
 all_enemies = floor.all_enemies
 
+
+
+#Draw the map
 fl_string = ""
 for s in floor.map_grid:
     for s2 in s:
@@ -399,30 +403,32 @@ def construct_partitions():
 
 
     if player.techniquefinished == 0: #this means its the very start of turn evaluation
-        if player.technique != "move":
+        if player.technique != Technique.MOVE:
             #do this technique
             partition_entity = -1
             
         else:
             #check if all enemies are also moving. if so, move everyone.
             for enemy in all_enemies:
-                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player)
+                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player, floor)
+                
                 enemy.technique = technique_to_do
                 enemy.techniquex = techx 
                 enemy.techniquey = techy
-                if technique_to_do != "move":
+                if technique_to_do != Technique.MOVE:
                     #not all enemies are moving. as a result, only do the player movement.
                     partition_entity = -1
                     break
+                #Added an option for staying still because not everyone is a busy guy
 
-    else:
+    else: 
         for enemy in all_enemies:
             if enemy.techniquefinished == 0:
-                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player)
+                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player, floor)
                 enemy.technique = technique_to_do
                 enemy.techniquex = techx 
                 enemy.techniquey = techy
-                if technique_to_do != "move":
+                if technique_to_do != Technique.MOVE:
                     #do this technique
                     partition_entity = all_enemies.index(enemy)
                     break

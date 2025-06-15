@@ -22,10 +22,13 @@ class Map:
         self.number_of_rooms = number_of_rooms
         self.rooms = []  # List to store the rooms
         self.map_grid = [['#' for _ in range(width)] for _ in range(height)]
-        self.valid_tiles = set()
+        self.valid_tiles = []
+        self.valid_entity_tiles = []
         self.list_of_all_item_names = ["Iron Sword", "Chicken", "Strawberry", "Shield_1"]
         self.floor_items = []  # List to hold items on the floor
         self.all_enemies = []
+        self.stairs = set(0,0) #stairs location on the map
+        
     
     #set the room tiles to be '.' (empty space)
     def generate_border(self, x, y, room_width, room_height):
@@ -114,13 +117,21 @@ class Map:
             print(f"Created item: {item.name} at ({x}, {y})")
 
     def generate_enemies(self, grid_entities1):
-        self.all_enemies.append(generate_enemy("GOOSE", 1, 29, 29, grid_entities1))
-        self.all_enemies.append(generate_enemy("GOOSE", 1, 30, 25, grid_entities1))
-        self.all_enemies.append(generate_enemy("GOOSE", 1, 25, 30, grid_entities1))
+        # random_location = random.choice(self.valid_tiles)
+        # y, x = random_location
 
-        self.all_enemies.append(generate_enemy("FOX", 1, 25, 34, grid_entities1))
-        self.all_enemies.append(generate_enemy("FOX", 1, 30, 32, grid_entities1))
-        
+        #TODO Randomly generate enemies around the map temp
+        for _ in range(5):
+            random_location = random.choice(self.valid_entity_tiles)
+            y, x = random_location
+            self.valid_entity_tiles.remove(random_location)
+            self.all_enemies.append(generate_enemy("GOOSE", 1, x, y, grid_entities1))
+        for _ in range(5):
+            random_location = random.choice(self.valid_tiles)
+            y, x = random_location
+            self.valid_entity_tiles.remove(random_location)
+            self.all_enemies.append(generate_enemy("FOX", 1, x, y, grid_entities1))
+
     def check_valid_tile(self):
         self.valid_tiles = [
             (y, x)
@@ -128,8 +139,7 @@ class Map:
             for x in range(self.width)
             if self.map_grid[self.height-1-y][x] == '.'
         ]
-        print("Valid tiles found:", self.valid_tiles)
-        return self.valid_tiles
+        self.valid_entity_tiles = self.valid_tiles.copy()
     # Connect rooms with corridors
     def center_of_room(self, room):
         x, y, width, height = room
