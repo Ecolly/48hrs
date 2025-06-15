@@ -11,6 +11,7 @@ def make_floor():
     test_map = Map(60, 60, number_of_rooms, default_tile='.')
     test_map.check_generate_room(test_map.rooms)
     test_map.connect_rooms()
+    test_map.check_valid_tile()  # Populate valid tiles after room generation
     return test_map
 
 class Map:
@@ -20,6 +21,7 @@ class Map:
         self.number_of_rooms = number_of_rooms
         self.rooms = []  # List to store the rooms
         self.map_grid = [['#' for _ in range(width)] for _ in range(height)]
+        self.valid_tiles = set()
     
     #set the room tiles to be '.' (empty space)
     def generate_border(self, x, y, room_width, room_height):
@@ -79,6 +81,15 @@ class Map:
     #     """Check surrounding tiles for different texture"""
     #     for i in 
     
+    def check_valid_tile(self):
+        self.valid_tiles = [
+            (x, y)
+            for y in range(self.height)
+            for x in range(self.width)
+            if self.map_grid[y][x] == '.'
+        ]
+        print("Valid tiles found:", self.valid_tiles)
+        return self.valid_tiles
     # Connect rooms with corridors
     def center_of_room(self, room):
         x, y, width, height = room

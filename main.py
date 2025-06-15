@@ -12,6 +12,8 @@ from game_classes.face_direction import *
 from game_classes.enemy import *
 #from game_classes.item import *
 from game_classes.map import *
+from game_classes.item import Weapon, Consumable
+from game_classes.item import Item
 
 
 
@@ -301,6 +303,29 @@ bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_ord
 bg.scale = 3
 bg.z = 0
 
+floor_items = []  # List to hold items on the floor
+
+def create_item(name):
+    # Example dummy factory
+    if name == "Iron Sword":
+        return Weapon(name, grid_items, sprite_locs = 0, damage=10, durability=100)
+    elif name == "Health Potion":
+        return Consumable(name, grid_items, sprite_locs = 2, nutrition_value=20)
+    
+list_of_all_item_names = ["Iron Sword", "Health Potion"]
+
+#self, name, grid_items, x, y, quantity
+for _ in range(3):  # Generate 3 items
+    random_location = random.choice(floor.valid_tiles)
+    x, y = random_location
+    item_name = random.choice(list_of_all_item_names)
+    item = create_item(item_name)
+    item.x = x
+    item.y = y
+    floor_items.append(item)
+    print(f"Created item: {item.name} at ({x}, {y})")
+
+
 
 
 global keypress_chk
@@ -405,6 +430,9 @@ def on_draw():
     player.draw(batch, animation_presets)
     for enemy in all_enemies:
         enemy.draw(batch, animation_presets, player)
+    for item in floor_items:
+        print(item.x, item.y)
+        item.draw(batch, player)
     batch.draw()
     
 
