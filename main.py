@@ -1,8 +1,3 @@
-
-
-
-
-
 import pyglet
 import math
 from image_handling import *
@@ -296,13 +291,12 @@ def on_mouse_release(x, y, button, modifiers):
 
 
 #Map Initiation
-bg_order = ["#", "o", "."]
-bg_tilekey = [26*16 + 8, 26*16 + 8, 26*16+6]
+bg_order = ["#", "o", ".", "@"]
+bg_tilekey = [26*16 + 8, 26*16 + 8, 26*16+6, 26*16+13]
 floor = make_floor()
 floor.random_create_item(grid_items)
 floor.generate_enemies(grid_entities1)
 all_enemies = floor.all_enemies
-
 
 
 #Draw the map
@@ -316,6 +310,26 @@ bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_ord
 bg.scale = 3
 bg.z = 0
 
+
+def go_to_next_level():
+    global floor, all_enemies, player, bg
+    #Triggered after Detects stairs
+    floor = make_floor()
+    floor.random_create_item(grid_items)
+    floor.generate_enemies(grid_entities1)
+    all_enemies = floor.all_enemies
+
+    print("test go to")
+
+    fl_string = ""
+    for s in floor.map_grid:
+        for s2 in s:
+            fl_string += s2
+    print(fl_string)
+    print(floor)
+    bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
+    bg.scale = 3
+    bg.z = 0
 
 
 
@@ -357,34 +371,6 @@ all_buttons.append(option_obj)
 
 
 
-
-
-
-#floor_items = []  # List to hold items on the floor
-
-# def create_item(name):
-#     # Example dummy factory
-#     if name == "Iron Sword":
-#         return Weapon(name, grid_items, sprite_locs = 0, damage=10, durability=100)
-#     elif name == "Health Potion":
-#         return Consumable(name, grid_items, sprite_locs = 2, nutrition_value=20)
-    
-# list_of_all_item_names = ["Iron Sword", "Health Potion"]
-
-# #self, name, grid_items, x, y, quantity
-# for _ in range(3):  # Generate 3 items
-#     random_location = random.choice(floor.valid_tiles)
-#     x, y = random_location
-#     item_name = random.choice(list_of_all_item_names)
-#     item = create_item(item_name)
-#     item.x = x
-#     item.y = y
-#     floor_items.append(item)
-#     print(f"Created item: {item.name} at ({x}, {y})")
-
-
-
-
 global keypress_chk
 keypress_chk = 0
 
@@ -415,7 +401,7 @@ def construct_partitions():
                 enemy.technique = technique_to_do
                 enemy.techniquex = techx 
                 enemy.techniquey = techy
-                if technique_to_do != Technique.MOVE:
+                if technique_to_do != Technique.MOVE and technique_to_do != Technique.STILL:
                     #not all enemies are moving. as a result, only do the player movement.
                     partition_entity = -1
                     break
@@ -428,7 +414,7 @@ def construct_partitions():
                 enemy.technique = technique_to_do
                 enemy.techniquex = techx 
                 enemy.techniquey = techy
-                if technique_to_do != Technique.MOVE:
+                if technique_to_do != Technique.MOVE and technique_to_do != Technique.STILL:
                     #do this technique
                     partition_entity = all_enemies.index(enemy)
                     break
@@ -531,11 +517,18 @@ def on_draw():
     if gamestate == 2:
         if partition_entity == -1:
             #if doing only the player's turn...
-
             player.process_turn(floor)
+            #print(f"{floor.stairs} HERE IS FLOOR STAIRS")
             if partition_entity == -1 and player.techniquefinished == 1:
+                # if (player.x, player.y) in floor.stairs:
+                #     print("on stairs")
+                #     go_to_next_level()
                 partition_entity = construct_partitions()
         elif partition_entity == -2: #if doing all movement...
+            # print(f"{floor.stairs} HERE IS FLOOR STAIRS")
+            # if (player.x, player.y) in floor.stairs:
+            #         print("on stairs")
+            #         go_to_next_level()
 
             is_allfinished_flag = 1
 

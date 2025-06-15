@@ -66,7 +66,9 @@ class Enemy:
         self.animframe = animframe #what frame of the animation it's on
         self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
         self.scale = 3
-
+    
+    def sign(self, x):
+        return (x > 0) - (x < 0)  # returns 1, 0, or -1
 
     def do_AI(self, all_enemies, player, game_map):
         if self.name == "FOX":
@@ -75,17 +77,19 @@ class Enemy:
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 return Technique.HIT, player.x, player.y
             else:
-                new_x = self.x + round(abs(player.x - self.x) / ((player.x - self.x) + 0.01))
-                new_y = self.y + round(abs(player.y - self.y) / ((player.y - self.y) + 0.01))
+                new_x = self.x + self.sign(player.x - self.x)
+                new_y = self.y + self.sign(player.y - self.y)
+                # new_x = self.x + round(abs(player.x - self.x) / ((player.x - self.x) + 0.01))
+                # new_y = self.y + round(abs(player.y - self.y) / ((player.y - self.y) + 0.01))
                 if self.can_move_to(new_x, new_y, game_map):
                     return Technique.MOVE, new_x, new_y    
                 else:
-                    return Technique.MOVE, new_x, new_y 
+                    return Technique.STILL, self.x, self.y 
     
     def can_move_to(self, x, y, game_map):
         #Detect walls
         if (x,y) not in game_map.valid_tiles:
-            print("Invalid tile cannot move")
+            print(f"Invalid tile cannot move{x, y}")
             return False
         elif any(x== enemy.x and enemy.y for enemy in game_map.all_enemies):
             print("Enemy cannot move")
@@ -179,7 +183,7 @@ class Enemy:
 
 
         else:
-            self.technique = Technique.MOVE
+            #self.technique = Technique.MOVE
             self.techniquefinished = 1
 
 

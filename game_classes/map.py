@@ -13,6 +13,8 @@ def make_floor():
     test_map.check_generate_room(test_map.rooms)
     test_map.connect_rooms()
     test_map.check_valid_tile()  # Populate valid tiles after room generation
+    test_map.create_stairs()
+    print(test_map.stairs)
     return test_map
 
 class Map:
@@ -27,7 +29,7 @@ class Map:
         self.list_of_all_item_names = ["Iron Sword", "Chicken", "Strawberry", "Shield_1"]
         self.floor_items = []  # List to hold items on the floor
         self.all_enemies = []
-        self.stairs = set(0,0) #stairs location on the map
+        self.stairs = set() #stairs location on the map
         
     
     #set the room tiles to be '.' (empty space)
@@ -89,6 +91,18 @@ class Map:
     # def check_surrounding_tiles(self, x, y):
     #     """Check surrounding tiles for different texture"""
     #     for i in 
+
+    def create_stairs(self):
+        #initiated after the corridors are generated
+        #need to find a better way to place it
+        random_location = random.choice(self.valid_entity_tiles)
+        y, x = random_location
+        self.valid_entity_tiles.remove(random_location)
+        self.map_grid[x][y] = '@'
+        self.stairs = (x,y)
+
+
+
     
     floor_items = []  # List to hold items on the floor
 
@@ -134,9 +148,11 @@ class Map:
 
     def check_valid_tile(self):
         self.valid_tiles = [
+            #stored in here is y, x
             (y, x)
             for y in range(self.height)
             for x in range(self.width)
+            #actual map value (index based)
             if self.map_grid[self.height-1-y][x] == '.'
         ]
         self.valid_entity_tiles = self.valid_tiles.copy()
