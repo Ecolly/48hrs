@@ -129,14 +129,14 @@ player = Player(
     animframe = 0,
 )
 
-all_enemies = []
+# all_enemies = []
 
-all_enemies.append(generate_enemy("GOOSE", 1, 29, 29, grid_entities1))
-all_enemies.append(generate_enemy("GOOSE", 1, 30, 25, grid_entities1))
-all_enemies.append(generate_enemy("GOOSE", 1, 25, 30, grid_entities1))
+# all_enemies.append(generate_enemy("GOOSE", 1, 29, 29, grid_entities1))
+# all_enemies.append(generate_enemy("GOOSE", 1, 30, 25, grid_entities1))
+# all_enemies.append(generate_enemy("GOOSE", 1, 25, 30, grid_entities1))
 
-all_enemies.append(generate_enemy("FOX", 1, 25, 34, grid_entities1))
-all_enemies.append(generate_enemy("FOX", 1, 30, 32, grid_entities1))
+# all_enemies.append(generate_enemy("FOX", 1, 25, 34, grid_entities1))
+# all_enemies.append(generate_enemy("FOX", 1, 30, 32, grid_entities1))
 
 
 
@@ -299,6 +299,9 @@ bg_order = ["#", "o", "."]
 bg_tilekey = [26*16 + 8, 26*16 + 8, 26*16+6]
 floor = make_floor()
 floor.random_create_item(grid_items)
+floor.generate_enemies(grid_entities1)
+all_enemies = floor.all_enemies
+
 fl_string = ""
 for s in floor.map_grid:
     for s2 in s:

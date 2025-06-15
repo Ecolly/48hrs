@@ -1,4 +1,3 @@
-from game_classes.player import Player
 from game_classes.face_direction import FaceDirection
 import pyglet
 import math
@@ -76,7 +75,23 @@ class Enemy:
             else:
                 return "move", self.x + round(abs(player.x-self.x)/((player.x-self.x)+0.01)), self.y + round(abs(player.y-self.y)/((player.y-self.y)+0.01))
     
+    
+    def can_move_to(self, x, y, game_map):
+        #Detect walls
+        if (x,y) not in game_map.valid_tiles:
+            print("Invalid tile cannot move")
+            return False
+        elif any(x== enemy.x and enemy.y for enemy in game_map.all_enemies):
+            print("Enemy cannot move")
+            return False
+        else: 
+            return True
+        
+        #Detect player
+        #Detect item (???)
+        pass
 
+    
 
 
     def draw(self, batch, animation_presets, player):
@@ -178,11 +193,11 @@ class Enemy:
         return self.health > 0
     
     #TODO
-    def attack(self, player:Player):
+    def attack(self, player):
         # Implement attack logic here
         pass
     
-    def can_see_player(self, player:Player, vision_range=5):
+    def can_see_player(self, player, vision_range=5):
         ex, ey = self.x, self.y
         px, py = player.x, player.y
         # Calculate the distance between the enemy and the player

@@ -68,23 +68,29 @@ class Item:
         sprite.z = 30
 
 class Weapon(Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_usable=True):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_usable=True, is_equipable = True):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
+
+        self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
         self.damage = damage
         self.durability = durability  # Default durability
         self.damage_type = "slashing"  # Default damage type
         self.is_usable = is_usable  # Default to usable
+        self.is_equipable = is_equipable
 
 class Consumable(Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, nutrition_value=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
+        self.sprite = create_sprite_item(grid_items, 29*6+ sprite_locs)
         self.nutrition_value = nutrition_value
         self.health_restored = 5  # Default health restored
 
 class Shield (Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0, is_equipable = True):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
+        self.sprite = create_sprite_item(grid_items, 29*8+ sprite_locs)
         self.defense = defense  # Default defense value
+        self.is_equipable = is_equipable
 
 # class Staff(Item):
 

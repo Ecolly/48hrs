@@ -1,6 +1,6 @@
 import random
-from game_classes.item import Item, Weapon, Consumable
-
+from game_classes.item import Item, Weapon, Consumable, Shield
+from game_classes.enemy import*
 
 
 
@@ -23,8 +23,9 @@ class Map:
         self.rooms = []  # List to store the rooms
         self.map_grid = [['#' for _ in range(width)] for _ in range(height)]
         self.valid_tiles = set()
-        self.list_of_all_item_names = ["Iron Sword", "Health Potion"]
+        self.list_of_all_item_names = ["Iron Sword", "Chicken", "Strawberry", "Shield_1"]
         self.floor_items = []  # List to hold items on the floor
+        self.all_enemies = []
     
     #set the room tiles to be '.' (empty space)
     def generate_border(self, x, y, room_width, room_height):
@@ -92,23 +93,34 @@ class Map:
         # Example dummy factory
         if name == "Iron Sword":
             return Weapon(name, grid_items, sprite_locs = 0, damage=10, durability=100)
-        elif name == "Health Potion":
-            return Consumable(name, grid_items, sprite_locs = 2, nutrition_value=20)
+        elif name == "Chicken":
+            return Consumable(name, grid_items, sprite_locs = 0, nutrition_value=20)
+        elif name == "Strawberry":
+            return Consumable(name, grid_items, sprite_locs = 4, nutrition_value=10)
+        elif name == "Shield_1":
+            return Shield(name, grid_items, sprite_locs=0, defense=5)
         
-    list_of_all_item_names = ["Iron Sword", "Health Potion"]
-
     #self, name, grid_items, x, y, quantity
     def random_create_item(self, grid_items):
-        for _ in range(3):  # Generate 3 items
+        for _ in range(10):  # Generate 3 items
             random_location = random.choice(self.valid_tiles)
             y, x = random_location
             item_name = random.choice(self.list_of_all_item_names)
+            print(item_name)
             item = self.create_item(item_name, grid_items)
             item.x = x
             item.y = y
             self.floor_items.append(item)
             print(f"Created item: {item.name} at ({x}, {y})")
 
+    def generate_enemies(self, grid_entities1):
+        self.all_enemies.append(generate_enemy("GOOSE", 1, 29, 29, grid_entities1))
+        self.all_enemies.append(generate_enemy("GOOSE", 1, 30, 25, grid_entities1))
+        self.all_enemies.append(generate_enemy("GOOSE", 1, 25, 30, grid_entities1))
+
+        self.all_enemies.append(generate_enemy("FOX", 1, 25, 34, grid_entities1))
+        self.all_enemies.append(generate_enemy("FOX", 1, 30, 32, grid_entities1))
+        
     def check_valid_tile(self):
         self.valid_tiles = [
             (y, x)
