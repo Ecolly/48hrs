@@ -62,6 +62,18 @@ columns_bg = sprite_bg.width // 16
 rows_bg = sprite_bg.height // 16
 grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 
+from pyglet.graphics import Group
+group_bg = Group(order=0)
+group_items = Group(order=20)
+group_enemies = Group(order=40)
+
+group_inv_bg = Group(order=50)
+group_inv = Group(order=60)
+
+group_inv_ext = Group(order=65)
+
+group_ui_bg = Group(order=70)
+group_ui = Group(order=80)
 
 animation_presets = [
     [0],
@@ -74,7 +86,9 @@ animation_presets = [
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
 
-
+all_buttons = []
+#floor_items = [item]
+inventory_items = []
 
 # string_to_draw = "The quick brown fox jumpeeeeeeeeeeeed over the lazy dog. This is the story of a man named Stanley. Stanley worked for a company at an office where he sat in room 427. etc etc buttons"
 # tiles_to_draw = text_to_tiles_wrapped(string_to_draw, grid_font, letter_order, 20, "center")
@@ -101,9 +115,11 @@ letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",
 #     depth=1,
 #     obj_type="label",
 #     draggable=True,
-#     custom_data={"label": "Click me!"}
+#     extra_1 = 0,
+#     extra_2 = 0,
+#     rclick = 0
 # )
-
+# all_buttons.append(my_object)
 
 
 
@@ -138,9 +154,7 @@ player = Player(
 
 batch = pyglet.graphics.Batch()
 
-all_buttons = []
-#floor_items = [item]
-inventory_items = []
+
 
 mouse_x = 0
 mouse_y = 0
@@ -177,51 +191,59 @@ def on_mouse_release(x, y, button, modifiers):
     global all_buttons
     global gamestate
     global current_entity_turn
-    if gamestate == 1: #this stuff can only happen between turns
+    global floor
+    if gamestate == 1 or gamestate == 3: #this stuff can only happen between turns or in inventory
+        
         if button == pyglet.window.mouse.LEFT:
+            was_button_clicked = 0
             for button in all_buttons:
                 button.clicked = False 
                 if button.hovered == True:
+                    was_button_clicked = 1
                     if button.type == "CANCEL":
                         pass 
                     elif button.type == "MOVE HERE":
-
-                        
                         dirx = button.extra_1
                         diry = button.extra_2
-
-                        player.move(dirx, diry)
+                        player.move(dirx, diry, floor)
                         gamestate = 2
-                        current_entity_turn = -1
+                        partition_entity = construct_partitions()
+                    elif button.type == "DROP":
+                        player.drop_item(button.extra_1, floor.floor_items)
+                        gamestate = 2
+                        partition_entity = construct_partitions()
+                        delete_buttons_supertype(all_buttons, 'inventory')
+                    elif button.type == "CONSUME":
+                        player.consume_item(button.extra_1, all_buttons)
+                        gamestate = 2
+                        partition_entity = construct_partitions()
+                        delete_buttons_supertype(all_buttons, 'inventory')
+                    elif button.type == "EQUIP": #Equipping/unequipping doesnt take up a turn
+                        if isinstance(player.inventory[button.extra_1], Weapon) == True:
+                            player.equip_weapon(player.inventory[button.extra_1])
+                        else:
+                          player.equip_shield(player.inventory[button.extra_1])
+                    elif button.type == "UNEQUIP":
+                        if isinstance(player.inventory[button.extra_1], Weapon) == True:
+                            player.unequip_weapon()
+                        else:
+                            player.unequip_shield()
+
+
                         #next_entity_turn = 0
                         #current_entity_turn, next_entity_turn = construct_partitions(current_entity_turn, next_entity_turn)
-            
-            for button in all_buttons: #delete all buttons
-                if button != -1 and button.rclick == True:
-                    for sprite in button.sprites:
-                        sprite.delete()
-                        del sprite
-                    id = all_buttons.index(button)
-                    del button
-                    all_buttons[id] = -1
+            delete_buttons_supertype(all_buttons, 'rclick')
+            if gamestate == 1 and was_button_clicked == 0:
+                mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+                mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+                print(mouse_x_tilemap, mouse_y_tilemap)
+                if (mouse_x_tilemap != player.prevx or mouse_y_tilemap != player.prevy) and player.prevx - 2 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 2 < mouse_y_tilemap < player.prevy + 2:
+                    player.hit(mouse_x_tilemap, mouse_y_tilemap)
+                    gamestate = 2
+                    partition_entity = construct_partitions()
 
         elif button == pyglet.window.mouse.RIGHT:
-            for button in all_buttons: #delete all buttons (ew duplicate code, move to a function?)
-                if button != -1 and button.rclick == True:
-                    for sprite in button.sprites:
-                        sprite.delete()
-                        del sprite
-                    id = all_buttons.index(button)
-                    del button
-                    all_buttons[id] = -1
-
-                # button.clicked = False
-                # if button.hovered == True:
-                #     pass
-                # else:
-                #     pass
-
-
+            delete_buttons_supertype(all_buttons, 'rclick')
             #get rclick options
             rclick_options = []
             rclick_extra_1 = []
@@ -242,23 +264,59 @@ def on_mouse_release(x, y, button, modifiers):
             #         if item.inventory_slot != -1:
             #             rclick_options.append("USE")
             #             rclick_options.append("THROW")
-
-            mouse_x_tilemap = mouse_x/48 - (1152/2)/48 + (player.x + 0.5)
-            mouse_y_tilemap = mouse_y/48 - (768/2)/48 + (player.y + 0.5)
-
-
-            if player.prevx - 1 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 1 < mouse_y_tilemap < player.prevy + 2:
-                rclick_options.append("MOVE HERE")
-                rclick_extra_1.append(math.floor(mouse_x_tilemap - player.x))
-                rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
-                print(math.floor(mouse_x_tilemap - player.x))
-                print(math.floor(mouse_y_tilemap - player.y))
+            if gamestate == 1:
+                mouse_x_tilemap = mouse_x/48 - (1152/2)/48 + (player.x + 0.5)
+                mouse_y_tilemap = mouse_y/48 - (768/2)/48 + (player.y + 0.5)
+                if player.prevx - 1 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 1 < mouse_y_tilemap < player.prevy + 2:
+                    rclick_options.append("MOVE HERE")
+                    rclick_extra_1.append(math.floor(mouse_x_tilemap - player.x))
+                    rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
+                    print(math.floor(mouse_x_tilemap - player.x))
+                    print(math.floor(mouse_y_tilemap - player.y))
+            elif gamestate == 3:
+                inventory_x = math.floor((mouse_x - int((1152)/48)*12)/48) 
+                inventory_y = math.floor((-mouse_y + int((768)/48)*32)/48) + 1
+                inventory_slot = inventory_y*10 + inventory_x
                 
+                #print(inventory_slot, player.inventory)
 
+                if len(player.inventory) > inventory_slot:
+                    item_to_eval = player.inventory[inventory_slot]
+
+                    rclick_options.append("DROP")
+                    rclick_extra_1.append(inventory_slot)
+                    rclick_extra_2.append(0)
+                    if item_to_eval.is_equipable == True:
+                        if player.equipment_weapon == item_to_eval or player.equipment_shield == item_to_eval:
+                            rclick_options.append("UNEQUIP")
+                        else:
+                            rclick_options.append("EQUIP")
+
+                        rclick_extra_1.append(inventory_slot)
+                        rclick_extra_2.append(0)
+
+                    if item_to_eval.is_consumable == True:
+                        rclick_options.append("CONSUME")
+                        rclick_extra_1.append(inventory_slot)
+                        rclick_extra_2.append(0)
+
+                    if item_to_eval.is_usable == True:
+                        rclick_options.append("USE")
+                        rclick_extra_1.append(inventory_slot)
+                        rclick_extra_2.append(0)
+
+                    #rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
+
+                #print(inventory_x, inventory_y, inventory_slot)
+                #pass
+
+            print(rclick_options)
 
             rclick_options.append("CANCEL")
             rclick_extra_1.append(0)
             rclick_extra_2.append(0)
+
+            print(rclick_options)
 
             i = 0
             for option in rclick_options:
@@ -279,7 +337,7 @@ def on_mouse_release(x, y, button, modifiers):
                     depth=1,
                     obj_type=option,
                     draggable=False,
-                    rclick = True,
+                    supertype = 'rclick',
                     extra_1 = rclick_extra_1[i],
                     extra_2 = rclick_extra_2[i]
                 )
@@ -306,7 +364,7 @@ for s in floor.map_grid:
         fl_string += s2
 print(fl_string)
 print(floor)
-bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
+bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60), group=group_bg)
 bg.scale = 3
 bg.z = 0
 
@@ -333,18 +391,19 @@ def go_to_next_level():
 
 
 
-#hp gui
-hp_string = str(player.health) + "/" + str(player.maxhealth) + " HP"
 
-spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
-spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
+
+
+gui_string = get_gui_string(player)
+spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string), "left"), 8, 8, len(gui_string)+1))
+spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background((gui_string+"______"), grid_font, letter_order, len(gui_string)+7, "left"), 8, 8, len(gui_string)+7))
 option_obj = InteractiveObject(
     x=24,
     y=768-16,
     width=spr2.width,
     height=spr2.height,
     sprites=[spr2, spr1],
-    colors=[[(0, 112, 234, 255), (0, 112, 234, 255), (0, 112, 234, 255)], [(33, 33, 33, 255), (33, 33, 33, 255), (33, 33, 33, 255)]],
+    colors=[[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)], [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255)]],
     animtype = [0, 0],
     animmod = [None, None],
     text = [None, None],
@@ -353,20 +412,11 @@ option_obj = InteractiveObject(
     depth=1,
     obj_type="GUI_HP",
     draggable=False,
-    rclick = False,
+    supertype = "none",
     extra_1 = player.health,
     extra_2 = player.maxhealth
 )
 all_buttons.append(option_obj)
-
-
-
-
-# gui_hp_2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
-# gui_hp = pyglet.sprite.Sprite(combine_tiles(text_to_tiles(, grid_font, letter_order), 8, 8, 20))
-# gui_hp.scale = 3
-# gui_hp.z = 70
-# gui_hp.color = (33, 33, 33, 255)
 
 
 
@@ -429,6 +479,9 @@ def construct_partitions():
         
             if alldone_flag == 1:
                 player.techniquefinished = 0
+                player.techniqueframe = 0
+                player.offsetx = 0
+                player.offsety = 0
                 for enemy in all_enemies:
                     enemy.techniquefinished = 0
                     enemy.techniqueframe = 0
@@ -480,6 +533,7 @@ def on_draw():
     global keypress_chk
     global gamestate
     global partition_entity
+    global all_buttons
     
     window.clear()
 
@@ -490,13 +544,15 @@ def on_draw():
         #enter inventory
         if gamestate == 1:
             keypress_chk = 1
-            create_inventory_menu()
+            create_inventory_menu(all_buttons)
             gamestate = 3
 
             #enter inventory
         elif gamestate == 3:
             keypress_chk = 1
             gamestate = 1
+            delete_buttons_supertype(all_buttons, 'inventory')
+
             #exit inventory
     elif gamestate == 1:
 
@@ -509,6 +565,9 @@ def on_draw():
             dirx = 1
         elif keys[pyglet.window.key.A]:
             dirx = -1
+
+        if dirx == 0 and diry == 0 and keys[pyglet.window.key.E] == False:
+            keypress_chk = 0
     else:
         if gamestate == 2 or keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D] or keys[pyglet.window.key.E] or keys[pyglet.window.key.ESCAPE]:
             pass
@@ -517,7 +576,7 @@ def on_draw():
     
     if diry != 0 or dirx != 0:
         #keypress_chk = 1
-        player.move(dirx, diry)
+        player.move(dirx, diry, floor)
         gamestate = 2
         partition_entity = construct_partitions()
         #current_entity_turn = -1
@@ -525,7 +584,7 @@ def on_draw():
     if gamestate == 2:
         if partition_entity == -1:
             #if doing only the player's turn...
-            player.process_turn(floor)
+            player.process_turn(all_enemies, player, all_buttons, floor)
             #print(f"{floor.stairs} HERE IS FLOOR STAIRS")
             if partition_entity == -1 and player.techniquefinished == 1:
                 # if (player.x, player.y) in floor.stairs:
@@ -541,13 +600,13 @@ def on_draw():
             is_allfinished_flag = 1
 
             if player.techniquefinished == 0:
-                player.process_turn(floor)
+                player.process_turn(all_enemies, player, all_buttons, floor)
                 if player.techniquefinished == 0:
                     is_allfinished_flag = 0
 
             for enemy in all_enemies:
                 if enemy.techniquefinished == 0:
-                    enemy.process_turn(all_enemies, player)
+                    enemy.process_turn(all_enemies, player, all_buttons)
                     is_allfinished_flag = 0
 
             if is_allfinished_flag == 1:
@@ -555,7 +614,7 @@ def on_draw():
         else:
 
             enemy_to_evaluate = all_enemies[partition_entity]
-            enemy_to_evaluate.process_turn(all_enemies, player)
+            enemy_to_evaluate.process_turn(all_enemies, player, all_buttons)
             if enemy_to_evaluate.techniquefinished == 1:
                 partition_entity = construct_partitions()
 
@@ -568,8 +627,18 @@ def on_draw():
 
     bg.batch = batch
 
-
     #sprite.image = texture
+    player.draw(batch, animation_presets, group_enemies)
+    for enemy in all_enemies:
+        enemy.draw(batch, animation_presets, player, group_enemies)
+    for item in floor.floor_items:
+        item.draw(batch, player, group_items)
+    i = 0 #theres probably a more pythonic way to do this, sowwy
+    for item in player.inventory:
+        item.draw_inventory(batch, player, group_inv, i, gamestate)
+        i = i + 1
+
+
 
     for button in all_buttons:
         if button == -1:
@@ -577,25 +646,26 @@ def on_draw():
         else:
             button.hovered = button.is_mouse_over(mouse_x, mouse_y)
 
-            button.draw(batch)
+            button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv)
 
             if button.type == "GUI_HP":
-                hp_string = str(player.health) + "/" + str(player.maxhealth) + " HP"
+                gui_string = get_gui_string(player)
                 sprite = button.sprites[1]
-                sprite.image = combine_tiles(text_to_tiles_wrapped(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10)
-            # elif button.type == "POINT_NUMBER":
-            #     button.y += 1
-            #     if button.animframe > 20:
-            #         all_buttons.remove(button)
+                sprite.image = combine_tiles(text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string)+1, "left"), 8, 8, len(gui_string)+1)
+            elif button.type == "POINT_NUMBER":
+                button.y += 1
+                if button.animframe > 20:
+                    if button.colors[0][0][3] == 255:
+                        button.colors[0][0] = (button.colors[0][0][0], button.colors[0][0][1], button.colors[0][0][2], 0)
+                    else:
+                        button.colors[0][0] = (button.colors[0][0][0], button.colors[0][0][1], button.colors[0][0][2], 255)
+                if button.animframe > 45:
+                    delete_buttons_supertype(all_buttons, "graphics")
             
             
             
 
-    player.draw(batch, animation_presets)
-    for enemy in all_enemies:
-        enemy.draw(batch, animation_presets, player)
-    for item in floor.floor_items:
-        item.draw(batch, player)
+
     batch.draw()
     
 

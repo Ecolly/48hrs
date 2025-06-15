@@ -45,6 +45,11 @@ class Enemy:
     def __init__(self, name, health, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
         self.name = name
         self.health = health
+        self.maxhealth = health
+        self.strength = 10  # Default strength
+        self.maxstrength = 10
+        self.defense = 5  # Default defense
+        self.maxdefense = 5
         self.level = level
         self.x = x # x coords are in 
         self.y = y
@@ -57,7 +62,9 @@ class Enemy:
         self.techniquey = 0
         self.techniqueframe = 0
         self.techniquefinished = 0
-
+        self.equipment_weapon = None
+        self.equipment_shield = None
+        
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
         self.grid = spritegrid
@@ -110,7 +117,7 @@ class Enemy:
     
 
 
-    def draw(self, batch, animation_presets, player):
+    def draw(self, batch, animation_presets, player, group):
         base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.prevx*16 + 8)*self.scale
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale
 
@@ -133,6 +140,7 @@ class Enemy:
         if self.animframe >= len(animation_presets[self.animtype]):
             self.animframe = 0
 
+        sprite.group = group
         sprite.x = base_x
         sprite.y = base_y
         sprite.scale = self.scale
@@ -143,7 +151,7 @@ class Enemy:
 
 
 
-    def process_turn(self, all_enemies, player):
+    def process_turn(self, all_enemies, player, all_buttons):
         #print("a")
         self.techniqueframe = self.techniqueframe + 1
 
@@ -175,13 +183,31 @@ class Enemy:
                 
                 for enemy in all_enemies:
                     if enemy.x == self.techniquex and enemy.y == self.techniquey:
-                        enemy.health = enemy.health - 1
-                        #button_class.create_point_number(enemy.x, enemy.y, 1, (255, 0, 0), player)
+                        damage = 0
+                        if self.equipment_weapon != None:
+                            damage += self.equipment_weapon.damage
+                        damage += self.strength
+                        if enemy.equipment_shield != None:
+                            damage -= enemy.equipment_shield.defense
+                        damage -= enemy.defense
+                        if damage < 1:
+                            damage = 1
+                        enemy.health = enemy.health - damage
+                        button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
                         break 
                 
                 if player.x == self.techniquex and player.y == self.techniquey:
-                    player.health = player.health - 1
-                    #button_class.create_point_number(player.x, player.y, 1, (255, 0, 0), player)
+                    damage = 0
+                    if self.equipment_weapon != None:
+                        damage += self.equipment_weapon.damage
+                    damage += self.strength
+                    if player.equipment_shield != None:
+                        damage -= player.equipment_shield.defense
+                    damage -= player.defense
+                    if damage < 1:
+                        damage = 1
+                    player.health = player.health - damage
+                    button_class.create_point_number(player.x, player.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
 
                 self.prevx = self.x
                 self.prevy = self.y

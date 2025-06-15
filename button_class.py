@@ -2,20 +2,21 @@
 import pyglet
 import math
 import image_handling
+import game_classes.map
 
-# sprite_font = pyglet.image.load('font.png')
-# columns_font = sprite_font.width // 8
-# rows_font = sprite_font.height // 8
-# grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
+sprite_font = pyglet.image.load('font.png')
+columns_font = sprite_font.width // 8
+rows_font = sprite_font.height // 8
+grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
 
 
-# letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
+letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
 
 
 
 class InteractiveObject:
-    def __init__(self, x, y, width, height, sprites, colors, animtype, animmod, text, obj_type, extra_1, extra_2, rclick,
+    def __init__(self, x, y, width, height, sprites, colors, animtype, animmod, text, obj_type, extra_1, extra_2, supertype,
                  alignment_x='left', alignment_y='bottom',
                  depth=0, draggable=False, rot=0, scale=3):
         
@@ -46,7 +47,7 @@ class InteractiveObject:
         self.being_dragged = False
         self.hovered = False
         self.clicked = False
-        self.rclick = rclick
+        self.supertype = supertype
 
         self.extra_1 = extra_1
         self.extra_2 = extra_2
@@ -77,15 +78,18 @@ class InteractiveObject:
         return (base_x <= mouse_x <= base_x + self.width*self.scale and
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
-    def draw(self, batch):
+    def draw(self, batch, group1, group2, group3, group4):
         base_x, base_y = self.get_screen_position()
 
         for i, sprite in enumerate(self.sprites):
+            #sprite.z = 100
             sprite.x = base_x
             sprite.y = base_y
             sprite.scale = self.scale
 
             self.animframe = self.animframe + 1
+
+                    
 
             if self.hovered == True:
                 if self.clicked == True:
@@ -95,53 +99,114 @@ class InteractiveObject:
             else:
                 sprite.color = self.colors[i][0]
             
-            sprite.batch = batch
-            if i == 0:
-                sprite.z = 60
+            if self.supertype == 'rclick': #draw rclick buttons on top of other menus
+                if i == 0:
+                    sprite.group = group1
+                else:
+                    sprite.group = group2
             else:
-                sprite.z = 70
+                if i == 0:
+                    sprite.group = group3
+                else:
+                    sprite.group = group4
+            sprite.batch = batch
 
 
             #sprite.draw()
 
 
+def delete_buttons_supertype(all_buttons, supertype):
+    #supertypes:
+        #'rclick'
+        #'inventory'
+    for button in all_buttons: #delete all buttons
+        if button != -1 and button.supertype == supertype:
+            for sprite in button.sprites:
+                sprite.delete()
+                del sprite
+            id = all_buttons.index(button)
+            del button
+            all_buttons[id] = -1
 
 
+def create_inventory_menu(all_buttons):
+    global grid_font
+    global letter_order
+
+    color = (255, 255, 255)
+
+    w = int((1152)/48)
+    h = int((768)/48)
+
+    #print(w, h, w*h)
+
+    #txt = "The quick brown fox jumpeeeeeeeeeeeed over the lazy dog. This is the story of a man named Stanley. Stanley worked for a company at an office where he sat in room 427. etc etc buttons"  #""
+    txt = ""
+    txt = txt.zfill(w*h)
+  
+    
+
+    spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(txt, grid_font, letter_order, w, "left"), 8, 8, w))
+    obj = InteractiveObject(
+        x=0 + 24*(w/2), #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+        y=48*3 + 24*(h/2), #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        width=spr2.width,
+        height=spr2.height,
+        sprites=[spr2],
+        colors=[[color, color, color]],
+        animtype = [0],
+        animmod = [None],
+        text = [None],
+        alignment_x='left',
+        alignment_y='top',
+        depth=1,
+        obj_type="MENU BG",
+        draggable=False,
+        supertype = "inventory",
+        extra_1 = 0,
+        extra_2 = 0
+    )
+    all_buttons.append(obj)
 
 
-def create_inventory_menu():
-    pass
+def create_point_number(x, y, text, color, player, all_buttons):
+    global grid_font 
+    global letter_order
+    spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(str(text), grid_font, letter_order, 10, "left"), 8, 8, 10))
+    #spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
+    obj = InteractiveObject(
+        x=1152/2 -24 - (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+        y=768/2 - (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        width=spr1.width,
+        height=spr1.height,
+        sprites=[spr1],
+        colors=[[color, color, color]],
+        animtype = [0],
+        animmod = [None],
+        text = [None],
+        alignment_x='left',
+        alignment_y='top',
+        depth=1,
+        obj_type="POINT_NUMBER",
+        draggable=False,
+        supertype = "graphics",
+        extra_1 = 0,
+        extra_2 = 0
+    )
+    all_buttons.append(obj)
 
+def get_gui_string(player):
+    strength = str(player.strength)
+    defense = str(player.defense)
 
+    if player.equipment_shield != None:
+        defense = defense + "+" + str(player.equipment_shield.defense)
+    if player.equipment_weapon != None:
+        strength = strength + "+" + str(player.equipment_weapon.damage)
 
-# def create_point_number(x, y, text, color, player):
-#     global grid_font 
-#     global letter_order
-#     spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(str("e35wWEF"), grid_font, letter_order, 10, "left"), 8, 8, 10))
-#     spr1.z = 80
-#     #spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
-#     obj = InteractiveObject(
-#         x=50,#1152/2 -24 - (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
-#         y=50,#768/2-24 - (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
-#         width=spr1.width,
-#         height=spr1.height,
-#         sprites=[spr1],
-#         colors=[[color, color, color]],
-#         animtype = [0],
-#         animmod = [None],
-#         text = [None],
-#         alignment_x='left',
-#         alignment_y='top',
-#         depth=1,
-#         obj_type="POINT_NUMBER",
-#         draggable=False,
-#         rclick = False,
-#         extra_1 = 0,
-#         extra_2 = 0
-#     )
-
-
-
+    #stats gui
+    gui_string = str(player.health) + "/" + str(player.maxhealth) + " HP_____" + str(strength) + "/" + str(player.maxstrength) + " STR_____" + str(defense) + "/" + str(player.maxdefense) + " DEF"
+    return gui_string
 
 
 

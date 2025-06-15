@@ -25,7 +25,9 @@ class Item:
         self.prevy = y
         self.quantity = quantity
         self.scale = 3
-        self.is_usable = True #default to true
+        self.is_usable = False #default to false
+        self.is_equipable = False #default to false
+        self.is_consumable = False #default to false
 
 
     def use(self, target):
@@ -43,47 +45,48 @@ class Item:
         return (base_x <= mouse_x <= base_x + self.width*self.scale and
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
-    def draw(self, batch, player):
+    def draw(self, batch, player, group):
         base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
-        
-        #print(f"Drawing item {self.name} at ({base_x}, {base_y})")
         sprite = self.sprite
-
-        #tex = pyglet.image.Texture.create(16, 16)
-        #print(self.animtype)
-        #print(self.animframe)
-        #tex.blit_into(grid_entities1[self.spriteindex + (self.direction.value)*8 + animation_presets[self.animtype][math.floor(self.animframe)]], 0, 0, 0)
-        #sprite.image = tex
-
-        #self.animframe = self.animframe + self.animmod
-        #if self.animframe >= len(animation_presets[self.animtype]):
-        #    self.animframe = 0
-
         sprite.x = base_x
         sprite.y = base_y
         sprite.scale = self.scale
-        #sprite.color = self.color
+        sprite.group = group
         sprite.batch = batch
-        sprite.z = 30
+        
+    def draw_inventory(self, batch, player, group, invslot, gamestate):
+        sprite = self.sprite
+        if gamestate == 3: #if in the inventory menu
+            base_x = (invslot % 10)*48 + int((1152)/48)*12 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+            base_y = (invslot // 10)*48 + int((768)/48)*32 #768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+            sprite.x = base_x
+            sprite.y = base_y
+            sprite.color = (255, 255, 255, 255)
+            sprite.scale = self.scale
+            sprite.group = group
+            sprite.batch = batch
+        else:
+            sprite.color = (0, 0, 0, 0)
+            sprite.batch = batch
 
 class Weapon(Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_usable=True, is_equipable = True):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
-
         self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
         self.damage = damage
         self.durability = durability  # Default durability
         self.damage_type = "slashing"  # Default damage type
-        self.is_usable = is_usable  # Default to usable
         self.is_equipable = is_equipable
 
 class Consumable(Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, nutrition_value=0):
+    def __init__(self, name, grid_items, sprite_locs, temp_hp_enabled=False, x=0, y=0, quantity=1, nutrition_value=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*6+ sprite_locs)
         self.nutrition_value = nutrition_value
         self.health_restored = 5  # Default health restored
+        self.is_consumable = True
+        self.temp_hp_enabled = temp_hp_enabled
 
 class Shield (Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0, is_equipable = True):
