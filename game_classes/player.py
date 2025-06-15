@@ -105,7 +105,9 @@ class Player:
             if item.x == self.x and item.y == self.y:
                 if len(self.inventory) < 30:  # Arbitrary limit for inventory size
                     self.inventory.append(item)
+                    item_list.remove(item)  # Remove item from the map
                     print(f"Picked up {item.name}.")
+                    print(f"inventory: {[i.name for i in self.inventory]}")
                 else:
                     print("Inventory full. Cannot pick up item.")
 

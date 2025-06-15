@@ -582,8 +582,7 @@ def on_draw():
     player.draw(batch, animation_presets)
     for enemy in all_enemies:
         enemy.draw(batch, animation_presets, player)
-    for item in floor_items:
-        print(item.x, item.y)
+    for item in floor.floor_items:
         item.draw(batch, player)
     batch.draw()
     

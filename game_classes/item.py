@@ -47,7 +47,7 @@ class Item:
         base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
         
-        print(f"Drawing item {self.name} at ({base_x}, {base_y})")
+        #print(f"Drawing item {self.name} at ({base_x}, {base_y})")
         sprite = self.sprite
 
         #tex = pyglet.image.Texture.create(16, 16)
