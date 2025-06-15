@@ -106,6 +106,14 @@ class InteractiveObject:
 
 
 
+
+
+
+def create_inventory_menu():
+    pass
+
+
+
 # def create_point_number(x, y, text, color, player):
 #     global grid_font 
 #     global letter_order

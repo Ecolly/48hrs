@@ -463,6 +463,11 @@ def construct_partitions():
 
 
 
+
+
+
+
+
 #0 = main menu
 #1 = your turn in the game world
 #2 = turn is happening
@@ -485,10 +490,13 @@ def on_draw():
         #enter inventory
         if gamestate == 1:
             keypress_chk = 1
+            create_inventory_menu()
+            gamestate = 3
 
             #enter inventory
         elif gamestate == 3:
             keypress_chk = 1
+            gamestate = 1
             #exit inventory
     elif gamestate == 1:
 
