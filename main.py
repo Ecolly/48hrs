@@ -193,7 +193,9 @@ def on_mouse_release(x, y, button, modifiers):
             for button in all_buttons:
                 button.clicked = False 
                 if button.hovered == True:
-                    was_button_clicked = 1
+                    if button.supertype != "overlay":
+                        was_button_clicked = 1
+
                     if button.type == "CANCEL":
                         pass 
                     elif button.type == "MOVE HERE":
@@ -231,6 +233,7 @@ def on_mouse_release(x, y, button, modifiers):
                         #next_entity_turn = 0
                         #current_entity_turn, next_entity_turn = construct_partitions(current_entity_turn, next_entity_turn)
             delete_buttons_supertype(all_buttons, 'rclick')
+            #print(gamestate, was_button_clicked)
             if gamestate == 1 and was_button_clicked == 0:
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
@@ -747,7 +750,7 @@ def on_draw():
                 else:
                     button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
             elif button.type == "mouse_overlay":
-                if gamestate == 1 or gamestate == 4: 
+                if gamestate == 1 or gamestate == 2 or gamestate == 4: 
                     button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
                     # button.x = math.floor((mouse_x - 12)/48)*48 
                     # button.y = math.floor((mouse_y - 12)/48)*48
