@@ -17,6 +17,7 @@ class Player:
         self.technique = "n/a"
         self.techniquex = 0
         self.techniquey = 0
+        self.techniquefinished = 0
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
@@ -51,9 +52,11 @@ class Player:
                 self.prevy = self.prevy + (abs(self.techniquey - self.prevy)/(self.techniquey - self.prevy))/8
 
             if self.y == self.prevy and self.x == self.prevx:
-                self.technique = "n/a"
+                self.technique = "move"
+                self.techniquefinished = 1
         else:
-            self.technique = "n/a"
+            self.technique = "move"
+            self.techniquefinished = 1
 
             
 
@@ -153,4 +156,3 @@ class Player:
 
     def __str__(self):
         return f"Player(name={self.name}, health={self.health}"
-    
