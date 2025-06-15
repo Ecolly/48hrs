@@ -1,6 +1,5 @@
 
 import pyglet
-from game_classes.player import Player
 from enum import Enum, auto
 
 def create_sprite_item(image_grid, index): #dumb. literally the same as the image handling function
@@ -44,7 +43,7 @@ class Item:
         return (base_x <= mouse_x <= base_x + self.width*self.scale and
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
-    def draw(self, batch, player:Player):
+    def draw(self, batch, player):
         base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
         

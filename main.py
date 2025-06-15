@@ -298,6 +298,7 @@ def on_mouse_release(x, y, button, modifiers):
 bg_order = ["#", "o", "."]
 bg_tilekey = [26*16 + 8, 26*16 + 8, 26*16+6]
 floor = make_floor()
+floor.random_create_item(grid_items)
 fl_string = ""
 for s in floor.map_grid:
     for s2 in s:
@@ -350,27 +351,27 @@ all_buttons.append(option_obj)
 
 
 
-floor_items = []  # List to hold items on the floor
+#floor_items = []  # List to hold items on the floor
 
-def create_item(name):
-    # Example dummy factory
-    if name == "Iron Sword":
-        return Weapon(name, grid_items, sprite_locs = 0, damage=10, durability=100)
-    elif name == "Health Potion":
-        return Consumable(name, grid_items, sprite_locs = 2, nutrition_value=20)
+# def create_item(name):
+#     # Example dummy factory
+#     if name == "Iron Sword":
+#         return Weapon(name, grid_items, sprite_locs = 0, damage=10, durability=100)
+#     elif name == "Health Potion":
+#         return Consumable(name, grid_items, sprite_locs = 2, nutrition_value=20)
     
-list_of_all_item_names = ["Iron Sword", "Health Potion"]
+# list_of_all_item_names = ["Iron Sword", "Health Potion"]
 
-#self, name, grid_items, x, y, quantity
-for _ in range(3):  # Generate 3 items
-    random_location = random.choice(floor.valid_tiles)
-    x, y = random_location
-    item_name = random.choice(list_of_all_item_names)
-    item = create_item(item_name)
-    item.x = x
-    item.y = y
-    floor_items.append(item)
-    print(f"Created item: {item.name} at ({x}, {y})")
+# #self, name, grid_items, x, y, quantity
+# for _ in range(3):  # Generate 3 items
+#     random_location = random.choice(floor.valid_tiles)
+#     x, y = random_location
+#     item_name = random.choice(list_of_all_item_names)
+#     item = create_item(item_name)
+#     item.x = x
+#     item.y = y
+#     floor_items.append(item)
+#     print(f"Created item: {item.name} at ({x}, {y})")
 
 
 
@@ -520,7 +521,7 @@ def on_draw():
         if partition_entity == -1:
             #if doing only the player's turn...
 
-            player.process_turn()
+            player.process_turn(floor)
             if partition_entity == -1 and player.techniquefinished == 1:
                 partition_entity = construct_partitions()
         elif partition_entity == -2: #if doing all movement...
@@ -528,7 +529,7 @@ def on_draw():
             is_allfinished_flag = 1
 
             if player.techniquefinished == 0:
-                player.process_turn()
+                player.process_turn(floor)
                 if player.techniquefinished == 0:
                     is_allfinished_flag = 0
 

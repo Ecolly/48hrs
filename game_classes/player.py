@@ -1,6 +1,7 @@
 from game_classes.face_direction import *
 import pyglet
 import math
+from game_classes.map import Map
 
 class Player:
     def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
@@ -72,7 +73,7 @@ class Player:
             self.equipment_weapon = None
     
 
-    def process_turn(self):
+    def process_turn(self, map: Map):
         #print("a")
         if self.technique == "move":
             if self.x != self.prevx:
@@ -83,6 +84,7 @@ class Player:
             if self.y == self.prevy and self.x == self.prevx:
                 self.technique = "move"
                 self.techniquefinished = 1
+                self.pick_up_item(map.floor_items)
         else:
             self.technique = "move"
             self.techniquefinished = 1
