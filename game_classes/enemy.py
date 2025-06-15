@@ -74,7 +74,7 @@ class Enemy:
                 return "hit", player.x, player.y
             else:
                 return "move", self.x + round(abs(player.x-self.x)/((player.x-self.x)+0.01)), self.y + round(abs(player.y-self.y)/((player.y-self.y)+0.01))
-
+    
 
 
 
