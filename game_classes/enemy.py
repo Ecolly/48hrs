@@ -81,9 +81,12 @@ class Enemy:
                 new_y = self.y + self.sign(player.y - self.y)
                 # new_x = self.x + round(abs(player.x - self.x) / ((player.x - self.x) + 0.01))
                 # new_y = self.y + round(abs(player.y - self.y) / ((player.y - self.y) + 0.01))
-                print(self.x, self.y, new_x, new_y, (new_x, new_y) in game_map.valid_tiles)
                 if self.can_move_to(new_x, new_y, game_map):
                     return Technique.MOVE, new_x, new_y    
+                elif self.can_move_to(new_x, self.y, game_map):
+                    return Technique.MOVE, new_x, self.y    
+                elif self.can_move_to(self.x, new_y, game_map):
+                    return Technique.MOVE, self.x, new_y    
                 else:
                     return Technique.STILL, self.x, self.y 
     
@@ -92,11 +95,17 @@ class Enemy:
         if (y,x) not in game_map.valid_tiles:
             print(f"Invalid tile cannot move{x, y}")
             return False
-        elif any(x== enemy.x and enemy.y for enemy in game_map.all_enemies):
-            print("Enemy cannot move")
-            return False
-        else: 
+        else:
+            for enemy in game_map.all_enemies:
+                if enemy.technique == Technique.MOVE and enemy.techniquefinished == 0 and enemy.techniquex == x and enemy.techniquey == y:#x == enemy.x and y == enemy.y:
+                    return False
+                elif enemy.x == x and enemy.y == y:
+                    return False
             return True
+
+
+
+
     
     
 
