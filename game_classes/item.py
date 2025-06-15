@@ -1,5 +1,6 @@
 
 import pyglet
+from game_classes.player import Player
 from enum import Enum, auto
 
 def create_sprite_item(image_grid, index): #dumb. literally the same as the image handling function
@@ -10,7 +11,7 @@ def create_sprite_item(image_grid, index): #dumb. literally the same as the imag
 
 class Item:
     #very basics item class cause we dono what items there are
-    def __init__(self, name, grid_items, x, y, quantity):
+    def __init__(self, name, grid_items, sprite_locs, x, y, quantity):
         # item_names = ["Kitchen Knife", "Machete", "Scimitar", "Screwdriver", "Sickle"]
         # item_fakenames = ["Kitchen Knife", "Machete", "Scimitar", "Screwdriver", "Sickle"]
         item_spritelocs = [29*10, 29*10+1, 29*10+2, 29*10+3, 29*10+4]
@@ -18,7 +19,7 @@ class Item:
         self.name = name
         # self.index = item_names.index(name)
         # self.fakename = item_fakenames[self.index]
-        self.sprite = create_sprite_item(grid_items, item_spritelocs[self.index])
+        self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
         self.x = x
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
@@ -43,8 +44,11 @@ class Item:
         return (base_x <= mouse_x <= base_x + self.width*self.scale and
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
-    def draw(self, batch):
-        base_x, base_y = self.get_screen_position()
+    def draw(self, batch, player:Player):
+        base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+        base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+        
+        print(f"Drawing item {self.name} at ({base_x}, {base_y})")
         sprite = self.sprite
 
         #tex = pyglet.image.Texture.create(16, 16)
@@ -65,21 +69,24 @@ class Item:
         sprite.z = 30
 
 class Weapon(Item):
-    def __init__(self, name, grid_items, x, y, quantity, damage, durability, is_usable=True):
-        super().__init__(name, grid_items, x, y, quantity)
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_usable=True):
+        super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.damage = damage
         self.durability = durability  # Default durability
         self.damage_type = "slashing"  # Default damage type
         self.is_usable = is_usable  # Default to usable
 
-
 class Consumable(Item):
-    def __init__(self, name, grid_items, x, y, quantity, nutrition_value):
-        super().__init__(name, grid_items, x, y, quantity)
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, nutrition_value=0):
+        super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.nutrition_value = nutrition_value
+        
         self.health_restored = 5  # Default health restored
 
-# class Shield (Item):
+class Shield (Item):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense_value=0):
+        super().__init__(name, grid_items, sprite_locs, x, y, quantity)
+        self.defense_value = defense_value  # Default defense value
 
 # class Staff(Item):
 
