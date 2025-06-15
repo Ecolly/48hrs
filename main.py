@@ -564,7 +564,10 @@ def on_draw():
             all_buttons.remove(button)
         else:
             button.hovered = button.is_mouse_over(mouse_x, mouse_y)
-            
+            if button.type == "GUI_HP":
+                hp_string = str(player.health) + "/" + str(player.maxhealth) + " HP"
+                sprite = button.sprites[1]
+                sprite.image = combine_tiles(text_to_tiles_wrapped(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10)
             button.draw(batch)
 
     player.draw(batch, animation_presets)
