@@ -14,7 +14,9 @@ def make_floor():
     test_map.connect_rooms()
     test_map.check_valid_tile()  # Populate valid tiles after room generation
     test_map.create_stairs()
-    print(test_map.stairs)
+    print(f"stairs{test_map.stairs}")
+    testmap2 = test_map.auto_tile_ascii()
+    print(testmap2)
     return test_map
 
 class Map:
@@ -25,6 +27,7 @@ class Map:
         self.rooms = []  # List to store the rooms
         self.map_grid = [['#' for _ in range(width)] for _ in range(height)]
         self.valid_tiles = []
+        self.textured_map = [[]]
         self.valid_entity_tiles = []
         self.list_of_all_item_names = ["Iron Sword", "Chicken", "Strawberry", "Shield_1"]
         self.floor_items = []  # List to hold items on the floor
@@ -98,10 +101,22 @@ class Map:
         random_location = random.choice(self.valid_entity_tiles)
         y, x = random_location
         self.valid_entity_tiles.remove(random_location)
-        self.map_grid[x][y] = '@'
+        self.map_grid[self.height -1 -y][x] = '@'
         self.stairs = (x,y)
 
-
+    # def pretti_fication(map_grid, x, y, target_char):
+    #     height = len(map_grid)
+    #     width = len(map_grid[0])
+    #     bitmask = 0
+    #     if y > 0 and map_grid[y-1][x] == target_char:      # Up
+    #         bitmask |= 1
+    #     if x < width-1 and map_grid[y][x+1] == target_char: # Right
+    #         bitmask |= 2
+    #     if y < height-1 and map_grid[y+1][x] == target_char: # Down
+    #         bitmask |= 4
+    #     if x > 0 and map_grid[y][x-1] == target_char:      # Left
+    #         bitmask |= 8
+    #     return bitmask
 
     
     floor_items = []  # List to hold items on the floor
@@ -136,11 +151,11 @@ class Map:
         #self.all_enemies.append(generate_enemy("GOOSE", 1, 26, 26, grid_entities1))
 
         #TODO Randomly generate enemies around the map temp
-        for _ in range(5):
-            random_location = random.choice(self.valid_entity_tiles)
-            y, x = random_location
-            self.valid_entity_tiles.remove(random_location)
-            self.all_enemies.append(generate_enemy("GOOSE", 1, x, y, grid_entities1))
+        # for _ in range(5):
+        #     random_location = random.choice(self.valid_entity_tiles)
+        #     y, x = random_location
+        #     self.valid_entity_tiles.remove(random_location)
+        #     self.all_enemies.append(generate_enemy("GOOSE", 1, x, y, grid_entities1))
         for _ in range(5):
             random_location = random.choice(self.valid_tiles)
             y, x = random_location
@@ -174,6 +189,53 @@ class Map:
             # Vertical corridor
             for y in range(min(y1, y2), max(y1, y2) + 1):
                 self.map_grid[y][x2] = '.'
+
+
+
+
+    def auto_tile_ascii(self, target_char='o', bitmask_to_ascii=None):
+        if bitmask_to_ascii is None:
+            bitmask_to_ascii = {
+                0: 'L',    # isolated
+                1: '^',    # up
+                2: '>',    # right
+                3: '/',    # up+right
+                4: 'v',    # down
+                5: '|',    # up+down
+                6: '\\',   # right+down
+                7: 'T',    # up+right+down
+                8: '<',    # left
+                9: '/',    # up+left
+                10: '-',   # right+left
+                11: 'T',   # up+right+left
+                12: '\\',  # down+left
+                13: 'T',   # up+down+left
+                14: 'T',   # right+down+left
+                15: '+',   # all sides
+            }
+
+        def get_bitmask(x, y):
+            bitmask = 0
+            if y > 0 and self.map_grid[y-1][x] == target_char:      # Up
+                bitmask |= 1
+            if x < self.width-1 and self.map_grid[y][x+1] == target_char: # Right
+                bitmask |= 2
+            if y < self.height-1 and self.map_grid[y+1][x] == target_char: # Down
+                bitmask |= 4
+            if x > 0 and self.map_grid[y][x-1] == target_char:      # Left
+                bitmask |= 8
+            return bitmask
+
+    # Create a copy so we don't overwrite neighbor info during processing
+        new_grid = [row[:] for row in self.map_grid]
+
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.map_grid[y][x] == target_char:
+                    bitmask = get_bitmask(x, y)
+                    new_grid[y][x] = bitmask_to_ascii.get(bitmask, target_char)
+
+        self.textured_map = new_grid
     
                 
 
