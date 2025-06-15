@@ -9,6 +9,10 @@ columns_font = sprite_font.width // 8
 rows_font = sprite_font.height // 8
 grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
+sprite_bg = pyglet.image.load('bgtiles.png')
+columns_bg = sprite_bg.width // 16
+rows_bg = sprite_bg.height // 16
+grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
@@ -78,7 +82,7 @@ class InteractiveObject:
         return (base_x <= mouse_x <= base_x + self.width*self.scale and
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
-    def draw(self, batch, group1, group2, group3, group4):
+    def draw(self, batch, group1, group2, group3, group4, group5):
         base_x, base_y = self.get_screen_position()
 
         for i, sprite in enumerate(self.sprites):
@@ -104,6 +108,8 @@ class InteractiveObject:
                     sprite.group = group1
                 else:
                     sprite.group = group2
+            elif self.supertype == "overlay":
+                sprite.group = group5
             else:
                 if i == 0:
                     sprite.group = group3
@@ -132,20 +138,11 @@ def delete_buttons_supertype(all_buttons, supertype):
 def create_inventory_menu(all_buttons):
     global grid_font
     global letter_order
-
     color = (255, 255, 255)
-
     w = int((1152)/48)
     h = int((768)/48)
-
-    #print(w, h, w*h)
-
-    #txt = "The quick brown fox jumpeeeeeeeeeeeed over the lazy dog. This is the story of a man named Stanley. Stanley worked for a company at an office where he sat in room 427. etc etc buttons"  #""
     txt = ""
     txt = txt.zfill(w*h)
-  
-    
-
     spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(txt, grid_font, letter_order, w, "left"), 8, 8, w))
     obj = InteractiveObject(
         x=0 + 24*(w/2), #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
@@ -167,6 +164,68 @@ def create_inventory_menu(all_buttons):
         extra_2 = 0
     )
     all_buttons.append(obj)
+
+def create_overlay(all_buttons):
+    global grid_bg
+
+    color = (33, 33, 33, 0)
+    w = int((1152)/48)
+    h = int((768)/48)
+    txt = ""
+    txt = txt.zfill(w*h)
+    spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_floor(txt, grid_bg, ["0", "1"], [25*16, 0], w), 16, 16, w))
+    obj = InteractiveObject(
+        x=0, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+        y=48*6 - 32, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        width=spr2.width,
+        height=spr2.height,
+        sprites=[spr2],
+        colors=[[color, color, color]],
+        animtype = [0],
+        animmod = [None],
+        text = [None],
+        alignment_x='left',
+        alignment_y='top',
+        depth=1,
+        obj_type="overlay",
+        draggable=False,
+        supertype = "overlay",
+        extra_1 = 0,
+        extra_2 = 0
+    )
+    all_buttons.append(obj)
+
+def create_mouse_overlay(all_buttons):
+    global grid_bg
+
+    color = (33, 33, 33, 0)
+    w = int((1152)/48)
+    h = int((768)/48)
+    txt = "0"
+    spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_floor(txt, grid_bg, ["0", "1"], [25*16, 0], w), 16, 16, w))
+    obj = InteractiveObject(
+        x=0, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+        y=48*6 - 32, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        width=spr2.width,
+        height=spr2.height,
+        sprites=[spr2],
+        colors=[[color, color, color]],
+        animtype = [0],
+        animmod = [None],
+        text = [None],
+        alignment_x='left',
+        alignment_y='top',
+        depth=1,
+        obj_type="mouse_overlay",
+        draggable=False,
+        supertype = "overlay",
+        extra_1 = 0,
+        extra_2 = 0
+    )
+    all_buttons.append(obj)
+
+
+
 
 
 def create_point_number(x, y, text, color, player, all_buttons):
@@ -209,6 +268,30 @@ def get_gui_string(player):
     return gui_string
 
 
-
-
+def create_gui(all_buttons, player):
+    global grid_font 
+    global letter_order
+    gui_string = get_gui_string(player)
+    spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string), "left"), 8, 8, len(gui_string)+1))
+    spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background((gui_string+"______"), grid_font, letter_order, len(gui_string)+7, "left"), 8, 8, len(gui_string)+7))
+    option_obj = InteractiveObject(
+        x=24,
+        y=768-16,
+        width=spr2.width,
+        height=spr2.height,
+        sprites=[spr2, spr1],
+        colors=[[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)], [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255)]],
+        animtype = [0, 0],
+        animmod = [None, None],
+        text = [None, None],
+        alignment_x='left',
+        alignment_y='top',
+        depth=1,
+        obj_type="GUI_HP",
+        draggable=False,
+        supertype = "none",
+        extra_1 = player.health,
+        extra_2 = player.maxhealth
+    )
+    all_buttons.append(option_obj)
 

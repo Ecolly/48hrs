@@ -67,6 +67,8 @@ group_bg = Group(order=0)
 group_items = Group(order=20)
 group_enemies = Group(order=40)
 
+group_overlay = Group(order=45)
+
 group_inv_bg = Group(order=50)
 group_inv = Group(order=60)
 
@@ -228,6 +230,10 @@ def on_mouse_release(x, y, button, modifiers):
                             player.unequip_weapon()
                         else:
                             player.unequip_shield()
+                    elif button.type == "THROW": #if throwing, switch to a "choose target" GUI with a different gamestate.
+                        gamestate = 4
+                        player.techniqueitem = player.inventory[button.extra_1]
+                        pass
 
 
                         #next_entity_turn = 0
@@ -286,6 +292,11 @@ def on_mouse_release(x, y, button, modifiers):
                     rclick_options.append("DROP")
                     rclick_extra_1.append(inventory_slot)
                     rclick_extra_2.append(0)
+
+                    rclick_options.append("THROW")
+                    rclick_extra_1.append(inventory_slot)
+                    rclick_extra_2.append(0)
+
                     if item_to_eval.is_equipable == True:
                         if player.equipment_weapon == item_to_eval or player.equipment_shield == item_to_eval:
                             rclick_options.append("UNEQUIP")
@@ -351,25 +362,25 @@ bg_order = [
     "#",   #filler
     '.',   #space
 
-    'L',   # 0: isolated
-    '^',   # 1: up
-    '>',   # 2: right
-    '/',   # 3: up + right
+    'a',   # 0: isolated
+    'b',   # 1: up
+    'c',   # 2: right
+    'd',   # 3: up + right
 
-    'v',   # 4: down
-    '|',   # 5: up + down
-    '\\',  # 6: right + down
-    'T',   # 7: up + right + down
+    'e',   # 4: down
+    'f',   # 5: up + down
+    'g',  # 6: right + down
+    'h',   # 7: up + right + down
 
-    '<',   # 8: left
-    '/',   # 9: up + left
-    '-',   # 10: right + left
-    'T',   # 11: up + right + left
+    'i',   # 8: left
+    'j',   # 9: up + left
+    'k',   # 10: right + left
+    'l',   # 11: up + right + left
     
-    '\\',  # 12: down + left
-    'T',   # 13: up + down + left
-    'T',   # 14: right + down + left
-    '+',   # 15: all sides
+    'm',  # 12: down + left
+    'n',   # 13: up + down + left
+    'o',   # 14: right + down + left
+    'p',   # 15: all sides
 
     "@"    # stairs
 ]
@@ -390,12 +401,14 @@ floor.random_create_item(grid_items)
 floor.generate_enemies(grid_entities1)
 all_enemies = floor.all_enemies
 
-
+print(floor.textured_map)
 #Draw the map
 fl_string = ""
 for s in floor.textured_map:
     for s2 in s:
         fl_string += s2
+
+    
 #bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
 bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
 bg.scale = 3
@@ -426,29 +439,12 @@ def go_to_next_level():
 
 
 
-gui_string = get_gui_string(player)
-spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string), "left"), 8, 8, len(gui_string)+1))
-spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background((gui_string+"______"), grid_font, letter_order, len(gui_string)+7, "left"), 8, 8, len(gui_string)+7))
-option_obj = InteractiveObject(
-    x=24,
-    y=768-16,
-    width=spr2.width,
-    height=spr2.height,
-    sprites=[spr2, spr1],
-    colors=[[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)], [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255)]],
-    animtype = [0, 0],
-    animmod = [None, None],
-    text = [None, None],
-    alignment_x='left',
-    alignment_y='top',
-    depth=1,
-    obj_type="GUI_HP",
-    draggable=False,
-    supertype = "none",
-    extra_1 = player.health,
-    extra_2 = player.maxhealth
-)
-all_buttons.append(option_obj)
+
+create_gui(all_buttons, player)
+create_overlay(all_buttons)
+create_mouse_overlay(all_buttons)
+
+
 
 
 
@@ -676,7 +672,7 @@ def on_draw():
         else:
             button.hovered = button.is_mouse_over(mouse_x, mouse_y)
 
-            button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv)
+            button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay)
 
             if button.type == "GUI_HP":
                 gui_string = get_gui_string(player)
@@ -691,6 +687,23 @@ def on_draw():
                         button.colors[0][0] = (button.colors[0][0][0], button.colors[0][0][1], button.colors[0][0][2], 255)
                 if button.animframe > 45:
                     delete_buttons_supertype(all_buttons, "graphics")
+            elif button.type == "overlay":
+                if gamestate == 3:
+                    button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
+                else:
+                    button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
+            elif button.type == "mouse_overlay":
+                if gamestate == 1 or gamestate == 4: 
+                    button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
+                    # button.x = math.floor((mouse_x - 12)/48)*48 
+                    # button.y = math.floor((mouse_y - 12)/48)*48
+
+                    #print(math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5)), math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5)))
+
+                    button.x = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))*16*3 + 1152/2 - (player.prevx*16 + 8)*player.scale
+                    button.y = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))*16*3 + 768/2 - (player.prevy*16+8)*player.scale + 16
+                else:
+                    button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
             
             
             

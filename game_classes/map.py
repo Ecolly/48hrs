@@ -196,22 +196,22 @@ class Map:
     def auto_tile_ascii(self, target_char='o', bitmask_to_ascii=None):
         if bitmask_to_ascii is None:
             bitmask_to_ascii = {
-                0: 'L',    # isolated
-                1: '^',    # up
-                2: '>',    # right
-                3: '/',    # up+right
-                4: 'v',    # down
-                5: '|',    # up+down
-                6: '\\',   # right+down
-                7: 'T',    # up+right+down
-                8: '<',    # left
-                9: '/',    # up+left
-                10: '-',   # right+left
-                11: 'T',   # up+right+left
-                12: '\\',  # down+left
-                13: 'T',   # up+down+left
-                14: 'T',   # right+down+left
-                15: '+',   # all sides
+                0: 'a',    # isolated
+                1: 'b',    # up
+                2: 'c',    # right
+                3: 'd',    # up+right
+                4: 'e',    # down
+                5: 'f',    # up+down
+                6: 'g',   # right+down
+                7: 'h',    # up+right+down
+                8: 'i',    # left
+                9: 'j',    # up+left
+                10: 'k',   # right+left
+                11: 'l',   # up+right+left
+                12: 'm',  # down+left
+                13: 'n',   # up+down+left
+                14: 'o',   # right+down+left
+                15: 'p',   # all sides
             }
 
         def get_bitmask(x, y):

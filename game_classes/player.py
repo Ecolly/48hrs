@@ -27,8 +27,10 @@ class Player:
         self.technique = Technique.NA
         self.techniquex = 0
         self.techniquey = 0
+        self.techniqueitem = None #used if technique uses an item and the object is needed (e.g. throwing)
         self.techniqueframe = 0
         self.techniquefinished = 0
+        
         
         self.strength = 10  # Default strength
         self.maxstrength = 10
@@ -101,28 +103,21 @@ class Player:
         new_x = self.x + dx 
         new_y = self.y + dy
 
-        if self.can_move_to(new_x, new_y, game_map):
-            self.technique = Technique.MOVE
-            self.techniquex = self.x + dx
-            self.techniquey = self.y + dy
-            #return Technique.MOVE, new_x, new_y    
-        elif self.can_move_to(new_x, self.y, game_map):
-            self.technique = Technique.MOVE
-            self.techniquex = self.x + dx
-            self.techniquey = self.y   
-        elif self.can_move_to(self.x, new_y, game_map):
-            self.technique = Technique.MOVE
-            self.techniquex = self.x
-            self.techniquey = self.y + dy 
-        else:
-            self.technique = Technique.STILL
+        #if self.can_move_to(new_x, new_y, game_map):
+        self.technique = Technique.MOVE
+        self.techniquex = self.x + dx
+        self.techniquey = self.y + dy
+        # elif self.can_move_to(new_x, self.y, game_map):
+        #     self.technique = Technique.MOVE
+        #     self.techniquex = self.x + dx
+        #     self.techniquey = self.y   
+        # elif self.can_move_to(self.x, new_y, game_map):
+        #     self.technique = Technique.MOVE
+        #     self.techniquex = self.x
+        #     self.techniquey = self.y + dy 
+        # else:
+        #     self.technique = Technique.STILL
 
-        # self.x += dx #this could be changed to be in process_turn like enemies if needed
-        # self.y += dy
-
-        # self.technique = Technique.MOVE
-        # self.techniquex = self.x
-        # self.techniquey = self.y
         #adjust rotation state (gross)
         if dx == 1:
             if dy == 1:
