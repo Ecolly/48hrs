@@ -23,6 +23,8 @@ class Map:
         self.rooms = []  # List to store the rooms
         self.map_grid = [['#' for _ in range(width)] for _ in range(height)]
         self.valid_tiles = set()
+        self.list_of_all_item_names = ["Iron Sword", "Health Potion"]
+        self.floor_items = []  # List to hold items on the floor
     
     #set the room tiles to be '.' (empty space)
     def generate_border(self, x, y, room_width, room_height):
@@ -82,6 +84,29 @@ class Map:
     #     """Check surrounding tiles for different texture"""
     #     for i in 
     
+    floor_items = []  # List to hold items on the floor
+
+    def create_item(self, name, grid_items):
+        # Example dummy factory
+        if name == "Iron Sword":
+            return Weapon(name, grid_items, sprite_locs = 0, damage=10, durability=100)
+        elif name == "Health Potion":
+            return Consumable(name, grid_items, sprite_locs = 2, nutrition_value=20)
+        
+    list_of_all_item_names = ["Iron Sword", "Health Potion"]
+
+    #self, name, grid_items, x, y, quantity
+    def random_create_item(self, grid_items):
+        for _ in range(3):  # Generate 3 items
+            random_location = random.choice(self.valid_tiles)
+            x, y = random_location
+            item_name = random.choice(self.list_of_all_item_names)
+            item = self.create_item(item_name, grid_items)
+            item.x = x
+            item.y = y
+            self.floor_items.append(item)
+            print(f"Created item: {item.name} at ({x}, {y})")
+
     def check_valid_tile(self):
         self.valid_tiles = [
             (x, y)
