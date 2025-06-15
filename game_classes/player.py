@@ -15,6 +15,8 @@ class Player:
         self.inventory = []
         self.direction = FaceDirection.DOWN  # Default direction
         self.technique = "n/a"
+        self.techniquex = 0
+        self.techniquey = 0
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
@@ -40,22 +42,48 @@ class Player:
     #     return (base_x <= mouse_x <= base_x + self.width*self.scale and
     #             base_y <= mouse_y <= base_y + self.height*self.scale)
     
-    def process_turn(self, current_entity_turn):
+    def process_turn(self):
         #print("a")
-        if self.x != self.prevx:
-            self.prevx = self.prevx + (abs(self.x - self.prevx)/(self.x - self.prevx))/8
-        if self.y != self.prevy:
-            self.prevy = self.prevy + (abs(self.y - self.prevy)/(self.y - self.prevy))/8
+        if self.technique == "move":
+            if self.x != self.prevx:
+                self.prevx = self.prevx + (abs(self.techniquex - self.prevx)/(self.techniquex - self.prevx))/8
+            if self.y != self.prevy:
+                self.prevy = self.prevy + (abs(self.techniquey - self.prevy)/(self.techniquey - self.prevy))/8
 
-        #print(self.x, self.y, self.prevx, self.prevy)
-
-        if self.y == self.prevy and self.x == self.prevx:
-            return current_entity_turn + 1
+            if self.y == self.prevy and self.x == self.prevx:
+                self.technique = "n/a"
         else:
-            return current_entity_turn
+            self.technique = "n/a"
+
             
 
+    def move(self, dx, dy): #Move relative to current position
+        self.x += dx
+        self.y += dy
 
+        self.technique = "move"
+        self.techniquex = self.x
+        self.techniquey = self.y
+        #adjust rotation state (gross)
+        if dx == 1:
+            if dy == 1:
+                self.direction = FaceDirection.UP_RIGHT
+            elif dy == -1:
+                self.direction = FaceDirection.DOWN_RIGHT
+            else:
+                self.direction = FaceDirection.RIGHT
+        elif dx == -1:
+            if dy == 1:
+                self.direction = FaceDirection.UP_LEFT
+            elif dy == -1:
+                self.direction = FaceDirection.DOWN_LEFT
+            else:
+                self.direction = FaceDirection.LEFT
+        else:
+            if dy == 1:
+                self.direction = FaceDirection.UP
+            elif dy == -1:
+                self.direction = FaceDirection.DOWN
 
 
 
@@ -88,30 +116,7 @@ class Player:
     def take_damage(self, amount):
         self.health = max(0, self.health - amount)
     
-    def move(self, dx, dy): #Move relative to current position
-        self.x += dx
-        self.y += dy
 
-        #adjust rotation state (gross)
-        if dx == 1:
-            if dy == 1:
-                self.direction = FaceDirection.UP_RIGHT
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN_RIGHT
-            else:
-                self.direction = FaceDirection.RIGHT
-        elif dx == -1:
-            if dy == 1:
-                self.direction = FaceDirection.UP_LEFT
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN_LEFT
-            else:
-                self.direction = FaceDirection.LEFT
-        else:
-            if dy == 1:
-                self.direction = FaceDirection.UP
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN
         
         
 

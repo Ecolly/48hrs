@@ -2,7 +2,6 @@ from game_classes.player import Player
 from game_classes.face_direction import FaceDirection
 import pyglet
 
-
 def create_sprite_enemy(image_grid, index):
     tex = pyglet.image.Texture.create(16, 16)
     tex.blit_into(image_grid[index], 0, 0, 0)
@@ -68,7 +67,7 @@ class Enemy:
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale
 
 
-        
+
         sprite = self.sprite
 
         frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][int(self.animframe)]

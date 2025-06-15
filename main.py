@@ -25,7 +25,7 @@ window = pyglet.window.Window(1152, 768)
 #pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
 gamestate = 1
-current_entity_turn = -1
+#current_entity_turn = -1
 
 
 sprite_font = pyglet.image.load('font.png')
@@ -308,9 +308,15 @@ keypress_chk = 0
 
 
 
-# def construct_partitions(current_entity_turn, next_entity_turn):
-#     current_entity_turn = next_entity_turn    
+# def construct_partitions():
+#     #current_entity_turn = next_entity_turn    
+    
+    
+#     global player
 #     global all_enemies 
+
+    
+    
 #     while next_entity_turn < len(all_enemies):
 #         if all_enemies[next_entity_turn].name == "GOOSE":
             
@@ -344,23 +350,6 @@ def on_draw():
     global current_entity_turn
     window.clear()
 
-    bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
-    bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
-
-
-
-
-
-
-    bg.batch = batch
-
-    for button in all_buttons:
-        if button == -1:
-            all_buttons.remove(button)
-        else:
-            button.hovered = button.is_mouse_over(mouse_x, mouse_y)
-            button.draw(batch)
-
     diry = 0
     dirx = 0
 
@@ -368,7 +357,7 @@ def on_draw():
         #enter inventory
         if gamestate == 1:
             keypress_chk = 1
-            
+
             #enter inventory
         elif gamestate == 3:
             keypress_chk = 1
@@ -394,15 +383,24 @@ def on_draw():
         #keypress_chk = 1
         player.move(dirx, diry)
         gamestate = 2
-        current_entity_turn = -1
-
-
+        #current_entity_turn = -1
 
     if gamestate == 2:
-        if current_entity_turn == -1:
-            current_entity_turn = player.process_turn(current_entity_turn)
-        else:
+        player.process_turn()
+        if player.technique == "n/a":
             gamestate = 1
+
+    bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
+    bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
+
+    bg.batch = batch
+
+    for button in all_buttons:
+        if button == -1:
+            all_buttons.remove(button)
+        else:
+            button.hovered = button.is_mouse_over(mouse_x, mouse_y)
+            button.draw(batch)
 
     player.draw(batch, animation_presets)
     for enemy in all_enemies:
