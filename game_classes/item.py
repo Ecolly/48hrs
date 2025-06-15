@@ -45,8 +45,8 @@ class Item:
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
     def draw(self, batch, player:Player):
-        base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.prevx*16 + 8)*self.scale
-        base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale
+        base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+        base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
         
         print(f"Drawing item {self.name} at ({base_x}, {base_y})")
         sprite = self.sprite
@@ -76,14 +76,17 @@ class Weapon(Item):
         self.damage_type = "slashing"  # Default damage type
         self.is_usable = is_usable  # Default to usable
 
-
 class Consumable(Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, nutrition_value=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.nutrition_value = nutrition_value
+        
         self.health_restored = 5  # Default health restored
 
-# class Shield (Item):
+class Shield (Item):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense_value=0):
+        super().__init__(name, grid_items, sprite_locs, x, y, quantity)
+        self.defense_value = defense_value  # Default defense value
 
 # class Staff(Item):
 
