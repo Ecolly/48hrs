@@ -28,13 +28,14 @@ class Item:
         self.is_usable = False #default to false
         self.is_equipable = False #default to false
         self.is_consumable = False #default to false
+        self.is_piercing = False #default to false
 
 
     def use(self, target):
         pass
 
 
-    def get_screen_position(self):
+    def get_screen_position(self): #unused?
         if self.inventory_slot == -1:
             return self.scale*(self.prevx*16-8), self.scale*(self.prevy*16-8)
     
@@ -46,6 +47,7 @@ class Item:
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
     def draw(self, batch, player, group):
+        
         base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
         sprite = self.sprite
@@ -54,7 +56,17 @@ class Item:
         sprite.scale = self.scale
         sprite.group = group
         sprite.batch = batch
-        
+    
+    def draw_projectiles(self, batch, player, group):
+        base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+        base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+        sprite = self.sprite
+        sprite.x = base_x
+        sprite.y = base_y
+        sprite.scale = self.scale
+        sprite.group = group
+        sprite.batch = batch
+
     def draw_inventory(self, batch, player, group, invslot, gamestate):
         sprite = self.sprite
         if gamestate == 3: #if in the inventory menu

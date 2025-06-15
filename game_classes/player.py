@@ -4,6 +4,8 @@ import pyglet
 import math
 from game_classes.map import Map
 import button_class
+from game_classes.item import *
+
 
 class Player:
     def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
@@ -23,6 +25,7 @@ class Player:
         self.offsetx = 0
         self.offsety = 0
         self.inventory = []
+        self.active_projectiles = []
         self.direction = FaceDirection.DOWN  # Default direction
         self.technique = Technique.NA
         self.techniquex = 0
@@ -139,8 +142,7 @@ class Player:
             elif dy == -1:
                 self.direction = FaceDirection.DOWN
 
-    def hit(self, x, y): #Move relative to current position
-
+    def hit(self, x, y):
         self.technique = Technique.HIT
         self.techniquex = x
         self.techniquey = y
@@ -168,11 +170,47 @@ class Player:
             elif dy == -1:
                 self.direction = FaceDirection.DOWN
 
-    def drop_item(self, inv_slot, floor_items):
-        item = self.inventory.pop(inv_slot)
-        floor_items.append(item)
+    def throw(self, x, y):
+        item = self.inventory.pop(self.techniqueitem)
+        self.active_projectiles.append(item)
+        item.sprite.color = (255, 255, 255, 255)
         item.x = self.x
-        item.y = self.y    
+        item.y = self.y 
+        item.prevx = self.x 
+        item.prevy = self.y
+        self.technique = Technique.THROW
+        self.techniquex = x
+        self.techniquey = y
+        dx = x - self.x 
+        dy = y - self.y
+
+        #adjust rotation state (gross)
+        if dx == 1:
+            if dy == 1:
+                self.direction = FaceDirection.UP_RIGHT
+            elif dy == -1:
+                self.direction = FaceDirection.DOWN_RIGHT
+            else:
+                self.direction = FaceDirection.RIGHT
+        elif dx == -1:
+            if dy == 1:
+                self.direction = FaceDirection.UP_LEFT
+            elif dy == -1:
+                self.direction = FaceDirection.DOWN_LEFT
+            else:
+                self.direction = FaceDirection.LEFT
+        else:
+            if dy == 1:
+                self.direction = FaceDirection.UP
+            elif dy == -1:
+                self.direction = FaceDirection.DOWN
+
+    def drop_item(self, inv_slot, floor_items):
+        if self.detect_item(floor_items) == False:
+            item = self.inventory.pop(inv_slot)
+            floor_items.append(item)
+            item.x = self.x
+            item.y = self.y    
         self.technique = Technique.STILL 
 
     def consume_item(self, inv_slot, all_buttons):
@@ -185,24 +223,6 @@ class Player:
         self.technique = Technique.STILL 
         del item
 
-
-    # def process_turn(self, map: Map):
-    #     #print("a")
-    #     if self.technique == Technique.MOVE:
-    #         if self.x != self.prevx:
-    #             self.prevx = self.prevx + (abs(self.techniquex - self.prevx)/(self.techniquex - self.prevx))/8
-    #         if self.y != self.prevy:
-    #             self.prevy = self.prevy + (abs(self.techniquey - self.prevy)/(self.techniquey - self.prevy))/8
-
-    #         if self.y == self.prevy and self.x == self.prevx:
-    #             self.technique = Technique.MOVE
-    #             self.techniquefinished = 1
-    #             self.pick_up_item(map.floor_items)
-    #             print(self.x, self.y)
-    #     else:
-    #         self.technique = Technique.MOVE
-    #         self.techniquefinished = 1
-
     def process_turn(self, all_enemies, player, all_buttons, map: Map):
         #print("a")
         self.techniqueframe = self.techniqueframe + 1
@@ -212,7 +232,6 @@ class Player:
                 self.prevx = self.prevx + round((abs(self.techniquex - self.prevx)/(self.techniquex - self.prevx+0.01)))/8
             if self.techniquey != self.prevy:
                 self.prevy = self.prevy + round((abs(self.techniquey - self.prevy)/(self.techniquey - self.prevy+0.01)))/8
-
             if self.techniquey == self.prevy and self.techniquex == self.prevx:
                 self.x = self.prevx
                 self.y = self.prevy
@@ -248,6 +267,66 @@ class Player:
                 self.techniquey = self.y
                 self.technique = Technique.MOVE
                 self.techniquefinished = 1
+        elif self.technique == Technique.THROW:
+            if self.techniqueframe < 17:
+                quartic_eq = (-0.19*(0.25*self.techniqueframe)**4 + (0.25*self.techniqueframe)**3 - (0.25*self.techniqueframe)**2)/2.5
+                self.offsetx = round((abs(self.techniquex - self.x)/(self.techniquex - self.x + 0.01)))*quartic_eq
+                self.offsety = round((abs(self.techniquey - self.y)/(self.techniquey - self.y + 0.01)))*quartic_eq
+            if self.techniqueframe == 16:
+                self.offsetx = 0
+                self.offsety = 0
+
+            
+
+            for item in self.active_projectiles:
+                item.x = item.x + abs(self.techniquex - item.prevx)*round((abs(self.techniquex - item.prevx)/(self.techniquex - item.prevx+0.01)))/20
+                item.y = item.y + abs(self.techniquey - item.prevy)*round((abs(self.techniquey - item.prevy)/(self.techniquey - item.prevy+0.01)))/20
+                
+                if self.can_move_to(math.floor(item.x), math.floor(item.y), map) == False: #if this space is occupied
+                    i = 0
+                    while self.can_move_to(math.floor(item.x), math.floor(item.y), map) == False and i < 20: #go backwards until you find a free space
+                        item.x = item.x - abs(self.techniquex - item.prevx)*round((abs(self.techniquex - item.prevx)/(self.techniquex - item.prevx+0.01)))/20
+                        item.y = item.y - abs(self.techniquey - item.prevy)*round((abs(self.techniquey - item.prevy)/(self.techniquey - item.prevy+0.01)))/20
+                        i = i + 1
+                        
+                    self.techniquex = math.floor(item.x)
+                    self.techniquey = math.floor(item.y)
+                    self.techniqueframe == 20
+
+                if self.techniqueframe == 20:
+                    allowed_to_drop = 1
+                    for enemy in all_enemies:
+                        if enemy.x == self.techniquex and enemy.y == self.techniquey:
+                            allowed_to_drop = 0
+                            damage = 0
+                            if isinstance(item, Weapon) != False:
+                                damage += item.damage
+                            damage += self.strength
+                            if enemy.equipment_shield != None:
+                                damage -= enemy.equipment_shield.defense
+                            damage -= enemy.defense
+                            if damage < 1:
+                                damage = 1
+                            enemy.health = enemy.health - damage
+                            button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
+                    
+                    for i in map.floor_items:
+                        # Check if the item is at the player's current position
+                        if i.x == self.techniquex and i.y == self.techniquey:
+                            allowed_to_drop = 0
+
+                    if allowed_to_drop == 1: #if no enemy detected and no item is on this spot, simply drop the item on the floor at this tile
+                        item.x = self.techniquex
+                        item.y = self.techniquey
+                        map.floor_items.append(item)
+
+            if self.techniqueframe == 20:
+                self.active_projectiles = []
+                self.techniquex = self.x
+                self.techniquey = self.y
+                self.technique = Technique.MOVE
+                self.techniquefinished = 1
+        
         else:
             #self.technique = Technique.MOVE
             self.techniquefinished = 1
@@ -285,6 +364,10 @@ class Player:
 
 
     def draw(self, batch, animation_presets, group):
+        
+        
+
+    
         base_x, base_y = 1152/2 -24 + self.offsetx*16*self.scale, 768/2-24 + self.offsety*16*self.scale #self.get_screen_position()
         sprite = self.sprite
 
@@ -311,6 +394,8 @@ class Player:
         #sprite.color = (int(20*self.animframe), int(20*self.animframe), int(20*self.animframe))
         sprite.z = 40
         sprite.batch = batch
+
+
         
 
     def take_damage(self, amount):

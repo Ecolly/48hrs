@@ -186,7 +186,7 @@ def on_mouse_release(x, y, button, modifiers):
     global gamestate
     global current_entity_turn
     global floor
-    if gamestate == 1 or gamestate == 3: #this stuff can only happen between turns or in inventory
+    if gamestate == 1 or gamestate == 3 or gamestate == 4: #this stuff can only happen between turns or in inventory
         
         if button == pyglet.window.mouse.LEFT:
             was_button_clicked = 0
@@ -226,7 +226,8 @@ def on_mouse_release(x, y, button, modifiers):
                             player.unequip_shield()
                     elif button.type == "THROW": #if throwing, switch to a "choose target" GUI with a different gamestate.
                         gamestate = 4
-                        player.techniqueitem = player.inventory[button.extra_1]
+                        player.techniqueitem = button.extra_1
+                        delete_buttons_supertype(all_buttons, 'inventory')
                         pass
 
 
@@ -237,11 +238,21 @@ def on_mouse_release(x, y, button, modifiers):
             if gamestate == 1 and was_button_clicked == 0:
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
-                print(mouse_x_tilemap, mouse_y_tilemap)
                 if (mouse_x_tilemap != player.prevx or mouse_y_tilemap != player.prevy) and player.prevx - 2 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 2 < mouse_y_tilemap < player.prevy + 2:
                     player.hit(mouse_x_tilemap, mouse_y_tilemap)
                     gamestate = 2
                     partition_entity = construct_partitions()
+            
+            if gamestate == 4 and was_button_clicked == 0:
+                mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+                mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+                player.throw(mouse_x_tilemap, mouse_y_tilemap)
+                gamestate = 2
+                partition_entity = construct_partitions()
+
+
+
+
 
         elif button == pyglet.window.mouse.RIGHT:
             delete_buttons_supertype(all_buttons, 'rclick')
@@ -714,8 +725,13 @@ def on_draw():
     player.draw(batch, animation_presets, group_enemies)
     for enemy in all_enemies:
         enemy.draw(batch, animation_presets, player, group_enemies)
+
     for item in floor.floor_items:
         item.draw(batch, player, group_items)
+
+    for item in player.active_projectiles:
+        item.draw_projectiles(batch, player, group_items)
+
     i = 0 #theres probably a more pythonic way to do this, sowwy
     for item in player.inventory:
         item.draw_inventory(batch, player, group_inv, i, gamestate)
