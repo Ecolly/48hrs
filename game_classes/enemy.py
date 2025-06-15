@@ -4,6 +4,7 @@ from game_classes.techniques import*
 import pyglet
 import math
 import button_class
+import random
 
 def create_sprite_enemy(image_grid, index):
     tex = pyglet.image.Texture.create(16, 16)
@@ -79,8 +80,32 @@ class Enemy:
 
     def do_AI(self, all_enemies, player, game_map):
         if self.name == "FOX":
-            #always run away when sees the player
-            return Technique.MOVE, self.x, self.y+1
+            #always run away when sees the player, in sscared mode 
+            if self.can_see_player(player=player, vision_range=5):
+                dx = self.sign(self.x - player.x)
+                dy = self.sign(self.y - player.y)
+                new_x = self.x + dx
+                new_y = self.y + dy
+                if self.can_move_to(new_x, new_y,game_map):
+                    return Technique.MOVE, new_x, new_y
+                elif self.can_move_to(new_x, self.y, game_map):
+                    return Technique.MOVE, new_x, self.y    
+                elif self.can_move_to(self.x, new_y, game_map):
+                    return Technique.MOVE, self.x, new_y    
+                else:
+                    return Technique.STILL, self.x, self.y
+            else:
+                idle_action = random.choice([Technique.MOVE, Technique.STILL])
+                if idle_action == Technique.MOVE:
+                    dx, dy = random.choice([(1,0), (-1,0), (0,1), (0,-1)])
+                    new_x = self.x + dx
+                    new_y = self.y + dy
+                    if self.can_move_to(new_x, new_y, game_map):
+                        return Technique.MOVE, new_x, new_y
+                # If not moving or can't move, stay still
+                return Technique.STILL, self.x, self.y
+                    
+                 
         elif self.name == "GOOSE":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 return Technique.HIT, player.x, player.y
@@ -97,6 +122,7 @@ class Enemy:
                     return Technique.MOVE, self.x, new_y    
                 else:
                     return Technique.STILL, self.x, self.y 
+        return Technique.STILL, self.x, self.y 
     
     def can_move_to(self, x, y, game_map):
         #Detect walls
@@ -216,11 +242,6 @@ class Enemy:
         else:
             #self.technique = Technique.MOVE
             self.techniquefinished = 1
-
-
-
-
-
 
 
     def take_damage(self, amount):
