@@ -79,6 +79,7 @@ class Enemy:
 
     def do_AI(self, all_enemies, player, game_map):
         if self.name == "FOX":
+            #always run away when sees the player
             return Technique.MOVE, self.x, self.y+1
         elif self.name == "GOOSE":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
@@ -109,12 +110,6 @@ class Enemy:
                 elif enemy.x == x and enemy.y == y:
                     return False
             return True
-
-
-
-
-    
-    
 
 
     def draw(self, batch, animation_presets, player, group):
@@ -242,8 +237,6 @@ class Enemy:
     def can_see_player(self, player, vision_range=5):
         ex, ey = self.x, self.y
         px, py = player.x, player.y
-        # Calculate the distance between the enemy and the player
-        # Using Euclidean distance for simplicity
         distance = ((ex - px) ** 2 + (ey - py) ** 2) ** 0.5
         return distance <= vision_range
 
