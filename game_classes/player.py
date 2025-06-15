@@ -14,7 +14,7 @@ class Player:
         self.prevy = y 
         self.inventory = []
         self.direction = FaceDirection.DOWN  # Default direction
-        self.technique = 0
+        self.technique = "n/a"
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid

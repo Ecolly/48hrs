@@ -38,23 +38,6 @@ def generate_enemy(name, level, x, y, grid):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class Enemy:
     def __init__(self, name, health, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
         self.name = name
@@ -66,7 +49,7 @@ class Enemy:
         self.prevy = y 
         self.inventory = []
         self.direction = FaceDirection.DOWN  # Default direction
-        self.technique = 0
+        self.technique = "n/a"
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
@@ -81,7 +64,11 @@ class Enemy:
 
 
     def draw(self, batch, animation_presets, player):
-        base_x, base_y = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.prevx*16 + 8)*self.scale, 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale
+        base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.prevx*16 + 8)*self.scale
+        base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale
+
+
+        
         sprite = self.sprite
 
         frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][int(self.animframe)]
