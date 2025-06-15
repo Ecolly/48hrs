@@ -9,7 +9,7 @@ from image_handling import *
 from button_class import *
 from game_classes.player import *
 from game_classes.face_direction import *
-#from game_classes.enemy import *
+from game_classes.enemy import *
 #from game_classes.item import *
 from game_classes.map import *
 
@@ -67,7 +67,7 @@ grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 animation_presets = [
     [0],
     [0, 1, 2, 1, 0, 3, 4, 3],
-
+    [0, 1, 2, 3, 4]
 
 ]
 
@@ -105,13 +105,18 @@ letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",
 
 
 
+
+
+
 player = Player(
-    name = "Damien",
+    name = "DAMIEN",
     health = 20,
     level = 1,
+    experience = 0,
     x = 30,
     y = 30,
     sprite = create_sprite(grid_entities1, 20*8*8),
+    spritegrid = grid_entities1,
     spriteindex = 20*8*8,
     color = (255, 255, 255, 255),
     animtype = 1,
@@ -119,22 +124,14 @@ player = Player(
     animframe = 0,
 )
 
+all_enemies = []
 
+all_enemies.append(generate_enemy("GOOSE", 1, 25, 25, grid_entities1))
+all_enemies.append(generate_enemy("GOOSE", 1, 30, 25, grid_entities1))
+all_enemies.append(generate_enemy("GOOSE", 1, 25, 30, grid_entities1))
 
-
-
-# item = Item(
-#     name = "Kitchen Knife",
-#     grid_items = grid_items,
-#     x = 8,
-#     y = 8,
-#     quantity = 1,
-# )
-
-
-
-
-
+all_enemies.append(generate_enemy("FOX", 1, 25, 34, grid_entities1))
+all_enemies.append(generate_enemy("FOX", 1, 30, 32, grid_entities1))
 
 
 
@@ -179,110 +176,113 @@ def on_mouse_release(x, y, button, modifiers):
     global all_buttons
     global gamestate
     global current_entity_turn
-    if button == pyglet.window.mouse.LEFT:
-        for button in all_buttons:
-            button.clicked = False 
-            if button.hovered == True:
-                if button.type == "CANCEL":
-                    pass 
-                elif button.type == "MOVE HERE":
+    if gamestate == 1: #this stuff can only happen between turns
+        if button == pyglet.window.mouse.LEFT:
+            for button in all_buttons:
+                button.clicked = False 
+                if button.hovered == True:
+                    if button.type == "CANCEL":
+                        pass 
+                    elif button.type == "MOVE HERE":
 
-                    
-                    dirx = button.extra_1
-                    diry = button.extra_2
+                        
+                        dirx = button.extra_1
+                        diry = button.extra_2
 
-                    player.move(dirx, diry)
-                    gamestate = 2
-                    current_entity_turn = -1
-         
-        for button in all_buttons: #delete all buttons
-            if button != -1:
-                for sprite in button.sprites:
-                    sprite.delete()
-                    del sprite
-                id = all_buttons.index(button)
-                del button
-                all_buttons[id] = -1
-
-    elif button == pyglet.window.mouse.RIGHT:
-        for button in all_buttons: #delete all buttons (ew duplicate code, move to a function?)
-            if button != -1:
-                for sprite in button.sprites:
-                    sprite.delete()
-                    del sprite
-                id = all_buttons.index(button)
-                del button
-                all_buttons[id] = -1
-
-            # button.clicked = False
-            # if button.hovered == True:
-            #     pass
-            # else:
-            #     pass
-
-
-        #get rclick options
-        rclick_options = []
-        rclick_extra_1 = []
-        rclick_extra_2 = []
-        #check what's here, such as...
-        # 
-        #   a button (e.g. in the case of a menu)
-        #   a blank space near the player 
-        #   an item
-        #   an enemy
-        #   an exit
-        #   you
-        # 
-        #  
-        # for item in floor_items:
-        #     if item.is_mouse_over(mouse_x, mouse_y):
-        #         rclick_options.append("EXAMINE")
-        #         if item.inventory_slot != -1:
-        #             rclick_options.append("USE")
-        #             rclick_options.append("THROW")
-
-        mouse_x_tilemap = mouse_x/48 - (1152/2)/48 + (player.x + 0.5)
-        mouse_y_tilemap = mouse_y/48 - (768/2)/48 + (player.y + 0.5)
-
-
-        if player.prevx - 1 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 1 < mouse_y_tilemap < player.prevy + 2:
-            rclick_options.append("MOVE HERE")
-            rclick_extra_1.append(math.floor(mouse_x_tilemap - player.x))
-            rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
-            print(math.floor(mouse_x_tilemap - player.x))
-            print(math.floor(mouse_y_tilemap - player.y))
+                        player.move(dirx, diry)
+                        gamestate = 2
+                        current_entity_turn = -1
+                        #next_entity_turn = 0
+                        #current_entity_turn, next_entity_turn = construct_partitions(current_entity_turn, next_entity_turn)
             
+            for button in all_buttons: #delete all buttons
+                if button != -1:
+                    for sprite in button.sprites:
+                        sprite.delete()
+                        del sprite
+                    id = all_buttons.index(button)
+                    del button
+                    all_buttons[id] = -1
+
+        elif button == pyglet.window.mouse.RIGHT:
+            for button in all_buttons: #delete all buttons (ew duplicate code, move to a function?)
+                if button != -1:
+                    for sprite in button.sprites:
+                        sprite.delete()
+                        del sprite
+                    id = all_buttons.index(button)
+                    del button
+                    all_buttons[id] = -1
+
+                # button.clicked = False
+                # if button.hovered == True:
+                #     pass
+                # else:
+                #     pass
 
 
-        rclick_options.append("CANCEL")
-        rclick_extra_1.append(0)
-        rclick_extra_2.append(0)
+            #get rclick options
+            rclick_options = []
+            rclick_extra_1 = []
+            rclick_extra_2 = []
+            #check what's here, such as...
+            # 
+            #   a button (e.g. in the case of a menu)
+            #   a blank space near the player 
+            #   an item
+            #   an enemy
+            #   an exit
+            #   you
+            # 
+            #  
+            # for item in floor_items:
+            #     if item.is_mouse_over(mouse_x, mouse_y):
+            #         rclick_options.append("EXAMINE")
+            #         if item.inventory_slot != -1:
+            #             rclick_options.append("USE")
+            #             rclick_options.append("THROW")
 
-        i = 0
-        for option in rclick_options:
-            spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
-            spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
-            option_obj = InteractiveObject(
-                x=mouse_x,
-                y=mouse_y - i*8*3,
-                width=spr2.width,
-                height=spr2.height,
-                sprites=[spr2, spr1],
-                colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
-                animtype = [0, 0],
-                animmod = [None, None],
-                text = [None, None],
-                alignment_x='left',
-                alignment_y='top',
-                depth=1,
-                obj_type=option,
-                draggable=True,
-                extra_1 = rclick_extra_1[i],
-                extra_2 = rclick_extra_2[i]
-            )
-            all_buttons.append(option_obj)
-            i = i + 1
+            mouse_x_tilemap = mouse_x/48 - (1152/2)/48 + (player.x + 0.5)
+            mouse_y_tilemap = mouse_y/48 - (768/2)/48 + (player.y + 0.5)
+
+
+            if player.prevx - 1 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 1 < mouse_y_tilemap < player.prevy + 2:
+                rclick_options.append("MOVE HERE")
+                rclick_extra_1.append(math.floor(mouse_x_tilemap - player.x))
+                rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
+                print(math.floor(mouse_x_tilemap - player.x))
+                print(math.floor(mouse_y_tilemap - player.y))
+                
+
+
+            rclick_options.append("CANCEL")
+            rclick_extra_1.append(0)
+            rclick_extra_2.append(0)
+
+            i = 0
+            for option in rclick_options:
+                spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
+                spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
+                option_obj = InteractiveObject(
+                    x=mouse_x,
+                    y=mouse_y - i*8*3,
+                    width=spr2.width,
+                    height=spr2.height,
+                    sprites=[spr2, spr1],
+                    colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
+                    animtype = [0, 0],
+                    animmod = [None, None],
+                    text = [None, None],
+                    alignment_x='left',
+                    alignment_y='top',
+                    depth=1,
+                    obj_type=option,
+                    draggable=True,
+                    extra_1 = rclick_extra_1[i],
+                    extra_2 = rclick_extra_2[i]
+                )
+                all_buttons.append(option_obj)
+                i = i + 1
 
 
 
@@ -301,14 +301,41 @@ bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_ord
 bg.scale = 3
 bg.z = 0
 
+
+
+global keypress_chk
+keypress_chk = 0
+
+
+
+# def construct_partitions(current_entity_turn, next_entity_turn):
+#     current_entity_turn = next_entity_turn    
+#     global all_enemies 
+#     while next_entity_turn < len(all_enemies):
+#         if all_enemies[next_entity_turn].name == "GOOSE":
+            
+
+#         elif all_enemies[next_entity_turn].name == "FOX":
+
+        
+
+#         next_entity_turn += 1
+
+
+
+
+
+
+
+
+
+
+
 #0 = main menu
 #1 = your turn in the game world
 #2 = turn is happening
 #3 = inventory?
 #4 = pause menu?
-
-global keypress_chk
-keypress_chk = 0
 
 @window.event
 def on_draw():
@@ -319,6 +346,12 @@ def on_draw():
 
     bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
     bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
+
+
+
+
+
+
     bg.batch = batch
 
     for button in all_buttons:
@@ -335,6 +368,7 @@ def on_draw():
         #enter inventory
         if gamestate == 1:
             keypress_chk = 1
+            
             #enter inventory
         elif gamestate == 3:
             keypress_chk = 1
@@ -363,13 +397,16 @@ def on_draw():
         current_entity_turn = -1
 
 
+
     if gamestate == 2:
         if current_entity_turn == -1:
             current_entity_turn = player.process_turn(current_entity_turn)
         else:
             gamestate = 1
 
-    player.draw(batch, grid_entities1, animation_presets)
+    player.draw(batch, animation_presets)
+    for enemy in all_enemies:
+        enemy.draw(batch, animation_presets, player)
     batch.draw()
     
 

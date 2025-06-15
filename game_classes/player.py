@@ -3,10 +3,11 @@ import pyglet
 import math
 
 class Player:
-    def __init__(self, name, health, level, sprite, spriteindex, color, animtype, animframe, animmod, x, y):
+    def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
         self.name = name
         self.health = health
         self.level = level
+        self.experience = experience
         self.x = x # x coords are in 
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
@@ -17,6 +18,7 @@ class Player:
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
+        self.grid = spritegrid
         self.color = color #4 entry tuple for the sprite to be colored as; white is default
         self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
         self.animframe = 0 #what frame of the animation it's on
@@ -57,12 +59,12 @@ class Player:
 
 
 
-    def draw(self, batch, grid_entities1, animation_presets):
+    def draw(self, batch, animation_presets):
         base_x, base_y = 1152/2 -24, 768/2-24 #self.get_screen_position()
         sprite = self.sprite
 
         frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][int(self.animframe)]
-        tile = grid_entities1[frame_index]
+        tile = self.grid[frame_index]
 
         # Get texture and set filtering
         texture = tile.get_texture()

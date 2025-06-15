@@ -1,13 +1,110 @@
-from player import Player
-from face_direction import FaceDirection
+from game_classes.player import Player
+from game_classes.face_direction import FaceDirection
+import pyglet
+
+
+def create_sprite_enemy(image_grid, index):
+    tex = pyglet.image.Texture.create(16, 16)
+    tex.blit_into(image_grid[index], 0, 0, 0)
+    return pyglet.sprite.Sprite(tex, x=0, y=0)
+
+def generate_enemy(name, level, x, y, grid):
+
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE"]
+    enemy_hps = [20, 15, 18, 8, 10, 12]
+    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1]
+    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8]
+
+    id = enemy_names.index(name)
+    enemy = Enemy(
+        name = name,
+        health = enemy_hps[id],
+        level = level,
+        sprite = create_sprite_enemy(grid, enemy_sprites[id]), #this SUCKS
+        spriteindex = enemy_sprites[id],
+        spritegrid = grid,
+        color = (255, 255, 255, 255),
+        animtype = enemy_animtypes[id],
+        animmod = enemy_animmods[id],
+        animframe = 0,
+        x = x,
+        y = y,
+
+
+    ) 
+
+    return enemy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class Enemy:
-    def __init__(self, name, health=50, x=0, y=0, level=1):
+    def __init__(self, name, health, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
         self.name = name
         self.health = health
-        self.x = x
+        self.level = level
+        self.x = x # x coords are in 
         self.y = y
-        self.level = level  # Default level for all enemies
+        self.prevx = x #previous x and y coordanites, for animating
+        self.prevy = y 
+        self.inventory = []
+        self.direction = FaceDirection.DOWN  # Default direction
+        self.technique = 0
+        
+        self.sprite = sprite  # pyglet.sprite.Sprite
+        self.spriteindex = spriteindex #actual index of sprite on tilegrid
+        self.grid = spritegrid
+        self.color = color #4 entry tuple for the sprite to be colored as; white is default
+        self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
+        self.animframe = animframe #what frame of the animation it's on
+        self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
+        self.scale = 3
+
+
+
+
+    def draw(self, batch, animation_presets, player):
+        base_x, base_y = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.prevx*16 + 8)*self.scale, 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale
+        sprite = self.sprite
+
+        frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][int(self.animframe)]
+        tile = self.grid[frame_index]
+
+        # Get texture and set filtering
+        texture = tile.get_texture()
+        texture.min_filter = pyglet.gl.GL_NEAREST
+        texture.mag_filter = pyglet.gl.GL_NEAREST
+
+        # Assign directly — no blitting, no texture creation
+        sprite.image = texture
+
+        self.animframe = self.animframe + self.animmod
+        if self.animframe >= len(animation_presets[self.animtype]):
+            self.animframe = 0
+
+        sprite.x = base_x
+        sprite.y = base_y
+        sprite.scale = self.scale
+        sprite.color = self.color
+        sprite.batch = batch
+        sprite.z = 40
 
     def take_damage(self, amount):
         self.health = max(0, self.health - amount)
@@ -28,9 +125,6 @@ class Enemy:
         distance = ((ex - px) ** 2 + (ey - py) ** 2) ** 0.5
         return distance <= vision_range
 
-class Goblin(Enemy):
-    def __init__(self, x=0, y=0, level=1):
-        super().__init__(name="Goblin", health=30, x=x, y=y, level=level)
-        self.attack_power = 5
+
 
 
