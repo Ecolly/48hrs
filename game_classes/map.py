@@ -40,10 +40,13 @@ class Map:
     
     #set the room tiles to be '.' (empty space)
     def generate_room(self, x, y, room_width, room_height):
+        textures = ['.', '*', '~']
         for i in range(y, y + room_height):
             for j in range(x, x + room_width):
                 if 0 <= i < self.height and 0 <= j < self.width:
-                    self.map_grid[i][j] = '.'
+                    tile = random.choices(textures, weights=[10, 1, 1])[0]
+                    self.map_grid[i][j] = tile
+                    
     # #set the room borders to be 'o' (empty space)
     # def generate_room(self, x, y, room_width, room_height):
     #     for i in range(y-1, y + room_height+1):
@@ -144,11 +147,11 @@ class Map:
         #self.all_enemies.append(generate_enemy("GOOSE", 1, 26, 26, grid_entities1))
 
         #TODO Randomly generate enemies around the map temp
-        # for _ in range(5):
-        #     random_location = random.choice(self.valid_entity_tiles)
-        #     y, x = random_location
-        #     self.valid_entity_tiles.remove(random_location)
-        #     self.all_enemies.append(generate_enemy("GOOSE", 1, x, y, grid_entities1))
+        for _ in range(5):
+            random_location = random.choice(self.valid_entity_tiles)
+            y, x = random_location
+            self.valid_entity_tiles.remove(random_location)
+            self.all_enemies.append(generate_enemy("GOOSE", 1, x, y, grid_entities1))
         for _ in range(5):
             random_location = random.choice(self.valid_tiles)
             y, x = random_location
@@ -162,7 +165,7 @@ class Map:
             for y in range(self.height)
             for x in range(self.width)
             #actual map value (index based)
-            if self.map_grid[self.height-1-y][x] == '.'
+            if self.map_grid[self.height-1-y][x] in ['.', '*', '~']
         ]
         self.valid_entity_tiles = self.valid_tiles.copy()
     # Connect rooms with corridors

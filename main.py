@@ -365,18 +365,21 @@ fl_string = ""
 if floor.map_type == "Simple":
     #Simple Map Initiation
     simple_color_sets = [(26,26), (29,29), (27,27)]
-    wall_texture_value, floor_texture_value = random.choice(simple_color_sets)
-    bg_order = ["#", "o", ".", "@"] #Filler, #Walls, #Space, @Stairs
-    bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 8, floor_texture_value*16+6, floor_texture_value*16+13]
+    wall_texture_value, floor_texture_base_value = random.choice(simple_color_sets)
+    bg_order = ["#", ".", "*", "~", "@"] #Filler, #Walls, #Space, @Stairs
+    bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9,floor_texture_base_value*16+7, floor_texture_base_value*16+13]
     for s in floor.map_grid:
         for s2 in s:
             fl_string += s2
 else:
-    complex_wall_sets = [(12, 31, 4), (11,28,4), (17, 25, 4)]
+    #wall, floor, floorcodes,
+    complex_wall_sets = [(12, 31, 4,4,4), (11,28,4,4,4), (17, 25, 0,0,4)]
     #Map Initiation
     bg_order = [
         "#",   #filler
         '.',   #space
+        '*',   #space texture
+        '~',    #space texture
 
     'a',   # 0: isolated
     'b',   # 1: up
@@ -401,13 +404,14 @@ else:
         "@"    # stairs
     ]
 
-    wall_texture_value, floor_texture_value, floor_texture_code = random.choice(complex_wall_sets)
-    bg_tilekey = [26*16 + 8, floor_texture_value*16+floor_texture_code, 
+    wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2 = random.choice(complex_wall_sets)
+    bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,
+                  
                 wall_texture_value*16, wall_texture_value*16+15, wall_texture_value*16+13, wall_texture_value*16+9,
                 wall_texture_value*16+12, wall_texture_value*16+8, wall_texture_value*16+6, wall_texture_value*16+2,
                 wall_texture_value*16+14, wall_texture_value*16+11, wall_texture_value*16+10, wall_texture_value*16+5,
                 wall_texture_value*16+7, wall_texture_value*16+4, wall_texture_value*16+1,wall_texture_value*16+3,
-                floor_texture_value*16+13]
+                floor_texture_base_value*16+13]
     
     for s in floor.textured_map:
         for s2 in s:
@@ -434,17 +438,19 @@ def go_to_next_level():
         #Simple Map Initiation
         simple_color_sets = [(26,26), (29,29), (27,27)]
         wall_texture_value, floor_texture_value = random.choice(simple_color_sets)
-        bg_order = ["#", "o", ".", "@"] #Filler, #Walls, #Space, @Stairs
-        bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 8, floor_texture_value*16+6, floor_texture_value*16+13]
+        bg_order = ["#", ".", "*", "~", "@"] #Filler, #Walls, #Space, @Stairs
+        bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_value*16+9,floor_texture_value*16+7, floor_texture_value*16+13]
         for s in floor.map_grid:
             for s2 in s:
                 fl_string += s2
     else:
-        complex_wall_sets = [(12, 31, 4), (11,28,4), (17, 25, 0)]
+        complex_wall_sets = [(12, 31, 4,4,4), (11,28,4,4,4), (17, 25, 0,0,9)]
         #Map Initiation
         bg_order = [
             "#",   #filler
             '.',   #space
+            '*',   #space texture
+            '~',    #space texture
 
             'a',   # 0: isolated
             'b',   # 1: up
@@ -469,14 +475,14 @@ def go_to_next_level():
             "@"    # stairs
         ]
 
-        wall_texture_value, floor_texture_value, floor_texture_code = random.choice(complex_wall_sets)
+        wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2 = random.choice(complex_wall_sets)
 
-        bg_tilekey = [26*16 + 8, floor_texture_value*16+floor_texture_code, 
+        bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,
                     wall_texture_value*16, wall_texture_value*16+15, wall_texture_value*16+13, wall_texture_value*16+9,
                     wall_texture_value*16+12, wall_texture_value*16+8, wall_texture_value*16+6, wall_texture_value*16+2,
                     wall_texture_value*16+14, wall_texture_value*16+11, wall_texture_value*16+10, wall_texture_value*16+5,
                     wall_texture_value*16+7, wall_texture_value*16+4, wall_texture_value*16+1,wall_texture_value*16+3,
-                    floor_texture_value*16+13]
+                    floor_texture_base_value*16+13]
         
         for s in floor.textured_map:
             for s2 in s:
