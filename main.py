@@ -303,6 +303,8 @@ fl_string = ""
 for s in floor.map_grid:
     for s2 in s:
         fl_string += s2
+print(fl_string)
+print(floor)
 bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
 bg.scale = 3
 bg.z = 0

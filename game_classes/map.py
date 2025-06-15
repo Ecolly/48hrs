@@ -9,7 +9,7 @@ from game_classes.item import Item, Weapon, Consumable
 
 def make_floor():
     number_of_rooms = random.randint(5, 9)  # Random number of rooms between 5 and 10
-    test_map = Map(60, 60, number_of_rooms, default_tile='.')
+    test_map = Map(60, 60, number_of_rooms, default_tile='#')
     test_map.check_generate_room(test_map.rooms)
     test_map.connect_rooms()
     test_map.check_valid_tile()  # Populate valid tiles after room generation
@@ -76,6 +76,8 @@ class Map:
                 self.generate_border(x, y, width, height)
                 rooms.append(new_room)
             attempts += 1
+
+
     def __str__(self):
         return '\n'.join(''.join(row) for row in self.map_grid)
     
@@ -99,7 +101,7 @@ class Map:
     def random_create_item(self, grid_items):
         for _ in range(3):  # Generate 3 items
             random_location = random.choice(self.valid_tiles)
-            x, y = random_location
+            y, x = random_location
             item_name = random.choice(self.list_of_all_item_names)
             item = self.create_item(item_name, grid_items)
             item.x = x
@@ -109,10 +111,10 @@ class Map:
 
     def check_valid_tile(self):
         self.valid_tiles = [
-            (x, y)
+            (y, x)
             for y in range(self.height)
             for x in range(self.width)
-            if self.map_grid[y][x] == '.'
+            if self.map_grid[self.height-1-y][x] == '.'
         ]
         print("Valid tiles found:", self.valid_tiles)
         return self.valid_tiles
