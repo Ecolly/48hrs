@@ -288,11 +288,45 @@ def on_mouse_release(x, y, button, modifiers):
 
 
 
+#Map Initiation
+bg_order = [
+    "#",   #filler
+    '.',   #space
 
+    'L',   # 0: isolated
+    '^',   # 1: up
+    '>',   # 2: right
+    '/',   # 3: up + right
+
+    'v',   # 4: down
+    '|',   # 5: up + down
+    '\\',  # 6: right + down
+    'T',   # 7: up + right + down
+
+    '<',   # 8: left
+    '/',   # 9: up + left
+    '-',   # 10: right + left
+    'T',   # 11: up + right + left
+    
+    '\\',  # 12: down + left
+    'T',   # 13: up + down + left
+    'T',   # 14: right + down + left
+    '+',   # 15: all sides
+
+    "@"    # stairs
+]
+
+texture_value = 19
+bg_tilekey = [26*16 + 8, 26*16+6, 
+                texture_value*16, texture_value*16+15, texture_value*16+13, texture_value*16+9,
+                texture_value*16+12, texture_value*16+8, texture_value*16+6, texture_value*16+2,
+                texture_value*16+14, texture_value*16+11, texture_value*16+10, texture_value*16+5,
+                texture_value*16+7, texture_value*16+4, texture_value*16+1,texture_value*16+3,
+                26*16+13]
 
 #Map Initiation
-bg_order = ["#", "o", ".", "@"]
-bg_tilekey = [26*16 + 8, 26*16 + 8, 26*16+6, 26*16+13]
+#bg_order = ["#", "o", ".", "@"]
+#bg_tilekey = [26*16 + 8, 26*16 + 8, 26*16+6, 26*16+13]
 floor = make_floor()
 floor.random_create_item(grid_items)
 floor.generate_enemies(grid_entities1)
@@ -301,15 +335,13 @@ all_enemies = floor.all_enemies
 
 #Draw the map
 fl_string = ""
-for s in floor.map_grid:
+for s in floor.textured_map:
     for s2 in s:
         fl_string += s2
-print(fl_string)
-print(floor)
+#bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
 bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
 bg.scale = 3
 bg.z = 0
-
 
 def go_to_next_level():
     global floor, all_enemies, player, bg
@@ -322,7 +354,7 @@ def go_to_next_level():
     print("test go to")
 
     fl_string = ""
-    for s in floor.map_grid:
+    for s in floor.textured_map:
         for s2 in s:
             fl_string += s2
     print(fl_string)
@@ -524,19 +556,21 @@ def on_draw():
 
     if gamestate == 2:
         if partition_entity == -1:
+            print(f"{floor.stairs} HERE IS FLOOR STAIRS")
             #if doing only the player's turn...
             player.process_turn(floor)
-            #print(f"{floor.stairs} HERE IS FLOOR STAIRS")
+            print(f"{floor.stairs} HERE IS FLOOR STAIRS")
+            print(player.x, player.y)
+            if (player.x, player.y) == floor.stairs:
+                print("on stairs GOING TO NEXT LEVEL")
+                go_to_next_level()
             if partition_entity == -1 and player.techniquefinished == 1:
-                # if (player.x, player.y) in floor.stairs:
-                #     print("on stairs")
-                #     go_to_next_level()
                 partition_entity = construct_partitions()
         elif partition_entity == -2: #if doing all movement...
-            # print(f"{floor.stairs} HERE IS FLOOR STAIRS")
-            # if (player.x, player.y) in floor.stairs:
-            #         print("on stairs")
-            #         go_to_next_level()
+            print(f"{floor.stairs} HERE IS FLOOR STAIRS")
+            if (player.x, player.y) == floor.stairs:
+                print("on stairs GOING TO NEXT LEVEL")
+                go_to_next_level()
 
             is_allfinished_flag = 1
 

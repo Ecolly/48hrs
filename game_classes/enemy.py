@@ -93,7 +93,7 @@ class Enemy:
     def can_move_to(self, x, y, game_map):
         #Detect walls
         if (y,x) not in game_map.valid_tiles:
-            print(f"Invalid tile cannot move{x, y}")
+            #print(f"Invalid tile cannot move{x, y}")
             return False
         else:
             for enemy in game_map.all_enemies:
