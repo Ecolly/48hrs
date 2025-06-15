@@ -1,11 +1,13 @@
 from game_classes.player import Player
 from game_classes.face_direction import FaceDirection
 import pyglet
+import math
 
 def create_sprite_enemy(image_grid, index):
     tex = pyglet.image.Texture.create(16, 16)
     tex.blit_into(image_grid[index], 0, 0, 0)
     return pyglet.sprite.Sprite(tex, x=0, y=0)
+
 
 def generate_enemy(name, level, x, y, grid):
 
@@ -49,7 +51,11 @@ class Enemy:
         self.inventory = []
         self.direction = FaceDirection.DOWN  # Default direction
         self.technique = "n/a"
-        
+        self.techniquex = 0
+        self.techniquey = 0
+        self.techniqueframe = 0
+        self.techniquefinished = 0
+
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
         self.grid = spritegrid
@@ -58,6 +64,16 @@ class Enemy:
         self.animframe = animframe #what frame of the animation it's on
         self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
         self.scale = 3
+
+
+    def do_AI(self, all_enemies, player):
+        if self.name == "FOX":
+            return "move", self.x, self.y+1
+        elif self.name == "GOOSE":
+            if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
+                return "hit", player.x, player.y
+            else:
+                return "move", self.x + round(abs(player.x-self.x)/((player.x-self.x)+0.01)), self.y + round(abs(player.y-self.y)/((player.y-self.y)+0.01))
 
 
 
@@ -91,6 +107,50 @@ class Enemy:
         sprite.color = self.color
         sprite.batch = batch
         sprite.z = 40
+
+
+
+
+    def process_turn(self):
+        #print("a")
+        self.techniqueframe = self.techniqueframe + 1
+
+        if self.technique == "move":
+            if self.techniquex != self.prevx:
+                self.prevx = self.prevx + round((abs(self.techniquex - self.prevx)/(self.techniquex - self.prevx+0.01)))/8
+            if self.techniquey != self.prevy:
+                self.prevy = self.prevy + round((abs(self.techniquey - self.prevy)/(self.techniquey - self.prevy+0.01)))/8
+
+            if self.techniquey == self.prevy and self.techniquex == self.prevx:
+                self.x = self.prevx
+                self.y = self.prevy
+                self.technique = "move"
+                self.techniquefinished = 1
+        elif self.technique == "hit":
+            #animate the "hit movement"
+            self.prevx = self.prevx + round((abs(self.techniquex - self.prevx)/(self.techniquex - self.prevx + 0.01)))/4
+            self.prevy = self.prevy + round((abs(self.techniquey - self.prevy)/(self.techniquey - self.prevy + 0.01)))/4
+
+
+            #if hit is finished, find entity at the target square and deduct hp
+            if self.techniqueframe == 4:
+                self.prevx = self.x
+                self.prevy = self.y
+                self.techniquex = self.x - 6
+                self.techniquey = self.y - 6
+                self.technique = "move"
+                self.techniquefinished = 1
+
+
+        else:
+            self.technique = "move"
+            self.techniquefinished = 1
+
+
+
+
+
+
 
     def take_damage(self, amount):
         self.health = max(0, self.health - amount)

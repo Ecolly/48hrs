@@ -25,6 +25,7 @@ window = pyglet.window.Window(1152, 768)
 #pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
 gamestate = 1
+partition_entity = -2
 #current_entity_turn = -1
 
 
@@ -126,7 +127,7 @@ player = Player(
 
 all_enemies = []
 
-all_enemies.append(generate_enemy("GOOSE", 1, 25, 25, grid_entities1))
+all_enemies.append(generate_enemy("GOOSE", 1, 29, 29, grid_entities1))
 all_enemies.append(generate_enemy("GOOSE", 1, 30, 25, grid_entities1))
 all_enemies.append(generate_enemy("GOOSE", 1, 25, 30, grid_entities1))
 
@@ -308,24 +309,87 @@ keypress_chk = 0
 
 
 
-# def construct_partitions():
-#     #current_entity_turn = next_entity_turn    
+def construct_partitions():
+    global player
+    global all_enemies 
+    global partition_entity
+    global gamestate
+
+    partition_entity = -2 
+    #if -2, move all entities that have technique_finished = 0.
+    #if -1, do player's technique and only player's technique.
+    #else, do technique of partition_entity id.
+
+
+    if player.techniquefinished == 0: #this means its the very start of turn evaluation
+        if player.technique != "move":
+            #do this technique
+            partition_entity = -1
+            
+        else:
+            #check if all enemies are also moving. if so, move everyone.
+            for enemy in all_enemies:
+                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player)
+                enemy.technique = technique_to_do
+                enemy.techniquex = techx 
+                enemy.techniquey = techy
+                if technique_to_do != "move":
+                    #not all enemies are moving. as a result, only do the player movement.
+                    partition_entity = -1
+                    break
+
+    else:
+        for enemy in all_enemies:
+            if enemy.techniquefinished == 0:
+                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player)
+                enemy.technique = technique_to_do
+                enemy.techniquex = techx 
+                enemy.techniquey = techy
+                if technique_to_do != "move":
+                    #do this technique
+                    partition_entity = all_enemies.index(enemy)
+                    break
+
+        #this last loop will check if all enemies have had a turn. if so, break out of turn execution.
+        alldone_flag = 1
+        if partition_entity == -2:
+            for enemy in all_enemies:
+                if enemy.techniquefinished == 0:
+                    alldone_flag = 0
+                    break
+        
+            if alldone_flag == 1:
+                player.techniquefinished = 0
+                for enemy in all_enemies:
+                    enemy.techniquefinished = 0
+                    enemy.techniqueframe = 0
+                gamestate = 1
+
+
+                    
+
+    #print(partition_entity)
+    return partition_entity
+
+                
+
+
+
+
+
     
-    
-#     global player
-#     global all_enemies 
 
     
     
-#     while next_entity_turn < len(all_enemies):
-#         if all_enemies[next_entity_turn].name == "GOOSE":
+    # while next_entity_turn < len(all_enemies):
+    #     if all_enemies[next_entity_turn].name == "GOOSE":
             
 
-#         elif all_enemies[next_entity_turn].name == "FOX":
+    #     elif all_enemies[next_entity_turn].name == "FOX":
 
         
 
-#         next_entity_turn += 1
+    #     next_entity_turn += 1
 
 
 
@@ -343,11 +407,13 @@ keypress_chk = 0
 #3 = inventory?
 #4 = pause menu?
 
+
 @window.event
 def on_draw():
     global keypress_chk
     global gamestate
-    global current_entity_turn
+    global partition_entity
+    
     window.clear()
 
     diry = 0
@@ -383,12 +449,42 @@ def on_draw():
         #keypress_chk = 1
         player.move(dirx, diry)
         gamestate = 2
+        partition_entity = construct_partitions()
         #current_entity_turn = -1
 
     if gamestate == 2:
-        player.process_turn()
-        if player.technique == "n/a":
-            gamestate = 1
+        if partition_entity == -1:
+            #if doing only the player's turn...
+
+            player.process_turn()
+            if partition_entity == -1 and player.techniquefinished == 1:
+                partition_entity = construct_partitions()
+        elif partition_entity == -2: #if doing all movement...
+
+            is_allfinished_flag = 1
+
+            if player.techniquefinished == 0:
+                player.process_turn()
+                if player.techniquefinished == 0:
+                    is_allfinished_flag = 0
+
+            for enemy in all_enemies:
+                if enemy.techniquefinished == 0:
+                    enemy.process_turn()
+                    is_allfinished_flag = 0
+
+            if is_allfinished_flag == 1:
+                partition_entity = construct_partitions()
+        else:
+
+            enemy_to_evaluate = all_enemies[partition_entity]
+            enemy_to_evaluate.process_turn()
+            if enemy_to_evaluate.techniquefinished == 1:
+                partition_entity = construct_partitions()
+
+
+            # if player.technique == "n/a":
+            #     gamestate = 1
 
     bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
     bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
