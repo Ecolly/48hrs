@@ -2,6 +2,7 @@ from game_classes.player import Player
 from game_classes.face_direction import FaceDirection
 import pyglet
 import math
+import button_class
 
 def create_sprite_enemy(image_grid, index):
     tex = pyglet.image.Texture.create(16, 16)
@@ -144,10 +145,12 @@ class Enemy:
                 for enemy in all_enemies:
                     if enemy.x == self.techniquex and enemy.y == self.techniquey:
                         enemy.health = enemy.health - 1
+                        #button_class.create_point_number(enemy.x, enemy.y, 1, (255, 0, 0), player)
                         break 
                 
                 if player.x == self.techniquex and player.y == self.techniquey:
                     player.health = player.health - 1
+                    #button_class.create_point_number(player.x, player.y, 1, (255, 0, 0), player)
 
                 self.prevx = self.x
                 self.prevy = self.y

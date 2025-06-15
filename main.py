@@ -75,7 +75,9 @@ animation_presets = [
 ]
 
 
+
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
+
 
 
 # string_to_draw = "The quick brown fox jumpeeeeeeeeeeeed over the lazy dog. This is the story of a man named Stanley. Stanley worked for a company at an office where he sat in room 427. etc etc buttons"
@@ -307,10 +309,7 @@ bg.z = 0
 
 
 
-    # gui_hp.x = 0
-    # gui_hp.y = 768 - 24
-    # gui_hp.batch = batch
-
+#hp gui
 hp_string = str(player.health) + "/" + str(player.maxhealth) + " HP"
 
 spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
@@ -564,11 +563,20 @@ def on_draw():
             all_buttons.remove(button)
         else:
             button.hovered = button.is_mouse_over(mouse_x, mouse_y)
+
+            button.draw(batch)
+
             if button.type == "GUI_HP":
                 hp_string = str(player.health) + "/" + str(player.maxhealth) + " HP"
                 sprite = button.sprites[1]
                 sprite.image = combine_tiles(text_to_tiles_wrapped(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10)
-            button.draw(batch)
+            # elif button.type == "POINT_NUMBER":
+            #     button.y += 1
+            #     if button.animframe > 20:
+            #         all_buttons.remove(button)
+            
+            
+            
 
     player.draw(batch, animation_presets)
     for enemy in all_enemies:

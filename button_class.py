@@ -1,6 +1,18 @@
 
 import pyglet
 import math
+import image_handling
+
+# sprite_font = pyglet.image.load('font.png')
+# columns_font = sprite_font.width // 8
+# rows_font = sprite_font.height // 8
+# grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
+
+
+
+# letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
+
+
 
 class InteractiveObject:
     def __init__(self, x, y, width, height, sprites, colors, animtype, animmod, text, obj_type, extra_1, extra_2, rclick,
@@ -73,6 +85,8 @@ class InteractiveObject:
             sprite.y = base_y
             sprite.scale = self.scale
 
+            self.animframe = self.animframe + 1
+
             if self.hovered == True:
                 if self.clicked == True:
                     sprite.color = self.colors[i][2]
@@ -89,6 +103,39 @@ class InteractiveObject:
 
 
             #sprite.draw()
+
+
+
+# def create_point_number(x, y, text, color, player):
+#     global grid_font 
+#     global letter_order
+#     spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(str("e35wWEF"), grid_font, letter_order, 10, "left"), 8, 8, 10))
+#     spr1.z = 80
+#     #spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
+#     obj = InteractiveObject(
+#         x=50,#1152/2 -24 - (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+#         y=50,#768/2-24 - (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+#         width=spr1.width,
+#         height=spr1.height,
+#         sprites=[spr1],
+#         colors=[[color, color, color]],
+#         animtype = [0],
+#         animmod = [None],
+#         text = [None],
+#         alignment_x='left',
+#         alignment_y='top',
+#         depth=1,
+#         obj_type="POINT_NUMBER",
+#         draggable=False,
+#         rclick = False,
+#         extra_1 = 0,
+#         extra_2 = 0
+#     )
+
+
+
+
+
 
 
 
