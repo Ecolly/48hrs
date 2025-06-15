@@ -61,11 +61,16 @@ class Player:
         base_x, base_y = 1152/2 -24, 768/2-24 #self.get_screen_position()
         sprite = self.sprite
 
-        tex = pyglet.image.Texture.create(16, 16)
-        #print(self.animtype)
-        #print(self.animframe)
-        tex.blit_into(grid_entities1[self.spriteindex + (self.direction.value)*8 + animation_presets[self.animtype][math.floor(self.animframe)]], 0, 0, 0)
-        sprite.image = tex
+        frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][int(self.animframe)]
+        tile = grid_entities1[frame_index]
+
+        # Get texture and set filtering
+        texture = tile.get_texture()
+        texture.min_filter = pyglet.gl.GL_NEAREST
+        texture.mag_filter = pyglet.gl.GL_NEAREST
+
+        # Assign directly — no blitting, no texture creation
+        sprite.image = texture
 
         self.animframe = self.animframe + self.animmod
         if self.animframe >= len(animation_presets[self.animtype]):

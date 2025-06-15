@@ -126,11 +126,7 @@ def combine_tiles(tiles, tile_width, tile_height, total_width):
 
 def create_sprite(image_grid, index):
     tex = pyglet.image.Texture.create(16, 16)
-
     tex.blit_into(image_grid[index], 0, 0, 0)
-
-    tex.min_filter = pyglet.gl.GL_NEAREST
-    tex.mag_filter = pyglet.gl.GL_NEAREST
     return pyglet.sprite.Sprite(tex, x=0, y=0)
 
 

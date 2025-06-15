@@ -3,9 +3,9 @@ import pyglet
 import math
 
 class InteractiveObject:
-    def __init__(self, x, y, width, height, sprites, colors, animtype, animmod, text, obj_type, 
+    def __init__(self, x, y, width, height, sprites, colors, animtype, animmod, text, obj_type, extra_1, extra_2,
                  alignment_x='left', alignment_y='bottom',
-                 depth=0, draggable=False, rot=0, scale=3, **extras):
+                 depth=0, draggable=False, rot=0, scale=3):
         
         # Position and alignment
         self.x = x
@@ -35,8 +35,10 @@ class InteractiveObject:
         self.hovered = False
         self.clicked = False
 
-        # Extra user-defined properties
-        self.extras = extras
+        self.extra_1 = extra_1
+        self.extra_2 = extra_2
+
+
 
     def get_screen_position(self):
         """Compute the on-screen position based on alignment."""

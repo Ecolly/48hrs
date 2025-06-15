@@ -10,7 +10,7 @@ from button_class import *
 from game_classes.player import *
 from game_classes.face_direction import *
 #from game_classes.enemy import *
-from game_classes.item import *
+#from game_classes.item import *
 from game_classes.map import *
 
 
@@ -120,13 +120,16 @@ player = Player(
 )
 
 
-item = Item(
-    name = "Kitchen Knife",
-    grid_items = grid_items,
-    x = 8,
-    y = 8,
-    quantity = 1,
-)
+
+
+
+# item = Item(
+#     name = "Kitchen Knife",
+#     grid_items = grid_items,
+#     x = 8,
+#     y = 8,
+#     quantity = 1,
+# )
 
 
 
@@ -138,7 +141,7 @@ item = Item(
 batch = pyglet.graphics.Batch()
 
 all_buttons = []
-floor_items = [item]
+#floor_items = [item]
 inventory_items = []
 
 mouse_x = 0
@@ -174,34 +177,43 @@ def on_mouse_motion(x, y, dx, dy):
 @window.event
 def on_mouse_release(x, y, button, modifiers):
     global all_buttons
+    global gamestate
+    global current_entity_turn
     if button == pyglet.window.mouse.LEFT:
-        
         for button in all_buttons:
-            button.clicked = False
+            button.clicked = False 
             if button.hovered == True:
                 if button.type == "CANCEL":
-                    for button2 in all_buttons:
-                        for sprite in button2.sprites:
-                            sprite.delete()
-                            del sprite
-                        id = all_buttons.index(button2)
-                        del button2
-                        all_buttons[id] = -1
-            else: #this is the code to delete all buttons, basically
+                    pass 
+                elif button.type == "MOVE HERE":
+
+                    
+                    dirx = button.extra_1
+                    diry = button.extra_2
+
+                    player.move(dirx, diry)
+                    gamestate = 2
+                    current_entity_turn = -1
+         
+        for button in all_buttons: #delete all buttons
+            if button != -1:
                 for sprite in button.sprites:
                     sprite.delete()
                     del sprite
                 id = all_buttons.index(button)
                 del button
                 all_buttons[id] = -1
+
     elif button == pyglet.window.mouse.RIGHT:
-        for button in all_buttons: #duplicate code; this should be moved into a function for sure. gross. yucktonium.
-            for sprite in button.sprites:
-                sprite.delete()
-                del sprite
-            id = all_buttons.index(button)
-            del button
-            all_buttons[id] = -1
+        for button in all_buttons: #delete all buttons (ew duplicate code, move to a function?)
+            if button != -1:
+                for sprite in button.sprites:
+                    sprite.delete()
+                    del sprite
+                id = all_buttons.index(button)
+                del button
+                all_buttons[id] = -1
+
             # button.clicked = False
             # if button.hovered == True:
             #     pass
@@ -211,6 +223,8 @@ def on_mouse_release(x, y, button, modifiers):
 
         #get rclick options
         rclick_options = []
+        rclick_extra_1 = []
+        rclick_extra_2 = []
         #check what's here, such as...
         # 
         #   a button (e.g. in the case of a menu)
@@ -228,15 +242,30 @@ def on_mouse_release(x, y, button, modifiers):
         #             rclick_options.append("USE")
         #             rclick_options.append("THROW")
 
-        rclick_options.append("CANCEL")
+        mouse_x_tilemap = mouse_x/48 - (1152/2)/48 + (player.x + 0.5)
+        mouse_y_tilemap = mouse_y/48 - (768/2)/48 + (player.y + 0.5)
 
+
+        if player.prevx - 1 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 1 < mouse_y_tilemap < player.prevy + 2:
+            rclick_options.append("MOVE HERE")
+            rclick_extra_1.append(math.floor(mouse_x_tilemap - player.x))
+            rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
+            print(math.floor(mouse_x_tilemap - player.x))
+            print(math.floor(mouse_y_tilemap - player.y))
+            
+
+
+        rclick_options.append("CANCEL")
+        rclick_extra_1.append(0)
+        rclick_extra_2.append(0)
+
+        i = 0
         for option in rclick_options:
-            print("a")
             spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
             spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
             option_obj = InteractiveObject(
                 x=mouse_x,
-                y=mouse_y,
+                y=mouse_y - i*8*3,
                 width=spr2.width,
                 height=spr2.height,
                 sprites=[spr2, spr1],
@@ -249,9 +278,11 @@ def on_mouse_release(x, y, button, modifiers):
                 depth=1,
                 obj_type=option,
                 draggable=True,
-                custom_data={"label": "Click me!"}
+                extra_1 = rclick_extra_1[i],
+                extra_2 = rclick_extra_2[i]
             )
             all_buttons.append(option_obj)
+            i = i + 1
 
 
 
