@@ -662,7 +662,7 @@ def on_draw():
         if partition_entity == -1:
             print(f"{floor.stairs} HERE IS FLOOR STAIRS")
             #if doing only the player's turn...
-            player.process_turn(floor)
+            player.process_turn(all_enemies, player, all_buttons, floor)
             
             if partition_entity == -1 and player.techniquefinished == 1:
                 print(f"{floor.stairs} HERE IS FLOOR STAIRS")
