@@ -133,6 +133,7 @@ class Map:
     def generate_enemies(self, grid_entities1):
         # random_location = random.choice(self.valid_tiles)
         # y, x = random_location
+        #self.all_enemies.append(generate_enemy("GOOSE", 1, 26, 26, grid_entities1))
 
         #TODO Randomly generate enemies around the map temp
         for _ in range(5):

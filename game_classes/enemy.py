@@ -81,6 +81,7 @@ class Enemy:
                 new_y = self.y + self.sign(player.y - self.y)
                 # new_x = self.x + round(abs(player.x - self.x) / ((player.x - self.x) + 0.01))
                 # new_y = self.y + round(abs(player.y - self.y) / ((player.y - self.y) + 0.01))
+                print(self.x, self.y, new_x, new_y, (new_x, new_y) in game_map.valid_tiles)
                 if self.can_move_to(new_x, new_y, game_map):
                     return Technique.MOVE, new_x, new_y    
                 else:
@@ -88,7 +89,7 @@ class Enemy:
     
     def can_move_to(self, x, y, game_map):
         #Detect walls
-        if (x,y) not in game_map.valid_tiles:
+        if (y,x) not in game_map.valid_tiles:
             print(f"Invalid tile cannot move{x, y}")
             return False
         elif any(x== enemy.x and enemy.y for enemy in game_map.all_enemies):
