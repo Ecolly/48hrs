@@ -80,13 +80,12 @@ class Consumable(Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, nutrition_value=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.nutrition_value = nutrition_value
-        
         self.health_restored = 5  # Default health restored
 
 class Shield (Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense_value=0):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
-        self.defense_value = defense_value  # Default defense value
+        self.defense = defense  # Default defense value
 
 # class Staff(Item):
 

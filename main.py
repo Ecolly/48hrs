@@ -391,17 +391,10 @@ def construct_partitions():
                 gamestate = 1
 
 
-                    
-
     #print(partition_entity)
     return partition_entity
 
                 
-
-
-
-
-
     
 
     

@@ -8,6 +8,10 @@ class Player:
         self.health = health
         self.level = level
         self.experience = experience
+        self.equipment_weapon = None
+        self.equipment_shield = None
+
+
         self.x = x # x coords are in 
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
@@ -18,6 +22,10 @@ class Player:
         self.techniquex = 0
         self.techniquey = 0
         self.techniquefinished = 0
+        self.strength = 10  # Default strength
+        self.defense = 10  # Default defense
+
+        
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
@@ -42,7 +50,27 @@ class Player:
     #     #print(mouse_x, mouse_y, base_x, base_y)
     #     return (base_x <= mouse_x <= base_x + self.width*self.scale and
     #             base_y <= mouse_y <= base_y + self.height*self.scale)
+    def equip_weapon(self, weapon):
+        """Equip a weapon to the player."""
+        if weapon in self.inventory:
+            self.equipment_weapon = weapon
+            self.strength += weapon.damage  # Increase strength by weapon's damage
+            print(f"Equipped {weapon.name}.")
+
+    def equip_shield(self, shield):
+        """Equip a shield to the player."""
+        if shield in self.inventory:
+            self.equipment_shield = shield
+            self.defense += shield.defense  # Increase defense by shield's defense
+            print(f"Equipped {shield.name}.")
+            
+    def unequip_weapon(self):
+        """Unequip the currently equipped weapon."""
+        if self.equipment_weapon != None:
+            print(f"Unequipped {self.equipment_weapon.name}.")
+            self.equipment_weapon = None
     
+
     def process_turn(self):
         #print("a")
         if self.technique == "move":
@@ -58,7 +86,25 @@ class Player:
             self.technique = "move"
             self.techniquefinished = 1
 
-            
+    # returns True if the item is detected at the player's current position
+    def detect_item(self, item_list):
+        for i in item_list:
+            # Check if the item is at the player's current position
+            if i.x == self.x and i.y == self.y:
+                print(f"Detected item: {i.name} at ({i.x}, {i.y})")
+                return True
+        return False
+    
+    # Pick up an item and add it to the player's inventory if there's room
+    def pick_up_item(self, item_list):
+        """Pick up an item and add it to the player's inventory."""
+        for item in item_list:
+            if item.x == self.x and item.y == self.y:
+                if len(self.inventory) < 30:  # Arbitrary limit for inventory size
+                    self.inventory.append(item)
+                    print(f"Picked up {item.name}.")
+                else:
+                    print("Inventory full. Cannot pick up item.")
 
     def move(self, dx, dy): #Move relative to current position
         self.x += dx
@@ -119,16 +165,6 @@ class Player:
     def take_damage(self, amount):
         self.health = max(0, self.health - amount)
     
-
-        
-        
-
-
-
-
-
-
-
 
     def is_alive(self):
         return self.health > 0

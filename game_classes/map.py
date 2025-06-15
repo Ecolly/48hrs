@@ -1,4 +1,5 @@
 import random
+from game_classes.item import Item, Weapon, Consumable
 
 
 
@@ -107,6 +108,7 @@ class Map:
             # Vertical corridor
             for y in range(min(y1, y2), max(y1, y2) + 1):
                 self.map_grid[y][x2] = '.'
+    
                 
 
 
