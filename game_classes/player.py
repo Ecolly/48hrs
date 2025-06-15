@@ -6,6 +6,7 @@ class Player:
     def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
         self.name = name
         self.health = health
+        self.maxhealth = health
         self.level = level
         self.experience = experience
         self.x = x # x coords are in 

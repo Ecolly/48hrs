@@ -199,7 +199,7 @@ def on_mouse_release(x, y, button, modifiers):
                         #current_entity_turn, next_entity_turn = construct_partitions(current_entity_turn, next_entity_turn)
             
             for button in all_buttons: #delete all buttons
-                if button != -1:
+                if button != -1 and button.rclick == True:
                     for sprite in button.sprites:
                         sprite.delete()
                         del sprite
@@ -209,7 +209,7 @@ def on_mouse_release(x, y, button, modifiers):
 
         elif button == pyglet.window.mouse.RIGHT:
             for button in all_buttons: #delete all buttons (ew duplicate code, move to a function?)
-                if button != -1:
+                if button != -1 and button.rclick == True:
                     for sprite in button.sprites:
                         sprite.delete()
                         del sprite
@@ -280,7 +280,8 @@ def on_mouse_release(x, y, button, modifiers):
                     alignment_y='top',
                     depth=1,
                     obj_type=option,
-                    draggable=True,
+                    draggable=False,
+                    rclick = True,
                     extra_1 = rclick_extra_1[i],
                     extra_2 = rclick_extra_2[i]
                 )
@@ -294,7 +295,6 @@ def on_mouse_release(x, y, button, modifiers):
 
 bg_order = ["#", "o", "."]
 bg_tilekey = [26*16 + 8, 26*16 + 8, 26*16+6]
-
 floor = make_floor()
 fl_string = ""
 for s in floor.map_grid:
@@ -303,6 +303,53 @@ for s in floor.map_grid:
 bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
 bg.scale = 3
 bg.z = 0
+
+
+
+
+    # gui_hp.x = 0
+    # gui_hp.y = 768 - 24
+    # gui_hp.batch = batch
+
+hp_string = str(player.health) + "/" + str(player.maxhealth) + " HP"
+
+spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
+spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
+option_obj = InteractiveObject(
+    x=24,
+    y=768-16,
+    width=spr2.width,
+    height=spr2.height,
+    sprites=[spr2, spr1],
+    colors=[[(0, 112, 234, 255), (0, 112, 234, 255), (0, 112, 234, 255)], [(33, 33, 33, 255), (33, 33, 33, 255), (33, 33, 33, 255)]],
+    animtype = [0, 0],
+    animmod = [None, None],
+    text = [None, None],
+    alignment_x='left',
+    alignment_y='top',
+    depth=1,
+    obj_type="GUI_HP",
+    draggable=False,
+    rclick = False,
+    extra_1 = player.health,
+    extra_2 = player.maxhealth
+)
+all_buttons.append(option_obj)
+
+
+
+
+# gui_hp_2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
+# gui_hp = pyglet.sprite.Sprite(combine_tiles(text_to_tiles(, grid_font, letter_order), 8, 8, 20))
+# gui_hp.scale = 3
+# gui_hp.z = 70
+# gui_hp.color = (33, 33, 33, 255)
+
+
+
+
+
+
 
 floor_items = []  # List to hold items on the floor
 
@@ -516,11 +563,15 @@ def on_draw():
 
     bg.batch = batch
 
+
+    #sprite.image = texture
+
     for button in all_buttons:
         if button == -1:
             all_buttons.remove(button)
         else:
             button.hovered = button.is_mouse_over(mouse_x, mouse_y)
+            
             button.draw(batch)
 
     player.draw(batch, animation_presets)

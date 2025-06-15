@@ -3,7 +3,7 @@ import pyglet
 import math
 
 class InteractiveObject:
-    def __init__(self, x, y, width, height, sprites, colors, animtype, animmod, text, obj_type, extra_1, extra_2,
+    def __init__(self, x, y, width, height, sprites, colors, animtype, animmod, text, obj_type, extra_1, extra_2, rclick,
                  alignment_x='left', alignment_y='bottom',
                  depth=0, draggable=False, rot=0, scale=3):
         
@@ -34,6 +34,7 @@ class InteractiveObject:
         self.being_dragged = False
         self.hovered = False
         self.clicked = False
+        self.rclick = rclick
 
         self.extra_1 = extra_1
         self.extra_2 = extra_2
