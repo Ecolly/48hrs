@@ -855,7 +855,7 @@ def on_draw():
         else:
             button.hovered = button.is_mouse_over(mouse_x, mouse_y)
 
-            button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay)
+            button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player)
 
             if button.type == "GUI_HP":
                 if has_won == 1:

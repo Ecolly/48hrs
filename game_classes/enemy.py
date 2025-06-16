@@ -303,8 +303,11 @@ class Enemy:
                             damage = 1
                         enemy.health = enemy.health - damage
                         if enemy.is_alive() is False:
+                            enemy.sprite.delete()
+                            del enemy.sprite
                             game_map.all_enemies.remove(enemy)
                             self.level_up()
+
                         button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
                         break 
                 

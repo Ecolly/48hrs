@@ -106,20 +106,20 @@ class Player:
         new_x = self.x + dx 
         new_y = self.y + dy
 
-        #if self.can_move_to(new_x, new_y, game_map):
-        self.technique = Technique.MOVE
-        self.techniquex = self.x + dx
-        self.techniquey = self.y + dy
-        # elif self.can_move_to(new_x, self.y, game_map):
-        #     self.technique = Technique.MOVE
-        #     self.techniquex = self.x + dx
-        #     self.techniquey = self.y   
-        # elif self.can_move_to(self.x, new_y, game_map):
-        #     self.technique = Technique.MOVE
-        #     self.techniquex = self.x
-        #     self.techniquey = self.y + dy 
-        # else:
-        #     self.technique = Technique.STILL
+        if self.can_move_to(new_x, new_y, game_map):
+            self.technique = Technique.MOVE
+            self.techniquex = self.x + dx
+            self.techniquey = self.y + dy
+        elif self.can_move_to(new_x, self.y, game_map):
+            self.technique = Technique.MOVE
+            self.techniquex = self.x + dx
+            self.techniquey = self.y   
+        elif self.can_move_to(self.x, new_y, game_map):
+            self.technique = Technique.MOVE
+            self.techniquex = self.x
+            self.techniquey = self.y + dy 
+        else:
+            self.technique = Technique.STILL
 
         #adjust rotation state (gross)
         if dx == 1:
@@ -185,6 +185,10 @@ class Player:
                     enemy.health = enemy.health - 10
                     button_class.create_point_number(enemy.x, enemy.y, "-15", (255, 0, 0, 255), self, all_buttons)
                     button_class.create_graphical_effect(enemy.x, enemy.y, 0, self, all_buttons)
+                    if not enemy.is_alive():
+                        enemy.sprite.delete()
+                        del enemy.sprite
+                        floor.all_enemies.remove(enemy)
                 sound_magic.play()
                 self.inventory.remove(item)
                 del item
@@ -406,6 +410,8 @@ class Player:
                             damage = 1
                         enemy.health = enemy.health - damage
                         if not enemy.is_alive():
+                            enemy.sprite.delete()
+                            del enemy.sprite
                             map.all_enemies.remove(enemy)
                         button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
                         break 
@@ -464,6 +470,8 @@ class Player:
                                 damage = 1
                             enemy.health = enemy.health - damage
                             if not enemy.is_alive():
+                                enemy.sprite.delete()
+                                del enemy.sprite
                                 map.all_enemies.remove(enemy)
                                 
                             button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
@@ -512,6 +520,10 @@ class Player:
                                 enemy.health = enemy.health - damage
                                 button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
                                 button_class.create_graphical_effect(enemy.x, enemy.y, 0, self, all_buttons)
+                                if not enemy.is_alive():
+                                    enemy.sprite.delete()
+                                    del enemy.sprite
+                                    map.all_enemies.remove(enemy)
                     del spell
 
 

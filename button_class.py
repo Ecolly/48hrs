@@ -86,7 +86,7 @@ class InteractiveObject:
         return (base_x <= mouse_x <= base_x + self.width*self.scale and
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
-    def draw(self, batch, group1, group2, group3, group4, group5):
+    def draw(self, batch, group1, group2, group3, group4, group5, group6, player):
         global grid_items
         base_x, base_y = self.get_screen_position()
 
@@ -124,7 +124,33 @@ class InteractiveObject:
             elif self.supertype == "overlay":
                 sprite.group = group5
             else:
-                if i == 0:
+                if self.type == 'equip sword':
+                    sprite.group = group6
+                    if player.equipment_weapon == None:
+                        sprite.color = (0, 189, 66, 0)
+                    else:
+                        sprite.color = (0, 189, 66, 255)
+                        id = player.inventory.index(player.equipment_weapon)
+                        inventory_x = id % 10
+                        inventory_y = id // 10
+                        self.x = inventory_x*48 + int(1152/48)*12
+                        self.y = inventory_y*48 + int(768/48)*32 - 1
+
+                elif self.type == 'equip shield':
+                    sprite.group = group6
+                    if player.equipment_shield == None:
+                        sprite.color = (0, 189, 66, 0)
+                    else:
+                        sprite.color = (0, 189, 66, 255)
+                        id = player.inventory.index(player.equipment_shield)
+                        inventory_x = id % 10
+                        inventory_y = id // 10
+                        self.x = inventory_x*48 + int(1152/48)*12
+                        self.y = inventory_y*48 + int(768/48)*32 - 1
+
+
+
+                elif i == 0:
                     sprite.group = group3
                 else:
                     sprite.group = group4
@@ -185,38 +211,51 @@ def create_inventory_menu(all_buttons):
     )
     all_buttons.append(obj)
 
-def create_main_menu(all_buttons):
-    global grid_font
-    global letter_order
-    color = (255, 255, 255)
-    color2 = (33, 33, 33, 90)
-    w = int((1152)/24)
-    h = int((768)/24)
-    txt = ""
-    txt = txt.zfill(w*h)
-    txt2 = "Made by zeroBound & EconicεMusic: Cyber Dream Loopεby Eric Matyasεwww.soundimage.orgε εä εä εä εä εä εä εä εä εä εä"
-    spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(txt2, grid_font, letter_order, w, "center"), 8, 8, w))
-    spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(txt, grid_font, letter_order, w, "left"), 8, 8, w))
+    spr3 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles("E", grid_font, letter_order), 8, 8, 2))
+    color2 = (0, 0, 0, 0)
     obj = InteractiveObject(
         x=0, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
-        y=48*6 - 32, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
-        width=spr2.width,
-        height=spr2.height,
-        sprites=[spr2, spr1],
-        colors=[[color2, color2, color2], [color, color, color]],
-        animtype = [0, 0],
-        animmod = [None, None],
-        text = [None, None],
+        y=0, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        width=spr3.width,
+        height=spr3.height,
+        sprites=[spr3],
+        colors=[[color2, color2, color2]],
+        animtype = [0],
+        animmod = [None],
+        text = [None],
         alignment_x='left',
         alignment_y='top',
         depth=1,
-        obj_type="menu stuff",
+        obj_type="equip sword",
         draggable=False,
-        supertype = "main menu",
+        supertype = "inventory",
         extra_1 = 0,
         extra_2 = 0
     )
     all_buttons.append(obj)
+    spr4 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles("E", grid_font, letter_order), 8, 8, 2))
+    obj = InteractiveObject(
+        x=0, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+        y=0, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        width=spr4.width,
+        height=spr4.height,
+        sprites=[spr4],
+        colors=[[color2, color2, color2]],
+        animtype = [0],
+        animmod = [None],
+        text = [None],
+        alignment_x='left',
+        alignment_y='top',
+        depth=1,
+        obj_type="equip shield",
+        draggable=False,
+        supertype = "inventory",
+        extra_1 = 0,
+        extra_2 = 0
+    )
+    all_buttons.append(obj)
+
+
 
     
 def create_win_lose_screen(all_buttons, winlose):
