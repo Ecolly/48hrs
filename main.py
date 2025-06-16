@@ -17,6 +17,7 @@ from game_classes.projectiles import *
 #from button_object import *
 #from shaders import *
 has_won = 0
+has_lost = 0
 window = pyglet.window.Window(1152, 768)
 
 #pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
@@ -732,7 +733,7 @@ def on_draw():
 
             for enemy in all_enemies:
                 if enemy.techniquefinished == 0:
-                    enemy.process_turn(all_enemies, player, all_buttons)
+                    enemy.process_turn(all_enemies, player, all_buttons, floor)
                     is_allfinished_flag = 0
 
             if is_allfinished_flag == 1:
@@ -744,7 +745,7 @@ def on_draw():
         else:
 
             enemy_to_evaluate = all_enemies[partition_entity]
-            enemy_to_evaluate.process_turn(all_enemies, player, all_buttons)
+            enemy_to_evaluate.process_turn(all_enemies, player, all_buttons, floor)
             if enemy_to_evaluate.techniquefinished == 1:
                 partition_entity = construct_partitions()
 

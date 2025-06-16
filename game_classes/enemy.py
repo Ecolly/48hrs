@@ -140,7 +140,6 @@ class Enemy:
             if self.can_see_player(player,8):
                 return self.movement_to_entity(player, game_map)
 
-            
             nearest_enemy = None
             min_dist = float('inf')
             for enemy in game_map.all_enemies:
@@ -152,7 +151,6 @@ class Enemy:
             if nearest_enemy:
                 return self.movement_to_entity(nearest_enemy, game_map)
             #once a player is in certain range, turn targets
-
 
     def drop_item(self, game_map):
         item = random.choice(self.loot)
@@ -224,7 +222,7 @@ class Enemy:
 
 
 
-    def process_turn(self, all_enemies, player, all_buttons):
+    def process_turn(self, all_enemies, player, all_buttons, game_map):
         #print("a")
         self.techniqueframe = self.techniqueframe + 1
 
@@ -266,6 +264,8 @@ class Enemy:
                         if damage < 1:
                             damage = 1
                         enemy.health = enemy.health - damage
+                        if enemy.is_alive() is False:
+                            game_map.all_enemies.remove(enemy)
                         button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
                         break 
                 
@@ -280,6 +280,12 @@ class Enemy:
                     if damage < 1:
                         damage = 1
                     player.health = player.health - damage
+                    if player.is_alive() is False:
+                        print("gg loser you lost")
+
+
+                    
+                    
                     button_class.create_point_number(player.x, player.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
 
                 self.prevx = self.x
