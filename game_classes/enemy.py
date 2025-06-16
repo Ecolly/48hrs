@@ -18,7 +18,7 @@ def generate_enemy(name, level, x, y, grid):
     enemy_hps = [20, 15, 18, 8, 10, 12]
     enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64]
     enemy_animtypes = [1, 1, 1, 1, 2, 1]
-    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8]
+    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8, 1/8]
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -34,8 +34,6 @@ def generate_enemy(name, level, x, y, grid):
         animframe = 0,
         x = x,
         y = y,
-
-
     ) 
 
     return enemy
@@ -80,6 +78,7 @@ class Enemy:
 
     def do_AI(self, all_enemies, player, game_map):
         if self.name == "FOX":
+            
             #always run away when sees the player, in sscared mode 
             if self.can_see_player(player=player, vision_range=5):
                 dx = self.sign(self.x - player.x)
@@ -122,7 +121,55 @@ class Enemy:
                     return Technique.MOVE, self.x, new_y    
                 else:
                     return Technique.STILL, self.x, self.y 
-        return Technique.STILL, self.x, self.y 
+                
+        elif self.name == "S'MORE":
+            print(self.x, self.y)
+            
+            #tries to hunt other player + entities down as soon as they spawn on the map
+            # if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
+            #     print("The smore is hitting player")
+            #     return Technique.HIT, player.x, player.y
+            for enemy in game_map.all_enemies:
+                if enemy is not self:
+                    if abs(enemy.x-self.x) < 2 and abs(enemy.y-self.y) < 2:
+                        print("The smore is hitting others")
+                        return Technique.HIT, enemy.x, enemy.y
+                
+
+            #Otherwise check if  can see the player
+            # if self.can_see_player(player,8):
+            #     return self.movement_to_entity(player, game_map)
+
+            
+            nearest_enemy = None
+            min_dist = float('inf')
+            for enemy in game_map.all_enemies:
+                if enemy is not self:
+                    dist = abs(enemy.x - self.x) + abs(enemy.y - self.y)
+                    if dist < min_dist:
+                        min_dist = dist
+                        nearest_enemy = enemy
+            if nearest_enemy:
+                return self.movement_to_entity(nearest_enemy, game_map)
+            #once a player is in certain range, turn targets
+        return Technique.STILL, self.x, self.y
+        
+
+
+
+    def movement_to_entity(self, target, game_map):
+        dx = self.sign(target.x - self.x)
+        dy = self.sign(target.y- self.y)
+        new_x = self.x + dx
+        new_y = self.y + dy
+        if self.can_move_to(new_x, new_y,game_map):
+            return Technique.MOVE, new_x, new_y
+        elif self.can_move_to(new_x, self.y, game_map):
+            return Technique.MOVE, new_x, self.y    
+        elif self.can_move_to(self.x, new_y, game_map):
+            return Technique.MOVE, self.x, new_y    
+        else:
+            return Technique.STILL, self.x, self.y
     
     def can_move_to(self, x, y, game_map):
         #Detect walls
