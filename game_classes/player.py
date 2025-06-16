@@ -179,43 +179,51 @@ class Player:
         if isinstance(item, Staff) == True:
             if name == "Red Staff": #Cuts an enemy's HP in half
                 pass
-            elif name == "Orange Staff": #Deducts 15 from HP of all enemies in floor (including you)
-                self.health = self.health - 15
+            elif name == "Orange Staff": #Deducts 10 from HP of all enemies in floor (including you)
+                self.health = self.health - 10
                 button_class.create_point_number(self.x, self.y, "-15", (255, 0, 0, 255), self, all_buttons)
                 button_class.create_graphical_effect(self.x, self.y, 0, self, all_buttons)
                 for enemy in all_enemies:
-                    enemy.health = enemy.health - 15
+                    enemy.health = enemy.health - 10
                     button_class.create_point_number(enemy.x, enemy.y, "-15", (255, 0, 0, 255), self, all_buttons)
                     button_class.create_graphical_effect(enemy.x, enemy.y, 0, self, all_buttons)
 
                 self.inventory.remove(item)
                 del item
+            elif name == "Gold Staff": #average all stats together
+                total_stats = math.floor((self.health + self.strength + self.defense)/3)
 
-            elif name == "Gold Staff":
-                pass
+                self.maxhealth = total_stats
+                self.health = total_stats
+
+                self.maxstrength = total_stats
+                self.strength = total_stats
+
+                self.maxdefense = total_stats
+                self.defense = total_stats
+
+                self.inventory.remove(item)
+                del item
             elif name == "Green Staff":
+                
                 pass
             elif name == "Teal Staff": 
+
                 pass
             elif name == "Blue Staff": #+1 to Sword and Shield.
-                pass
-                # if self.equipment_shield != None:
-                #     self.equipment_sheild.defense += 1
-                # if self.equipment_weapon != None:
-                #     self.equipment_weapon.strength += 1
-                # self.inventory.remove(item)
-                # del item
-            elif name == "Light Blue Staff": #Destroys all swords/shields except for your equipped items. +1 per item destroyed.
-                # for item in self.inventory:
-                #     if item != self.equipment_shield and isinstance(item, Shield) and self.equipment_shield != None:
-                #         self.equipment_shield.strength += 1
-                #         self.inventory.remove(item)
-                #         del item
-                #     elif item != self.equipment_weapon and isinstance(item, Weapon) and self.equipment_weapon != None:
-                #         self.equipment_shield.strength += 1
-                #         self.inventory.remove(item)
-                #         del item
-                pass
+                if self.equipment_shield != None:
+                    self.equipment_shield.defense += 1
+                if self.equipment_weapon != None:
+                    self.equipment_weapon.damage += 1
+                self.inventory.remove(item)
+                del item
+            elif name == "Light Blue Staff": #Multiplies Sword & Shield strength by 1.2x
+                if self.equipment_shield != None:
+                    self.equipment_shield.defense = math.floor(self.equipment_shield.defense*1.2)
+                if self.equipment_weapon != None:
+                    self.equipment_weapon.damage = math.floor(self.equipment_sheild.damage*1.2)
+                self.inventory.remove(item)
+                del item
             elif name == "Magenta Staff":
 
                 # self.health = self.health - 15

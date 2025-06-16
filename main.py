@@ -541,8 +541,13 @@ create_mouse_overlay(all_buttons)
 
 player.inventory.append(floor.create_item("Blue Staff", grid_items))
 player.inventory.append(floor.create_item("Stick", grid_items))
+player.inventory.append(floor.create_item("Stick", grid_items))
+player.inventory.append(floor.create_item("Stick", grid_items))
+player.inventory.append(floor.create_item("Stick", grid_items))
+player.inventory.append(floor.create_item("Stick", grid_items))
+player.inventory.append(floor.create_item("Light Blue Staff", grid_items))
 player.inventory.append(floor.create_item("Armor Plate", grid_items))
-player.inventory.append(floor.create_item("Orange Staff", grid_items))
+player.inventory.append(floor.create_item("Gold Staff", grid_items))
 player.inventory.append(floor.create_item("Magenta Staff", grid_items))
 
 
@@ -572,7 +577,7 @@ def construct_partitions():
         else:
             #check if all enemies are also moving. if so, move everyone.
             for enemy in all_enemies:
-                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player, floor)
+                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player, floor, 0)
                 
                 enemy.technique = technique_to_do
                 enemy.techniquex = techx 
@@ -586,7 +591,7 @@ def construct_partitions():
     else: 
         for enemy in all_enemies:
             if enemy.techniquefinished == 0:
-                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player, floor)
+                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player, floor, 1)
                 enemy.technique = technique_to_do
                 enemy.techniquex = techx 
                 enemy.techniquey = techy

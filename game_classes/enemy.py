@@ -77,13 +77,20 @@ class Enemy:
     def sign(self, x):
         return (x > 0) - (x < 0)  # returns 1, 0, or -1
 
-    def do_AI(self, all_enemies, player, game_map):
+    def do_AI(self, all_enemies, player, game_map, state):
+        if state == 0: #this means entities should check where player 'will' be
+            xtochk = player.techniquex
+            ytochk = player.techniquey
+        else:
+            xtochk = player.x
+            ytochk = player.y
+
         if self.name == "FOX":
             
             #always run away when sees the player, in sscared mode 
             if self.can_see_player(player=player, vision_range=5):
-                dx = self.sign(self.x - player.x)
-                dy = self.sign(self.y - player.y)
+                dx = self.sign(self.x - xtochk)
+                dy = self.sign(self.y - ytochk)
                 new_x = self.x + dx
                 new_y = self.y + dy
                 if self.can_move_to(new_x, new_y,game_map):
@@ -107,13 +114,13 @@ class Enemy:
                     
                  
         elif self.name == "GOOSE":
-            if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
-                return Technique.HIT, player.x, player.y
+            if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
+                return Technique.HIT, xtochk, ytochk
             else:
-                new_x = self.x + self.sign(player.x - self.x)
-                new_y = self.y + self.sign(player.y - self.y)
-                # new_x = self.x + round(abs(player.x - self.x) / ((player.x - self.x) + 0.01))
-                # new_y = self.y + round(abs(player.y - self.y) / ((player.y - self.y) + 0.01))
+                new_x = self.x + self.sign(xtochk - self.x)
+                new_y = self.y + self.sign(ytochk - self.y)
+                # new_x = self.x + round(abs(xtochk - self.x) / ((xtochk - self.x) + 0.01))
+                # new_y = self.y + round(abs(ytochk - self.y) / ((ytochk - self.y) + 0.01))
                 if self.can_move_to(new_x, new_y, game_map):
                     return Technique.MOVE, new_x, new_y    
                 elif self.can_move_to(new_x, self.y, game_map):
@@ -127,9 +134,9 @@ class Enemy:
             print(self.x, self.y)
             
             #tries to hunt other player + entities down as soon as they spawn on the map
-            if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
+            if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 print("The smore is hitting player")
-                return Technique.HIT, player.x, player.y
+                return Technique.HIT, xtochk, ytochk
             for enemy in game_map.all_enemies:
                 if enemy is not self:
                     if abs(enemy.x-self.x) < 2 and abs(enemy.y-self.y) < 2:

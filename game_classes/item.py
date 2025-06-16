@@ -31,10 +31,8 @@ class Item:
         self.is_castable = False
         self.is_piercing = False #default to false
 
-
     def use(self, target):
         pass
-
 
     def get_screen_position(self): #unused?
         if self.inventory_slot == -1:
