@@ -70,7 +70,7 @@ class Item:
         sprite = self.sprite
         if gamestate == 3: #if in the inventory menu
             base_x = (invslot % 10)*48 + int((1152)/48)*12 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
-            base_y = (invslot // 10)*48 + int((768)/48)*32 #768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+            base_y = -(invslot // 10)*48 + int((768)/48)*32 #768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
             sprite.x = base_x
             sprite.y = base_y
             sprite.color = (255, 255, 255, 255)

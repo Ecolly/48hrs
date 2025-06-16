@@ -239,7 +239,7 @@ def on_mouse_release(x, y, button, modifiers):
                             gamestate = 5
                         else:
                             gamestate = 2
-                            has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won)
+                            has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor)
                             partition_entity = construct_partitions()
                             
                         delete_buttons_supertype(all_buttons, 'inventory')
@@ -312,7 +312,7 @@ def on_mouse_release(x, y, button, modifiers):
                 
                 #print(inventory_slot, player.inventory)
 
-                if len(player.inventory) > inventory_slot:
+                if inventory_slot > 0 and len(player.inventory) > inventory_slot:
                     item_to_eval = player.inventory[inventory_slot]
 
                     rclick_options.append("DROP")
@@ -544,16 +544,28 @@ create_mouse_overlay(all_buttons)
 
 player.inventory.append(floor.create_item("Blue Staff", grid_items))
 player.inventory.append(floor.create_item("Stick", grid_items))
-player.inventory.append(floor.create_item("Stick", grid_items))
-player.inventory.append(floor.create_item("Stick", grid_items))
-player.inventory.append(floor.create_item("Stick", grid_items))
-player.inventory.append(floor.create_item("Stick", grid_items))
 player.inventory.append(floor.create_item("Light Blue Staff", grid_items))
 player.inventory.append(floor.create_item("Armor Plate", grid_items))
 player.inventory.append(floor.create_item("Gold Staff", grid_items))
+player.inventory.append(floor.create_item("Green Staff", grid_items))
 player.inventory.append(floor.create_item("Magenta Staff", grid_items))
 
 
+# Load the music file (supports .mp3, .wav, .ogg, etc.)
+music = pyglet.media.load('Cyber-Dream-Loop.mp3')  # Replace with your actual file path
+
+# Create a player and queue the music
+mplayer = pyglet.media.Player()
+mplayer.queue(music)
+mplayer.volume = 0.25  
+
+# Set to loop if desired
+mplayer.loop = True
+
+# Play the music
+mplayer.play()
+
+sound_hit = pyglet.media.load('hit.mp3', streaming=False)
 
 global keypress_chk
 keypress_chk = 0
@@ -719,7 +731,8 @@ def on_draw():
         if partition_entity == -1:
             print(f"{floor.stairs} HERE IS FLOOR STAIRS")
             #if doing only the player's turn...
-            
+            tech = player.technique
+
             if keys[pyglet.window.key.Q]:
                 while player.techniquefinished != 1:
                     player.process_turn(all_enemies, player, all_buttons, floor)
@@ -727,6 +740,8 @@ def on_draw():
                 player.process_turn(all_enemies, player, all_buttons, floor)
             
             if partition_entity == -1 and player.techniquefinished == 1:
+                if tech == Technique.HIT:
+                    sound_hit.play()
                 print(f"{floor.stairs} HERE IS FLOOR STAIRS")
                 print(player.x, player.y)
                 if (player.x, player.y) == floor.stairs:
@@ -772,8 +787,11 @@ def on_draw():
                     enemy_to_evaluate.process_turn(all_enemies, player, all_buttons, floor)
                 partition_entity = construct_partitions()
             else:
+                tech = enemy_to_evaluate.technique
                 enemy_to_evaluate.process_turn(all_enemies, player, all_buttons, floor)
                 if enemy_to_evaluate.techniquefinished == 1:
+                    if tech == Technique.HIT:
+                        sound_hit.play()
                     partition_entity = construct_partitions()
 
 
