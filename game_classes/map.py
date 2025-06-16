@@ -202,17 +202,17 @@ class Map:
         #self.all_enemies.append(generate_enemy("GOOSE", 1, 26, 26, grid_entities1))
 
         #TODO Randomly generate enemies around the map temp
-        # for _ in range(5):
-        #     random_location = random.choice(self.valid_entity_tiles)
-        #     y, x = random_location
-        #     self.valid_entity_tiles.remove(random_location)
-        #     self.all_enemies.append(generate_enemy("GOOSE", 1, x, y, grid_entities1))
+        for _ in range(5):
+            random_location = random.choice(self.valid_entity_tiles)
+            y, x = random_location
+            self.valid_entity_tiles.remove(random_location)
+            self.all_enemies.append(generate_enemy("GOOSE", 1, x, y, grid_entities1))
         for _ in range(10):
             random_location = random.choice(self.valid_entity_tiles)
             y, x = random_location
             self.valid_entity_tiles.remove(random_location)
-            self.all_enemies.append(generate_enemy("FOX", 1, x, y, grid_entities1)) 
-        for _ in range(5):
+            self.all_enemies.append(generate_enemy("FOX", 1, x, y, grid_entities1))
+        for _ in range(10):
             random_location = random.choice(self.valid_entity_tiles)
             y, x = random_location
             self.valid_entity_tiles.remove(random_location)

@@ -400,6 +400,8 @@ class Player:
                         if damage < 1:
                             damage = 1
                         enemy.health = enemy.health - damage
+                        if not enemy.is_alive():
+                            map.all_enemies.remove(enemy)
                         button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
                         break 
                 self.prevx = self.x
@@ -456,6 +458,9 @@ class Player:
                             if damage < 1:
                                 damage = 1
                             enemy.health = enemy.health - damage
+                            if not enemy.is_alive():
+                                map.all_enemies.remove(enemy)
+                                
                             button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
                     
                     for i in map.floor_items:
