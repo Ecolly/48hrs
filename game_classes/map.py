@@ -208,7 +208,10 @@ class Map:
             y, x = random_location
             rng_enemy = random.choice(self.list_of_all_enemy_names)
             self.valid_entity_tiles.remove(random_location)
+            test_enemy = generate_enemy(rng_enemy, enemy_Scale, x, y, grid_entities1)
             self.all_enemies.append(generate_enemy(rng_enemy, enemy_Scale, x, y, grid_entities1))
+            print(f"the experience{test_enemy.experience}")
+
 
     def check_valid_tile(self):
         self.valid_tiles = [

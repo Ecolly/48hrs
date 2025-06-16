@@ -62,6 +62,22 @@ class Player:
     #     #print(mouse_x, mouse_y, base_x, base_y)
     #     return (base_x <= mouse_x <= base_x + self.width*self.scale and
     #             base_y <= mouse_y <= base_y + self.height*self.scale)
+
+    def increase_experience(self, incoming_experience):
+        self.experience +=incoming_experience
+        new_level = int(self.experience**(1/3))
+
+        while new_level>self.level:
+            self.level_up()
+            new_level = int (self.experience**(1/3))
+    
+    def level_up(self):
+        self.level+=1
+        self.maxhealth +=3
+        
+
+    
+
     def equip_weapon(self, weapon):
         """Equip a weapon to the player."""
         if weapon in self.inventory:
@@ -407,6 +423,7 @@ class Player:
                         enemy.health = enemy.health - damage
                         if not enemy.is_alive():
                             map.all_enemies.remove(enemy)
+                            self.increase_experience(enemy.experience)
                         button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
                         break 
                 self.prevx = self.x
@@ -465,6 +482,7 @@ class Player:
                             enemy.health = enemy.health - damage
                             if not enemy.is_alive():
                                 map.all_enemies.remove(enemy)
+                                self.increase_experience(enemy.experience)
                                 
                             button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
                     
