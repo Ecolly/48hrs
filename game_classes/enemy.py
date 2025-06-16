@@ -112,7 +112,6 @@ class Enemy:
                 # If not moving or can't move, stay still
                 return Technique.STILL, self.x, self.y
                     
-                 
         elif self.name == "GOOSE":
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 return Technique.HIT, xtochk, ytochk
@@ -121,6 +120,36 @@ class Enemy:
                 new_y = self.y + self.sign(ytochk - self.y)
                 # new_x = self.x + round(abs(xtochk - self.x) / ((xtochk - self.x) + 0.01))
                 # new_y = self.y + round(abs(ytochk - self.y) / ((ytochk - self.y) + 0.01))
+                if self.can_move_to(new_x, new_y, game_map):
+                    return Technique.MOVE, new_x, new_y    
+                elif self.can_move_to(new_x, self.y, game_map):
+                    return Technique.MOVE, new_x, self.y    
+                elif self.can_move_to(self.x, new_y, game_map):
+                    return Technique.MOVE, self.x, new_y    
+                else:
+                    return Technique.STILL, self.x, self.y 
+                
+        elif self.name == "LEAFALOTTA":
+            if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
+                return Technique.HIT, player.x, player.y
+            else:
+                new_x = self.x + self.sign(player.x - self.x)
+                new_y = self.y + self.sign(player.y - self.y)
+                if self.can_move_to(new_x, new_y, game_map):
+                    return Technique.MOVE, new_x, new_y    
+                elif self.can_move_to(new_x, self.y, game_map):
+                    return Technique.MOVE, new_x, self.y    
+                elif self.can_move_to(self.x, new_y, game_map):
+                    return Technique.MOVE, self.x, new_y    
+                else:
+                    return Technique.STILL, self.x, self.y 
+                
+        elif self.name == "CHLOROSPORE":
+            if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
+                return Technique.HIT, player.x, player.y
+            else:
+                new_x = self.x + self.sign(player.x - self.x)
+                new_y = self.y + self.sign(player.y - self.y)
                 if self.can_move_to(new_x, new_y, game_map):
                     return Technique.MOVE, new_x, new_y    
                 elif self.can_move_to(new_x, self.y, game_map):
@@ -158,6 +187,8 @@ class Enemy:
             if nearest_enemy:
                 return self.movement_to_entity(nearest_enemy, game_map)
             #once a player is in certain range, turn targets
+        return Technique.STILL, self.x, self.y 
+        
 
     def drop_item(self, game_map):
         item = random.choice(self.loot)
@@ -273,6 +304,7 @@ class Enemy:
                         enemy.health = enemy.health - damage
                         if enemy.is_alive() is False:
                             game_map.all_enemies.remove(enemy)
+                            self.level_up()
                         button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
                         break 
                 
@@ -315,10 +347,21 @@ class Enemy:
     def is_alive(self):
         return self.health > 0
     
-    #TODO
-    def attack(self, player):
-        # Implement attack logic here
-        pass
+    def level_scale(self): #depending what level they are their stats will change
+        level = self.level
+        self.maxhealth = level*self.maxhealth
+        self.defense = level*self.defense
+        self.strength = level*self.strength
+    
+    def level_up(self):
+        #more can be added later
+        self.level += 1
+        if self.name == "S'MORE":
+            self.maxhealth += 5  # You can scale this however you want
+            self.health = self.maxhealth  # Heal to full on level up
+            self.strength += 2
+            self.defense += 1
+    
     
     def can_see_player(self, player, vision_range=5):
         ex, ey = self.x, self.y

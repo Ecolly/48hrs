@@ -53,10 +53,6 @@ class Player:
         self.scale = 3
 
 
-        # self.skills = []
-        # self.equipment = {}
-        # self.experience = 0
-
     # def get_screen_position(self):
     #     return self.scale*(self.prevx*16-8), self.scale*(self.prevy*16-8)
 
@@ -101,6 +97,8 @@ class Player:
                 elif enemy.x == x and enemy.y == y:
                     return False
             return True
+        
+    
         
     def move(self, dx, dy, game_map): #Move relative to current position
 

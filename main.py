@@ -389,7 +389,7 @@ def on_mouse_release(x, y, button, modifiers):
 
 floor = make_floor()
 floor.random_create_item(grid_items)
-floor.generate_enemies(grid_entities1)
+floor.generate_enemies(grid_entities1, floor_level)
 all_enemies = floor.all_enemies
 print(f"BEFORE{player.x, player.y}")
 player.x, player.y = floor.spawnpoint
@@ -458,11 +458,13 @@ bg.scale = 3
 bg.z = 0
 
 def go_to_next_level():
-    global floor, all_enemies, player, bg
+    global floor, all_enemies, player, bg, floor_level
+    floor_level +=1
+    print(floor_level)
     #Triggered after Detects stairs
     floor = make_floor()
     floor.random_create_item(grid_items)
-    floor.generate_enemies(grid_entities1)
+    floor.generate_enemies(grid_entities1, floor_level)
     print(f"BEFORE{player.x, player.y}")
     player.x, player.y = floor.spawnpoint
     player.prevx, player.prevy = floor.spawnpoint
