@@ -19,6 +19,7 @@ def generate_enemy(name, level, x, y, grid):
     enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64]
     enemy_animtypes = [1, 1, 1, 1, 2, 1, 1]
     enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8, 1/8,1/8]
+    enemy_exp = [0, 10, 10, 10, 10, 6, 35, 2]
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -34,6 +35,7 @@ def generate_enemy(name, level, x, y, grid):
         animframe = 0,
         x = x,
         y = y,
+        experience = enemy_exp[id],
     ) 
 
     return enemy
@@ -41,7 +43,7 @@ def generate_enemy(name, level, x, y, grid):
 
 
 class Enemy:
-    def __init__(self, name, health, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
+    def __init__(self, name, health, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y, experience):
         self.name = name
         self.health = health
         self.maxhealth = health
@@ -73,6 +75,7 @@ class Enemy:
         self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
         self.scale = 3
         self.loot = None #drop when dead
+        self.experience = experience #Drop when dead
     
     def sign(self, x):
         return (x > 0) - (x < 0)  # returns 1, 0, or -1
