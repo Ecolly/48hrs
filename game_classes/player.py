@@ -173,7 +173,7 @@ class Player:
                 self.direction = FaceDirection.DOWN
 
 
-    def spellcasting(self, inv_slot, all_enemies, all_buttons, has_won, floor):
+    def spellcasting(self, inv_slot, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate):
         item = self.inventory[inv_slot]
         name = item.name
         if isinstance(item, Staff) == True:
@@ -187,7 +187,7 @@ class Player:
                     enemy.health = enemy.health - 10
                     button_class.create_point_number(enemy.x, enemy.y, "-15", (255, 0, 0, 255), self, all_buttons)
                     button_class.create_graphical_effect(enemy.x, enemy.y, 0, self, all_buttons)
-
+                sound_magic.play()
                 self.inventory.remove(item)
                 del item
             elif name == "Gold Staff": #average all stats together (could be a consumable)
@@ -201,7 +201,7 @@ class Player:
 
                 self.maxdefense = total_stats
                 self.defense = total_stats
-
+                sound_magic.play()
                 self.inventory.remove(item)
                 del item
             elif name == "Green Staff": #wand of teleporting
@@ -209,17 +209,21 @@ class Player:
                 y, x = random_location
                 self.x, self.y = x, y
                 self.prevx, self.prevy = x, y
+                sound_magic.play()
                 self.inventory.remove(item)
                 del item
                 pass
             elif name == "Teal Staff": 
-
-                pass
+                self.health = self.maxhealth
+                sound_magic.play()
+                self.inventory.remove(item)
+                del item
             elif name == "Blue Staff": #+1 to Sword and Shield.
                 if self.equipment_shield != None:
                     self.equipment_shield.defense += 1
                 if self.equipment_weapon != None:
                     self.equipment_weapon.damage += 1
+                sound_magic.play()
                 self.inventory.remove(item)
                 del item
             elif name == "Light Blue Staff": #Multiplies Sword & Shield strength by 1.2x
@@ -227,23 +231,19 @@ class Player:
                     self.equipment_shield.defense = math.floor(self.equipment_shield.defense*1.2)
                 if self.equipment_weapon != None:
                     self.equipment_weapon.damage = math.floor(self.equipment_sheild.damage*1.2)
+                sound_magic.play()
                 self.inventory.remove(item)
                 del item
             elif name == "Magenta Staff":
-
-                # self.health = self.health - 15
-                # button_class.create_point_number(self.x, self.y, "-15", (255, 0, 0, 255), self, all_buttons)
-                # button_class.create_graphical_effect(self.x, self.y, 0, self, all_buttons)
-                # for enemy in all_enemies:
-                #     enemy.health = enemy.health - 15
-                #     button_class.create_point_number(enemy.x, enemy.y, "-15", (255, 0, 0, 255), self, all_buttons)
-                #     button_class.create_graphical_effect(enemy.x, enemy.y, 0, self, all_buttons)
-
+                sound_magic.play()
                 has_won = 1
-                pass
+                self.inventory.remove(item)
+                del item
             elif name == "Black Staff":
-
-
+                self.maxhealth = self.maxhealth + 1
+                sound_magic.play()
+                self.inventory.remove(item)
+                del item
                 pass
             
             self.technique = Technique.STILL

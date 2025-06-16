@@ -19,7 +19,7 @@ columns_items = sprite_items.width // 16
 rows_items = sprite_items.height // 16
 grid_items = pyglet.image.ImageGrid(sprite_items, rows_items, columns_items)
 
-letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
+letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
 
 
 
@@ -185,6 +185,80 @@ def create_inventory_menu(all_buttons):
     )
     all_buttons.append(obj)
 
+def create_main_menu(all_buttons):
+    global grid_font
+    global letter_order
+    color = (255, 255, 255)
+    color2 = (33, 33, 33, 90)
+    w = int((1152)/24)
+    h = int((768)/24)
+    txt = ""
+    txt = txt.zfill(w*h)
+    txt2 = "Made by zeroBound & EconicεMusic: Cyber Dream Loopεby Eric Matyasεwww.soundimage.orgε εä εä εä εä εä εä εä εä εä εä"
+    spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(txt2, grid_font, letter_order, w, "center"), 8, 8, w))
+    spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(txt, grid_font, letter_order, w, "left"), 8, 8, w))
+    obj = InteractiveObject(
+        x=0, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+        y=48*6 - 32, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        width=spr2.width,
+        height=spr2.height,
+        sprites=[spr2, spr1],
+        colors=[[color2, color2, color2], [color, color, color]],
+        animtype = [0, 0],
+        animmod = [None, None],
+        text = [None, None],
+        alignment_x='left',
+        alignment_y='top',
+        depth=1,
+        obj_type="menu stuff",
+        draggable=False,
+        supertype = "main menu",
+        extra_1 = 0,
+        extra_2 = 0
+    )
+    all_buttons.append(obj)
+
+    
+def create_win_lose_screen(all_buttons, winlose):
+    global grid_font
+    global letter_order
+    color = (255, 255, 255)
+    color2 = (33, 33, 33, 90)
+    w = int((1152)/24)
+    h = int((768)/24)
+    txt = ""
+    txt = txt.zfill(w*h)
+
+    txt2 = ""
+    if winlose == "win":
+        txt2 = "You won!"
+    else:
+        txt2 = "You lost..."
+
+    txt2 = txt2 + "εPANDORIUMεMade by zeroBound & EconicεMusic: Cyber Dream Loopεby Eric Matyasεwww.soundimage.orgεPress TAB to quit.εä εä εä εä εä εä εä εä εä εä"
+    spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(txt2, grid_font, letter_order, w, "center"), 8, 8, w))
+    spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(txt, grid_font, letter_order, w, "left"), 8, 8, w))
+    obj = InteractiveObject(
+        x=0, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+        y=48*6 - 32, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        width=spr2.width,
+        height=spr2.height,
+        sprites=[spr2, spr1],
+        colors=[[color2, color2, color2], [color, color, color]],
+        animtype = [0, 0],
+        animmod = [None, None],
+        text = [None, None],
+        alignment_x='left',
+        alignment_y='top',
+        depth=1,
+        obj_type="menu stuff",
+        draggable=False,
+        supertype = "winlose",
+        extra_1 = 0,
+        extra_2 = 0
+    )
+    all_buttons.append(obj)
+
 def create_overlay(all_buttons):
     global grid_bg
 
@@ -314,7 +388,7 @@ def get_gui_string(player):
             strength = strength + "+" + str(player.equipment_weapon.damage)
 
     #stats gui
-    gui_string = str(player.health) + "/" + str(player.maxhealth) + " HP_____" + str(strength) + "/" + str(player.maxstrength) + " STR_____" + str(defense) + "/" + str(player.maxdefense) + " DEF"
+    gui_string = str(player.health) + "/" + str(player.maxhealth) + " HP, " + str(strength) + "/" + str(player.maxstrength) + " STR, " + str(defense) + "/" + str(player.maxdefense) + " DEF, LV " + str(player.level) + ", " + str(player.experience) + " EXP"
     return gui_string
 
 

@@ -14,6 +14,7 @@ from game_classes.projectiles import *
 
 
 
+
 #from button_object import *
 #from shaders import *
 has_won = 0
@@ -88,7 +89,7 @@ animation_presets = [
 
 
 
-letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
+letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
 
 all_buttons = []
 #floor_items = [item]
@@ -190,6 +191,7 @@ def on_mouse_release(x, y, button, modifiers):
     global current_entity_turn
     global floor
     global has_won
+    global sound_magic
     if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5: #this stuff can only happen between turns or in inventory
         
         if button == pyglet.window.mouse.LEFT:
@@ -239,8 +241,12 @@ def on_mouse_release(x, y, button, modifiers):
                             gamestate = 5
                         else:
                             gamestate = 2
-                            has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor)
-                            partition_entity = construct_partitions()
+                            has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
+                            if has_won == 0:
+                                partition_entity = construct_partitions()
+                            else:
+                                gamestate = 0
+                                create_win_lose_screen(all_buttons, "win")
                             
                         delete_buttons_supertype(all_buttons, 'inventory')
 
@@ -312,7 +318,7 @@ def on_mouse_release(x, y, button, modifiers):
                 
                 #print(inventory_slot, player.inventory)
 
-                if inventory_slot > 0 and len(player.inventory) > inventory_slot:
+                if inventory_slot > -1 and len(player.inventory) > inventory_slot:
                     item_to_eval = player.inventory[inventory_slot]
 
                     rclick_options.append("DROP")
@@ -540,11 +546,11 @@ create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
 
-player.inventory.append(floor.create_item("Blue Staff", grid_items))
-player.inventory.append(floor.create_item("Stick", grid_items))
-player.inventory.append(floor.create_item("Light Blue Staff", grid_items))
-player.inventory.append(floor.create_item("Armor Plate", grid_items))
-player.inventory.append(floor.create_item("Gold Staff", grid_items))
+# player.inventory.append(floor.create_item("Blue Staff", grid_items))
+# player.inventory.append(floor.create_item("Stick", grid_items))
+# player.inventory.append(floor.create_item("Light Blue Staff", grid_items))
+# player.inventory.append(floor.create_item("Armor Plate", grid_items))
+player.inventory.append(floor.create_item("Red Staff", grid_items))
 player.inventory.append(floor.create_item("Green Staff", grid_items))
 player.inventory.append(floor.create_item("Magenta Staff", grid_items))
 
@@ -564,6 +570,7 @@ mplayer.loop = True
 mplayer.play()
 
 sound_hit = pyglet.media.load('hit.mp3', streaming=False)
+sound_magic = pyglet.media.load('magic.mp3', streaming=False)
 
 global keypress_chk
 keypress_chk = 0
@@ -684,6 +691,18 @@ def on_draw():
     diry = 0
     dirx = 0
 
+
+    if keys[pyglet.window.key.TAB] and keypress_chk == 0:
+        #enter main menu
+        # if gamestate == 1:
+        #     keypress_chk = 1
+        #     create_main_menu(all_buttons)
+        #     gamestate = 0
+        if gamestate == 0:
+            exit()
+            keypress_chk = 1
+            gamestate = 1
+            delete_buttons_supertype(all_buttons, 'winlose')
     if keys[pyglet.window.key.E] and keypress_chk == 0:
         #enter inventory
         if gamestate == 1:
@@ -710,10 +729,14 @@ def on_draw():
         elif keys[pyglet.window.key.A]:
             dirx = -1
 
-        if dirx == 0 and diry == 0 and keys[pyglet.window.key.E] == False:
+        if dirx == 0 and diry == 0 and keys[pyglet.window.key.E] == False and keys[pyglet.window.key.TAB] == False:
             keypress_chk = 0
+
+        if player.is_alive() == False:
+            gamestate = 0
+            create_win_lose_screen(all_buttons, "lose")
     else:
-        if gamestate == 2 or keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D] or keys[pyglet.window.key.E] or keys[pyglet.window.key.ESCAPE]:
+        if gamestate == 2 or keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D] or keys[pyglet.window.key.E] or keys[pyglet.window.key.TAB]:
             pass
         else:
             keypress_chk = 0
@@ -737,7 +760,9 @@ def on_draw():
             else:
                 player.process_turn(all_enemies, player, all_buttons, floor)
             
-            if partition_entity == -1 and player.techniquefinished == 1:
+            if player.techniqueframe == 1 and tech == Technique.CAST:
+                sound_magic.play()
+            if player.techniquefinished == 1:
                 if tech == Technique.HIT:
                     sound_hit.play()
                 print(f"{floor.stairs} HERE IS FLOOR STAIRS")
@@ -834,11 +859,8 @@ def on_draw():
                 if has_won == 1:
                     player.health = 999
                     player.maxhealth = 999
-                    gui_string = get_gui_string(player) + " " + str("WINNER!")
-                else:
-                    gui_string = get_gui_string(player)
 
-                
+                gui_string = get_gui_string(player)
                 sprite = button.sprites[1]
                 sprite.image = combine_tiles(text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string)+1, "left"), 8, 8, len(gui_string)+1)
             elif button.type == "POINT_NUMBER":
