@@ -31,6 +31,7 @@ class Map:
         self.valid_tiles = []
         self.textured_map = [[]]
         self.valid_entity_tiles = []
+        self.list_of_all_enemy_names = ["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER"]
         self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         self.floor_items = []  # List to hold items on the floor
         self.all_enemies = []
@@ -196,28 +197,18 @@ class Map:
             self.floor_items.append(item)
             print(f"Created item: {item.name} at ({x}, {y})")
 
-    def generate_enemies(self, grid_entities1):
+    def generate_enemies(self, grid_entities1, floor_level):
+        enemy_Scale = floor_level // 3 
+        #enemies scale based on base stats
         # random_location = random.choice(self.valid_tiles)
-        # y, x = random_location
-        #self.all_enemies.append(generate_enemy("GOOSE", 1, 26, 26, grid_entities1))
 
-        #TODO Randomly generate enemies around the map temp
+        #self.list_of_all_enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER"]
         for _ in range(5):
             random_location = random.choice(self.valid_entity_tiles)
             y, x = random_location
+            rng_enemy = random.choice(self.list_of_all_enemy_names)
             self.valid_entity_tiles.remove(random_location)
-            self.all_enemies.append(generate_enemy("GOOSE", 1, x, y, grid_entities1))
-        for _ in range(10):
-            random_location = random.choice(self.valid_entity_tiles)
-            y, x = random_location
-            self.valid_entity_tiles.remove(random_location)
-            self.all_enemies.append(generate_enemy("FOX", 1, x, y, grid_entities1))
-        for _ in range(10):
-            random_location = random.choice(self.valid_entity_tiles)
-            y, x = random_location
-            self.valid_entity_tiles.remove(random_location)
-            self.all_enemies.append(generate_enemy("S'MORE",1, x, y, grid_entities1))
-        
+            self.all_enemies.append(generate_enemy(rng_enemy, enemy_Scale, x, y, grid_entities1))
 
     def check_valid_tile(self):
         self.valid_tiles = [
