@@ -1,5 +1,5 @@
 import random
-from game_classes.item import Item, Weapon, Consumable, Shield
+from game_classes.item import Item, Weapon, Consumable, Shield, Staff, Miscellanious
 from game_classes.enemy import*
 
 
@@ -31,7 +31,7 @@ class Map:
         self.valid_tiles = []
         self.textured_map = [[]]
         self.valid_entity_tiles = []
-        self.list_of_all_item_names = ["Iron Sword", "Chicken", "Strawberry", "Shield_1"]
+        self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         self.floor_items = []  # List to hold items on the floor
         self.all_enemies = []
         self.spawnpoint = set()
@@ -119,15 +119,70 @@ class Map:
 
     def create_item(self, name, grid_items):
         # Example dummy factory
-        if name == "Iron Sword":
-            return Weapon(name, grid_items, sprite_locs = 0, damage=10, durability=100)
-        elif name == "Chicken":
-            return Consumable(name, grid_items, sprite_locs = 0, nutrition_value=20)
-        elif name == "Strawberry":
-            return Consumable(name, grid_items, sprite_locs = 4, nutrition_value=10)
-        elif name == "Shield_1":
-            return Shield(name, grid_items, sprite_locs=0, defense=5)
-        
+
+        if name == "Knife":
+            return Weapon(name, grid_items, sprite_locs = 0, damage=5, durability=100)
+        elif name == "Machete":
+            return Weapon(name, grid_items, sprite_locs = 1, damage=6, durability=100)
+        elif name == "Scimitar":
+            return Weapon(name, grid_items, sprite_locs = 2, damage=7, durability=100)
+        elif name == "Sickle":
+            return Weapon(name, grid_items, sprite_locs = 4, damage=4, durability=100)
+        elif name == "Rapier":
+            return Weapon(name, grid_items, sprite_locs = 5, damage=9, durability=100)
+        elif name == "Stick":
+            return Weapon(name, grid_items, sprite_locs = 6, damage=1, durability=100)
+        elif name == "Fury Cutter":
+            return Weapon(name, grid_items, sprite_locs = 9, damage=30, durability=100) #deducts 1/4 of attack damage from your hp
+        elif name == "Windsword":
+            return Weapon(name, grid_items, sprite_locs = 10, damage=16, durability=100)
+        elif name == "Red Staff":
+            return Staff(name, grid_items, sprite_locs = 1, damage=10, projectile=True) #divides enemy's hp by 2
+        elif name == "Orange Staff":
+            return Staff(name, grid_items, sprite_locs = 2, damage=10, projectile=False) #deducts 15 from all enemy hp on floor
+        elif name == "Gold Staff":
+            return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=False)
+        elif name == "Green Staff":
+            return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=False)
+        elif name == "Teal Staff":
+            return Staff(name, grid_items, sprite_locs = 13, damage=10, projectile=False)
+        elif name == "Blue Staff":
+            return Staff(name, grid_items, sprite_locs = 16, damage=10, projectile=False)
+        elif name == "Light Blue Staff":
+            return Staff(name, grid_items, sprite_locs = 17, damage=10, projectile=False)
+        elif name == "Magenta Staff":
+            return Staff(name, grid_items, sprite_locs = 22, damage=10, projectile=False) #wins game
+        elif name == "Black Staff":
+            return Staff(name, grid_items, sprite_locs = 25, damage=10, projectile=False)
+        elif name == "Blue Shield":
+            return Shield(name, grid_items, sprite_locs=0, defense=8)
+        elif name == "Wood Shield":
+            return Shield(name, grid_items, sprite_locs=2, defense=5)
+        elif name == "Steel Shield":
+            return Shield(name, grid_items, sprite_locs=4, defense=12)
+        elif name == "Armor Plate":
+            return Shield(name, grid_items, sprite_locs=5, defense=24) #prevents weapons from adding to strength
+        elif name == "Rock":
+            return Miscellanious(name, grid_items, sprite_locs = 0, description = "")
+        elif name == "Note":
+            return Miscellanious(name, grid_items, sprite_locs = 1, description = "")
+        elif name == "Poultry":
+            return Consumable(name, grid_items, sprite_locs = 0, nutrition_value=100)
+        elif name == "Mushrooms":
+            return Consumable(name, grid_items, sprite_locs = 1, nutrition_value=5) #increases maximum hp
+        elif name == "Leaves":
+            return Consumable(name, grid_items, sprite_locs = 3, nutrition_value=1)
+        elif name == "Apple":
+            return Consumable(name, grid_items, sprite_locs = 4, nutrition_value=50)
+        elif name == "Cherry":
+            return Consumable(name, grid_items, sprite_locs = 5, nutrition_value=25)
+        elif name == "Starfruit":
+            return Consumable(name, grid_items, sprite_locs = 6, nutrition_value=1000) #gain xp to get to next level
+        elif name == "Durian":
+            return Consumable(name, grid_items, sprite_locs = 7, nutrition_value=50) #gives temporary hp beyond max
+        elif name == "Dragonfruit":
+            return Consumable(name, grid_items, sprite_locs = 8, nutrition_value=12) #increase a random stat by 1
+
     #self, name, grid_items, x, y, quantity
     def random_create_item(self, grid_items):
         for _ in range(10):  # Generate 3 items

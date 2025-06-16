@@ -4,5 +4,6 @@ class Technique (Enum):
     MOVE = auto()
     THROW = auto()
     STILL = auto()
+    CAST = auto()
     NA = auto()
     
