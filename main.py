@@ -12,7 +12,7 @@ from game_classes.item import Weapon, Consumable
 from game_classes.item import Item
 from game_classes.projectiles import *
 
-
+#made by zero and eco :)
 
 
 #from button_object import *
