@@ -173,7 +173,7 @@ class Player:
                 self.direction = FaceDirection.DOWN
 
 
-    def spellcasting(self, inv_slot, all_enemies, all_buttons, has_won):
+    def spellcasting(self, inv_slot, all_enemies, all_buttons, has_won, floor):
         item = self.inventory[inv_slot]
         name = item.name
         if isinstance(item, Staff) == True:
@@ -190,7 +190,7 @@ class Player:
 
                 self.inventory.remove(item)
                 del item
-            elif name == "Gold Staff": #average all stats together
+            elif name == "Gold Staff": #average all stats together (could be a consumable)
                 total_stats = math.floor((self.health + self.strength + self.defense)/3)
 
                 self.maxhealth = total_stats
@@ -204,8 +204,13 @@ class Player:
 
                 self.inventory.remove(item)
                 del item
-            elif name == "Green Staff":
-                
+            elif name == "Green Staff": #wand of teleporting
+                random_location = random.choice(floor.valid_entity_tiles)
+                y, x = random_location
+                self.x, self.y = x, y
+                self.prevx, self.prevy = x, y
+                self.inventory.remove(item)
+                del item
                 pass
             elif name == "Teal Staff": 
 
@@ -237,6 +242,8 @@ class Player:
                 has_won = 1
                 pass
             elif name == "Black Staff":
+
+
                 pass
             
             self.technique = Technique.STILL
