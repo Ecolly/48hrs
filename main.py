@@ -467,7 +467,7 @@ def go_to_next_level():
     player.x, player.y = floor.spawnpoint
     player.prevx, player.prevy = floor.spawnpoint
     all_enemies = floor.all_enemies
-    floor_level +=1
+    #floor_level +=1
     print(floor.map_type)
 
     fl_string = ""
@@ -659,7 +659,6 @@ def construct_partitions():
 #3 = inventory?
 #4 = pause menu?
 
-
 @window.event
 def on_draw():
     global keypress_chk
@@ -718,7 +717,12 @@ def on_draw():
         if partition_entity == -1:
             print(f"{floor.stairs} HERE IS FLOOR STAIRS")
             #if doing only the player's turn...
-            player.process_turn(all_enemies, player, all_buttons, floor)
+            
+            if keys[pyglet.window.key.Q]:
+                while player.techniquefinished != 1:
+                    player.process_turn(all_enemies, player, all_buttons, floor)
+            else:
+                player.process_turn(all_enemies, player, all_buttons, floor)
             
             if partition_entity == -1 and player.techniquefinished == 1:
                 print(f"{floor.stairs} HERE IS FLOOR STAIRS")
@@ -732,13 +736,23 @@ def on_draw():
             is_allfinished_flag = 1
 
             if player.techniquefinished == 0:
-                player.process_turn(all_enemies, player, all_buttons, floor)
+
+                if keys[pyglet.window.key.Q]:
+                    while player.techniquefinished != 1:
+                        player.process_turn(all_enemies, player, all_buttons, floor)
+                else:
+                    player.process_turn(all_enemies, player, all_buttons, floor)
+                    
                 if player.techniquefinished == 0:
                     is_allfinished_flag = 0
 
             for enemy in all_enemies:
                 if enemy.techniquefinished == 0:
-                    enemy.process_turn(all_enemies, player, all_buttons, floor)
+                    if keys[pyglet.window.key.Q] or ((enemy.techniquex > player.x + 10 or enemy.techniquex < player.x - 10) and (enemy.techniquey > player.y + 6 or enemy.techniquey < player.y + 6)):
+                        while enemy.techniquefinished != 1:
+                            enemy.process_turn(all_enemies, player, all_buttons, floor)
+                    else:
+                        enemy.process_turn(all_enemies, player, all_buttons, floor)
                     is_allfinished_flag = 0
 
             if is_allfinished_flag == 1:
@@ -748,11 +762,17 @@ def on_draw():
                     go_to_next_level()
                 partition_entity = construct_partitions()
         else:
-
+            
             enemy_to_evaluate = all_enemies[partition_entity]
-            enemy_to_evaluate.process_turn(all_enemies, player, all_buttons, floor)
-            if enemy_to_evaluate.techniquefinished == 1:
+            if keys[pyglet.window.key.Q] or ((enemy_to_evaluate.techniquex > player.x + 10 or enemy_to_evaluate.techniquex < player.x - 10) and (enemy_to_evaluate.techniquey > player.y + 6 or enemy_to_evaluate.techniquey < player.y + 6)):
+                
+                while enemy_to_evaluate.techniquefinished != 1:
+                    enemy_to_evaluate.process_turn(all_enemies, player, all_buttons, floor)
                 partition_entity = construct_partitions()
+            else:
+                enemy_to_evaluate.process_turn(all_enemies, player, all_buttons, floor)
+                if enemy_to_evaluate.techniquefinished == 1:
+                    partition_entity = construct_partitions()
 
 
             # if player.technique == "n/a":
