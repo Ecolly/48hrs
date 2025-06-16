@@ -411,8 +411,6 @@ class Player:
                 self.offsetx = 0
                 self.offsety = 0
 
-            
-
             for item in self.active_projectiles:
                 item.x = item.x + abs(self.techniquex - item.prevx)*round((abs(self.techniquex - item.prevx)/(self.techniquex - item.prevx+0.01)))/20
                 item.y = item.y + abs(self.techniquey - item.prevy)*round((abs(self.techniquey - item.prevy)/(self.techniquey - item.prevy+0.01)))/20

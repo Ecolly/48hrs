@@ -4,6 +4,7 @@ from game_classes.techniques import*
 import pyglet
 import math
 import button_class
+import random
 
 def create_sprite_enemy(image_grid, index):
     tex = pyglet.image.Texture.create(16, 16)
@@ -13,11 +14,11 @@ def create_sprite_enemy(image_grid, index):
 
 def generate_enemy(name, level, x, y, grid):
 
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE"]
-    enemy_hps = [20, 15, 18, 8, 10, 12]
-    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1]
-    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8]
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER"]
+    enemy_hps = [20, 15, 18, 8, 10, 12, 20]
+    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1]
+    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8, 1/8,1/8]
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -33,8 +34,6 @@ def generate_enemy(name, level, x, y, grid):
         animframe = 0,
         x = x,
         y = y,
-
-
     ) 
 
     return enemy
@@ -73,14 +72,40 @@ class Enemy:
         self.animframe = animframe #what frame of the animation it's on
         self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
         self.scale = 3
+        self.loot = None #drop when dead
     
     def sign(self, x):
         return (x > 0) - (x < 0)  # returns 1, 0, or -1
 
     def do_AI(self, all_enemies, player, game_map):
         if self.name == "FOX":
-            #always run away when sees the player
-            return Technique.MOVE, self.x, self.y+1
+            
+            #always run away when sees the player, in sscared mode 
+            if self.can_see_player(player=player, vision_range=5):
+                dx = self.sign(self.x - player.x)
+                dy = self.sign(self.y - player.y)
+                new_x = self.x + dx
+                new_y = self.y + dy
+                if self.can_move_to(new_x, new_y,game_map):
+                    return Technique.MOVE, new_x, new_y
+                elif self.can_move_to(new_x, self.y, game_map):
+                    return Technique.MOVE, new_x, self.y    
+                elif self.can_move_to(self.x, new_y, game_map):
+                    return Technique.MOVE, self.x, new_y    
+                else:
+                    return Technique.STILL, self.x, self.y
+            else:
+                idle_action = random.choice([Technique.MOVE, Technique.STILL])
+                if idle_action == Technique.MOVE:
+                    dx, dy = random.choice([(1,0), (-1,0), (0,1), (0,-1)])
+                    new_x = self.x + dx
+                    new_y = self.y + dy
+                    if self.can_move_to(new_x, new_y, game_map):
+                        return Technique.MOVE, new_x, new_y
+                # If not moving or can't move, stay still
+                return Technique.STILL, self.x, self.y
+                    
+                 
         elif self.name == "GOOSE":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 return Technique.HIT, player.x, player.y
@@ -97,6 +122,59 @@ class Enemy:
                     return Technique.MOVE, self.x, new_y    
                 else:
                     return Technique.STILL, self.x, self.y 
+                
+        elif self.name == "S'MORE":
+            print(self.x, self.y)
+            
+            #tries to hunt other player + entities down as soon as they spawn on the map
+            if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
+                print("The smore is hitting player")
+                return Technique.HIT, player.x, player.y
+            for enemy in game_map.all_enemies:
+                if enemy is not self:
+                    if abs(enemy.x-self.x) < 2 and abs(enemy.y-self.y) < 2:
+                        print("The smore is hitting others")
+                        return Technique.HIT, enemy.x, enemy.y
+
+            #Otherwise check if  can see the player
+            if self.can_see_player(player,8):
+                return self.movement_to_entity(player, game_map)
+
+            
+            nearest_enemy = None
+            min_dist = float('inf')
+            for enemy in game_map.all_enemies:
+                if enemy is not self:
+                    dist = abs(enemy.x - self.x) + abs(enemy.y - self.y)
+                    if dist < min_dist:
+                        min_dist = dist
+                        nearest_enemy = enemy
+            if nearest_enemy:
+                return self.movement_to_entity(nearest_enemy, game_map)
+            #once a player is in certain range, turn targets
+
+
+    def drop_item(self, game_map):
+        item = random.choice(self.loot)
+        game_map.floor_items.append(item)
+        item.x = self.x
+        item.y = self.y    
+        self.technique = Technique.STILL 
+        #maybe randomize a loot table
+
+    def movement_to_entity(self, target, game_map):
+        dx = self.sign(target.x - self.x)
+        dy = self.sign(target.y- self.y)
+        new_x = self.x + dx
+        new_y = self.y + dy
+        if self.can_move_to(new_x, new_y,game_map):
+            return Technique.MOVE, new_x, new_y
+        elif self.can_move_to(new_x, self.y, game_map):
+            return Technique.MOVE, new_x, self.y    
+        elif self.can_move_to(self.x, new_y, game_map):
+            return Technique.MOVE, self.x, new_y    
+        else:
+            return Technique.STILL, self.x, self.y
     
     def can_move_to(self, x, y, game_map):
         #Detect walls
@@ -216,11 +294,6 @@ class Enemy:
         else:
             #self.technique = Technique.MOVE
             self.techniquefinished = 1
-
-
-
-
-
 
 
     def take_damage(self, amount):
