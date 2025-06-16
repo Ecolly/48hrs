@@ -14,6 +14,10 @@ columns_bg = sprite_bg.width // 16
 rows_bg = sprite_bg.height // 16
 grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 
+sprite_items = pyglet.image.load('items_and_fx.png')
+columns_items = sprite_items.width // 16
+rows_items = sprite_items.height // 16
+grid_items = pyglet.image.ImageGrid(sprite_items, rows_items, columns_items)
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬"];
 
@@ -83,6 +87,7 @@ class InteractiveObject:
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
     def draw(self, batch, group1, group2, group3, group4, group5):
+        global grid_items
         base_x, base_y = self.get_screen_position()
 
         for i, sprite in enumerate(self.sprites):
@@ -92,8 +97,16 @@ class InteractiveObject:
             sprite.scale = self.scale
 
             self.animframe = self.animframe + 1
+            if self.type == "SMOKE CLOUD":
+                tile = grid_items[29+(math.floor(self.animframe/8) % 4)]
 
-                    
+                # Get texture and set filtering
+                texture = tile.get_texture()
+                texture.min_filter = pyglet.gl.GL_NEAREST
+                texture.mag_filter = pyglet.gl.GL_NEAREST
+
+                # Assign directly — no blitting, no texture creation
+                sprite.image = texture
 
             if self.hovered == True:
                 if self.clicked == True:
@@ -134,6 +147,13 @@ def delete_buttons_supertype(all_buttons, supertype):
             del button
             all_buttons[id] = -1
 
+def delete_buttons_specific(all_buttons, button):
+    for sprite in button.sprites:
+        sprite.delete()
+        del sprite
+    id = all_buttons.index(button)
+    del button
+    all_buttons[id] = -1
 
 def create_inventory_menu(all_buttons):
     global grid_font
@@ -254,6 +274,32 @@ def create_point_number(x, y, text, color, player, all_buttons):
     )
     all_buttons.append(obj)
 
+def create_graphical_effect(x, y, color, player, all_buttons):
+    global grid_items 
+    global letter_order
+    spr1 = image_handling.create_sprite(grid_items, 29 + 4*color)
+    #spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
+    obj = InteractiveObject(
+        x=1152/2 -24 - (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+        y=768/2 - (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        width=spr1.width,
+        height=spr1.height,
+        sprites=[spr1],
+        colors=[[(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255)]],
+        animtype = [0],
+        animmod = [None],
+        text = [None],
+        alignment_x='left',
+        alignment_y='top',
+        depth=1,
+        obj_type="SMOKE CLOUD",
+        draggable=False,
+        supertype = "graphics",
+        extra_1 = 0,
+        extra_2 = 0
+    )
+    all_buttons.append(obj)
+
 def get_gui_string(player):
     strength = str(player.strength)
     defense = str(player.defense)
@@ -261,7 +307,11 @@ def get_gui_string(player):
     if player.equipment_shield != None:
         defense = defense + "+" + str(player.equipment_shield.defense)
     if player.equipment_weapon != None:
-        strength = strength + "+" + str(player.equipment_weapon.damage)
+        if player.equipment_shield != None:
+            if player.equipment_shield.name != "Armor Plate":
+                strength = strength + "+" + str(player.equipment_weapon.damage)
+        else:
+            strength = strength + "+" + str(player.equipment_weapon.damage)
 
     #stats gui
     gui_string = str(player.health) + "/" + str(player.maxhealth) + " HP_____" + str(strength) + "/" + str(player.maxstrength) + " STR_____" + str(defense) + "/" + str(player.maxdefense) + " DEF"

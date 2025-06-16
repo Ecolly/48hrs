@@ -10,13 +10,13 @@ from game_classes.enemy import *
 from game_classes.map import *
 from game_classes.item import Weapon, Consumable
 from game_classes.item import Item
-
+from game_classes.projectiles import *
 
 
 
 #from button_object import *
 #from shaders import *
-
+has_won = 0
 window = pyglet.window.Window(1152, 768)
 
 #pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
@@ -183,11 +183,13 @@ def on_mouse_motion(x, y, dx, dy):
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
+    global all_enemies
     global all_buttons
     global gamestate
     global current_entity_turn
     global floor
-    if gamestate == 1 or gamestate == 3 or gamestate == 4: #this stuff can only happen between turns or in inventory
+    global has_won
+    if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5: #this stuff can only happen between turns or in inventory
         
         if button == pyglet.window.mouse.LEFT:
             was_button_clicked = 0
@@ -230,6 +232,17 @@ def on_mouse_release(x, y, button, modifiers):
                         player.techniqueitem = button.extra_1
                         delete_buttons_supertype(all_buttons, 'inventory')
                         pass
+                    elif button.type == "CAST":
+                        player.techniqueitem = button.extra_1
+                        if player.inventory[button.extra_1].is_castable_projectile == True:
+                            gamestate = 5
+                        else:
+                            gamestate = 2
+                            has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won)
+                            partition_entity = construct_partitions()
+                            
+                        delete_buttons_supertype(all_buttons, 'inventory')
+
 
 
                         #next_entity_turn = 0
@@ -251,9 +264,14 @@ def on_mouse_release(x, y, button, modifiers):
                 gamestate = 2
                 partition_entity = construct_partitions()
 
+            if gamestate == 5 and was_button_clicked == 0:
+                mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+                mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+                player.cast_projectile(mouse_x_tilemap, mouse_y_tilemap)
+                gamestate = 2
+                partition_entity = construct_partitions()
 
-
-
+            print(gamestate)
 
         elif button == pyglet.window.mouse.RIGHT:
             delete_buttons_supertype(all_buttons, 'rclick')
@@ -315,6 +333,11 @@ def on_mouse_release(x, y, button, modifiers):
 
                     if item_to_eval.is_consumable == True:
                         rclick_options.append("CONSUME")
+                        rclick_extra_1.append(inventory_slot)
+                        rclick_extra_2.append(0)
+
+                    if item_to_eval.is_castable == True:
+                        rclick_options.append("CAST")
                         rclick_extra_1.append(inventory_slot)
                         rclick_extra_2.append(0)
 
@@ -516,7 +539,11 @@ create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
 
-
+player.inventory.append(floor.create_item("Blue Staff", grid_items))
+player.inventory.append(floor.create_item("Stick", grid_items))
+player.inventory.append(floor.create_item("Armor Plate", grid_items))
+player.inventory.append(floor.create_item("Orange Staff", grid_items))
+player.inventory.append(floor.create_item("Magenta Staff", grid_items))
 
 
 
@@ -633,7 +660,8 @@ def on_draw():
     global gamestate
     global partition_entity
     global all_buttons
-    
+    global has_won
+
     window.clear()
 
     diry = 0
@@ -740,6 +768,9 @@ def on_draw():
     for item in player.active_projectiles:
         item.draw_projectiles(batch, player, group_items)
 
+    for spell in player.active_spells:
+        spell.draw(batch, player, group_items)
+
     i = 0 #theres probably a more pythonic way to do this, sowwy
     for item in player.inventory:
         item.draw_inventory(batch, player, group_inv, i, gamestate)
@@ -756,7 +787,14 @@ def on_draw():
             button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay)
 
             if button.type == "GUI_HP":
-                gui_string = get_gui_string(player)
+                if has_won == 1:
+                    player.health = 999
+                    player.maxhealth = 999
+                    gui_string = get_gui_string(player) + " " + str("WINNER!")
+                else:
+                    gui_string = get_gui_string(player)
+
+                
                 sprite = button.sprites[1]
                 sprite.image = combine_tiles(text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string)+1, "left"), 8, 8, len(gui_string)+1)
             elif button.type == "POINT_NUMBER":
@@ -767,14 +805,23 @@ def on_draw():
                     else:
                         button.colors[0][0] = (button.colors[0][0][0], button.colors[0][0][1], button.colors[0][0][2], 255)
                 if button.animframe > 45:
-                    delete_buttons_supertype(all_buttons, "graphics")
+                    delete_buttons_specific(all_buttons, button)
+            elif button.type == "SMOKE CLOUD":
+                if button.animframe > 20:
+                    if button.colors[0][0][3] == 255:
+                        button.colors[0][0] = (button.colors[0][0][0], button.colors[0][0][1], button.colors[0][0][2], 0)
+                    else:
+                        button.colors[0][0] = (button.colors[0][0][0], button.colors[0][0][1], button.colors[0][0][2], 255)
+                if button.animframe > 45:
+                    delete_buttons_specific(all_buttons, button)
+
             elif button.type == "overlay":
                 if gamestate == 3:
                     button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
                 else:
                     button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
             elif button.type == "mouse_overlay":
-                if gamestate == 1 or gamestate == 2 or gamestate == 4: 
+                if gamestate == 1 or gamestate == 2 or gamestate == 4 or gamestate == 5: 
                     button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
                     # button.x = math.floor((mouse_x - 12)/48)*48 
                     # button.y = math.floor((mouse_y - 12)/48)*48
