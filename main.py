@@ -24,6 +24,7 @@ window = pyglet.window.Window(1152, 768)
 
 gamestate = 1
 partition_entity = -2
+floor_level = 1
 #current_entity_turn = -1
 
 
@@ -442,6 +443,7 @@ def go_to_next_level():
     player.x, player.y = floor.spawnpoint
     player.prevx, player.prevy = floor.spawnpoint
     all_enemies = floor.all_enemies
+    floor_level +=1
     print(floor.map_type)
 
     fl_string = ""

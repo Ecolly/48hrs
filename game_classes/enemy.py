@@ -14,11 +14,11 @@ def create_sprite_enemy(image_grid, index):
 
 def generate_enemy(name, level, x, y, grid):
 
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE"]
-    enemy_hps = [20, 15, 18, 8, 10, 12]
-    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1]
-    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8, 1/8]
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER"]
+    enemy_hps = [20, 15, 18, 8, 10, 12, 20]
+    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1]
+    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8, 1/8,1/8]
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -72,6 +72,7 @@ class Enemy:
         self.animframe = animframe #what frame of the animation it's on
         self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
         self.scale = 3
+        self.loot = None #drop when dead
     
     def sign(self, x):
         return (x > 0) - (x < 0)  # returns 1, 0, or -1
@@ -126,19 +127,18 @@ class Enemy:
             print(self.x, self.y)
             
             #tries to hunt other player + entities down as soon as they spawn on the map
-            # if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
-            #     print("The smore is hitting player")
-            #     return Technique.HIT, player.x, player.y
+            if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
+                print("The smore is hitting player")
+                return Technique.HIT, player.x, player.y
             for enemy in game_map.all_enemies:
                 if enemy is not self:
                     if abs(enemy.x-self.x) < 2 and abs(enemy.y-self.y) < 2:
                         print("The smore is hitting others")
                         return Technique.HIT, enemy.x, enemy.y
-                
 
             #Otherwise check if  can see the player
-            # if self.can_see_player(player,8):
-            #     return self.movement_to_entity(player, game_map)
+            if self.can_see_player(player,8):
+                return self.movement_to_entity(player, game_map)
 
             
             nearest_enemy = None
@@ -152,10 +152,15 @@ class Enemy:
             if nearest_enemy:
                 return self.movement_to_entity(nearest_enemy, game_map)
             #once a player is in certain range, turn targets
-        return Technique.STILL, self.x, self.y
-        
 
 
+    def drop_item(self, game_map):
+        item = random.choice(self.loot)
+        game_map.floor_items.append(item)
+        item.x = self.x
+        item.y = self.y    
+        self.technique = Technique.STILL 
+        #maybe randomize a loot table
 
     def movement_to_entity(self, target, game_map):
         dx = self.sign(target.x - self.x)
