@@ -56,6 +56,7 @@ class InteractiveObject:
         self.hovered = False
         self.clicked = False
         self.supertype = supertype
+        self.should_be_deleted = False
 
         self.extra_1 = extra_1
         self.extra_2 = extra_2
@@ -134,7 +135,7 @@ class InteractiveObject:
                         inventory_x = id % 10
                         inventory_y = id // 10
                         self.x = inventory_x*48 + int(1152/48)*12
-                        self.y = inventory_y*48 + int(768/48)*32 - 1
+                        self.y = -inventory_y*48 + int(768/48)*32 - 1
 
                 elif self.type == 'equip shield':
                     sprite.group = group6
@@ -146,7 +147,7 @@ class InteractiveObject:
                         inventory_x = id % 10
                         inventory_y = id // 10
                         self.x = inventory_x*48 + int(1152/48)*12
-                        self.y = inventory_y*48 + int(768/48)*32 - 1
+                        self.y = -inventory_y*48 + int(768/48)*32 - 1
 
 
 
@@ -165,21 +166,11 @@ def delete_buttons_supertype(all_buttons, supertype):
         #'rclick'
         #'inventory'
     for button in all_buttons: #delete all buttons
-        if button != -1 and button.supertype == supertype:
-            for sprite in button.sprites:
-                sprite.delete()
-                del sprite
-            id = all_buttons.index(button)
-            del button
-            all_buttons[id] = -1
+        if button.supertype == supertype:
+            button.should_be_deleted = True
 
 def delete_buttons_specific(all_buttons, button):
-    for sprite in button.sprites:
-        sprite.delete()
-        del sprite
-    id = all_buttons.index(button)
-    del button
-    all_buttons[id] = -1
+    button.should_be_deleted = True
 
 def create_inventory_menu(all_buttons):
     global grid_font
@@ -298,6 +289,8 @@ def create_win_lose_screen(all_buttons, winlose):
     )
     all_buttons.append(obj)
 
+
+
 def create_overlay(all_buttons):
     global grid_bg
 
@@ -327,6 +320,8 @@ def create_overlay(all_buttons):
         extra_2 = 0
     )
     all_buttons.append(obj)
+
+
 
 def create_mouse_overlay(all_buttons):
     global grid_bg
@@ -361,57 +356,57 @@ def create_mouse_overlay(all_buttons):
 
 
 
-def create_point_number(x, y, text, color, player, all_buttons):
-    global grid_font 
-    global letter_order
-    spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(str(text), grid_font, letter_order, 10, "left"), 8, 8, 10))
-    #spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
-    obj = InteractiveObject(
-        x=1152/2 -24 - (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
-        y=768/2 - (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
-        width=spr1.width,
-        height=spr1.height,
-        sprites=[spr1],
-        colors=[[color, color, color]],
-        animtype = [0],
-        animmod = [None],
-        text = [None],
-        alignment_x='left',
-        alignment_y='top',
-        depth=1,
-        obj_type="POINT_NUMBER",
-        draggable=False,
-        supertype = "graphics",
-        extra_1 = 0,
-        extra_2 = 0
-    )
-    all_buttons.append(obj)
+# def create_point_number(x, y, text, color, player, all_buttons):
+#     global grid_font 
+#     global letter_order
+#     spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(str(text), grid_font, letter_order, 10, "left"), 8, 8, 10))
+#     #spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
+#     obj = InteractiveObject(
+#         x=1152/2 -24 - (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+#         y=768/2 - (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+#         width=spr1.width,
+#         height=spr1.height,
+#         sprites=[spr1],
+#         colors=[[color, color, color]],
+#         animtype = [0],
+#         animmod = [None],
+#         text = [None],
+#         alignment_x='left',
+#         alignment_y='top',
+#         depth=1,
+#         obj_type="POINT_NUMBER",
+#         draggable=False,
+#         supertype = "graphics",
+#         extra_1 = 0,
+#         extra_2 = 0
+#     )
+#     all_buttons.append(obj)
 
-def create_graphical_effect(x, y, color, player, all_buttons):
-    global grid_items 
-    global letter_order
-    spr1 = image_handling.create_sprite(grid_items, 29 + 4*color)
-    #spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
-    obj = InteractiveObject(
-        x=1152/2 -24 - (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
-        y=768/2 - (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
-        width=spr1.width,
-        height=spr1.height,
-        sprites=[spr1],
-        colors=[[(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255)]],
-        animtype = [0],
-        animmod = [None],
-        text = [None],
-        alignment_x='left',
-        alignment_y='top',
-        depth=1,
-        obj_type="SMOKE CLOUD",
-        draggable=False,
-        supertype = "graphics",
-        extra_1 = 0,
-        extra_2 = 0
-    )
-    all_buttons.append(obj)
+# def create_graphical_effect(x, y, color, player, all_buttons):
+#     global grid_items 
+#     global letter_order
+#     spr1 = image_handling.create_sprite(grid_items, 29 + 4*color)
+#     #spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(hp_string, grid_font, letter_order, 10, "left"), 8, 8, 10))
+#     obj = InteractiveObject(
+#         x=1152/2 -24 - (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+#         y=768/2 - (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+#         width=spr1.width,
+#         height=spr1.height,
+#         sprites=[spr1],
+#         colors=[[(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255)]],
+#         animtype = [0],
+#         animmod = [None],
+#         text = [None],
+#         alignment_x='left',
+#         alignment_y='top',
+#         depth=1,
+#         obj_type="SMOKE CLOUD",
+#         draggable=False,
+#         supertype = "graphics",
+#         extra_1 = 0,
+#         extra_2 = 0
+#     )
+#     all_buttons.append(obj)
 
 def get_gui_string(player):
     strength = str(player.strength)
@@ -427,7 +422,7 @@ def get_gui_string(player):
             strength = strength + "+" + str(player.equipment_weapon.damage)
 
     #stats gui
-    gui_string = str(player.health) + "/" + str(player.maxhealth) + " HP, " + str(strength) + "/" + str(player.maxstrength) + " STR, " + str(defense) + "/" + str(player.maxdefense) + " DEF, LV " + str(player.level) + ", " + str(player.experience) + " EXP"
+    gui_string = str(player.health_visual) + "/" + str(player.maxhealth_visual) + " HP, " + str(strength) + "/" + str(player.maxstrength) + " STR, " + str(defense) + "/" + str(player.maxdefense) + " DEF, LV " + str(player.level_visual) + ", " + str(player.experience_visual) + " EXP"
     return gui_string
 
 

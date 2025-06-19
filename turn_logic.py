@@ -1,0 +1,293 @@
+
+import pyglet
+from game_classes.techniques import *
+from game_classes.enemy import *
+from game_classes.player import *
+import animations
+
+
+
+#for all entities, starting from player...
+    #check AI (for player, this is already present)
+    #do turn
+
+def check_if_entity_is_on_screen(entity, player, result1, result2):
+    if ((entity.x > player.x + 13 or entity.x < player.x - 13) or (entity.y > player.y + 9 or entity.y < player.y - 9)):
+        return result1
+    else:
+        return result2
+
+def adjust_rotation(entity, dx, dy):
+    #adjust rotation state (gross)
+    if dx == 1:
+        if dy == 1:
+            return FaceDirection.UP_RIGHT
+        elif dy == -1:
+            return FaceDirection.DOWN_RIGHT
+        else:
+            return FaceDirection.RIGHT
+    elif dx == -1:
+        if dy == 1:
+            return FaceDirection.UP_LEFT
+        elif dy == -1:
+            return FaceDirection.DOWN_LEFT
+        else:
+            return FaceDirection.LEFT
+    else:
+        if dy == 1:
+            return FaceDirection.UP
+        elif dy == -1:
+            return FaceDirection.DOWN
+        else:
+            return FaceDirection.DOWN
+
+
+
+def can_move_to(x, y, game_map, player):
+    #Detect walls
+    if (y,x) not in game_map.valid_tiles:
+        #print(f"Invalid tile cannot move{x, y}")
+        return False
+    else:
+        for enemy in game_map.all_enemies:
+            if enemy.x == x and enemy.y == y and enemy.should_be_deleted == False:
+                return False
+        if player.x == x and player.y == y:
+            return False
+        return True
+
+
+
+def inflict_damage(attacker, target, player, chronology, list_of_animations, item):
+    damage = 0
+    damage += attacker.strength
+    if isinstance(item, Weapon) != False:
+        if attacker.equipment_shield == None or attacker.equipment_shield.name != "Armor Plate":
+            damage += attacker.equipment_weapon.damage
+            if item.name == "Fury Cutter":
+                attacker.health = attacker.health - math.floor(damage/4)
+    if target.equipment_shield != None:
+        damage -= target.equipment_shield.defense
+    damage -= target.defense
+    if damage < 1:
+        damage = 1
+    target.health = target.health - damage
+
+    if target != player and not target.is_alive():
+        target.should_be_deleted = True
+        #target.attacker = attacker
+
+        attacker.level_up()
+        if attacker == player:
+           attacker.increase_experience(target.experience)
+        else:
+           attacker.level_up()
+
+
+    anim = animations.Animation("-" + str(damage), 2, 0, (255, 0, 0, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage)
+    #when this anim happens...
+
+    list_of_animations.append(anim)
+
+
+def do_individual_turn(entity, floor, player, list_of_animations, chronology, prevtechnique):
+
+
+
+
+    if entity.technique == Technique.STILL:
+        return Technique.STILL, chronology
+    elif entity.technique == Technique.MOVE:
+        if can_move_to(entity.techniquex, entity.techniquey, floor, player):
+            pass
+        elif can_move_to(entity.techniquex, entity.y, floor, player):
+            entity.techniquey = entity.y 
+        elif can_move_to(entity.x, entity.techniquey, floor, player):
+            entity.techniquex = entity.x
+        else:
+            entity.techniquex = entity.x 
+            entity.techniquey = entity.y
+        rot = adjust_rotation(entity, entity.techniquex-entity.x, entity.techniquey-entity.y)
+
+
+
+        anim = animations.Animation(None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 8), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.MOVE, None, None, None)
+        list_of_animations.append(anim)
+
+        #if previous technique was not 'move' or 'still', chronology must be incremented by 8
+        if prevtechnique != Technique.MOVE and prevtechnique != Technique.STILL:
+            chronology += 8
+
+        entity.x = entity.techniquex
+        entity.y = entity.techniquey
+
+
+
+        return Technique.MOVE, chronology
+    elif entity.technique == Technique.HIT:
+        rot = adjust_rotation(entity, entity.techniquex-entity.x, entity.techniquey-entity.y)
+        target = None
+        if player.x == entity.techniquex and player.y == entity.techniquey:
+            target = player
+        else:
+            for enemy in floor.all_enemies:
+                if enemy.x == entity.techniquex and enemy.y == entity.techniquey and entity.should_be_deleted == False:
+                    target = enemy
+
+        if target != None:
+            inflict_damage(entity, target, player, chronology+16, list_of_animations, entity.equipment_weapon)
+        
+        if ((entity.x > player.x + 13 or entity.x < player.x - 13) or (entity.y > player.y + 9 or entity.y < player.y + 9)):
+            t = 1
+        else:
+            t = 16
+
+
+        anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
+        list_of_animations.append(anim2)
+        chronology += 16
+
+        return Technique.HIT, chronology
+    elif entity.technique == Technique.THROW:
+        rot = adjust_rotation(entity, entity.techniquex-entity.x, entity.techniquey-entity.y)
+        anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
+        list_of_animations.append(anim2)
+        #chronology += 16
+
+        chron_i = 1
+        projectiles_remaining = len(entity.active_projectiles)
+        while projectiles_remaining > 0: #while there are still projectiles to move...
+            itemi = 0
+            for item in entity.active_projectiles: #for each projectile, move 1 unit of distance further in trajectory
+                if item != -1:
+
+                    distance_x = entity.techniquex - entity.x
+                    distance_y = entity.techniquey - entity.y
+                    distance_total = math.sqrt(distance_x*distance_x + distance_y*distance_y)
+
+                    distance_x_normalized = distance_x/(distance_total*5)
+                    distance_y_normalized = distance_y/(distance_total*5)
+
+                    item.x = item.x + distance_x_normalized
+                    item.y = item.y + distance_y_normalized
+
+                    tilex = math.floor(item.x)
+                    tiley = math.floor(item.y)
+
+                    enemy_hit = None
+                    if entity != player and tilex == player.x and tiley == player.y: #if hit the player and player isnt the source entity
+                        enemy_hit = player
+                    else:
+                        for enemy in floor.all_enemies:
+                            if enemy != entity and enemy.x == math.floor(item.x) and enemy.y == math.floor(item.y): #if hit an enemy and enemy isnt the source entity
+                                enemy_hit = enemy
+                    
+                    if enemy_hit == None: #if no creature was hit
+                        if (tiley,tilex) not in floor.valid_tiles: #if a wall is hit...
+                            i = 0
+                            while (tiley,tilex) not in floor.valid_tiles: #go backwards until finding a free space
+                                item.x = item.x - distance_x_normalized 
+                                item.y = item.y - distance_y_normalized
+                                tilex = math.floor(item.x)
+                                tiley = math.floor(item.y)
+
+                            #add animation
+                            #remove from projectiles remaining
+                            anim3 = animations.Animation(item.spriteindex, 3, 0, (255, 255, 255, 0), chronology, chronology+chron_i, entity.x, entity.y, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item)
+                            list_of_animations.append(anim3)
+                            entity.active_projectiles[itemi] = -1
+                            projectiles_remaining += -1
+                        else:
+                            distance_travelled = math.sqrt(abs(tilex - entity.x)**2 + abs(tiley - entity.y)**2)
+                            if distance_travelled >= distance_total:
+                                anim3 = animations.Animation(item.spriteindex, 3, 0, (255, 255, 255, 0), chronology, chronology+chron_i, entity.x, entity.y, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item)
+                                list_of_animations.append(anim3)
+                                entity.active_projectiles[itemi] = -1
+                                projectiles_remaining += -1 
+                            
+                    else: #if a creature was hit inflict damage on them
+                        #add animation
+                        #remove from projectiles remaining
+                        inflict_damage(entity, enemy_hit, player, chronology+chron_i, list_of_animations, item)
+                        anim3 = animations.Animation(item.spriteindex, 3, 0, (255, 255, 255, 0), chronology, chronology+chron_i, entity.x, entity.y, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item)
+                        list_of_animations.append(anim3)
+                        entity.active_projectiles[itemi] = -1
+                        projectiles_remaining += -1
+
+                
+                
+
+                itemi += 1
+            chron_i += 1
+        entity.active_projectiles = []
+
+        chronology = chronology + max(chron_i, 16)
+
+        return Technique.THROW, chronology
+
+
+
+
+
+
+                    # allowed_to_drop = 1
+                    # for i in map.floor_items:
+                    #     # Check if the item is at the player's current position
+                    #     if i.x == entity.techniquex and i.y == entity.techniquey:
+                    #         allowed_to_drop = 0
+
+                    # if allowed_to_drop == 1: #if no enemy detected and no item is on this spot, simply drop the item on the floor at this tile
+                    #     item.x = self.techniquex
+                    #     item.y = self.techniquey
+                    #     map.floor_items.append(item)
+                    # else:
+                    #     del item
+
+                # if self.techniqueframe == 20:
+                #     self.active_projectiles = []
+                #     self.techniquex = self.x
+                #     self.techniquey = self.y
+                #     self.technique = Technique.MOVE
+                #     self.techniquefinished = 1
+
+
+
+        pass
+    elif entity.technique == Technique.CAST:
+        pass
+    else:
+        pass
+
+
+
+
+
+
+def do_turns(all_enemies, player, floor):
+    list_of_animations = []
+    chronology = 0
+    prevtechnique = Technique.STILL
+    prevtechnique, chronology = do_individual_turn(player, floor, player, list_of_animations, chronology, prevtechnique)
+    for enemy in all_enemies:
+        if enemy.should_be_deleted != True: #if enemy isnt already dead...
+            enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
+            prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
+    return list_of_animations
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
