@@ -19,6 +19,7 @@ class Item:
         # self.index = item_names.index(name)
         # self.fakename = item_fakenames[self.index]
         self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
+        self.spriteindex = 29*10+sprite_locs
         self.x = x
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
@@ -30,6 +31,7 @@ class Item:
         self.is_consumable = False #default to false
         self.is_castable = False
         self.is_piercing = False #default to false
+        self.should_be_deleted = False
 
     def use(self, target):
         pass
@@ -56,15 +58,15 @@ class Item:
         sprite.group = group
         sprite.batch = batch
     
-    def draw_projectiles(self, batch, player, group):
-        base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
-        base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
-        sprite = self.sprite
-        sprite.x = base_x
-        sprite.y = base_y
-        sprite.scale = self.scale
-        sprite.group = group
-        sprite.batch = batch
+    # def draw_projectiles(self, batch, player, group):
+    #     base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+    #     base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+    #     sprite = self.sprite
+    #     sprite.x = base_x
+    #     sprite.y = base_y
+    #     sprite.scale = self.scale
+    #     sprite.group = group
+    #     sprite.batch = batch
 
     def draw_inventory(self, batch, player, group, invslot, gamestate):
         sprite = self.sprite
@@ -85,6 +87,7 @@ class Weapon(Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
+        self.spriteindex = 29*10+sprite_locs
         self.damage = damage
         self.durability = durability  # Default durability
         self.damage_type = "slashing"  # Default damage type
@@ -94,6 +97,7 @@ class Staff(Item):
     def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=3):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*9+ sprite_locs)
+        self.spriteindex = 29*9+sprite_locs
         self.damage = damage
         self.charges = charges #number of uses
         self.damage_type = "slashing"  # Default damage type
@@ -105,6 +109,7 @@ class Consumable(Item):
     def __init__(self, name, grid_items, sprite_locs, nutrition_value, x=0, y=0, quantity=1):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*6+ sprite_locs)
+        self.spriteindex = 29*6+sprite_locs
         self.nutrition_value = nutrition_value
         self.is_consumable = True
 
@@ -113,6 +118,7 @@ class Shield (Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0, is_equipable = True):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*8+ sprite_locs)
+        self.spriteindex = 29*8+sprite_locs
         self.defense = defense  # Default defense value
         self.is_equipable = is_equipable
 
@@ -120,6 +126,7 @@ class Miscellanious(Item):
     def __init__(self, name, grid_items, sprite_locs, description, x=0, y=0, quantity=1):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*7+ sprite_locs)
+        self.spriteindex = 29*7+sprite_locs
         self.description = description
         #self.defense = defense  # Default defense value
         #self.is_equipable = is_equipable

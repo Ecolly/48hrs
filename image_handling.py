@@ -122,7 +122,12 @@ def combine_tiles(tiles, tile_width, tile_height, total_width):
         combined.blit_into(tile, x, y, 0)
     return combined
 
+letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
 
+def create_sprite_text_simple(image_grid, txt):
+    global letter_order
+    tex = combine_tiles(text_to_tiles(txt, image_grid, letter_order), 8, 8, 200)
+    return pyglet.sprite.Sprite(tex, x=0, y=0)
 
 def create_sprite(image_grid, index):
     tex = pyglet.image.Texture.create(16, 16)

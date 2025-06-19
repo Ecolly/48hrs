@@ -52,10 +52,19 @@ class Enemy:
         self.defense = 5  # Default defense
         self.maxdefense = 5
         self.level = level
+
+        #these are for displaying the stats during combat
+        self.health_visual = health
+        self.maxhealth_visual = health
+        self.level_visual = level
+
+
         self.x = x # x coords are in 
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
         self.prevy = y 
+        self.offsetx = 0
+        self.offsety = 0
         self.inventory = []
         self.direction = FaceDirection.DOWN  # Default direction
         self.technique = Technique.NA
@@ -65,6 +74,7 @@ class Enemy:
         self.techniquefinished = 0
         self.equipment_weapon = None
         self.equipment_shield = None
+        self.should_be_deleted = False
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
@@ -80,30 +90,21 @@ class Enemy:
     def sign(self, x):
         return (x > 0) - (x < 0)  # returns 1, 0, or -1
 
-    def do_AI(self, all_enemies, player, game_map, state):
-        if state == 0: #this means entities should check where player 'will' be
-            xtochk = player.techniquex
-            ytochk = player.techniquey
-        else:
-            xtochk = player.x
-            ytochk = player.y
+    def do_AI(self, all_enemies, player, game_map):
+
+        xtochk = player.x
+        ytochk = player.y
 
         if self.name == "FOX":
-            
+
             #always run away when sees the player, in sscared mode 
             if self.can_see_player(player=player, vision_range=5):
                 dx = self.sign(self.x - xtochk)
                 dy = self.sign(self.y - ytochk)
                 new_x = self.x + dx
                 new_y = self.y + dy
-                if self.can_move_to(new_x, new_y,game_map):
-                    return Technique.MOVE, new_x, new_y
-                elif self.can_move_to(new_x, self.y, game_map):
-                    return Technique.MOVE, new_x, self.y    
-                elif self.can_move_to(self.x, new_y, game_map):
-                    return Technique.MOVE, self.x, new_y    
-                else:
-                    return Technique.STILL, self.x, self.y
+                return Technique.MOVE, self.x, new_y    
+
             else:
                 idle_action = random.choice([Technique.MOVE, Technique.STILL])
                 if idle_action == Technique.MOVE:
@@ -121,16 +122,8 @@ class Enemy:
             else:
                 new_x = self.x + self.sign(xtochk - self.x)
                 new_y = self.y + self.sign(ytochk - self.y)
-                # new_x = self.x + round(abs(xtochk - self.x) / ((xtochk - self.x) + 0.01))
-                # new_y = self.y + round(abs(ytochk - self.y) / ((ytochk - self.y) + 0.01))
-                if self.can_move_to(new_x, new_y, game_map):
-                    return Technique.MOVE, new_x, new_y    
-                elif self.can_move_to(new_x, self.y, game_map):
-                    return Technique.MOVE, new_x, self.y    
-                elif self.can_move_to(self.x, new_y, game_map):
-                    return Technique.MOVE, self.x, new_y    
-                else:
-                    return Technique.STILL, self.x, self.y 
+                return Technique.MOVE, new_x, new_y    
+
                 
         elif self.name == "LEAFALOTTA":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
@@ -138,14 +131,7 @@ class Enemy:
             else:
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
-                if self.can_move_to(new_x, new_y, game_map):
-                    return Technique.MOVE, new_x, new_y    
-                elif self.can_move_to(new_x, self.y, game_map):
-                    return Technique.MOVE, new_x, self.y    
-                elif self.can_move_to(self.x, new_y, game_map):
-                    return Technique.MOVE, self.x, new_y    
-                else:
-                    return Technique.STILL, self.x, self.y 
+                return Technique.MOVE, new_x, new_y    
                 
         elif self.name == "CHLOROSPORE":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
@@ -153,14 +139,8 @@ class Enemy:
             else:
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
-                if self.can_move_to(new_x, new_y, game_map):
-                    return Technique.MOVE, new_x, new_y    
-                elif self.can_move_to(new_x, self.y, game_map):
-                    return Technique.MOVE, new_x, self.y    
-                elif self.can_move_to(self.x, new_y, game_map):
-                    return Technique.MOVE, self.x, new_y    
-                else:
-                    return Technique.STILL, self.x, self.y 
+                return Technique.MOVE, new_x, new_y    
+
                 
         elif self.name == "S'MORE":
             print(self.x, self.y)
@@ -206,14 +186,8 @@ class Enemy:
         dy = self.sign(target.y- self.y)
         new_x = self.x + dx
         new_y = self.y + dy
-        if self.can_move_to(new_x, new_y,game_map):
-            return Technique.MOVE, new_x, new_y
-        elif self.can_move_to(new_x, self.y, game_map):
-            return Technique.MOVE, new_x, self.y    
-        elif self.can_move_to(self.x, new_y, game_map):
-            return Technique.MOVE, self.x, new_y    
-        else:
-            return Technique.STILL, self.x, self.y
+        return Technique.MOVE, new_x, new_y    
+
     
     def can_move_to(self, x, y, game_map):
         #Detect walls
@@ -230,8 +204,8 @@ class Enemy:
 
 
     def draw(self, batch, animation_presets, player, group):
-        base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.prevx*16 + 8)*self.scale
-        base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale
+        base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.prevx*16 + 8)*self.scale + self.offsetx*16*self.scale
+        base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale + self.offsety*16*self.scale
 
 
 
@@ -306,9 +280,7 @@ class Enemy:
                             damage = 1
                         enemy.health = enemy.health - damage
                         if enemy.is_alive() is False:
-                            enemy.sprite.delete()
-                            del enemy.sprite
-                            game_map.all_enemies.remove(enemy)
+                            enemy.should_be_deleted = True
                             self.level_up()
 
                         button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)

@@ -11,6 +11,8 @@ from game_classes.map import *
 from game_classes.item import Weapon, Consumable
 from game_classes.item import Item
 from game_classes.projectiles import *
+import turn_logic
+import delete_object
 
 #made by zero and eco :)
 
@@ -70,6 +72,8 @@ group_bg = Group(order=0)
 group_items = Group(order=20)
 group_enemies = Group(order=40)
 
+group_effects = Group(order=42)
+
 group_overlay = Group(order=45)
 
 group_inv_bg = Group(order=50)
@@ -92,6 +96,8 @@ animation_presets = [
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
 
 all_buttons = []
+all_anims = []
+
 #floor_items = [item]
 inventory_items = []
 
@@ -185,6 +191,7 @@ def on_mouse_motion(x, y, dx, dy):
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
+    global all_anims
     global all_enemies
     global all_buttons
     global gamestate
@@ -209,16 +216,19 @@ def on_mouse_release(x, y, button, modifiers):
                         diry = button.extra_2
                         player.move(dirx, diry, floor)
                         gamestate = 2
-                        partition_entity = construct_partitions()
+                        #partition_entity = construct_partitions()
                     elif button.type == "DROP":
                         player.drop_item(button.extra_1, floor.floor_items)
                         gamestate = 2
-                        partition_entity = construct_partitions()
+
+                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                        #partition_entity = construct_partitions()
                         delete_buttons_supertype(all_buttons, 'inventory')
                     elif button.type == "CONSUME":
                         player.consume_item(button.extra_1, all_buttons)
                         gamestate = 2
-                        partition_entity = construct_partitions()
+                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                        #partition_entity = construct_partitions()
                         delete_buttons_supertype(all_buttons, 'inventory')
                     elif button.type == "EQUIP": #Equipping/unequipping doesnt take up a turn
                         if isinstance(player.inventory[button.extra_1], Weapon) == True:
@@ -243,7 +253,8 @@ def on_mouse_release(x, y, button, modifiers):
                             gamestate = 2
                             has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
                             if has_won == 0:
-                                partition_entity = construct_partitions()
+                                #partition_entity = construct_partitions()
+                                pass
                             else:
                                 gamestate = 0
                                 create_win_lose_screen(all_buttons, "win")
@@ -262,21 +273,24 @@ def on_mouse_release(x, y, button, modifiers):
                 if (mouse_x_tilemap != player.prevx or mouse_y_tilemap != player.prevy) and player.prevx - 2 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 2 < mouse_y_tilemap < player.prevy + 2:
                     player.hit(mouse_x_tilemap, mouse_y_tilemap)
                     gamestate = 2
-                    partition_entity = construct_partitions()
+                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+
             
             if gamestate == 4 and was_button_clicked == 0:
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
                 player.throw(mouse_x_tilemap, mouse_y_tilemap)
                 gamestate = 2
-                partition_entity = construct_partitions()
+                all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                
 
-            if gamestate == 5 and was_button_clicked == 0:
-                mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
-                mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
-                player.cast_projectile(mouse_x_tilemap, mouse_y_tilemap)
-                gamestate = 2
-                partition_entity = construct_partitions()
+
+            # if gamestate == 5 and was_button_clicked == 0:
+            #     mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+            #     mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+            #     player.cast_projectile(mouse_x_tilemap, mouse_y_tilemap)
+            #     gamestate = 2
+
 
             print(gamestate)
 
@@ -415,7 +429,7 @@ if floor.map_type == "Simple":
             fl_string += s2
 else:
     #wall, floor, floorcodes,
-    complex_wall_sets = [(12, 31, 4,4,4), (11,28,4,4,4), (17, 25, 0,0,4)]
+    complex_wall_sets = [(12, 31, 4,4,4), (22,30,2,2,10), (21,31,1,9,10), (17, 30, 5,5-16,5-48)]
     #Map Initiation
     bg_order = [
         "#",   #filler
@@ -577,74 +591,6 @@ sound_magic = pyglet.media.load('magic.mp3', streaming=False)
 global keypress_chk
 keypress_chk = 0
 
-
-
-def construct_partitions():
-    global player
-    global all_enemies 
-    global partition_entity
-    global gamestate
-
-    partition_entity = -2 
-    #if -2, move all entities that have technique_finished = 0.
-    #if -1, do player's technique and only player's technique.
-    #else, do technique of partition_entity id.
-
-
-    if player.techniquefinished == 0: #this means its the very start of turn evaluation
-        if player.technique != Technique.MOVE:
-            #do this technique
-            partition_entity = -1
-            
-        else:
-            #check if all enemies are also moving. if so, move everyone.
-            for enemy in all_enemies:
-                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player, floor, 0)
-                
-                enemy.technique = technique_to_do
-                enemy.techniquex = techx 
-                enemy.techniquey = techy
-                if technique_to_do != Technique.MOVE and technique_to_do != Technique.STILL:
-                    #not all enemies are moving. as a result, only do the player movement.
-                    partition_entity = -1
-                    break
-                #Added an option for staying still because not everyone is a busy guy
-
-    else: 
-        for enemy in all_enemies:
-            if enemy.techniquefinished == 0:
-                technique_to_do, techx, techy = enemy.do_AI(all_enemies, player, floor, 1)
-                enemy.technique = technique_to_do
-                enemy.techniquex = techx 
-                enemy.techniquey = techy
-                if technique_to_do != Technique.MOVE and technique_to_do != Technique.STILL:
-                    #do this technique
-                    partition_entity = all_enemies.index(enemy)
-                    break
-
-        #this last loop will check if all enemies have had a turn. if so, break out of turn execution.
-        alldone_flag = 1
-        if partition_entity == -2:
-            for enemy in all_enemies:
-                if enemy.techniquefinished == 0:
-                    alldone_flag = 0
-                    break
-        
-            if alldone_flag == 1:
-                player.techniquefinished = 0
-                player.techniqueframe = 0
-                player.offsetx = 0
-                player.offsety = 0
-                for enemy in all_enemies:
-                    enemy.techniquefinished = 0
-                    enemy.techniqueframe = 0
-                gamestate = 1
-
-
-    #print(partition_entity)
-    return partition_entity
-
-                
     
 
     
@@ -687,6 +633,7 @@ def on_draw():
     global partition_entity
     global all_buttons
     global has_won
+    global all_anims
 
     window.clear()
 
@@ -747,81 +694,17 @@ def on_draw():
         #keypress_chk = 1
         player.move(dirx, diry, floor)
         gamestate = 2
-        partition_entity = construct_partitions()
+        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+
+        #partition_entity = construct_partitions()
         #current_entity_turn = -1
 
     if gamestate == 2:
-        if partition_entity == -1:
-            print(f"{floor.stairs} HERE IS FLOOR STAIRS")
-            #if doing only the player's turn...
-            tech = player.technique
-
-            if keys[pyglet.window.key.Q]:
-                while player.techniquefinished != 1:
-                    player.process_turn(all_enemies, player, all_buttons, floor)
-            else:
-                player.process_turn(all_enemies, player, all_buttons, floor)
-            
-            if player.techniqueframe == 1 and tech == Technique.CAST:
-                sound_magic.play()
-            if player.techniquefinished == 1:
-                if tech == Technique.HIT:
-                    sound_hit.play()
-                print(f"{floor.stairs} HERE IS FLOOR STAIRS")
-                print(player.x, player.y)
-                if (player.x, player.y) == floor.stairs:
-                    print("on stairs GOING TO NEXT LEVEL")
-                    go_to_next_level()
-                partition_entity = construct_partitions()
-        elif partition_entity == -2: #if doing all movement...
-
-            is_allfinished_flag = 1
-
-            if player.techniquefinished == 0:
-
-                if keys[pyglet.window.key.Q]:
-                    while player.techniquefinished != 1:
-                        player.process_turn(all_enemies, player, all_buttons, floor)
-                else:
-                    player.process_turn(all_enemies, player, all_buttons, floor)
-                    
-                if player.techniquefinished == 0:
-                    is_allfinished_flag = 0
-
-            for enemy in all_enemies:
-                if enemy.techniquefinished == 0:
-                    if keys[pyglet.window.key.Q] or ((enemy.techniquex > player.x + 10 or enemy.techniquex < player.x - 10) and (enemy.techniquey > player.y + 6 or enemy.techniquey < player.y + 6)):
-                        while enemy.techniquefinished != 1:
-                            enemy.process_turn(all_enemies, player, all_buttons, floor)
-                    else:
-                        enemy.process_turn(all_enemies, player, all_buttons, floor)
-                    is_allfinished_flag = 0
-
-            if is_allfinished_flag == 1:
-                print(f"{floor.stairs} HERE IS FLOOR STAIRS")
-                if(player.x, player.y) == floor.stairs:
-                    print("on stairs GOING TO NEXT LEVEL")
-                    go_to_next_level()
-                partition_entity = construct_partitions()
-        else:
-            
-            enemy_to_evaluate = all_enemies[partition_entity]
-            if keys[pyglet.window.key.Q] or ((enemy_to_evaluate.techniquex > player.x + 10 or enemy_to_evaluate.techniquex < player.x - 10) and (enemy_to_evaluate.techniquey > player.y + 6 or enemy_to_evaluate.techniquey < player.y + 6)):
-                
-                while enemy_to_evaluate.techniquefinished != 1:
-                    enemy_to_evaluate.process_turn(all_enemies, player, all_buttons, floor)
-                partition_entity = construct_partitions()
-            else:
-                tech = enemy_to_evaluate.technique
-                enemy_to_evaluate.process_turn(all_enemies, player, all_buttons, floor)
-                if enemy_to_evaluate.techniquefinished == 1:
-                    if tech == Technique.HIT:
-                        sound_hit.play()
-                    partition_entity = construct_partitions()
-
-
-            # if player.technique == "n/a":
-            #     gamestate = 1
+        if len(all_anims) == 0 or all(anim.proceed for anim in all_anims):
+            gamestate = 1
+            if(player.x, player.y) == floor.stairs:
+                print("on stairs GOING TO NEXT LEVEL")
+                go_to_next_level()
 
     bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
     bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
@@ -836,8 +719,8 @@ def on_draw():
     for item in floor.floor_items:
         item.draw(batch, player, group_items)
 
-    for item in player.active_projectiles:
-        item.draw_projectiles(batch, player, group_items)
+    # for item in player.active_projectiles:
+    #     item.draw_projectiles(batch, player, group_items)
 
     for spell in player.active_spells:
         spell.draw(batch, player, group_items)
@@ -847,59 +730,53 @@ def on_draw():
         item.draw_inventory(batch, player, group_inv, i, gamestate)
         i = i + 1
 
+    if keys[pyglet.window.key.Q]:
+        while len(all_anims) > 0:
+            for anim in all_anims:
+                anim.draw(batch, player, group_effects, floor)
+            delete_object.delobj(all_anims)
+    else:
+        for anim in all_anims:
+            anim.draw(batch, player, group_effects, floor)
+        delete_object.delobj(all_anims)
 
+
+    if gamestate != 2:
+        delete_object.delobj(all_enemies)
+    
+    delete_object.delobj(floor.floor_items)
+    # delete_object.delobj(player.active_projectiles)
+    delete_object.delobj(player.active_spells)
+    delete_object.delobj(all_anims)
+    delete_object.delobj(player.inventory)
+    delete_object.delobj(all_buttons)
 
     for button in all_buttons:
-        if button == -1:
-            all_buttons.remove(button)
-        else:
-            button.hovered = button.is_mouse_over(mouse_x, mouse_y)
+        
+        button.hovered = button.is_mouse_over(mouse_x, mouse_y)
 
-            button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player)
+        button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player)
 
-            if button.type == "GUI_HP":
-                if has_won == 1:
-                    player.health = 999
-                    player.maxhealth = 999
+        if button.type == "GUI_HP":
+            if has_won == 1:
+                player.health = 999
+                player.maxhealth = 999
 
-                gui_string = get_gui_string(player)
-                sprite = button.sprites[1]
-                sprite.image = combine_tiles(text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string)+1, "left"), 8, 8, len(gui_string)+1)
-            elif button.type == "POINT_NUMBER":
-                button.y += 1
-                if button.animframe > 20:
-                    if button.colors[0][0][3] == 255:
-                        button.colors[0][0] = (button.colors[0][0][0], button.colors[0][0][1], button.colors[0][0][2], 0)
-                    else:
-                        button.colors[0][0] = (button.colors[0][0][0], button.colors[0][0][1], button.colors[0][0][2], 255)
-                if button.animframe > 45:
-                    delete_buttons_specific(all_buttons, button)
-            elif button.type == "SMOKE CLOUD":
-                if button.animframe > 20:
-                    if button.colors[0][0][3] == 255:
-                        button.colors[0][0] = (button.colors[0][0][0], button.colors[0][0][1], button.colors[0][0][2], 0)
-                    else:
-                        button.colors[0][0] = (button.colors[0][0][0], button.colors[0][0][1], button.colors[0][0][2], 255)
-                if button.animframe > 45:
-                    delete_buttons_specific(all_buttons, button)
-
-            elif button.type == "overlay":
-                if gamestate == 3:
-                    button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
-                else:
-                    button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
-            elif button.type == "mouse_overlay":
-                if gamestate == 1 or gamestate == 2 or gamestate == 4 or gamestate == 5: 
-                    button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
-                    # button.x = math.floor((mouse_x - 12)/48)*48 
-                    # button.y = math.floor((mouse_y - 12)/48)*48
-
-                    #print(math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5)), math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5)))
-
-                    button.x = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))*16*3 + 1152/2 - (player.prevx*16 + 8)*player.scale
-                    button.y = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))*16*3 + 768/2 - (player.prevy*16+8)*player.scale + 16
-                else:
-                    button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
+            gui_string = get_gui_string(player)
+            sprite = button.sprites[1]
+            sprite.image = combine_tiles(text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string)+1, "left"), 8, 8, len(gui_string)+1)
+        elif button.type == "overlay":
+            if gamestate == 3:
+                button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
+            else:
+                button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
+        elif button.type == "mouse_overlay":
+            if gamestate == 1 or gamestate == 2 or gamestate == 4 or gamestate == 5: 
+                button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
+                button.x = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))*16*3 + 1152/2 - (player.prevx*16 + 8)*player.scale
+                button.y = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))*16*3 + 768/2 - (player.prevy*16+8)*player.scale + 16
+            else:
+                button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
             
             
             

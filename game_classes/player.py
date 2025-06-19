@@ -7,6 +7,7 @@ import button_class
 import random
 from game_classes.item import *
 from game_classes.projectiles import *
+import animations
 
 class Player:
     def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
@@ -18,6 +19,11 @@ class Player:
         self.equipment_weapon = None
         self.equipment_shield = None
 
+        #these are for displaying the stats during combat
+        self.health_visual = health
+        self.maxhealth_visual = health
+        self.experience_visual = experience
+        self.level_visual = level
 
         self.x = x # x coords are in 
         self.y = y
@@ -35,7 +41,7 @@ class Player:
         self.techniqueitem = None #used if technique uses an item and the object is needed (e.g. throwing)
         self.techniqueframe = 0
         self.techniquefinished = 0
-        
+        self.should_be_deleted = False #unused; do not delete player ever
         
         self.strength = 10  # Default strength
         self.maxstrength = 10
@@ -122,69 +128,19 @@ class Player:
         new_x = self.x + dx 
         new_y = self.y + dy
 
-        if self.can_move_to(new_x, new_y, game_map):
-            self.technique = Technique.MOVE
-            self.techniquex = self.x + dx
-            self.techniquey = self.y + dy
-        elif self.can_move_to(new_x, self.y, game_map):
-            self.technique = Technique.MOVE
-            self.techniquex = self.x + dx
-            self.techniquey = self.y   
-        elif self.can_move_to(self.x, new_y, game_map):
-            self.technique = Technique.MOVE
-            self.techniquex = self.x
-            self.techniquey = self.y + dy 
-        else:
-            self.technique = Technique.STILL
 
-        #adjust rotation state (gross)
-        if dx == 1:
-            if dy == 1:
-                self.direction = FaceDirection.UP_RIGHT
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN_RIGHT
-            else:
-                self.direction = FaceDirection.RIGHT
-        elif dx == -1:
-            if dy == 1:
-                self.direction = FaceDirection.UP_LEFT
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN_LEFT
-            else:
-                self.direction = FaceDirection.LEFT
-        else:
-            if dy == 1:
-                self.direction = FaceDirection.UP
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN
+        self.technique = Technique.MOVE
+        self.techniquex = self.x + dx
+        self.techniquey = self.y + dy
+
+
 
     def hit(self, x, y):
         self.technique = Technique.HIT
         self.techniquex = x
         self.techniquey = y
-        dx = x - self.x 
-        dy = y - self.y
 
-        #adjust rotation state (gross)
-        if dx == 1:
-            if dy == 1:
-                self.direction = FaceDirection.UP_RIGHT
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN_RIGHT
-            else:
-                self.direction = FaceDirection.RIGHT
-        elif dx == -1:
-            if dy == 1:
-                self.direction = FaceDirection.UP_LEFT
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN_LEFT
-            else:
-                self.direction = FaceDirection.LEFT
-        else:
-            if dy == 1:
-                self.direction = FaceDirection.UP
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN
+
 
 
     def spellcasting(self, inv_slot, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate):
@@ -307,7 +263,7 @@ class Player:
     def throw(self, x, y):
         item = self.inventory.pop(self.techniqueitem)
         self.active_projectiles.append(item)
-        item.sprite.color = (255, 255, 255, 255)
+        item.sprite.color = (255, 255, 255, 0)
         item.x = self.x
         item.y = self.y 
         item.prevx = self.x 
@@ -318,26 +274,7 @@ class Player:
         dx = x - self.x 
         dy = y - self.y
 
-        #adjust rotation state (gross)
-        if dx == 1:
-            if dy == 1:
-                self.direction = FaceDirection.UP_RIGHT
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN_RIGHT
-            else:
-                self.direction = FaceDirection.RIGHT
-        elif dx == -1:
-            if dy == 1:
-                self.direction = FaceDirection.UP_LEFT
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN_LEFT
-            else:
-                self.direction = FaceDirection.LEFT
-        else:
-            if dy == 1:
-                self.direction = FaceDirection.UP
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN
+
 
     def drop_item(self, inv_slot, floor_items):
         if self.detect_item(floor_items) == False:
@@ -347,7 +284,7 @@ class Player:
             item.y = self.y    
         self.technique = Technique.STILL 
 
-    def consume_item(self, inv_slot, all_buttons):
+    def consume_item(self, inv_slot, list_of_animations):
         item = self.inventory.pop(inv_slot)
         health_to_restore = item.nutrition_value
 
@@ -357,7 +294,11 @@ class Player:
         if (self.health + health_to_restore > self.maxhealth) and item.name != "Durian":
             health_to_restore = self.maxhealth - self.health
         self.health += health_to_restore
-        button_class.create_point_number(self.x, self.y, "+" + str(health_to_restore), (0, 189, 66, 255), self, all_buttons)
+        #button_class.create_point_number(self.x, self.y, "+" + str(health_to_restore), (0, 189, 66, 255), self, all_buttons)
+        anim = animations.Animation("+" + str(health_to_restore), 2, 0, (0, 189, 66, 0), 0, 50, self.x, self.y+8, self.x, self.y, 0, None, None, self, self, -health_to_restore)
+        #when this anim happens...
+
+        list_of_animations.append(anim)
 
         if item.name == "Starfruit":
             #gain a level
