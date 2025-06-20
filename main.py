@@ -374,8 +374,6 @@ def on_mouse_release(x, y, button, modifiers):
                 #pass
 
             print(rclick_options)
-
-            rclick_options.append("CANCEL")
             rclick_extra_1.append(0)
             rclick_extra_2.append(0)
 
@@ -387,7 +385,7 @@ def on_mouse_release(x, y, button, modifiers):
                 spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
                 option_obj = InteractiveObject(
                     x=mouse_x,
-                    y=mouse_y - i*8*3,
+                    y=mouse_y - i*8*3-16,
                     width=spr2.width,
                     height=spr2.height,
                     sprites=[spr2, spr1],
