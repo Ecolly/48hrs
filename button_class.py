@@ -9,6 +9,11 @@ columns_font = sprite_font.width // 8
 rows_font = sprite_font.height // 8
 grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
+sprite_tinyfont = pyglet.image.load('tinyfont.png')
+columns_tinyfont = sprite_tinyfont.width // 5
+rows_tinyfont = sprite_tinyfont.height // 8
+grid_tinyfont = pyglet.image.ImageGrid(sprite_tinyfont, rows_tinyfont, columns_tinyfont)
+
 sprite_bg = pyglet.image.load('bgtiles.png')
 columns_bg = sprite_bg.width // 16
 rows_bg = sprite_bg.height // 16
@@ -19,7 +24,7 @@ columns_items = sprite_items.width // 16
 rows_items = sprite_items.height // 16
 grid_items = pyglet.image.ImageGrid(sprite_items, rows_items, columns_items)
 
-letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
+letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "", "", "", "", "", "", "", "", "ä"];
 
 
 
@@ -180,10 +185,17 @@ def create_inventory_menu(all_buttons):
     h = int((768)/48)
     txt = ""
     txt = txt.zfill(w*h)
-    spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(txt, grid_font, letter_order, w, "left"), 8, 8, w))
+    sprite_inv = pyglet.image.load('inventory.png')
+    # combined = pyglet.image.Texture.create(190, 76)
+
+    # combined.blit_into(sprite_inv, 0, 0, 0)
+
+
+
+    spr2 = pyglet.sprite.Sprite(sprite_inv)
     obj = InteractiveObject(
         x=0 + 24*(w/2), #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
-        y=48*3 + 24*(h/2), #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        y=48*4.5+ 24*(h/2), #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
         width=spr2.width,
         height=spr2.height,
         sprites=[spr2],
@@ -266,6 +278,7 @@ def create_win_lose_screen(all_buttons, winlose):
         txt2 = "You lost..."
 
     txt2 = txt2 + "εPANDORIUMεMade by zeroBound & EconicεMusic: Cyber Dream Loopεby Eric Matyasεwww.soundimage.orgεPress TAB to quit.εä εä εä εä εä εä εä εä εä εä"
+    
     spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(txt2, grid_font, letter_order, w, "center"), 8, 8, w))
     spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(txt, grid_font, letter_order, w, "left"), 8, 8, w))
     obj = InteractiveObject(

@@ -42,6 +42,11 @@ columns_font = sprite_font.width // 8
 rows_font = sprite_font.height // 8
 grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
+sprite_tinyfont = pyglet.image.load('tinyfont.png')
+columns_tinyfont = sprite_tinyfont.width // 5
+rows_tinyfont = sprite_tinyfont.height // 8
+grid_tinyfont = pyglet.image.ImageGrid(sprite_tinyfont, rows_tinyfont, columns_tinyfont)
+
 sprite_entities1 = pyglet.image.load('entities_level1.png')
 columns_entities1 = sprite_entities1.width // 16
 rows_entities1 = sprite_entities1.height // 16
