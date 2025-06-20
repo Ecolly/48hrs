@@ -7,6 +7,45 @@ import button_class
 import random
 from game_classes.projectiles import *
 
+
+#dumb dumb dumb dumb dumb dumb dumb
+sprite_entities1 = pyglet.image.load('entities_level1.png')
+columns_entities1 = sprite_entities1.width // 16
+rows_entities1 = sprite_entities1.height // 16
+grid_entities1 = pyglet.image.ImageGrid(sprite_entities1, rows_entities1, columns_entities1)
+
+sprite_entities2 = pyglet.image.load('entities_level2.png')
+columns_entities2 = sprite_entities2.width // 16
+rows_entities2 = sprite_entities2.height // 16
+grid_entities2 = pyglet.image.ImageGrid(sprite_entities2, rows_entities2, columns_entities2)
+
+sprite_entities3 = pyglet.image.load('entities_level3.png')
+columns_entities3 = sprite_entities3.width // 16
+rows_entities3 = sprite_entities3.height // 16
+grid_entities3 = pyglet.image.ImageGrid(sprite_entities3, rows_entities3, columns_entities3)
+
+sprite_entities4 = pyglet.image.load('entities_level4.png')
+columns_entities4 = sprite_entities4.width // 16
+rows_entities4 = sprite_entities4.height // 16
+grid_entities4 = pyglet.image.ImageGrid(sprite_entities4, rows_entities4, columns_entities4)
+
+def enemy_grid_to_use(level):
+    global grid_entities1 
+    global grid_entities2
+    global grid_entities3
+    global grid_entities4
+    if level < 2:
+        return grid_entities1
+    elif level == 2:
+        return grid_entities2
+    elif level == 3:
+        return grid_entities3
+    else:
+        return grid_entities4
+
+
+
+
 def create_sprite_enemy(image_grid, index):
     tex = pyglet.image.Texture.create(16, 16)
     tex.blit_into(image_grid[index], 0, 0, 0)
@@ -216,7 +255,7 @@ class Enemy:
 
 
         sprite = self.sprite
-
+        self.grid = enemy_grid_to_use(self.level_visual)
         frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][int(self.animframe)]
         tile = self.grid[frame_index]
 

@@ -4,6 +4,10 @@ from game_classes.enemy import*
 
 
 
+
+
+
+
 def make_floor():
     number_of_rooms = random.randint(5, 9)  # Random number of rooms between 5 and 10
     test_map = Map(60, 60, number_of_rooms, default_tile='#')
@@ -31,8 +35,9 @@ class Map:
         self.valid_tiles = []
         self.textured_map = [[]]
         self.valid_entity_tiles = []
-        self.list_of_all_enemy_names = ["LEAFALOTTA", "HAMSTER", "GOOSE", "CHLOROSPORE", "FOX", "S'MORE"]
-        #self.list_of_all_enemies = [["LEAFALOTTA", "GOOSE", "HAMSTER"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"]]
+        #self.list_of_all_enemy_names = ["LEAFALOTTA", "HAMSTER", "GOOSE", "CHLOROSPORE", "FOX", "S'MORE"]
+        self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "GOOSE"]]
+        self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 2]]
         self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         self.floor_items = []  # List to hold items on the floor
         self.all_enemies = []
@@ -199,16 +204,22 @@ class Map:
             print(f"Created item: {item.name} at ({x}, {y})")
 
     def generate_enemies(self, grid_entities1, floor_level):
-        enemy_Scale = floor_level // 3 
+        enemy_Scale = min(floor_level // 3, len(self.list_of_all_enemies))
         #enemies scale based on base stats
         # random_location = random.choice(self.valid_tiles)
         for _ in range(5):
             random_location = random.choice(self.valid_entity_tiles)
             y, x = random_location
-            rng_enemy = random.choice(self.list_of_all_enemy_names)
+
+            #choose a random enemy out of the enemy name & level options for this floor
+            rng_enemy = random.randint(0, len(self.list_of_all_enemies[enemy_Scale])-1)
+            enemy_name = self.list_of_all_enemies[enemy_Scale][rng_enemy]
+            enemy_level = self.list_of_all_levels[enemy_Scale][rng_enemy]
+
             self.valid_entity_tiles.remove(random_location)
-            test_enemy = generate_enemy(rng_enemy, enemy_Scale, x, y, grid_entities1)
-            self.all_enemies.append(generate_enemy(rng_enemy, enemy_Scale, x, y, grid_entities1))
+            
+            test_enemy = generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level))
+            self.all_enemies.append(generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level)))
             print(f"the experience{test_enemy.experience}")
 
 

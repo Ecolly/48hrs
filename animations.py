@@ -116,7 +116,7 @@ class Animation:
                 
                 if self.animtype == 1 or self.animtype == 4:
 
-                    
+
                     tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 4)]
                     # Get texture and set filtering
                     texture = tile.get_texture()
@@ -150,7 +150,8 @@ class Animation:
                                         self.attacker.maxhealth_visual += 3
                             else:
                                 if is_dead == 1:
-                                    pass
+                                    self.attacker.level_visual += 1
+                                    #pass
                                     #update attacker sprite to reflect current level
                             self.target.health_visual = self.target.health_visual - self.damage
                             
@@ -164,7 +165,7 @@ class Animation:
                     self.color = (self.color[0], self.color[1], self.color[2], 255)           
                     distance_x = self.endx - self.startx
                     distance_y = self.endy - self.starty
-                    distance_total = math.sqrt(distance_x*distance_x + distance_y*distance_y)
+                    distance_total = max(math.sqrt(distance_x*distance_x + distance_y*distance_y), 0.001)
 
                     distance_x_normalized = distance_x/(distance_total*5)
                     distance_y_normalized = distance_y/(distance_total*5)

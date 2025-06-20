@@ -72,6 +72,20 @@ columns_bg = sprite_bg.width // 16
 rows_bg = sprite_bg.height // 16
 grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 
+# def enemy_grid_to_use(level):
+#     global grid_entities1 
+#     global grid_entities2
+#     global grid_entities3
+#     global grid_entities4
+#     if level < 2:
+#         return grid_entities1
+#     elif level == 2:
+#         return grid_entities2
+#     elif level == 3:
+#         return grid_entities3
+#     else:
+#         return grid_entities4
+
 from pyglet.graphics import Group
 group_bg = Group(order=0)
 group_items = Group(order=20)
