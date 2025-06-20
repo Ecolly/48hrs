@@ -134,87 +134,112 @@ class Player:
         self.techniquey = y
 
 
+    def throw(self, x, y):
+        item = self.inventory.pop(self.techniqueitem)
+        self.active_projectiles.append(item)
+        item.sprite.color = (255, 255, 255, 0)
+        item.x = self.x
+        item.y = self.y 
+        item.prevx = self.x 
+        item.prevy = self.y
+        self.technique = Technique.THROW
+        self.techniquex = x
+        self.techniquey = y
+        dx = x - self.x 
+        dy = y - self.y
 
 
-    def spellcasting(self, inv_slot, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate):
-        item = self.inventory[inv_slot]
-        name = item.name
-        if isinstance(item, Staff) == True:
-            if name == "Red Staff": #Cuts an enemy's HP in half
-                pass
-            elif name == "Orange Staff": #Deducts 10 from HP of all enemies in floor (including you)
-                self.health = self.health - 10
-                button_class.create_point_number(self.x, self.y, "-15", (255, 0, 0, 255), self, all_buttons)
-                button_class.create_graphical_effect(self.x, self.y, 0, self, all_buttons)
-                for enemy in all_enemies:
-                    enemy.health = enemy.health - 10
-                    button_class.create_point_number(enemy.x, enemy.y, "-15", (255, 0, 0, 255), self, all_buttons)
-                    button_class.create_graphical_effect(enemy.x, enemy.y, 0, self, all_buttons)
-                    if not enemy.is_alive():
-                        enemy.sprite.delete()
-                        del enemy.sprite
-                        floor.all_enemies.remove(enemy)
-                sound_magic.play()
-                self.inventory.remove(item)
-                del item
-            elif name == "Gold Staff": #average all stats together (could be a consumable)
-                total_stats = math.floor((self.health + self.strength + self.defense)/3)
+    def cast(self, x, y):
+        item = self.inventory[self.techniqueitem]
+        self.active_projectiles.append(turn_logic.Projectile(item.name, 0, self.x, self.y))
+        self.technique = Technique.THROW
+        self.techniquex = x 
+        self.techniquey = y
 
-                self.maxhealth = total_stats
-                self.health = total_stats
+    def cast_static(self):
+        self.technique = Technique.CAST
+        
 
-                self.maxstrength = total_stats
-                self.strength = total_stats
+    # def spellcasting(self, inv_slot, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate):
+        
+    #     item = self.inventory[inv_slot]
+    #     name = item.name
+    #     if isinstance(item, Staff) == True:
+    #         if name == "Red Staff": #Cuts an enemy's HP in half
+    #             pass
+    #         elif name == "Orange Staff": #Deducts 10 from HP of all enemies in floor (including you)
+    #             self.health = self.health - 10
+    #             button_class.create_point_number(self.x, self.y, "-15", (255, 0, 0, 255), self, all_buttons)
+    #             button_class.create_graphical_effect(self.x, self.y, 0, self, all_buttons)
+    #             for enemy in all_enemies:
+    #                 enemy.health = enemy.health - 10
+    #                 button_class.create_point_number(enemy.x, enemy.y, "-15", (255, 0, 0, 255), self, all_buttons)
+    #                 button_class.create_graphical_effect(enemy.x, enemy.y, 0, self, all_buttons)
+    #                 if not enemy.is_alive():
+    #                     enemy.sprite.delete()
+    #                     del enemy.sprite
+    #                     floor.all_enemies.remove(enemy)
+    #             sound_magic.play()
+    #             self.inventory.remove(item)
+    #             del item
+    #         elif name == "Gold Staff": #average all stats together (could be a consumable)
+    #             total_stats = math.floor((self.health + self.strength + self.defense)/3)
 
-                self.maxdefense = total_stats
-                self.defense = total_stats
-                sound_magic.play()
-                self.inventory.remove(item)
-                del item
-            elif name == "Green Staff": #wand of teleporting
-                random_location = random.choice(floor.valid_entity_tiles)
-                y, x = random_location
-                self.x, self.y = x, y
-                self.prevx, self.prevy = x, y
-                sound_magic.play()
-                self.inventory.remove(item)
-                del item
-                pass
-            elif name == "Teal Staff": 
-                self.health = self.maxhealth
-                sound_magic.play()
-                self.inventory.remove(item)
-                del item
-            elif name == "Blue Staff": #+1 to Sword and Shield.
-                if self.equipment_shield != None:
-                    self.equipment_shield.defense += 1
-                if self.equipment_weapon != None:
-                    self.equipment_weapon.damage += 1
-                sound_magic.play()
-                self.inventory.remove(item)
-                del item
-            elif name == "Light Blue Staff": #Multiplies Sword & Shield strength by 1.2x
-                if self.equipment_shield != None:
-                    self.equipment_shield.defense = math.floor(self.equipment_shield.defense*1.2)
-                if self.equipment_weapon != None:
-                    self.equipment_weapon.damage = math.floor(self.equipment_sheild.damage*1.2)
-                sound_magic.play()
-                self.inventory.remove(item)
-                del item
-            elif name == "Magenta Staff":
-                sound_magic.play()
-                has_won = 1
-                self.inventory.remove(item)
-                del item
-            elif name == "Black Staff":
-                self.maxhealth = self.maxhealth + 1
-                sound_magic.play()
-                self.inventory.remove(item)
-                del item
-                pass
+    #             self.maxhealth = total_stats
+    #             self.health = total_stats
+
+    #             self.maxstrength = total_stats
+    #             self.strength = total_stats
+
+    #             self.maxdefense = total_stats
+    #             self.defense = total_stats
+    #             sound_magic.play()
+    #             self.inventory.remove(item)
+    #             del item
+    #         elif name == "Green Staff": #wand of teleporting
+    #             random_location = random.choice(floor.valid_entity_tiles)
+    #             y, x = random_location
+    #             self.x, self.y = x, y
+    #             self.prevx, self.prevy = x, y
+    #             sound_magic.play()
+    #             self.inventory.remove(item)
+    #             del item
+    #             pass
+    #         elif name == "Teal Staff": 
+    #             self.health = self.maxhealth
+    #             sound_magic.play()
+    #             self.inventory.remove(item)
+    #             del item
+    #         elif name == "Blue Staff": #+1 to Sword and Shield.
+    #             if self.equipment_shield != None:
+    #                 self.equipment_shield.defense += 1
+    #             if self.equipment_weapon != None:
+    #                 self.equipment_weapon.damage += 1
+    #             sound_magic.play()
+    #             self.inventory.remove(item)
+    #             del item
+    #         elif name == "Light Blue Staff": #Multiplies Sword & Shield strength by 1.2x
+    #             if self.equipment_shield != None:
+    #                 self.equipment_shield.defense = math.floor(self.equipment_shield.defense*1.2)
+    #             if self.equipment_weapon != None:
+    #                 self.equipment_weapon.damage = math.floor(self.equipment_sheild.damage*1.2)
+    #             sound_magic.play()
+    #             self.inventory.remove(item)
+    #             del item
+    #         elif name == "Magenta Staff":
+    #             sound_magic.play()
+    #             has_won = 1
+    #             self.inventory.remove(item)
+    #             del item
+    #         elif name == "Black Staff":
+    #             self.maxhealth = self.maxhealth + 1
+    #             sound_magic.play()
+    #             self.inventory.remove(item)
+    #             del item
+    #             pass
             
-            self.technique = Technique.STILL
-            return has_won
+    #         self.technique = Technique.STILL
+    #         return has_won
 
 
     # def cast_projectile(self, x, y):
@@ -253,27 +278,7 @@ class Player:
     #             self.direction = FaceDirection.DOWN
 
 
-    def throw(self, x, y):
-        item = self.inventory.pop(self.techniqueitem)
-        self.active_projectiles.append(item)
-        item.sprite.color = (255, 255, 255, 0)
-        item.x = self.x
-        item.y = self.y 
-        item.prevx = self.x 
-        item.prevy = self.y
-        self.technique = Technique.THROW
-        self.techniquex = x
-        self.techniquey = y
-        dx = x - self.x 
-        dy = y - self.y
 
-
-    def cast(self, x, y):
-        item = self.inventory[self.techniqueitem]
-        self.active_projectiles.append(turn_logic.Projectile(item.name, 0, self.x, self.y))
-        self.technique = Technique.THROW
-        self.techniquex = x 
-        self.techniquey = y
 
 
 
@@ -296,14 +301,18 @@ class Player:
         item = self.inventory.pop(inv_slot)
         health_to_restore = item.nutrition_value
 
+
+        print(health_to_restore, self.maxhealth, self.health, self.maxhealth_visual, self.health_visual)
         if item.name == "Mushrooms":
             self.maxhealth += health_to_restore
+            self.maxhealth_visual += health_to_restore
 
         if (self.health + health_to_restore > self.maxhealth) and item.name != "Durian":
             health_to_restore = self.maxhealth - self.health
         self.health += health_to_restore
         #button_class.create_point_number(self.x, self.y, "+" + str(health_to_restore), (0, 189, 66, 255), self, all_buttons)
-        anim = animations.Animation("+" + str(health_to_restore), 2, 0, (0, 189, 66, 0), 0, 50, self.x, self.y+8, self.x, self.y, 0, None, None, self, self, -health_to_restore)
+        #print("adqwd")
+        anim = animations.Animation("+" + str(health_to_restore), 2, 0, (0, 189, 66, 0), 0, 50, self.x, self.y+0.5, self.x, self.y, 0, None, None, self, self, -health_to_restore)
         #when this anim happens...
 
         list_of_animations.append(anim)

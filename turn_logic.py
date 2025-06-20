@@ -85,7 +85,7 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
         target.should_be_deleted = True
         #target.attacker = attacker
 
-        attacker.level_up()
+        #attacker.level_up()
         if attacker == player:
            attacker.increase_experience(target.experience)
         else:
@@ -131,6 +131,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         entity.x = entity.techniquex
         entity.y = entity.techniquey
         return Technique.MOVE, chronology
+    elif entity.technique == Technique.CONSUME:
+        entity.consume_item(entity.techniqueitem, list_of_animations)
+        return Technique.CONSUME, chronology+10
     elif entity.technique == Technique.HIT:
         rot = adjust_rotation(entity, entity.techniquex-entity.x, entity.techniquey-entity.y)
         target = None
@@ -239,7 +242,15 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         chronology = chronology + max(chron_i, 16)
 
         return Technique.THROW, chronology
-
+    elif entity.technique == Technique.CAST: #this is for static castings (not projectiles)
+        item = entity.inventory[entity.techniqueitem]
+        if item.name == "Orange Staff":
+            inflict_damage(entity, player, player, chronology, list_of_animations, item, 15, "magic")
+            for enemy in floor.all_enemies:
+                inflict_damage(entity, enemy, player, chronology, list_of_animations, item, 15, "magic")
+        
+        chronology += 10
+        return Technique.CAST, chronology
 
 
 

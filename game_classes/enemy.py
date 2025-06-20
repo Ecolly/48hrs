@@ -195,7 +195,7 @@ class Enemy:
                 print("The smore is hitting player")
                 return Technique.HIT, xtochk, ytochk
             for enemy in game_map.all_enemies:
-                if enemy is not self:
+                if enemy is not self and enemy.should_be_deleted == False:
                     if abs(enemy.x-self.x) < 2 and abs(enemy.y-self.y) < 2:
                         print("The smore is hitting others")
                         return Technique.HIT, enemy.x, enemy.y
@@ -207,7 +207,7 @@ class Enemy:
             nearest_enemy = None
             min_dist = float('inf')
             for enemy in game_map.all_enemies:
-                if enemy is not self:
+                if enemy is not self and enemy.should_be_deleted == False:
                     dist = abs(enemy.x - self.x) + abs(enemy.y - self.y)
                     if dist < min_dist:
                         min_dist = dist

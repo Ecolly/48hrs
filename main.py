@@ -244,7 +244,8 @@ def on_mouse_release(x, y, button, modifiers):
                         #partition_entity = construct_partitions()
                         delete_buttons_supertype(all_buttons, 'inventory')
                     elif button.type == "CONSUME":
-                        player.consume_item(button.extra_1, all_buttons)
+                        player.technique = Technique.CONSUME 
+                        player.techniqueitem = button.extra_1
                         gamestate = 2
                         all_anims = turn_logic.do_turns(all_enemies, player, floor)
                         #partition_entity = construct_partitions()
@@ -270,13 +271,18 @@ def on_mouse_release(x, y, button, modifiers):
                             gamestate = 5
                         else:
                             gamestate = 2
-                            has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
+                            player.cast_static()
+                            #has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
+                            all_anims = turn_logic.do_turns(all_enemies, player, floor)
+
                             if has_won == 0:
                                 #partition_entity = construct_partitions()
                                 pass
                             else:
                                 gamestate = 0
                                 create_win_lose_screen(all_buttons, "win")
+
+                
                             
                         delete_buttons_supertype(all_buttons, 'inventory')
 
@@ -593,8 +599,9 @@ create_mouse_overlay(all_buttons)
 # player.inventory.append(floor.create_item("Light Blue Staff", grid_items))
 # player.inventory.append(floor.create_item("Armor Plate", grid_items))
 player.inventory.append(floor.create_item("Red Staff", grid_items))
-player.inventory.append(floor.create_item("Green Staff", grid_items))
-player.inventory.append(floor.create_item("Magenta Staff", grid_items))
+player.inventory.append(floor.create_item("Orange Staff", grid_items))
+# player.inventory.append(floor.create_item("Green Staff", grid_items))
+# player.inventory.append(floor.create_item("Magenta Staff", grid_items))
 
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
@@ -778,8 +785,6 @@ def on_draw():
     delete_object.delobj(all_buttons)
 
     for button in all_buttons:
-        if isinstance(button, InteractiveObject) == False:
-            print(all_buttons)
         button.hovered = button.is_mouse_over(mouse_x, mouse_y)
 
         button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player)

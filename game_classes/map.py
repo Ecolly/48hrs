@@ -204,7 +204,7 @@ class Map:
             print(f"Created item: {item.name} at ({x}, {y})")
 
     def generate_enemies(self, grid_entities1, floor_level):
-        enemy_Scale = min(floor_level // 3, len(self.list_of_all_enemies))
+        enemy_Scale = min(floor_level // 3, len(self.list_of_all_enemies)-1)
         #enemies scale based on base stats
         # random_location = random.choice(self.valid_tiles)
         for _ in range(5):

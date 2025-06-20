@@ -5,5 +5,6 @@ class Technique (Enum):
     THROW = auto()
     STILL = auto()
     CAST = auto()
+    CONSUME = auto()
     NA = auto()
     
