@@ -10,7 +10,7 @@ from game_classes.enemy import *
 from game_classes.map import *
 from game_classes.item import Weapon, Consumable
 from game_classes.item import Item
-from game_classes.projectiles import *
+
 import turn_logic
 import delete_object
 
@@ -285,14 +285,15 @@ def on_mouse_release(x, y, button, modifiers):
                 
 
 
-            # if gamestate == 5 and was_button_clicked == 0:
-            #     mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
-            #     mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
-            #     player.cast_projectile(mouse_x_tilemap, mouse_y_tilemap)
-            #     gamestate = 2
+            if gamestate == 5 and was_button_clicked == 0:
+                mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+                mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+                player.cast(mouse_x_tilemap, mouse_y_tilemap)
+                gamestate = 2
+                all_anims = turn_logic.do_turns(all_enemies, player, floor)
 
 
-            print(gamestate)
+
 
         elif button == pyglet.window.mouse.RIGHT:
             delete_buttons_supertype(all_buttons, 'rclick')
@@ -422,20 +423,23 @@ if floor.map_type == "Simple":
     #Simple Map Initiation
     simple_color_sets = [(26,26), (29,29), (27,27)]
     wall_texture_value, floor_texture_base_value = random.choice(simple_color_sets)
-    bg_order = ["#", ".", "*", "~", "@"] #Filler, #Walls, #Space, @Stairs
-    bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9,floor_texture_base_value*16+7, floor_texture_base_value*16+13]
+    bg_order = ["#", ".", "*", "~", '%', '<', '>', "@"] #Filler, #Walls, #Space, @Stairs
+    bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13]
     for s in floor.map_grid:
         for s2 in s:
             fl_string += s2
 else:
     #wall, floor, floorcodes,
-    complex_wall_sets = [(12, 31, 4,4,4), (22,30,2,2,10), (21,31,1,9,10), (17, 30, 5,5-16,5-48)]
+    complex_wall_sets = [(12, 31, 4,4,4,4,4,4), (22,30,2,2,10,2,2,2), (21,31,1,9,10,11,0,3), (17, 24, 5,5+32,5+48,5+64,5+80,5+96)]
     #Map Initiation
     bg_order = [
         "#",   #filler
         '.',   #space
         '*',   #space texture
         '~',    #space texture
+        '%',
+        '<',
+        '>',
 
     'a',   # 0: isolated
     'b',   # 1: up
@@ -460,8 +464,8 @@ else:
         "@"    # stairs
     ]
 
-    wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2 = random.choice(complex_wall_sets)
-    bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,
+    wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = random.choice(complex_wall_sets)
+    bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,floor_texture_base_value*16+floor_texture_code3, floor_texture_base_value*16+floor_texture_code4, floor_texture_base_value*16+floor_texture_code5,
                   
                 wall_texture_value*16, wall_texture_value*16+15, wall_texture_value*16+13, wall_texture_value*16+9,
                 wall_texture_value*16+12, wall_texture_value*16+8, wall_texture_value*16+6, wall_texture_value*16+2,
@@ -496,47 +500,52 @@ def go_to_next_level():
     if floor.map_type == "Simple":
         #Simple Map Initiation
         simple_color_sets = [(26,26), (29,29), (27,27)]
-        wall_texture_value, floor_texture_value = random.choice(simple_color_sets)
-        bg_order = ["#", ".", "*", "~", "@"] #Filler, #Walls, #Space, @Stairs
-        bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_value*16+9,floor_texture_value*16+7, floor_texture_value*16+13]
+        wall_texture_value, floor_texture_base_value = random.choice(simple_color_sets)
+        bg_order = ["#", ".", "*", "~", '%', '<', '>', "@"] #Filler, #Walls, #Space, @Stairs
+        bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13]
+       
         for s in floor.map_grid:
             for s2 in s:
                 fl_string += s2
     else:
-        complex_wall_sets = [(12, 31, 4,4,4), (11,28,4,4,4), (17, 25, 0,0,9)]
+        #wall, floor, floorcodes,
+        complex_wall_sets = [(12, 31, 4,4,4,4,4,4), (22,30,2,2,10,2,2,2), (21,31,1,9,10,11,0,3), (17, 24, 5,5+32,5+48,5+64,5+80,5+96)]
         #Map Initiation
         bg_order = [
             "#",   #filler
             '.',   #space
             '*',   #space texture
             '~',    #space texture
+            '%',
+            '<',
+            '>',
 
-            'a',   # 0: isolated
-            'b',   # 1: up
-            'c',   # 2: right
-            'd',   # 3: up + right
+        'a',   # 0: isolated
+        'b',   # 1: up
+        'c',   # 2: right
+        'd',   # 3: up + right
 
-            'e',   # 4: down
-            'f',   # 5: up + down
-            'g',  # 6: right + down
-            'h',   # 7: up + right + down
+        'e',   # 4: down
+        'f',   # 5: up + down
+        'g',  # 6: right + down
+        'h',   # 7: up + right + down
 
-            'i',   # 8: left
-            'j',   # 9: up + left
-            'k',   # 10: right + left
-            'l',   # 11: up + right + left
-            
-            'm',  # 12: down + left
-            'n',   # 13: up + down + left
-            'o',   # 14: right + down + left
-            'p',   # 15: all sides
+        'i',   # 8: left
+        'j',   # 9: up + left
+        'k',   # 10: right + left
+        'l',   # 11: up + right + left
+        
+        'm',  # 12: down + left
+        'n',   # 13: up + down + left
+        'o',   # 14: right + down + left
+        'p',   # 15: all sides
 
             "@"    # stairs
         ]
 
-        wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2 = random.choice(complex_wall_sets)
-
-        bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,
+        wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = random.choice(complex_wall_sets)
+        bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,floor_texture_base_value*16+floor_texture_code3, floor_texture_base_value*16+floor_texture_code4, floor_texture_base_value*16+floor_texture_code5,
+                    
                     wall_texture_value*16, wall_texture_value*16+15, wall_texture_value*16+13, wall_texture_value*16+9,
                     wall_texture_value*16+12, wall_texture_value*16+8, wall_texture_value*16+6, wall_texture_value*16+2,
                     wall_texture_value*16+14, wall_texture_value*16+11, wall_texture_value*16+10, wall_texture_value*16+5,
@@ -722,8 +731,8 @@ def on_draw():
     # for item in player.active_projectiles:
     #     item.draw_projectiles(batch, player, group_items)
 
-    for spell in player.active_spells:
-        spell.draw(batch, player, group_items)
+    # for spell in player.active_spells:
+    #     spell.draw(batch, player, group_items)
 
     i = 0 #theres probably a more pythonic way to do this, sowwy
     for item in player.inventory:
@@ -746,13 +755,13 @@ def on_draw():
     
     delete_object.delobj(floor.floor_items)
     # delete_object.delobj(player.active_projectiles)
-    delete_object.delobj(player.active_spells)
     delete_object.delobj(all_anims)
     delete_object.delobj(player.inventory)
     delete_object.delobj(all_buttons)
 
     for button in all_buttons:
-        
+        if isinstance(button, InteractiveObject) == False:
+            print(all_buttons)
         button.hovered = button.is_mouse_over(mouse_x, mouse_y)
 
         button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player)

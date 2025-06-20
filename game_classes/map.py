@@ -41,11 +41,11 @@ class Map:
     
     #set the room tiles to be '.' (empty space)
     def generate_room(self, x, y, room_width, room_height):
-        textures = ['.', '*', '~']
+        textures = ['.', '*', '~', '%', '<', '>']
         for i in range(y, y + room_height):
             for j in range(x, x + room_width):
                 if 0 <= i < self.height and 0 <= j < self.width:
-                    tile = random.choices(textures, weights=[10, 1, 1])[0]
+                    tile = random.choices(textures, weights=[10, 1, 1, 1, 1, 1])[0]
                     self.map_grid[i][j] = tile
                     
     # #set the room borders to be 'o' (empty space)
@@ -220,7 +220,7 @@ class Map:
             for y in range(self.height)
             for x in range(self.width)
             #actual map value (index based)
-            if self.map_grid[self.height-1-y][x] in ['.', '*', '~']
+            if self.map_grid[self.height-1-y][x] in ['.', '*', '~', '%', '<', '>']
         ]
         self.valid_entity_tiles = self.valid_tiles.copy()
     # Connect rooms with corridors

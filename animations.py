@@ -5,6 +5,7 @@ import math
 import random
 from game_classes.techniques import *
 from enum import Enum, auto
+from game_classes.item import *
 
 # def create_sprite_item(image_grid, index): #dumb. literally the same as the image handling function
 #     tex = pyglet.image.Texture.create(16, 16)
@@ -113,14 +114,14 @@ class Animation:
                 base_y =  768/2-24-(player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale #+768/2-24?
 
                 
-                if self.animtype == 1:
+                if self.animtype == 1 or self.animtype == 4:
                     tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 4)]
                     # Get texture and set filtering
                     texture = tile.get_texture()
                     texture.min_filter = pyglet.gl.GL_NEAREST
                     texture.mag_filter = pyglet.gl.GL_NEAREST
                     # Assign directly — no blitting, no texture creation
-                    sprite.image = texture
+                    self.sprite.image = texture
                 elif self.animtype == 2: #point numbers
                     #print("dwqdwdw")
                     #base_y =  -(player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale #for some reason, base y alignment is different for letters
@@ -152,7 +153,9 @@ class Animation:
 
                     elif frame > 20:
                         self.color = (self.color[0], self.color[1], self.color[2], random.choice([0, 255]))
-                elif self.animtype == 3: #projectiles
+                
+                
+                if self.animtype == 3 or self.animtype == 4: #projectiles
                     
                     self.color = (self.color[0], self.color[1], self.color[2], 255)           
                     distance_x = self.endx - self.startx
@@ -191,8 +194,9 @@ class Animation:
                     sprite.group = group
                     sprite.batch = batch
                     if self.item != None:
-                        self.item.sprite.delete()
-                        del self.item.sprite
+                        if isinstance(self.item, Item):
+                            self.item.sprite.delete()
+                            del self.item.sprite
                         del self.item
                 self.should_be_deleted = True
 

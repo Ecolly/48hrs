@@ -8,6 +8,7 @@ import random
 from game_classes.item import *
 from game_classes.projectiles import *
 import animations
+import turn_logic
 
 class Player:
     def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
@@ -33,7 +34,7 @@ class Player:
         self.offsety = 0
         self.inventory = []
         self.active_projectiles = []
-        self.active_spells = []
+        #self.active_spells = []
         self.direction = FaceDirection.DOWN  # Default direction
         self.technique = Technique.NA
         self.techniquex = 0
@@ -123,17 +124,9 @@ class Player:
     
         
     def move(self, dx, dy, game_map): #Move relative to current position
-
-
-        new_x = self.x + dx 
-        new_y = self.y + dy
-
-
         self.technique = Technique.MOVE
         self.techniquex = self.x + dx
         self.techniquey = self.y + dy
-
-
 
     def hit(self, x, y):
         self.technique = Technique.HIT
@@ -224,40 +217,40 @@ class Player:
             return has_won
 
 
-    def cast_projectile(self, x, y):
-        projectile = Spell("spell", sprite_locs=4)
-        self.active_spells.append(projectile)
-        projectile.x = self.x
-        projectile.y = self.y   
-        projectile.prevx = self.x 
-        projectile.prevy = self.y
-        self.technique = Technique.CAST
+    # def cast_projectile(self, x, y):
+    #     projectile = Spell("spell", sprite_locs=4)
+    #     self.active_spells.append(projectile)
+    #     projectile.x = self.x
+    #     projectile.y = self.y   
+    #     projectile.prevx = self.x 
+    #     projectile.prevy = self.y
+    #     self.technique = Technique.CAST
 
-        self.techniquex = x
-        self.techniquey = y
-        dx = x - self.x 
-        dy = y - self.y
+    #     self.techniquex = x
+    #     self.techniquey = y
+    #     dx = x - self.x 
+    #     dy = y - self.y
 
-        #adjust rotation state (gross)
-        if dx == 1:
-            if dy == 1:
-                self.direction = FaceDirection.UP_RIGHT
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN_RIGHT
-            else:
-                self.direction = FaceDirection.RIGHT
-        elif dx == -1:
-            if dy == 1:
-                self.direction = FaceDirection.UP_LEFT
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN_LEFT
-            else:
-                self.direction = FaceDirection.LEFT
-        else:
-            if dy == 1:
-                self.direction = FaceDirection.UP
-            elif dy == -1:
-                self.direction = FaceDirection.DOWN
+    #     #adjust rotation state (gross)
+    #     if dx == 1:
+    #         if dy == 1:
+    #             self.direction = FaceDirection.UP_RIGHT
+    #         elif dy == -1:
+    #             self.direction = FaceDirection.DOWN_RIGHT
+    #         else:
+    #             self.direction = FaceDirection.RIGHT
+    #     elif dx == -1:
+    #         if dy == 1:
+    #             self.direction = FaceDirection.UP_LEFT
+    #         elif dy == -1:
+    #             self.direction = FaceDirection.DOWN_LEFT
+    #         else:
+    #             self.direction = FaceDirection.LEFT
+    #     else:
+    #         if dy == 1:
+    #             self.direction = FaceDirection.UP
+    #         elif dy == -1:
+    #             self.direction = FaceDirection.DOWN
 
 
     def throw(self, x, y):
@@ -273,6 +266,21 @@ class Player:
         self.techniquey = y
         dx = x - self.x 
         dy = y - self.y
+
+
+    def cast(self, x, y):
+        item = self.inventory[self.techniqueitem]
+        self.active_projectiles.append(turn_logic.Projectile(item.name, 0, self.x, self.y))
+        self.technique = Technique.THROW
+        self.techniquex = x 
+        self.techniquey = y
+
+
+
+
+
+
+
 
 
 
@@ -323,184 +331,6 @@ class Player:
 
     
                 
-
-
-
-
-
-    def process_turn(self, all_enemies, player, all_buttons, map: Map):
-        #print("a")
-        self.techniqueframe = self.techniqueframe + 1
-
-        if self.technique == Technique.MOVE:
-            if self.techniquex != self.prevx:
-                self.prevx = self.prevx + round((abs(self.techniquex - self.prevx)/(self.techniquex - self.prevx+0.01)))/8
-            if self.techniquey != self.prevy:
-                self.prevy = self.prevy + round((abs(self.techniquey - self.prevy)/(self.techniquey - self.prevy+0.01)))/8
-            if self.techniquey == self.prevy and self.techniquex == self.prevx:
-                self.x = self.prevx
-                self.y = self.prevy
-                self.technique = Technique.MOVE
-                self.techniquefinished = 1
-                self.pick_up_item(map.floor_items)
-        elif self.technique == Technique.HIT:
-            #animate the "hit movement"
-            quartic_eq = (-0.19*(0.25*self.techniqueframe)**4 + (0.25*self.techniqueframe)**3 - (0.25*self.techniqueframe)**2)/2.5
-            self.offsetx = round((abs(self.techniquex - self.x)/(self.techniquex - self.x + 0.01)))*quartic_eq
-            self.offsety = round((abs(self.techniquey - self.y)/(self.techniquey - self.y + 0.01)))*quartic_eq
-            #if hit is finished, find entity at the target square and deduct hp
-            if self.techniqueframe == 16:
-                for enemy in all_enemies:
-                    if enemy.x == self.techniquex and enemy.y == self.techniquey:
-                        damage = 0
-                        damage += self.strength
-                        if self.equipment_weapon != None:
-                            if self.equipment_shield == None or self.equipment_shield.name != "Armor Plate":
-                                damage += self.equipment_weapon.damage
-                                if self.equipment_weapon.name == "Fury Cutter":
-                                    self.health = self.health - math.floor(damage/4)
-                                    button_class.create_point_number(self.x, self.y, "-" + str(math.floor(damage/4)), (255, 0, 0, 255), player, all_buttons)
-                        if enemy.equipment_shield != None:
-                            damage -= enemy.equipment_shield.defense
-                        damage -= enemy.defense
-                        if damage < 1:
-                            damage = 1
-                        enemy.health = enemy.health - damage
-                        if not enemy.is_alive():
-                            enemy.sprite.delete()
-                            del enemy.sprite
-                            map.all_enemies.remove(enemy)
-                            self.increase_experience(enemy.experience)
-                        button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
-                        break 
-                self.prevx = self.x
-                self.prevy = self.y
-                self.offsetx = 0
-                self.offsety = 0
-                self.techniquex = self.x
-                self.techniquey = self.y
-                self.technique = Technique.MOVE
-                self.techniquefinished = 1
-        elif self.technique == Technique.THROW:
-            if self.techniqueframe < 17:
-                quartic_eq = (-0.19*(0.25*self.techniqueframe)**4 + (0.25*self.techniqueframe)**3 - (0.25*self.techniqueframe)**2)/2.5
-                self.offsetx = round((abs(self.techniquex - self.x)/(self.techniquex - self.x + 0.01)))*quartic_eq
-                self.offsety = round((abs(self.techniquey - self.y)/(self.techniquey - self.y + 0.01)))*quartic_eq
-            if self.techniqueframe == 16:
-                self.offsetx = 0
-                self.offsety = 0
-
-            for item in self.active_projectiles:
-                item.x = item.x + abs(self.techniquex - item.prevx)*round((abs(self.techniquex - item.prevx)/(self.techniquex - item.prevx+0.01)))/20
-                item.y = item.y + abs(self.techniquey - item.prevy)*round((abs(self.techniquey - item.prevy)/(self.techniquey - item.prevy+0.01)))/20
-                
-                if self.can_move_to(math.floor(item.x), math.floor(item.y), map) == False: #if this space is occupied
-                    is_enemy_hit = 0
-                    for enemy in map.all_enemies:
-                        if enemy.technique == Technique.MOVE and enemy.techniquefinished == 0 and enemy.techniquex == math.floor(item.x) and enemy.techniquey == math.floor(item.y):#x == enemy.x and y == enemy.y:
-                            is_enemy_hit = 1
-                        elif enemy.x == math.floor(item.x) and enemy.y == math.floor(item.y):
-                            is_enemy_hit = 1
-                    if is_enemy_hit == 0:
-                        i = 0
-                        while self.can_move_to(math.floor(item.x), math.floor(item.y), map) == False and i < 20: #go backwards until you find a free space
-                            item.x = item.x - abs(self.techniquex - item.prevx)*round((abs(self.techniquex - item.prevx)/(self.techniquex - item.prevx+0.01)))/20
-                            item.y = item.y - abs(self.techniquey - item.prevy)*round((abs(self.techniquey - item.prevy)/(self.techniquey - item.prevy+0.01)))/20
-                            i = i + 1
-                        
-                    self.techniquex = math.floor(item.x)
-                    self.techniquey = math.floor(item.y)
-                    self.techniqueframe == 20
-
-                if self.techniqueframe == 20:
-                    allowed_to_drop = 1
-                    for enemy in all_enemies:
-                        if enemy.x == self.techniquex and enemy.y == self.techniquey:
-                            allowed_to_drop = 0
-                            damage = 0
-                            if isinstance(item, Weapon) != False:
-                                damage += item.damage
-                            damage += self.strength
-                            if enemy.equipment_shield != None:
-                                damage -= enemy.equipment_shield.defense
-                            damage -= enemy.defense
-                            if damage < 1:
-                                damage = 1
-                            enemy.health = enemy.health - damage
-                            if not enemy.is_alive():
-                                enemy.sprite.delete()
-                                del enemy.sprite
-                                map.all_enemies.remove(enemy)
-                                self.increase_experience(enemy.experience)
-                                
-                            button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
-                    
-                    for i in map.floor_items:
-                        # Check if the item is at the player's current position
-                        if i.x == self.techniquex and i.y == self.techniquey:
-                            allowed_to_drop = 0
-
-                    if allowed_to_drop == 1: #if no enemy detected and no item is on this spot, simply drop the item on the floor at this tile
-                        item.x = self.techniquex
-                        item.y = self.techniquey
-                        map.floor_items.append(item)
-                    else:
-                        del item
-
-            if self.techniqueframe == 20:
-                self.active_projectiles = []
-                self.techniquex = self.x
-                self.techniquey = self.y
-                self.technique = Technique.MOVE
-                self.techniquefinished = 1
-        elif self.technique == Technique.CAST:
-            if self.techniqueframe < 17:
-                quartic_eq = (-0.19*(0.25*self.techniqueframe)**4 + (0.25*self.techniqueframe)**3 - (0.25*self.techniqueframe)**2)/2.5
-                self.offsetx = round((abs(self.techniquex - self.x)/(self.techniquex - self.x + 0.01)))*quartic_eq
-                self.offsety = round((abs(self.techniquey - self.y)/(self.techniquey - self.y + 0.01)))*quartic_eq
-            if self.techniqueframe == 16:
-                self.offsetx = 0
-                self.offsety = 0
-            for spell in self.active_spells:
-                spell.x = spell.x + abs(self.techniquex - spell.prevx)*round((abs(self.techniquex - spell.prevx)/(self.techniquex - spell.prevx+0.01)))/20
-                spell.y = spell.y + abs(self.techniquey - spell.prevy)*round((abs(self.techniquey - spell.prevy)/(self.techniquey - spell.prevy+0.01)))/20
-                
-                if self.can_move_to(math.floor(spell.x + 0.5), math.floor(spell.y + 0.5), map) == False: #if this space is occupied
-                    self.techniquex = math.floor(spell.x + 0.5)
-                    self.techniquey = math.floor(spell.y + 0.5)
-                    self.techniqueframe == 20
-
-                if self.techniqueframe == 20:
-                    for enemy in all_enemies:
-                        if enemy.x == self.techniquex and enemy.y == self.techniquey:
-                            item = player.inventory[self.techniqueitem]
-                            if item.name == "Red Staff":
-                                damage = math.floor(enemy.health/2)
-                                enemy.health = enemy.health - damage
-                                button_class.create_point_number(enemy.x, enemy.y, "-" + str(damage), (255, 0, 0, 255), player, all_buttons)
-                                button_class.create_graphical_effect(enemy.x, enemy.y, 0, self, all_buttons)
-                                if not enemy.is_alive():
-                                    enemy.sprite.delete()
-                                    del enemy.sprite
-                                    map.all_enemies.remove(enemy)
-                    del spell
-
-
-
-            if self.techniqueframe == 20:
-                self.active_spells = []
-                item = player.inventory[self.techniqueitem]
-                player.inventory.remove(item)
-                del item
-
-                self.techniquex = self.x
-                self.techniquey = self.y
-                self.technique = Technique.MOVE
-                self.techniquefinished = 1
-        else:
-            #self.technique = Technique.MOVE
-            self.techniquefinished = 1
-
 
 
 
