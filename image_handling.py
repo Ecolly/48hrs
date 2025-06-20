@@ -114,6 +114,9 @@ def combine_tiles(tiles, tile_width, tile_height, total_width):
 
     combined = pyglet.image.Texture.create(combined_width, combined_height)
 
+    combined.min_filter = pyglet.gl.GL_NEAREST
+    combined.mag_filter = pyglet.gl.GL_NEAREST
+    
     for i, tile in enumerate(tiles):
         col = i % total_width
         row = i // total_width

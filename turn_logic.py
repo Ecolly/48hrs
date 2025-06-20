@@ -211,7 +211,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         else:
                             #if nothing was hit
                             distance_travelled = math.sqrt(abs(tilex - entity.x)**2 + abs(tiley - entity.y)**2)
-                            if distance_travelled >= distance_total:
+                            if distance_travelled > distance_total:
                                 anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology, chronology+chron_i, entity.x, entity.y, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item)
                                 list_of_animations.append(anim3)
                                 entity.active_projectiles[itemi] = -1

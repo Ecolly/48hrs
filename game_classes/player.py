@@ -376,9 +376,10 @@ class Player:
 
         # Get texture and set filtering
         texture = tile.get_texture()
+        pyglet.gl.glBindTexture(pyglet.gl.GL_TEXTURE_2D, texture.id)
         texture.min_filter = pyglet.gl.GL_NEAREST
         texture.mag_filter = pyglet.gl.GL_NEAREST
-
+        
         # Assign directly — no blitting, no texture creation
         sprite.image = texture
 

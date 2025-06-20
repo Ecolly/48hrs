@@ -14,6 +14,10 @@ from game_classes.item import Item
 import turn_logic
 import delete_object
 
+
+pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
+pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
+
 #made by zero and eco :)
 
 
@@ -21,7 +25,8 @@ import delete_object
 #from shaders import *
 has_won = 0
 has_lost = 0
-window = pyglet.window.Window(1152, 768)
+config = pyglet.gl.Config(double_buffer=True, sample_buffers=0, samples=0)
+window = pyglet.window.Window(1152, 768, config=config)
 
 #pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
 #pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -649,7 +654,8 @@ def on_draw():
     diry = 0
     dirx = 0
 
-
+    # pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MIN_FILTER, pyglet.gl.GL_NEAREST)
+    # pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MAG_FILTER, pyglet.gl.GL_NEAREST)
     if keys[pyglet.window.key.TAB] and keypress_chk == 0:
         #enter main menu
         # if gamestate == 1:

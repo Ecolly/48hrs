@@ -115,6 +115,8 @@ class Animation:
 
                 
                 if self.animtype == 1 or self.animtype == 4:
+
+                    
                     tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 4)]
                     # Get texture and set filtering
                     texture = tile.get_texture()
@@ -122,6 +124,8 @@ class Animation:
                     texture.mag_filter = pyglet.gl.GL_NEAREST
                     # Assign directly — no blitting, no texture creation
                     self.sprite.image = texture
+
+
                 elif self.animtype == 2: #point numbers
                     #print("dwqdwdw")
                     #base_y =  -(player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale #for some reason, base y alignment is different for letters
