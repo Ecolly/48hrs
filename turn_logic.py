@@ -107,7 +107,8 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
 
 def do_spell(entity, enemy_hit, player, spellname, charges, chronology, list_of_animations):
     if spellname == "Red Staff":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, math.floor(enemy_hit.health/2), "magic")
+        if enemy_hit != None:
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, math.floor(enemy_hit.health/2), "magic")
         entity.inventory[entity.techniqueitem].charges -= charges
         if entity.inventory[entity.techniqueitem].charges < 1:
             entity.inventory[entity.techniqueitem].should_be_deleted = True
@@ -193,7 +194,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
                     distance_x = entity.techniquex - entity.x
                     distance_y = entity.techniquey - entity.y
-                    distance_total = math.sqrt(distance_x*distance_x + distance_y*distance_y)
+                    distance_total = math.sqrt(distance_x*distance_x + distance_y*distance_y) + 0.5
 
                     distance_x_normalized = distance_x/(distance_total*5)
                     distance_y_normalized = distance_y/(distance_total*5)

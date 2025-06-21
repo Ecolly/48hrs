@@ -335,6 +335,7 @@ def on_mouse_release(x, y, button, modifiers):
                         #t = func
                         if ((button2.animframe - 0.0001)/speed % (button2.extra_2*2)) > button2.extra_2 and func != button2.extra_2:
                             func = -func + button2.extra_2
+                        button2.animframe = -24
                         #num of charges = func
 
 
@@ -344,9 +345,11 @@ def on_mouse_release(x, y, button, modifiers):
 
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+
+
                 player.cast(mouse_x_tilemap, mouse_y_tilemap)
-                gamestate = 2
-                all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                gamestate = 7 #gamestate 7 is when power bar flashes, showing you what result you made it to
+                
 
 
 
@@ -704,6 +707,12 @@ def on_draw():
     diry = 0
     dirx = 0
 
+
+    # mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+    # mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+    
+    # print (mouse_x_tilemap, mouse_y_tilemap)
+
     # pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MIN_FILTER, pyglet.gl.GL_NEAREST)
     # pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MAG_FILTER, pyglet.gl.GL_NEAREST)
     if keys[pyglet.window.key.TAB] and keypress_chk == 0:
@@ -818,7 +827,7 @@ def on_draw():
     for button in all_buttons:
         button.hovered = button.is_mouse_over(mouse_x, mouse_y)
 
-        button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player)
+        button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player, gamestate)
 
         if button.type == "GUI_HP":
             if has_won == 1:
@@ -842,8 +851,12 @@ def on_draw():
                 button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
         elif button.supertype == "power bar":
             
-            if gamestate != 6:
+            if gamestate != 6 and gamestate != 7:
                 button.should_be_deleted = True
+            if gamestate == 7 and button.animframe == 1:
+                
+                all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                gamestate = 2
 
 
                 

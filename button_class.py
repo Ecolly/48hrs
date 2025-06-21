@@ -92,7 +92,7 @@ class InteractiveObject:
         return (base_x <= mouse_x <= base_x + self.width*self.scale and
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
-    def draw(self, batch, group1, group2, group3, group4, group5, group6, player):
+    def draw(self, batch, group1, group2, group3, group4, group5, group6, player, gamestate):
         global grid_items
         
         base_x, base_y = self.get_screen_position()
@@ -105,26 +105,37 @@ class InteractiveObject:
 
             self.animframe = self.animframe + 1
 
-            if self.hovered == True:
-                if self.clicked == True:
-                    sprite.color = self.colors[i][2]
-                else:
-                    sprite.color = self.colors[i][1]
-            else:
-                sprite.color = self.colors[i][0]
-            
-            if self.type == "power bar":
-                speed = 2
-                func = ((self.animframe - 0.0001)/speed % self.extra_2) #self.extra_2*(math.asin(((self.animframe/(math.pi*3)) % 2) - 1) + math.pi/2)/math.pi
-                #t = func
-                if ((self.animframe - 0.0001)/speed % (self.extra_2*2)) > self.extra_2 and func != self.extra_2:
-                    func = -func + self.extra_2
 
-                
-                if self.extra_1 > func:
-                    sprite.color = (self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 0)
+            
+            if self.type != "power bar":
+                if self.hovered == True:
+                    if self.clicked == True:
+                        sprite.color = self.colors[i][2]
+                    else:
+                        sprite.color = self.colors[i][1]
                 else:
-                    sprite.color = (self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 255)
+                    sprite.color = self.colors[i][0]
+            else:
+                if gamestate == 6:
+                    speed = 2
+                    func = ((self.animframe - 0.0001)/speed % self.extra_2) #self.extra_2*(math.asin(((self.animframe/(math.pi*3)) % 2) - 1) + math.pi/2)/math.pi
+                    #t = func
+                    if ((self.animframe - 0.0001)/speed % (self.extra_2*2)) > self.extra_2 and func != self.extra_2:
+                        func = -func + self.extra_2
+
+                    
+                    if self.extra_1 > func:
+                        self.color = (self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 0)
+                        sprite.color = self.color
+                    else:
+                        self.color = (self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 255)
+                        sprite.color = self.color
+                else:
+                    if round(abs(self.animframe) % 2) < 1:
+                        sprite.color = (255, 255, 255, self.color[3])
+                    else:
+                        sprite.color = (255, 255, 255, 0)
+                
 
 
             if self.supertype == 'rclick': #draw rclick buttons on top of other menus

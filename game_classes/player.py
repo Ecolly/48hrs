@@ -139,10 +139,10 @@ class Player:
         item = self.inventory.pop(self.techniqueitem)
         self.active_projectiles.append(item)
         item.sprite.color = (255, 255, 255, 0)
-        item.x = self.x
-        item.y = self.y 
-        item.prevx = self.x 
-        item.prevy = self.y
+        item.x = self.x + 0.5
+        item.y = self.y + 0.5
+        item.prevx = self.x + 0.5
+        item.prevy = self.y + 0.5
         self.technique = Technique.THROW
         self.techniquex = x
         self.techniquey = y
@@ -152,7 +152,7 @@ class Player:
 
     def cast(self, x, y):
         item = self.inventory[self.techniqueitem]
-        self.active_projectiles.append(turn_logic.Projectile(item.name, 0, self.x, self.y))
+        self.active_projectiles.append(turn_logic.Projectile(item.name, 0, self.x + 0.5, self.y + 0.5))
         self.technique = Technique.THROW
         self.techniquex = x 
         self.techniquey = y
