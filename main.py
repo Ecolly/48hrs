@@ -339,6 +339,9 @@ def on_mouse_release(x, y, button, modifiers):
 
 
                 player.techniquecharges = max(round(func), 1)
+                if func > player.inventory[button.extra_1].charges: #if num of charges exceeds amount remaining, just choose a random amount
+                    func = random.randint(1, player.inventory[button.extra_1].charges)
+
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
                 player.cast(mouse_x_tilemap, mouse_y_tilemap)

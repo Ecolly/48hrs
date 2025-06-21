@@ -231,7 +231,7 @@ def create_power_bar(all_buttons, item, x, y):
             draggable=False,
             supertype = "power bar",
             extra_1 = i,
-            extra_2 = maxcharges
+            extra_2 = charges
         ))
 
         color2 = (33, 33, 33, 255)
