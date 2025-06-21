@@ -1,14 +1,32 @@
 #just a superdeduper small class for non-item projectiles
+
+
+import math 
+
 class Projectile:
-    def __init__(self, name, damage, x, y):
+    def __init__(self, name, damage, x, y, xend, yend, chron=0):
         self.name = name
         self.damage = damage
-        self.x = x
-        self.y = y
+        self.x = math.floor(x)
+        self.y = math.floor(y)
+        self.xend = xend + 0.5
+        self.yend = yend + 0.5
+        self.distance_to_travel = math.sqrt(abs(self.x - xend)**2 + abs(self.y - yend)**2)
+        self.xinit = math.floor(x)
+        self.yinit = math.floor(y)
+        self.chron_offset = chron
+        self.num_of_bounces = 0
+        self.friendly_fire = False
         if name == "Spores":
             self.spriteindex = 29 + 8
+        elif name == "Dragon Fire":
+            self.spriteindex = 2*29
         else:
             self.spriteindex = 4*29
+
+        if name == "Green Staff":
+           self.num_of_bounces = 5 
+
 
 
 

@@ -125,14 +125,14 @@ class InteractiveObject:
 
                     
                     if self.extra_1 > func:
-                        self.color = (self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 0)
-                        sprite.color = self.color
+                        self.colors = [[(self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 0)]]
+                        sprite.color = self.colors[0][0]
                     else:
-                        self.color = (self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 255)
-                        sprite.color = self.color
+                        self.colors = [[(self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 255)]]
+                        sprite.color = self.colors[0][0]
                 else:
                     if round(abs(self.animframe) % 2) < 1:
-                        sprite.color = (255, 255, 255, self.color[3])
+                        sprite.color = (255, 255, 255, self.colors[0][0][3])
                     else:
                         sprite.color = (255, 255, 255, 0)
                 

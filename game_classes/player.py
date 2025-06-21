@@ -141,6 +141,11 @@ class Player:
         item.sprite.color = (255, 255, 255, 0)
         item.x = self.x + 0.5
         item.y = self.y + 0.5
+        item.xinit = item.x 
+        item.yinit = item.y
+        item.xend = x + 0.5
+        item.yend = y + 0.5
+        item.distance_to_travel = math.sqrt(abs(item.x - item.xend)**2 + abs(item.y - item.yend)**2)
         item.prevx = self.x + 0.5
         item.prevy = self.y + 0.5
         self.technique = Technique.THROW
@@ -152,7 +157,7 @@ class Player:
 
     def cast(self, x, y):
         item = self.inventory[self.techniqueitem]
-        self.active_projectiles.append(turn_logic.Projectile(item.name, 0, self.x + 0.5, self.y + 0.5))
+        self.active_projectiles.append(turn_logic.Projectile(item.name, 0, self.x + 0.5, self.y + 0.5, x, y))
         self.technique = Technique.THROW
         self.techniquex = x 
         self.techniquey = y

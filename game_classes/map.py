@@ -36,8 +36,8 @@ class Map:
         self.textured_map = [[]]
         self.valid_entity_tiles = []
         #self.list_of_all_enemy_names = ["LEAFALOTTA", "HAMSTER", "GOOSE", "CHLOROSPORE", "FOX", "S'MORE"]
-        self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "GOOSE"]]
-        self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 2]]
+        self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "CHROME DOME"], ["DRAGON", "S'MORE", "CHROME DOME"]]
+        self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 2], [2, 2, 2]]
         self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         self.floor_items = []  # List to hold items on the floor
         self.all_enemies = []
@@ -64,8 +64,8 @@ class Map:
     #check if a room can be generated at the given coordinates
     #checks it against existing rooms list
     def check_generate_room(self, rooms):
-        max_possible_size = min(self.width, self.height) // 2
-        min_possible_size = 15
+        max_possible_size = 18#min(self.width, self.height) // 2
+        min_possible_size = 12
 
         max_size = max(min_possible_size, int(max_possible_size * (1 - (self.number_of_rooms / 20))))
         min_size = max(min_possible_size, int(max_size * 0.6))
@@ -150,7 +150,7 @@ class Map:
         elif name == "Gold Staff":
             return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=True) #deals between <charges> and <charges*3> damage
         elif name == "Green Staff":
-            return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=False)
+            return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=True) #bounces
         elif name == "Teal Staff":
             return Staff(name, grid_items, sprite_locs = 13, damage=10, projectile=False)
         elif name == "Blue Staff":

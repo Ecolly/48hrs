@@ -24,6 +24,13 @@ class Item:
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
         self.prevy = y
+        self.xinit = x 
+        self.yinit = y
+        self.distance_to_travel = 0
+        self.xend = x
+        self.yend = y
+        self.chron_offset = 0
+        self.friendly_fire = False 
         self.quantity = quantity
         self.scale = 3
         self.is_usable = False #default to false
@@ -32,6 +39,7 @@ class Item:
         self.is_castable = False
         self.is_piercing = False #default to false
         self.should_be_deleted = False
+        self.num_of_bounces = 0
 
     def use(self, target):
         pass
@@ -94,7 +102,7 @@ class Weapon(Item):
         self.is_equipable = is_equipable
         
 class Staff(Item):
-    def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=14):
+    def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*9+ sprite_locs)
         self.spriteindex = 29*9+sprite_locs

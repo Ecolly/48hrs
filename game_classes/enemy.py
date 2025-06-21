@@ -54,12 +54,12 @@ def create_sprite_enemy(image_grid, index):
 
 def generate_enemy(name, level, x, y, grid):
 
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER"]
-    enemy_hps = [20, 15, 18, 8, 10, 12, 20]
-    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1]
-    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8, 1/8,1/8]
-    enemy_exp = [0, 10, 10, 10, 10, 6, 35, 2]
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME"]
+    enemy_hps = [20, 15, 18, 8, 10, 12, 20, 30, 20]
+    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1]
+    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8, 1/8,1/8, 1/8, 1/8]
+    enemy_exp = [0, 10, 10, 10, 10, 6, 35, 2, 60, 30]
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -158,7 +158,7 @@ class Enemy:
                 # If not moving or can't move, stay still
                 return Technique.STILL, self.x, self.y
                     
-        elif self.name == "GOOSE":
+        elif self.name == "GOOSE" or self.name == "CHROME DOME":
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 return Technique.HIT, xtochk, ytochk
             else:
@@ -178,16 +178,26 @@ class Enemy:
         elif self.name == "CHLOROSPORE":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 return Technique.HIT, player.x, player.y
-            elif abs(player.x-self.x) < 5 and abs(player.y-self.y) < 5:
-                self.active_projectiles.append(Projectile("Spores", 0, self.x, self.y))
-                return Technique.THROW, player.x, player.y
+            elif abs(player.x-self.x) < 5 and abs(player.y-self.y) < 5 and random.randint(0, 1) == 1:
+                    self.active_projectiles.append(Projectile("Spores", 0, self.x, self.y))
+                    return Technique.THROW, player.x, player.y 
             else:
-
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
                 return Technique.MOVE, new_x, new_y    
 
-                
+        elif self.name == "DRAGON":
+            if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
+                return Technique.HIT, player.x, player.y
+            elif abs(player.x-self.x) < 8 and abs(player.y-self.y) < 8 and random.randint(0, 4) == 1:
+                self.active_projectiles.append(Projectile("Dragon Fire", 0, self.x, self.y))
+                return Technique.THROW, player.x, player.y
+            else:
+                new_x = self.x + self.sign(player.x - self.x)
+                new_y = self.y + self.sign(player.y - self.y)
+                return Technique.MOVE, new_x, new_y    
+            
+
         elif self.name == "S'MORE":
             print(self.x, self.y)
             

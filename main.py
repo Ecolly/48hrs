@@ -635,6 +635,12 @@ create_mouse_overlay(all_buttons)
 player.inventory.append(floor.create_item("Red Staff", grid_items))
 player.inventory.append(floor.create_item("Orange Staff", grid_items))
 player.inventory.append(floor.create_item("Gold Staff", grid_items))
+player.inventory.append(floor.create_item("Green Staff", grid_items))
+player.inventory.append(floor.create_item("Rock", grid_items))
+player.inventory.append(floor.create_item("Rock", grid_items))
+player.inventory.append(floor.create_item("Rock", grid_items))
+player.inventory.append(floor.create_item("Rock", grid_items))
+
 # player.inventory.append(floor.create_item("Magenta Staff", grid_items))
 
 
@@ -644,7 +650,7 @@ music = pyglet.media.load('Cyber-Dream-Loop.mp3')  # Replace with your actual fi
 # Create a player and queue the music
 mplayer = pyglet.media.Player()
 mplayer.queue(music)
-mplayer.volume = 0.25  
+mplayer.volume = 0#.25  
 
 # Set to loop if desired
 mplayer.loop = True
