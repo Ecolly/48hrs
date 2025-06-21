@@ -42,6 +42,7 @@ class Player:
         self.techniqueitem = None #used if technique uses an item and the object is needed (e.g. throwing)
         self.techniqueframe = 0
         self.techniquefinished = 0
+        self.techniquecharges = 0
         self.should_be_deleted = False #unused; do not delete player ever
         
         self.strength = 10  # Default strength
@@ -373,10 +374,6 @@ class Player:
 
 
     def draw(self, batch, animation_presets, group):
-        
-        
-
-    
         base_x, base_y = 1152/2 -24 + self.offsetx*16*self.scale, 768/2-24 + self.offsety*16*self.scale #self.get_screen_position()
         sprite = self.sprite
 

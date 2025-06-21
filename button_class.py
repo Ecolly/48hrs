@@ -94,6 +94,7 @@ class InteractiveObject:
     
     def draw(self, batch, group1, group2, group3, group4, group5, group6, player):
         global grid_items
+        
         base_x, base_y = self.get_screen_position()
 
         for i, sprite in enumerate(self.sprites):
@@ -103,16 +104,6 @@ class InteractiveObject:
             sprite.scale = self.scale
 
             self.animframe = self.animframe + 1
-            if self.type == "SMOKE CLOUD":
-                tile = grid_items[29+(math.floor(self.animframe/8) % 4)]
-
-                # Get texture and set filtering
-                texture = tile.get_texture()
-                texture.min_filter = pyglet.gl.GL_NEAREST
-                texture.mag_filter = pyglet.gl.GL_NEAREST
-
-                # Assign directly — no blitting, no texture creation
-                sprite.image = texture
 
             if self.hovered == True:
                 if self.clicked == True:
@@ -122,12 +113,26 @@ class InteractiveObject:
             else:
                 sprite.color = self.colors[i][0]
             
+            if self.type == "power bar":
+                speed = 2
+                func = ((self.animframe - 0.0001)/speed % self.extra_2) #self.extra_2*(math.asin(((self.animframe/(math.pi*3)) % 2) - 1) + math.pi/2)/math.pi
+                #t = func
+                if ((self.animframe - 0.0001)/speed % (self.extra_2*2)) > self.extra_2 and func != self.extra_2:
+                    func = -func + self.extra_2
+
+                
+                if self.extra_1 > func:
+                    sprite.color = (self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 0)
+                else:
+                    sprite.color = (self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 255)
+
+
             if self.supertype == 'rclick': #draw rclick buttons on top of other menus
                 if i == 0:
                     sprite.group = group1
                 else:
                     sprite.group = group2
-            elif self.supertype == "overlay":
+            elif self.supertype == "overlay" or self.type == "power bar 2":
                 sprite.group = group5
             else:
                 if self.type == 'equip sword':
@@ -176,6 +181,91 @@ def delete_buttons_supertype(all_buttons, supertype):
 
 def delete_buttons_specific(all_buttons, button):
     button.should_be_deleted = True
+
+
+
+def create_power_bar(all_buttons, item, x, y):
+    global grid_font
+    charges = item.charges
+    maxcharges = item.maxcharges
+    #power bar should be ~48 px wide. if a section is over 7 px width, set to 7 px width
+    width_per_bar = min(4, math.ceil(48/maxcharges))
+
+
+    tile = grid_font[112 + 8 - (width_per_bar-1)]
+    spr = pyglet.sprite.Sprite(tile)
+
+    tile2 = grid_font[112 + 8 - (width_per_bar)]
+    spr2 = pyglet.sprite.Sprite(tile)
+    #spr2.yscale = spr2.yscale*10/8
+
+    i = 0
+    while i < maxcharges:
+        if i < charges:
+            if i == 0:
+                color = (36, 221, 185, 255) #lowest charge
+            elif i == charges - 1:
+                color = (255, 0, 0, 255) #highest charge
+            elif i < charges/3:
+                color = (97, 226, 142, 255)
+            elif i < 2*charges/3:
+                color = (223, 255, 0, 255)
+            else:
+                color = (255, 191, 0, 255)
+        else:
+            color = (98, 98, 98, 255)
+        all_buttons.append(InteractiveObject(
+            x=x+(i*width_per_bar)*3, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+            y=y, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+            width=int(spr.width),
+            height=int(spr.height),
+            sprites=[pyglet.sprite.Sprite(tile)],
+            colors=[[color, color, color]],
+            animtype = [0],
+            animmod = [None],
+            text = [None],
+            alignment_x='left',
+            alignment_y='top',
+            depth=1,
+            obj_type="power bar",
+            draggable=False,
+            supertype = "power bar",
+            extra_1 = i,
+            extra_2 = maxcharges
+        ))
+
+        color2 = (33, 33, 33, 255)
+        all_buttons.append(InteractiveObject(
+            x=x+(i*width_per_bar - 1)*3, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+            y=y-3, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+            width=int(spr2.width),
+            height=int(spr2.height),
+            sprites=[pyglet.sprite.Sprite(tile2)],
+            colors=[[color2, color2, color2]],
+            animtype = [0],
+            animmod = [None],
+            text = [None],
+            alignment_x='left',
+            alignment_y='top',
+            depth=1,
+            obj_type="power bar 2",
+            draggable=False,
+            supertype = "power bar",
+            extra_1 = 0,
+            extra_2 = 0
+        ))
+
+        all_buttons[len(all_buttons)-1].sprites[0].scale_y = all_buttons[len(all_buttons)-1].sprites[0].scale_y*(10/8)
+
+        i = i + 1
+    spr.delete()
+    del spr
+    spr2.delete()
+    del spr2
+
+
+
+
 
 def create_inventory_menu(all_buttons):
     global grid_font

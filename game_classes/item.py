@@ -94,12 +94,13 @@ class Weapon(Item):
         self.is_equipable = is_equipable
         
 class Staff(Item):
-    def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=3):
+    def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=14):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*9+ sprite_locs)
         self.spriteindex = 29*9+sprite_locs
         self.damage = damage
-        self.charges = charges #number of uses
+        self.charges = charges-1 #number of uses
+        self.maxcharges = charges
         self.damage_type = "slashing"  # Default damage type
         self.is_castable = True
         self.is_castable_projectile = projectile

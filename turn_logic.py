@@ -66,6 +66,8 @@ def can_move_to(x, y, game_map, player):
 
 
 def inflict_damage(attacker, target, player, chronology, list_of_animations, item, damage, damage_type):
+    if target == None:
+        return
     if damage_type == "physical":
         damage += attacker.strength
         if isinstance(item, Weapon) != False:
@@ -97,9 +99,23 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
 
     list_of_animations.append(anim)
 
-def do_spell(entity, enemy_hit, player, spellname, chronology, list_of_animations):
+
+
+
+
+
+
+def do_spell(entity, enemy_hit, player, spellname, charges, chronology, list_of_animations):
     if spellname == "Red Staff":
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, math.floor(enemy_hit.health/2), "magic")
+        entity.inventory[entity.techniqueitem].charges -= charges
+        if entity.inventory[entity.techniqueitem].charges < 1:
+            entity.inventory[entity.techniqueitem].should_be_deleted = True
+    if spellname == "Gold Staff":
+        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges*2, "magic") #random.randint(charges, charges*3)
+        entity.inventory[entity.techniqueitem].charges -= charges
+        if entity.inventory[entity.techniqueitem].charges < 1:
+            entity.inventory[entity.techniqueitem].should_be_deleted = True
     elif spellname == "Spores":
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic")
 
@@ -211,6 +227,8 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                             list_of_animations.append(anim3)
                             entity.active_projectiles[itemi] = -1
                             projectiles_remaining += -1
+                            if isinstance(item, Projectile) == True:
+                                do_spell(entity, None, player, item.name, entity.techniquecharges, chronology+chron_i, list_of_animations)
                         else:
                             #if nothing was hit
                             distance_travelled = math.sqrt(abs(tilex - entity.x)**2 + abs(tiley - entity.y)**2)
@@ -219,12 +237,13 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                                 list_of_animations.append(anim3)
                                 entity.active_projectiles[itemi] = -1
                                 projectiles_remaining += -1 
+                                if isinstance(item, Projectile) == True:
+                                    do_spell(entity, None, player, item.name, entity.techniquecharges, chronology+chron_i, list_of_animations)
                             
                     else: #if a creature was hit inflict damage on them
                         #print("adwedwqdq")
                         if isinstance(item, Projectile) == True:
-                            #print("gggggggggggggggg")
-                            do_spell(entity, enemy_hit, player, item.name, chronology+chron_i, list_of_animations)
+                            do_spell(entity, enemy_hit, player, item.name, entity.techniquecharges, chronology+chron_i, list_of_animations)
                         else:
                             inflict_damage(entity, enemy_hit, player, chronology+chron_i, list_of_animations, item, 0, "physical")
                         anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology, chronology+chron_i, entity.x, entity.y, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item)

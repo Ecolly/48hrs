@@ -197,21 +197,31 @@ def on_mouse_motion(x, y, dx, dy):
     global mouse_x, mouse_y
     mouse_x, mouse_y = x, y
 
-# @window.event
-# def on_mouse_press(x, y, button, modifiers):
-#     if button == pyglet.window.mouse.LEFT:
-#         for button in all_buttons:
-#             if button.hovered == True:
-#                 button.clicked = True
-#             else:
-#                 #possibly delete the button
-#                 pass
-#     elif button == pyglet.window.mouse.RIGHT:
-#         for button in all_buttons:
-#             if button.hovered == True:
-#                 button.clicked = True
-#             else:
-#                 pass
+@window.event
+def on_mouse_press(x, y, button, modifiers):
+    global all_buttons
+    global gamestate
+    if button == pyglet.window.mouse.LEFT:
+
+        if gamestate == 5:
+            gamestate = 6 #6 means power bar mode
+            create_power_bar(all_buttons, player.inventory[player.techniqueitem], mouse_x, mouse_y)
+ 
+
+
+
+        # for button in all_buttons:
+        #     if button.hovered == True:
+        #         button.clicked = True
+        #     else:
+        #         #possibly delete the button
+        #         pass
+    # elif button == pyglet.window.mouse.RIGHT:
+    #     for button in all_buttons:
+    #         if button.hovered == True:
+    #             button.clicked = True
+    #         else:
+    #             pass
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
@@ -223,14 +233,15 @@ def on_mouse_release(x, y, button, modifiers):
     global floor
     global has_won
     global sound_magic
-    if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5: #this stuff can only happen between turns or in inventory
-        
+    if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6: #this stuff can only happen between turns or in inventory
+
         if button == pyglet.window.mouse.LEFT:
+            
             was_button_clicked = 0
             for button in all_buttons:
                 button.clicked = False 
                 if button.hovered == True:
-                    if button.supertype != "overlay":
+                    if button.supertype != "overlay" and button.supertype != "power bar" and button.supertype != "power bar 2":
                         was_button_clicked = 1
 
                     if button.type == "CANCEL":
@@ -315,7 +326,19 @@ def on_mouse_release(x, y, button, modifiers):
                 
 
 
-            if gamestate == 5 and was_button_clicked == 0:
+            if gamestate == 6 and was_button_clicked == 0: #button was released; check powerbar values
+
+                for button2 in all_buttons:
+                    if button2.type == "power bar":
+                        speed = 2
+                        func = ((button2.animframe - 0.0001)/speed % button2.extra_2) #self.extra_2*(math.asin(((self.animframe/(math.pi*3)) % 2) - 1) + math.pi/2)/math.pi
+                        #t = func
+                        if ((button2.animframe - 0.0001)/speed % (button2.extra_2*2)) > button2.extra_2 and func != button2.extra_2:
+                            func = -func + button2.extra_2
+                        #num of charges = func
+
+
+                player.techniquecharges = max(round(func), 1)
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
                 player.cast(mouse_x_tilemap, mouse_y_tilemap)
@@ -605,7 +628,7 @@ create_mouse_overlay(all_buttons)
 # player.inventory.append(floor.create_item("Armor Plate", grid_items))
 player.inventory.append(floor.create_item("Red Staff", grid_items))
 player.inventory.append(floor.create_item("Orange Staff", grid_items))
-# player.inventory.append(floor.create_item("Green Staff", grid_items))
+player.inventory.append(floor.create_item("Gold Staff", grid_items))
 # player.inventory.append(floor.create_item("Magenta Staff", grid_items))
 
 
@@ -814,8 +837,13 @@ def on_draw():
                 button.y = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))*16*3 + 768/2 - (player.prevy*16+8)*player.scale + 16
             else:
                 button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
+        elif button.supertype == "power bar":
             
-            
+            if gamestate != 6:
+                button.should_be_deleted = True
+
+
+                
             
 
 

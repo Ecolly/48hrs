@@ -148,7 +148,7 @@ class Map:
         elif name == "Orange Staff":
             return Staff(name, grid_items, sprite_locs = 2, damage=10, projectile=False) #deducts 15 from all enemy hp on floor
         elif name == "Gold Staff":
-            return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=False)
+            return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=True) #deals between <charges> and <charges*3> damage
         elif name == "Green Staff":
             return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=False)
         elif name == "Teal Staff":

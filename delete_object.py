@@ -11,6 +11,10 @@ def delobj(objlist):
             if hasattr(objlist[i], 'sprite') == True and objlist[i].sprite != None:
                 objlist[i].sprite.delete()  
                 del objlist[i].sprite       
+            if hasattr(objlist[i], 'sprites') == True:
+                for sprite in objlist[i].sprites:
+                    sprite.delete()  
+                    del sprite       
             del objlist[i]  # removes the object from the list and deletes the reference
         else:
             i += 1

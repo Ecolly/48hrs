@@ -113,6 +113,7 @@ class Enemy:
         self.techniquey = 0
         self.techniqueframe = 0
         self.techniquefinished = 0
+        self.techniquecharges = 0
         self.equipment_weapon = None
         self.equipment_shield = None
         self.should_be_deleted = False
