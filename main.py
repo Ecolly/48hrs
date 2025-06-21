@@ -224,6 +224,23 @@ def on_mouse_press(x, y, button, modifiers):
     #             pass
 
 @window.event
+def on_mouse_press(x, y, button, modifiers):
+    global dragging_item, drag_offset
+    for slot in inventory:
+        if slot.item and slot.item.hit_test(x, y):
+            dragging_item = slot.item
+            drag_offset = (x - slot.x, y - slot.y)
+            slot.item = None
+            break
+
+@window.event
+def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+    if dragging_item:
+        dragging_item.sprite.x = x - drag_offset[0]
+        dragging_item.sprite.y = y - drag_offset[1]
+
+
+@window.event
 def on_mouse_release(x, y, button, modifiers):
     global all_anims
     global all_enemies
@@ -233,8 +250,8 @@ def on_mouse_release(x, y, button, modifiers):
     global floor
     global has_won
     global sound_magic
-    if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6: #this stuff can only happen between turns or in inventory
-
+    if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5: #this stuff can only happen between turns or in inventory
+        print("mouse release", button, x, y)
         if button == pyglet.window.mouse.LEFT:
             
             was_button_clicked = 0
