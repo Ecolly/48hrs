@@ -207,37 +207,23 @@ def on_mouse_press(x, y, button, modifiers):
             gamestate = 6 #6 means power bar mode
             create_power_bar(all_buttons, player.inventory[player.techniqueitem], mouse_x, mouse_y)
  
+# @window.event
+# def on_mouse_press(x, y, button, modifiers):
+#     pass
+    # global dragging_item, drag_offset
+    # for slot in inventory:
+    #     if slot.item and slot.item.hit_test(x, y):
+    #         dragging_item = slot.item
+    #         drag_offset = (x - slot.x, y - slot.y)
+    #         slot.item = None
+    #         break
 
-
-
-        # for button in all_buttons:
-        #     if button.hovered == True:
-        #         button.clicked = True
-        #     else:
-        #         #possibly delete the button
-        #         pass
-    # elif button == pyglet.window.mouse.RIGHT:
-    #     for button in all_buttons:
-    #         if button.hovered == True:
-    #             button.clicked = True
-    #         else:
-    #             pass
-
-@window.event
-def on_mouse_press(x, y, button, modifiers):
-    global dragging_item, drag_offset
-    for slot in inventory:
-        if slot.item and slot.item.hit_test(x, y):
-            dragging_item = slot.item
-            drag_offset = (x - slot.x, y - slot.y)
-            slot.item = None
-            break
-
-@window.event
-def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    if dragging_item:
-        dragging_item.sprite.x = x - drag_offset[0]
-        dragging_item.sprite.y = y - drag_offset[1]
+# @window.event
+# def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+#     pass
+    # if dragging_item:
+    #     dragging_item.sprite.x = x - drag_offset[0]
+    #     dragging_item.sprite.y = y - drag_offset[1]
 
 
 @window.event
@@ -250,7 +236,7 @@ def on_mouse_release(x, y, button, modifiers):
     global floor
     global has_won
     global sound_magic
-    if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5: #this stuff can only happen between turns or in inventory
+    if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6: #this stuff can only happen between turns or in inventory
         print("mouse release", button, x, y)
         if button == pyglet.window.mouse.LEFT:
             
