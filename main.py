@@ -341,8 +341,9 @@ def on_mouse_release(x, y, button, modifiers):
                         button2.animframe = -24
                         #num of charges = func
                 player.techniquecharges = max(round(func), 1)
-                if func > player.inventory[button.extra_1].charges: #if num of charges exceeds amount remaining, just choose a random amount
-                    func = random.randint(1, player.inventory[button.extra_1].charges)
+                #print(button.extra_1)
+                if func > player.inventory[player.techniqueitem].charges: #if num of charges exceeds amount remaining, just choose a random amount
+                    func = random.randint(1, player.inventory[player.techniqueitem].charges)
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
                 player.cast(mouse_x_tilemap, mouse_y_tilemap)
@@ -629,11 +630,12 @@ create_mouse_overlay(all_buttons)
 # player.inventory.append(floor.create_item("Blue Staff", grid_items))
 # player.inventory.append(floor.create_item("Stick", grid_items))
 # player.inventory.append(floor.create_item("Light Blue Staff", grid_items))
-# player.inventory.append(floor.create_item("Armor Plate", grid_items))
+player.inventory.append(floor.create_item("Armor Plate", grid_items))
 player.inventory.append(floor.create_item("Red Staff", grid_items))
 player.inventory.append(floor.create_item("Orange Staff", grid_items))
 player.inventory.append(floor.create_item("Gold Staff", grid_items))
 player.inventory.append(floor.create_item("Green Staff", grid_items))
+player.inventory.append(floor.create_item("Teal Staff", grid_items))
 player.inventory.append(floor.create_item("Rock", grid_items))
 player.inventory.append(floor.create_item("Starfruit", grid_items))
 

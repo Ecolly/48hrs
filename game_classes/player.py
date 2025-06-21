@@ -57,12 +57,12 @@ class Player:
         self.color = color #4 entry tuple for the sprite to be colored as; white is default
         self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
         self.animframe = 0 #what frame of the animation it's on
-        self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
+        self.animmod = 1/16 #a preset animation modifier (e.g. vibration amplitude)
         self.scale = 3
 
-        self.default_speed = 1
-        self.speed = 1
-        self.turns_left_before_moving = 1
+        self.default_speed = 2
+        self.speed = 2
+        self.turns_left_before_moving = 2
         self.speed_turns = 0
 
 
@@ -328,7 +328,7 @@ class Player:
         list_of_animations.append(anim)
 
         if item.name == "Starfruit":
-            self.speed = 2
+            self.speed = 4
             self.speed_turns = 12
             self.technique = Technique.STILL 
         elif item.name == "Dragonfruit":

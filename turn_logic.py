@@ -122,6 +122,12 @@ def do_spell(entity, enemy_hit, player, spellname, charges, chronology, list_of_
         entity.inventory[entity.techniqueitem].charges -= charges
         if entity.inventory[entity.techniqueitem].charges < 1:
             entity.inventory[entity.techniqueitem].should_be_deleted = True
+    if spellname == "Teal Staff":
+        enemy_hit.speed = 1
+        enemy_hit.speed_turns = charges
+        entity.inventory[entity.techniqueitem].charges -= charges
+        if entity.inventory[entity.techniqueitem].charges < 1:
+            entity.inventory[entity.techniqueitem].should_be_deleted = True
     elif spellname == "Spores":
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic")
     elif spellname == "Dragon Fire":
@@ -410,21 +416,58 @@ def do_turns(all_enemies, player, floor):
     prevtechnique, chronology = do_individual_turn(player, floor, player, list_of_animations, chronology, prevtechnique)
     player.turns_left_before_moving += -1
 
+    #for all enemies
+        #if they have a higher speed than you, do 2 turns
+        #if equal speed, do turn
+        #if lower speed & 'turns left' 
+
+
     for enemy in all_enemies:
-        while enemy.turns_left_before_moving > player.turns_left_before_moving:
+        if enemy.speed > player.speed: #double speed
             if enemy.should_be_deleted != True: #if enemy isnt already dead...
                 enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
                 prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
-            enemy.turns_left_before_moving += -1
-        if enemy.turns_left_before_moving == 0:
-            enemy.turns_left_before_moving = enemy.speed
-            enemy.speed_turns += -1
-            if enemy.speed_turns < 1:
-                enemy.speed = enemy.default_speed
+            if enemy.should_be_deleted != True: #if enemy isnt already dead...
+                enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
+                prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
+                if player.turns_left_before_moving == 0:
+                    enemy.speed_turns += -1
+                    if enemy.speed_turns < 1:
+                        enemy.speed = enemy.default_speed
+        elif enemy.speed == player.speed: #normal speed
+            if enemy.should_be_deleted != True: #if enemy isnt already dead...
+                enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
+                prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
+                if player.turns_left_before_moving == 0:
+                    enemy.speed_turns += -1
+                    if enemy.speed_turns < 1:
+                        enemy.speed = enemy.default_speed
+        else: #1/2 speed
+            if player.turns_left_before_moving == 0:
+                if enemy.should_be_deleted != True: #if enemy isnt already dead...
+                    enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
+                    prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
+                    enemy.speed_turns += -1
+                    if enemy.speed_turns < 1:
+                        enemy.speed = enemy.default_speed
+
+
+
+    # for enemy in all_enemies:
+    #     while enemy.turns_left_before_moving > player.turns_left_before_moving:
+    #         if enemy.should_be_deleted != True: #if enemy isnt already dead...
+    #             enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
+    #             prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
+    #         enemy.turns_left_before_moving += -1
+    #     if enemy.turns_left_before_moving == 0:
+    #         enemy.turns_left_before_moving = enemy.speed
+    #         enemy.speed_turns += -1
+    #         if enemy.speed_turns < 1:
+    #             enemy.speed = enemy.default_speed
 
     if player.turns_left_before_moving == 0:
         player.turns_left_before_moving = player.speed
-        player.speed_turns += -1
+        player.speed_turns += -(player.speed/2)
         if player.speed_turns < 1:
             player.speed = player.default_speed
         

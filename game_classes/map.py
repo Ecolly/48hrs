@@ -37,8 +37,8 @@ class Map:
         self.textured_map = [[]]
         self.valid_entity_tiles = []
         #self.list_of_all_enemy_names = ["LEAFALOTTA", "HAMSTER", "GOOSE", "CHLOROSPORE", "FOX", "S'MORE"]
-        self.list_of_all_enemies = [["TETRAHEDRON"], ["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "CHROME DOME"], ["DRAGON", "S'MORE", "CHROME DOME"], ["DRAGON", "S'MORE", "TETRAHEDRON"]]
-        self.list_of_all_levels = [[1], [1, 1, 1], [1, 2, 2], [1, 2, 2], [2, 2, 2], [2, 3, 2]]
+        self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "CHROME DOME"], ["DRAGON", "S'MORE", "CHROME DOME"], ["DRAGON", "S'MORE", "TETRAHEDRON"]]
+        self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 2], [2, 2, 2], [2, 3, 2]]
         self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         self.floor_items = []  # List to hold items on the floor
         self.all_enemies = []
@@ -163,7 +163,7 @@ class Map:
         elif name == "Green Staff":
             return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=True) #bounces
         elif name == "Teal Staff":
-            return Staff(name, grid_items, sprite_locs = 13, damage=10, projectile=False)
+            return Staff(name, grid_items, sprite_locs = 13, damage=10, projectile=True) #slows down enemy
         elif name == "Blue Staff":
             return Staff(name, grid_items, sprite_locs = 16, damage=10, projectile=False)
         elif name == "Light Blue Staff":
