@@ -111,8 +111,8 @@ group_ui = Group(order=80)
 animation_presets = [
     [0],
     [0, 1, 2, 1, 0, 3, 4, 3],
-    [0, 1, 2, 3, 4]
-
+    [0, 1, 2, 3, 4],
+    [0, 1, 2, 3, 4, 5, 6, 7]
 ]
 
 
@@ -340,16 +340,11 @@ def on_mouse_release(x, y, button, modifiers):
                             func = -func + button2.extra_2
                         button2.animframe = -24
                         #num of charges = func
-
-
                 player.techniquecharges = max(round(func), 1)
                 if func > player.inventory[button.extra_1].charges: #if num of charges exceeds amount remaining, just choose a random amount
                     func = random.randint(1, player.inventory[button.extra_1].charges)
-
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
-
-
                 player.cast(mouse_x_tilemap, mouse_y_tilemap)
                 gamestate = 7 #gamestate 7 is when power bar flashes, showing you what result you made it to
                 
@@ -640,9 +635,7 @@ player.inventory.append(floor.create_item("Orange Staff", grid_items))
 player.inventory.append(floor.create_item("Gold Staff", grid_items))
 player.inventory.append(floor.create_item("Green Staff", grid_items))
 player.inventory.append(floor.create_item("Rock", grid_items))
-player.inventory.append(floor.create_item("Rock", grid_items))
-player.inventory.append(floor.create_item("Rock", grid_items))
-player.inventory.append(floor.create_item("Rock", grid_items))
+player.inventory.append(floor.create_item("Starfruit", grid_items))
 
 # player.inventory.append(floor.create_item("Magenta Staff", grid_items))
 

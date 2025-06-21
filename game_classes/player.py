@@ -60,6 +60,11 @@ class Player:
         self.animmod = animmod #a preset animation modifier (e.g. vibration amplitude)
         self.scale = 3
 
+        self.default_speed = 1
+        self.speed = 1
+        self.turns_left_before_moving = 1
+        self.speed_turns = 0
+
 
     # def get_screen_position(self):
     #     return self.scale*(self.prevx*16-8), self.scale*(self.prevy*16-8)
@@ -307,7 +312,6 @@ class Player:
         item = self.inventory.pop(inv_slot)
         health_to_restore = item.nutrition_value
 
-
         print(health_to_restore, self.maxhealth, self.health, self.maxhealth_visual, self.health_visual)
         if item.name == "Mushrooms":
             self.maxhealth += health_to_restore
@@ -324,7 +328,8 @@ class Player:
         list_of_animations.append(anim)
 
         if item.name == "Starfruit":
-            #gain a level
+            self.speed = 2
+            self.speed_turns = 12
             self.technique = Technique.STILL 
         elif item.name == "Dragonfruit":
             #increase a random stat by 1
@@ -394,7 +399,7 @@ class Player:
         # Assign directly — no blitting, no texture creation
         sprite.image = texture
 
-        self.animframe = self.animframe + self.animmod
+        self.animframe = self.animframe + self.animmod*self.speed
         if self.animframe >= len(animation_presets[self.animtype]):
             self.animframe = 0
 

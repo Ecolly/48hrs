@@ -54,12 +54,13 @@ def create_sprite_enemy(image_grid, index):
 
 def generate_enemy(name, level, x, y, grid):
 
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME"]
-    enemy_hps = [20, 15, 18, 8, 10, 12, 20, 30, 20]
-    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1]
-    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8, 1/8,1/8, 1/8, 1/8]
-    enemy_exp = [0, 10, 10, 10, 10, 6, 35, 2, 60, 30]
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON"]
+    enemy_hps = [20, 15, 18, 8, 10, 12, 20, 30, 20, 10]
+    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64, 9*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3]
+    enemy_animmods = [1/8, 1/8, 1/8, 1/8, 1/8, 1/8,1/8, 1/8, 1/8, 1/4]
+    enemy_exp = [0, 10, 10, 10, 10, 6, 35, 2, 60, 30, 30]
+    enemy_speeds = [1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -76,6 +77,7 @@ def generate_enemy(name, level, x, y, grid):
         x = x,
         y = y,
         experience = enemy_exp[id],
+        speed = enemy_speeds[id]
     ) 
 
     return enemy
@@ -83,7 +85,7 @@ def generate_enemy(name, level, x, y, grid):
 
 
 class Enemy:
-    def __init__(self, name, health, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y, experience):
+    def __init__(self, name, health, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y, experience, speed):
         self.name = name
         self.health = health
         self.maxhealth = health
@@ -128,6 +130,11 @@ class Enemy:
         self.scale = 3
         self.loot = None #drop when dead
         self.experience = experience #Drop when dead
+
+        self.speed = speed
+        self.default_speed = speed
+        self.turns_left_before_moving = speed
+        self.speed_turns = 0
     
     def sign(self, x):
         return (x > 0) - (x < 0)  # returns 1, 0, or -1
@@ -158,7 +165,7 @@ class Enemy:
                 # If not moving or can't move, stay still
                 return Technique.STILL, self.x, self.y
                     
-        elif self.name == "GOOSE" or self.name == "CHROME DOME":
+        elif self.name == "GOOSE" or self.name == "CHROME DOME" or self.name == "TETRAHEDRON":
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 return Technique.HIT, xtochk, ytochk
             else:
@@ -278,7 +285,7 @@ class Enemy:
         # Assign directly — no blitting, no texture creation
         sprite.image = texture
 
-        self.animframe = self.animframe + self.animmod
+        self.animframe = self.animframe + self.animmod*self.speed
         if self.animframe >= len(animation_presets[self.animtype]):
             self.animframe = 0
 

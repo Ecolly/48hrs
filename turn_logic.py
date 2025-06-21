@@ -408,11 +408,47 @@ def do_turns(all_enemies, player, floor):
     chronology = 0
     prevtechnique = Technique.STILL
     prevtechnique, chronology = do_individual_turn(player, floor, player, list_of_animations, chronology, prevtechnique)
+    player.turns_left_before_moving += -1
+
     for enemy in all_enemies:
-        if enemy.should_be_deleted != True: #if enemy isnt already dead...
-            enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
-            prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
+        while enemy.turns_left_before_moving > player.turns_left_before_moving:
+            if enemy.should_be_deleted != True: #if enemy isnt already dead...
+                enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
+                prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
+            enemy.turns_left_before_moving += -1
+        if enemy.turns_left_before_moving == 0:
+            enemy.turns_left_before_moving = enemy.speed
+            enemy.speed_turns += -1
+            if enemy.speed_turns < 1:
+                enemy.speed = enemy.default_speed
+
+    if player.turns_left_before_moving == 0:
+        player.turns_left_before_moving = player.speed
+        player.speed_turns += -1
+        if player.speed_turns < 1:
+            player.speed = player.default_speed
+        
     return list_of_animations
+
+
+
+
+    # if player.turns_left_before_moving == 0:
+    #     for enemy in all_enemies:
+    #         i = 0
+    #         while i < enemy.speed:
+    #             if enemy.should_be_deleted != True: #if enemy isnt already dead...
+    #                 enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
+    #                 prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
+    #             i = i + 1
+    #         enemy.speed_turns += -1
+    #         if enemy.speed_turns < 1:
+    #             enemy.speed = enemy.default_speed
+    #     player.turns_left_before_moving = player.speed
+    #     player.speed_turns += -1
+    #     if player.speed_turns < 1:
+    #         player.speed = player.default_speed
+    # return list_of_animations
 
 
 
