@@ -21,6 +21,7 @@ def make_floor():
         test_map.auto_tile_ascii()
         test_map.map_type = "Complex"
         return test_map
+    test_map.assign_textures_to_all_floor_tiles()
     print(test_map)
     return test_map
 
@@ -46,20 +47,30 @@ class Map:
         
     
     #set the room tiles to be '.' (empty space)
-    def generate_room(self, x, y, room_width, room_height):
+    def assign_textures_to_all_floor_tiles(self):
         textures = ['.', '*', '~', '%', '<', '>']
+        weights = [10, 1, 1, 1, 1, 1]
+        for i in range(self.height):
+            for j in range(self.width):
+                if self.map_grid[i][j] == '.':
+                    tile = random.choices(textures, weights=weights)[0]
+                    self.map_grid[i][j] = tile
+
+    # def assign_room_textures(self, x, y, room_width, room_height):
+    #     textures = ['.', '*', '~', '%', '<', '>']
+    #     weights = [10, 1, 1, 1, 1, 1]
+    #     for i in range(y, y + room_height):
+    #         for j in range(x, x + room_width):
+    #             if 0 <= i < self.height and 0 <= j < self.width:
+    #                 tile = random.choices(textures, weights=weights)[0]
+    #                 self.map_grid[i][j] = tile
+
+    #set the room borders to be 'o' (empty space)
+    def generate_room(self, x, y, room_width, room_height):
         for i in range(y, y + room_height):
             for j in range(x, x + room_width):
                 if 0 <= i < self.height and 0 <= j < self.width:
-                    tile = random.choices(textures, weights=[10, 1, 1, 1, 1, 1])[0]
-                    self.map_grid[i][j] = tile
-                    
-    # #set the room borders to be 'o' (empty space)
-    # def generate_room(self, x, y, room_width, room_height):
-    #     for i in range(y-1, y + room_height+1):
-    #         for j in range(x-1, x + room_width+1):
-    #             if 0 <= i < self.height and 0 <= j < self.width:
-    #                 self.map_grid[i][j] = 'o'
+                    self.map_grid[i][j] = '.'  # Set the room area to empty space
     
     #check if a room can be generated at the given coordinates
     #checks it against existing rooms list
@@ -148,7 +159,7 @@ class Map:
         elif name == "Orange Staff":
             return Staff(name, grid_items, sprite_locs = 2, damage=10, projectile=False) #deducts 15 from all enemy hp on floor
         elif name == "Gold Staff":
-            return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=True) #deals between <charges> and <charges*3> damage
+            return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=False)
         elif name == "Green Staff":
             return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=False)
         elif name == "Teal Staff":
