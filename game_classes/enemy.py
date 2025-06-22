@@ -109,6 +109,9 @@ class Enemy:
         self.health_visual = health
         self.maxhealth_visual = health
         self.level_visual = level
+
+        self.strength = 0 #unused, only here to stop bugs
+        self.defense = 0
         self.strength_visual = 10 
         self.defense_visual = 5
 

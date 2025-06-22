@@ -496,7 +496,7 @@ def do_turns(all_enemies, player, floor):
     if player.turns_left_before_moving == 0:
         player.turns_left_before_moving = player.speed
         player.speed_turns += -(player.speed/2)
-        enemy.paralysis_turns += -(player.speed/2)
+        player.paralysis_turns += -(player.speed/2)
         if player.speed_turns < 1:
             player.speed = player.default_speed
         player.speed_visual = player.speed
