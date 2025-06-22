@@ -149,26 +149,28 @@ class InteractiveObject:
                 if self.type == 'equip sword':
                     sprite.group = group6
                     if player.equipment_weapon == None:
-                        sprite.color = (0, 189, 66, 0)
-                    else:
-                        sprite.color = (0, 189, 66, 255)
-                        id = player.inventory.index(player.equipment_weapon)
-                        inventory_x = id % 10
-                        inventory_y = id // 10
-                        self.x = inventory_x*48 + int(1152/48)*12
-                        self.y = -inventory_y*48 + int(768/48)*32 - 1
+                        pass
+                    #     sprite.color = (0, 189, 66, 0)
+                    # else:
+                    #     sprite.color = (0, 189, 66, 255)
+                    #     id = player.inventory.index(player.equipment_weapon)
+                    #     inventory_x = id % 10
+                    #     inventory_y = id // 10
+                    #     self.x = inventory_x*48 + int(1152/48)*12
+                    #     self.y = -inventory_y*48 + int(768/48)*32 - 1
 
                 elif self.type == 'equip shield':
-                    sprite.group = group6
-                    if player.equipment_shield == None:
-                        sprite.color = (0, 189, 66, 0)
-                    else:
-                        sprite.color = (0, 189, 66, 255)
-                        id = player.inventory.index(player.equipment_shield)
-                        inventory_x = id % 10
-                        inventory_y = id // 10
-                        self.x = inventory_x*48 + int(1152/48)*12
-                        self.y = -inventory_y*48 + int(768/48)*32 - 1
+                    pass
+                    # sprite.group = group6
+                    # if player.equipment_shield == None:
+                    #     sprite.color = (0, 189, 66, 0)
+                    # else:
+                    #     sprite.color = (0, 189, 66, 255)
+                    #     id = player.inventory.index(player.equipment_shield)
+                    #     inventory_x = id % 10
+                    #     inventory_y = id // 10
+                    #     self.x = inventory_x*48 + int(1152/48)*12
+                    #     self.y = -inventory_y*48 + int(768/48)*32 - 1
 
 
 
