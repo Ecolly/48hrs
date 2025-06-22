@@ -86,9 +86,6 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
             target.strength = max(target.strength-strength_reduction, 1)
             target.defense = max(target.defense-defense_reduction, 1)
 
-
-
-
         damage += attacker.strength
         if isinstance(item, Weapon) != False:
             if attacker.equipment_shield == None or attacker.equipment_shield.name != "Armor Plate":
@@ -102,6 +99,7 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
             damage = 1
 
     target.health = target.health - damage
+    #target.paralysis_turns = 0 #paralysis turns should be set to 0 if taking damage?
 
     if target != player and not target.is_alive():
         target.should_be_deleted = True
