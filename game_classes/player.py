@@ -413,7 +413,7 @@ class Player:
                 scale = -1
                 group = group_fg
             elif self.direction == FaceDirection.DOWN_RIGHT:
-                scale = -1
+                scale = 1
                 group = group_fg
             elif self.direction == FaceDirection.RIGHT:
                 scale = 1
@@ -425,7 +425,7 @@ class Player:
                 scale = 1
                 group = group_bg
             elif self.direction == FaceDirection.UP_LEFT:
-                scale = 1
+                scale = -1
                 group = group_bg
             elif self.direction == FaceDirection.LEFT:
                 scale = -1
@@ -443,7 +443,7 @@ class Player:
                 group = group_fg
             elif self.direction == FaceDirection.DOWN_RIGHT:
                 scale = 1
-                group = group_fg
+                group = group_bg
             elif self.direction == FaceDirection.RIGHT:
                 scale = 1
                 group = group_bg
@@ -455,7 +455,7 @@ class Player:
                 group = group_bg
             elif self.direction == FaceDirection.UP_LEFT:
                 scale = -1
-                group = group_bg
+                group = group_fg
             elif self.direction == FaceDirection.LEFT:
                 scale = -1
                 group = group_fg
