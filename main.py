@@ -117,6 +117,9 @@ animation_presets = [
     [0, 1, 2, 3, 4, 5, 6, 7]
 ]
 
+dragging_item = None
+dragging_from_slot = None
+drag_offset = (0, 0)
 
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
@@ -202,29 +205,49 @@ def on_mouse_motion(x, y, dx, dy):
 def on_mouse_press(x, y, button, modifiers):
     global all_buttons
     global gamestate
+    global dragging_item, drag_offset
+    mouse_x, mouse_y = x, y
     if button == pyglet.window.mouse.LEFT:
 
         if gamestate == 5:
             gamestate = 6 #6 means power bar mode
             create_power_bar(all_buttons, player.inventory[player.techniqueitem], mouse_x, mouse_y)
- 
-# @window.event
-# def on_mouse_press(x, y, button, modifiers):
-#     pass
-    # global dragging_item, drag_offset
-    # for slot in inventory:
-    #     if slot.item and slot.item.hit_test(x, y):
-    #         dragging_item = slot.item
-    #         drag_offset = (x - slot.x, y - slot.y)
-    #         slot.item = None
-    #         break
+        if gamestate == 3:  # Inventory state
+        # Check if an item is clicked in the inventory
+            inventory_x = math.floor((x - int((1152)/48)*12)/48) 
+            inventory_y = math.floor((-y + int((768)/48)*32)/48) + 1
 
-# @window.event
-# def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-#     pass
-    # if dragging_item:
-    #     dragging_item.sprite.x = x - drag_offset[0]
-    #     dragging_item.sprite.y = y - drag_offset[1]
+            # Calculate the inventory slot based on x and y coordinates
+            inventory_slot = inventory_y*10 + inventory_x
+
+        
+            if inventory_slot > -1 and len(player.inventory) > inventory_slot:
+                # Check if the clicked position corresponds to an inventory slot
+                if dragging_item is None:
+                    item_to_eval = player.inventory[inventory_slot]
+                    print()
+                    if item_to_eval:
+                        dragging_item = item_to_eval
+                        # Set the sprite position to the mouse position
+                        drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
+                        #remove the item from the inventory slot
+                        player.inventory[inventory_slot] = None
+                        print("Dragging item:", dragging_item.name)
+                else: 
+                    #if there is an item being dragged
+                    #place it in the moused over inventory slot if there are no items in that slot
+                    if player.inventory[inventory_slot] is None:
+                        player.inventory[inventory_slot] = dragging_item
+                        dragging_item = None
+                    else: #if there is an item in the slot, swap them
+                        item_to_eval = player.inventory[inventory_slot]
+                        player.inventory[inventory_slot] = dragging_item #swap items
+                        dragging_item = item_to_eval #set dragging item to the one that was in the slot
+                        drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
+                    
+                
+
+    
 
 
 @window.event
@@ -350,7 +373,7 @@ def on_mouse_release(x, y, button, modifiers):
                 player.cast(mouse_x_tilemap, mouse_y_tilemap)
                 gamestate = 7 #gamestate 7 is when power bar flashes, showing you what result you made it to
                 
-
+        
 
 
 
@@ -402,30 +425,30 @@ def on_mouse_release(x, y, button, modifiers):
                     rclick_options.append("THROW")
                     rclick_extra_1.append(inventory_slot)
                     rclick_extra_2.append(0)
+                    if item_to_eval is not None:
+                        if item_to_eval.is_equipable == True:
+                            if player.equipment_weapon == item_to_eval or player.equipment_shield == item_to_eval:
+                                rclick_options.append("UNEQUIP")
+                            else:
+                                rclick_options.append("EQUIP")
 
-                    if item_to_eval.is_equipable == True:
-                        if player.equipment_weapon == item_to_eval or player.equipment_shield == item_to_eval:
-                            rclick_options.append("UNEQUIP")
-                        else:
-                            rclick_options.append("EQUIP")
+                            rclick_extra_1.append(inventory_slot)
+                            rclick_extra_2.append(0)
 
-                        rclick_extra_1.append(inventory_slot)
-                        rclick_extra_2.append(0)
+                        if item_to_eval.is_consumable == True:
+                            rclick_options.append("CONSUME")
+                            rclick_extra_1.append(inventory_slot)
+                            rclick_extra_2.append(0)
 
-                    if item_to_eval.is_consumable == True:
-                        rclick_options.append("CONSUME")
-                        rclick_extra_1.append(inventory_slot)
-                        rclick_extra_2.append(0)
+                        if item_to_eval.is_castable == True:
+                            rclick_options.append("CAST")
+                            rclick_extra_1.append(inventory_slot)
+                            rclick_extra_2.append(0)
 
-                    if item_to_eval.is_castable == True:
-                        rclick_options.append("CAST")
-                        rclick_extra_1.append(inventory_slot)
-                        rclick_extra_2.append(0)
-
-                    if item_to_eval.is_usable == True:
-                        rclick_options.append("USE")
-                        rclick_extra_1.append(inventory_slot)
-                        rclick_extra_2.append(0)
+                        if item_to_eval.is_usable == True:
+                            rclick_options.append("USE")
+                            rclick_extra_1.append(inventory_slot)
+                            rclick_extra_2.append(0)
 
                     #rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
 
@@ -633,32 +656,33 @@ create_gui(all_buttons, player)
 create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
+print("I AM HRE NOW")
 
-player.inventory.append(floor.create_item("Blue Staff", grid_items))
-# player.inventory.append(floor.create_item("Stick", grid_items))
-# player.inventory.append(floor.create_item("Light Blue Staff", grid_items))
-player.inventory.append(floor.create_item("Armor Plate", grid_items))
-#player.inventory.append(floor.create_item("Blue Shield", grid_items))
-player.inventory.append(floor.create_item("Wood Shield", grid_items))
-#player.inventory.append(floor.create_item("Steel Shield", grid_items))
-player.inventory.append(floor.create_item("Knife", grid_items))
-# player.inventory.append(floor.create_item("Machete", grid_items))
-# player.inventory.append(floor.create_item("Scimitar", grid_items))
-# player.inventory.append(floor.create_item("Sickle", grid_items))
-# player.inventory.append(floor.create_item("Rapier", grid_items))
-player.inventory.append(floor.create_item("Stick", grid_items))
-# player.inventory.append(floor.create_item("Fury Cutter", grid_items))
-# player.inventory.append(floor.create_item("Windsword", grid_items))
+player.add_to_inventory(floor.create_item("Blue Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Stick", grid_items))
+# player.add_to_inventory(floor.create_item("Light Blue Staff", grid_items))
+player.add_to_inventory(floor.create_item("Armor Plate", grid_items))
+#player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
+player.add_to_inventory(floor.create_item("Wood Shield", grid_items))
+#player.add_to_inventory(floor.create_item("Steel Shield", grid_items))
+player.add_to_inventory(floor.create_item("Knife", grid_items))
+# player.add_to_inventory(floor.create_item("Machete", grid_items))
+# player.add_to_inventory(floor.create_item("Scimitar", grid_items))
+# player.add_to_inventory(floor.create_item("Sickle", grid_items))
+# player.add_to_inventory(floor.create_item("Rapier", grid_items))
+player.add_to_inventory(floor.create_item("Stick", grid_items))
+# player.add_to_inventory(floor.create_item("Fury Cutter", grid_items))
+# player.add_to_inventory(floor.create_item("Windsword", grid_items))
 
-player.inventory.append(floor.create_item("Red Staff", grid_items))
-player.inventory.append(floor.create_item("Orange Staff", grid_items))
-player.inventory.append(floor.create_item("Gold Staff", grid_items))
-player.inventory.append(floor.create_item("Green Staff", grid_items))
-player.inventory.append(floor.create_item("Teal Staff", grid_items))
-player.inventory.append(floor.create_item("Rock", grid_items))
-player.inventory.append(floor.create_item("Starfruit", grid_items))
+player.add_to_inventory(floor.create_item("Red Staff", grid_items))
+player.add_to_inventory(floor.create_item("Orange Staff", grid_items))
+player.add_to_inventory(floor.create_item("Gold Staff", grid_items))
+player.add_to_inventory(floor.create_item("Green Staff", grid_items))
+player.add_to_inventory(floor.create_item("Teal Staff", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Starfruit", grid_items))
 
-# player.inventory.append(floor.create_item("Magenta Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
@@ -828,8 +852,13 @@ def on_draw():
 
     i = 0 #theres probably a more pythonic way to do this, sowwy
     for item in player.inventory:
-        item.draw_inventory(batch, player, group_inv, i, gamestate)
+        if item is not None:
+            item.draw_inventory(batch, player, group_inv, i, gamestate)
+        if dragging_item:
+            dragging_item.sprite.x = mouse_x - drag_offset[0]
+            dragging_item.sprite.y = mouse_y - drag_offset[1]
         i = i + 1
+
 
     if keys[pyglet.window.key.Q]:
         while len(all_anims) > 0:
@@ -848,7 +877,7 @@ def on_draw():
     delete_object.delobj(floor.floor_items)
     # delete_object.delobj(player.active_projectiles)
     delete_object.delobj(all_anims)
-    delete_object.delobj(player.inventory)
+    #delete_object.delobj(player.inventory)
     delete_object.delobj(all_buttons)
 
     for button in all_buttons:

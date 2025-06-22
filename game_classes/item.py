@@ -77,19 +77,20 @@ class Item:
     #     sprite.batch = batch
 
     def draw_inventory(self, batch, player, group, invslot, gamestate):
-        sprite = self.sprite
-        if gamestate == 3: #if in the inventory menu
-            base_x = (invslot % 10)*48 + int((1152)/48)*12 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
-            base_y = -(invslot // 10)*48 + int((768)/48)*32 #768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
-            sprite.x = base_x
-            sprite.y = base_y
-            sprite.color = (255, 255, 255, 255)
-            sprite.scale = self.scale
-            sprite.group = group
-            sprite.batch = batch
-        else:
-            sprite.color = (0, 0, 0, 0)
-            sprite.batch = batch
+        if self is not None:
+            sprite = self.sprite
+            if gamestate == 3: #if in the inventory menu
+                base_x = (invslot % 10)*48 + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+                base_y = -(invslot // 10)*48 + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+                sprite.x = base_x
+                sprite.y = base_y
+                sprite.color = (255, 255, 255, 255)
+                sprite.scale = self.scale
+                sprite.group = group
+                sprite.batch = batch
+            else:
+                sprite.color = (0, 0, 0, 0)
+                sprite.batch = batch            
 
 class Weapon(Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True):

@@ -33,7 +33,7 @@ class Player:
         self.prevy = y 
         self.offsetx = 0
         self.offsety = 0
-        self.inventory = []
+        self.inventory = [None]*30
         self.active_projectiles = []
         #self.active_spells = []
         self.direction = FaceDirection.DOWN  # Default direction
@@ -78,8 +78,15 @@ class Player:
         
         self.paralysis_turns = 0
         self.paralysis_visual = 0
-
-
+    
+    def add_to_inventory(self, item):
+        for slot in range(len(self.inventory)):
+            print(f"Checking slot {slot} for item {item.name}")
+            if self.inventory[slot] is None:
+                self.inventory[slot] = item
+                return True  # Success
+        print("Inventory full. Cannot pick up item.")
+        return False  # Inventory was full
 
     # def get_screen_position(self):
     #     return self.scale*(self.prevx*16-8), self.scale*(self.prevy*16-8)
