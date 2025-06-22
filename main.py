@@ -853,11 +853,12 @@ def on_draw():
 
     i = 0 #theres probably a more pythonic way to do this, sowwy
     for item in player.inventory:
-        if item is not None:
-            item.draw_inventory(batch, player, group_inv, i, gamestate)
         if dragging_item:
             dragging_item.sprite.x = mouse_x - drag_offset[0]
             dragging_item.sprite.y = mouse_y - drag_offset[1]
+        if item is not None:
+            item.draw_inventory(batch, player, group_inv, i, gamestate)
+      
         i = i + 1
 
 

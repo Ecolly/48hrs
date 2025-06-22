@@ -217,6 +217,9 @@ class Animation:
                         if isinstance(self.item, Item):
                             self.item.sprite.delete()
                             del self.item.sprite
+                            print("deleted item sprite")
+                            print(player.inventory)
+                            print(len(player.inventory))
                         del self.item
                 self.should_be_deleted = True
 

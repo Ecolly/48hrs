@@ -202,14 +202,18 @@ class Player:
 
     def drop_item(self, inv_slot, floor_items):
         if self.detect_item(floor_items) == False:
-            item = self.inventory.pop(inv_slot)
-            floor_items.append(item)
-            item.x = self.x
-            item.y = self.y    
+            item = self.inventory[inv_slot]
+            if item is not None:
+                self.inventory[inv_slot] = None  # Remove item from inventory
+                floor_items.append(item)
+                item.x = self.x
+                item.y = self.y    
         self.technique = Technique.STILL 
 
     def consume_item(self, inv_slot, list_of_animations):
-        item = self.inventory.pop(inv_slot)
+        item = self.inventory[inv_slot]
+        if item is not None:
+            self.inventory[inv_slot] = None  
         health_to_restore = item.nutrition_value
 
         print(health_to_restore, self.maxhealth, self.health, self.maxhealth_visual, self.health_visual)
