@@ -163,7 +163,8 @@ class Player:
 
 
     def throw(self, x, y):
-        item = self.inventory.pop(self.techniqueitem)
+        item = self.inventory[self.techniqueitem]
+        self.inventory[self.techniqueitem] = None  # Remove item from inventory
         self.active_projectiles.append(item)
         item.sprite.color = (255, 255, 255, 0)
         item.x = self.x + 0.5
