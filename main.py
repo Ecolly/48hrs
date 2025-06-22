@@ -217,6 +217,8 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
             create_power_bar(all_buttons, player.inventory[player.techniqueitem], mouse_x, mouse_y)
         if gamestate == 3 and right_click_menu_enabled == False:  # Inventory state
         # Check if an item is clicked in the inventory
+            
+
             inventory_x = math.floor((mouse_x - int((1152)/48)*12)/(48+9)) 
             inventory_y = math.floor((-mouse_y + int((768)/48)*32)/(48+9)) + 1
 
@@ -224,31 +226,31 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
             inventory_slot = inventory_y*10 + inventory_x
             print(inventory_slot)
 
-        
-            if inventory_slot > -1 and len(player.inventory) > inventory_slot:
-                # Check if the clicked position corresponds to an inventory slot
-                if dragging_item is None:
-                    item_to_eval = player.inventory[inventory_slot]
-                    print()
-                    if item_to_eval:
-                        dragging_item = item_to_eval
-                        # Set the sprite position to the mouse position
-                        drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
-                        #remove the item from the inventory slot
-                        player.inventory[inventory_slot] = None
-                        print("Dragging item:", dragging_item.name)
-                else: 
-                    #if there is an item being dragged
-                    #place it in the moused over inventory slot if there are no items in that slot
-                    if player.inventory[inventory_slot] is None:
-                        player.inventory[inventory_slot] = dragging_item
-                        dragging_item = None
-                    else: #if there is an item in the slot, swap them
+            if 0 <= inventory_x < 10 and 0 <= inventory_y < 3:
+                if inventory_slot > -1 and len(player.inventory) > inventory_slot:
+                    # Check if the clicked position corresponds to an inventory slot
+                    if dragging_item is None:
                         item_to_eval = player.inventory[inventory_slot]
-                        player.inventory[inventory_slot] = dragging_item #swap items
-                        dragging_item = item_to_eval #set dragging item to the one that was in the slot
-                        drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
-                    
+                        print()
+                        if item_to_eval:
+                            dragging_item = item_to_eval
+                            # Set the sprite position to the mouse position
+                            drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
+                            #remove the item from the inventory slot
+                            player.inventory[inventory_slot] = None
+                            print("Dragging item:", dragging_item.name)
+                    else: 
+                        #if there is an item being dragged
+                        #place it in the moused over inventory slot if there are no items in that slot
+                        if player.inventory[inventory_slot] is None:
+                            player.inventory[inventory_slot] = dragging_item
+                            dragging_item = None
+                        else: #if there is an item in the slot, swap them
+                            item_to_eval = player.inventory[inventory_slot]
+                            player.inventory[inventory_slot] = dragging_item #swap items
+                            dragging_item = item_to_eval #set dragging item to the one that was in the slot
+                            drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
+                        
                 
 
     
