@@ -540,6 +540,12 @@ bg.z = 0
 
 def go_to_next_level():
     global floor, all_enemies, player, bg, floor_level
+
+    player.strength = player.maxstrength
+    player.strength_visual = player.strength
+
+    player.defense = player.maxdefense 
+    player.defense_visual = player.defense
     floor_level +=1
     print(floor_level)
     #Triggered after Detects stairs
@@ -628,21 +634,21 @@ create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
 
-# player.inventory.append(floor.create_item("Blue Staff", grid_items))
+player.inventory.append(floor.create_item("Blue Staff", grid_items))
 # player.inventory.append(floor.create_item("Stick", grid_items))
 # player.inventory.append(floor.create_item("Light Blue Staff", grid_items))
 player.inventory.append(floor.create_item("Armor Plate", grid_items))
-player.inventory.append(floor.create_item("Blue Shield", grid_items))
+#player.inventory.append(floor.create_item("Blue Shield", grid_items))
 player.inventory.append(floor.create_item("Wood Shield", grid_items))
-player.inventory.append(floor.create_item("Steel Shield", grid_items))
+#player.inventory.append(floor.create_item("Steel Shield", grid_items))
 player.inventory.append(floor.create_item("Knife", grid_items))
-player.inventory.append(floor.create_item("Machete", grid_items))
-player.inventory.append(floor.create_item("Scimitar", grid_items))
-player.inventory.append(floor.create_item("Sickle", grid_items))
-player.inventory.append(floor.create_item("Rapier", grid_items))
+# player.inventory.append(floor.create_item("Machete", grid_items))
+# player.inventory.append(floor.create_item("Scimitar", grid_items))
+# player.inventory.append(floor.create_item("Sickle", grid_items))
+# player.inventory.append(floor.create_item("Rapier", grid_items))
 player.inventory.append(floor.create_item("Stick", grid_items))
-player.inventory.append(floor.create_item("Fury Cutter", grid_items))
-player.inventory.append(floor.create_item("Windsword", grid_items))
+# player.inventory.append(floor.create_item("Fury Cutter", grid_items))
+# player.inventory.append(floor.create_item("Windsword", grid_items))
 
 player.inventory.append(floor.create_item("Red Staff", grid_items))
 player.inventory.append(floor.create_item("Orange Staff", grid_items))
@@ -793,6 +799,10 @@ def on_draw():
     if gamestate == 2:
         if len(all_anims) == 0 or all(anim.proceed for anim in all_anims):
             gamestate = 1
+            #we should refresh all visuals to match their actual counterparts here just for safety
+            refresh_all_visuals(player)
+            for enemy in all_enemies:
+                refresh_all_visuals(enemy)
             if(player.x, player.y) == floor.stairs:
                 print("on stairs GOING TO NEXT LEVEL")
                 go_to_next_level()

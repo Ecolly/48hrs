@@ -48,9 +48,11 @@ class Player:
         
         self.strength = 10  # Default strength
         self.maxstrength = 10
+        self.strength_visual = 10
 
         self.defense = 5  # Default defense
         self.maxdefense = 5
+        self.defense_visual = 5
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
@@ -72,6 +74,11 @@ class Player:
         self.speed = 2
         self.turns_left_before_moving = 2
         self.speed_turns = 0
+        self.speed_visual = 2
+        
+        self.paralysis_turns = 0
+        self.paralysis_visual = 0
+
 
 
     # def get_screen_position(self):
@@ -178,128 +185,6 @@ class Player:
     def cast_static(self):
         self.technique = Technique.CAST
         
-
-    # def spellcasting(self, inv_slot, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate):
-        
-    #     item = self.inventory[inv_slot]
-    #     name = item.name
-    #     if isinstance(item, Staff) == True:
-    #         if name == "Red Staff": #Cuts an enemy's HP in half
-    #             pass
-    #         elif name == "Orange Staff": #Deducts 10 from HP of all enemies in floor (including you)
-    #             self.health = self.health - 10
-    #             button_class.create_point_number(self.x, self.y, "-15", (255, 0, 0, 255), self, all_buttons)
-    #             button_class.create_graphical_effect(self.x, self.y, 0, self, all_buttons)
-    #             for enemy in all_enemies:
-    #                 enemy.health = enemy.health - 10
-    #                 button_class.create_point_number(enemy.x, enemy.y, "-15", (255, 0, 0, 255), self, all_buttons)
-    #                 button_class.create_graphical_effect(enemy.x, enemy.y, 0, self, all_buttons)
-    #                 if not enemy.is_alive():
-    #                     enemy.sprite.delete()
-    #                     del enemy.sprite
-    #                     floor.all_enemies.remove(enemy)
-    #             sound_magic.play()
-    #             self.inventory.remove(item)
-    #             del item
-    #         elif name == "Gold Staff": #average all stats together (could be a consumable)
-    #             total_stats = math.floor((self.health + self.strength + self.defense)/3)
-
-    #             self.maxhealth = total_stats
-    #             self.health = total_stats
-
-    #             self.maxstrength = total_stats
-    #             self.strength = total_stats
-
-    #             self.maxdefense = total_stats
-    #             self.defense = total_stats
-    #             sound_magic.play()
-    #             self.inventory.remove(item)
-    #             del item
-    #         elif name == "Green Staff": #wand of teleporting
-    #             random_location = random.choice(floor.valid_entity_tiles)
-    #             y, x = random_location
-    #             self.x, self.y = x, y
-    #             self.prevx, self.prevy = x, y
-    #             sound_magic.play()
-    #             self.inventory.remove(item)
-    #             del item
-    #             pass
-    #         elif name == "Teal Staff": 
-    #             self.health = self.maxhealth
-    #             sound_magic.play()
-    #             self.inventory.remove(item)
-    #             del item
-    #         elif name == "Blue Staff": #+1 to Sword and Shield.
-    #             if self.equipment_shield != None:
-    #                 self.equipment_shield.defense += 1
-    #             if self.equipment_weapon != None:
-    #                 self.equipment_weapon.damage += 1
-    #             sound_magic.play()
-    #             self.inventory.remove(item)
-    #             del item
-    #         elif name == "Light Blue Staff": #Multiplies Sword & Shield strength by 1.2x
-    #             if self.equipment_shield != None:
-    #                 self.equipment_shield.defense = math.floor(self.equipment_shield.defense*1.2)
-    #             if self.equipment_weapon != None:
-    #                 self.equipment_weapon.damage = math.floor(self.equipment_sheild.damage*1.2)
-    #             sound_magic.play()
-    #             self.inventory.remove(item)
-    #             del item
-    #         elif name == "Magenta Staff":
-    #             sound_magic.play()
-    #             has_won = 1
-    #             self.inventory.remove(item)
-    #             del item
-    #         elif name == "Black Staff":
-    #             self.maxhealth = self.maxhealth + 1
-    #             sound_magic.play()
-    #             self.inventory.remove(item)
-    #             del item
-    #             pass
-            
-    #         self.technique = Technique.STILL
-    #         return has_won
-
-
-    # def cast_projectile(self, x, y):
-    #     projectile = Spell("spell", sprite_locs=4)
-    #     self.active_spells.append(projectile)
-    #     projectile.x = self.x
-    #     projectile.y = self.y   
-    #     projectile.prevx = self.x 
-    #     projectile.prevy = self.y
-    #     self.technique = Technique.CAST
-
-    #     self.techniquex = x
-    #     self.techniquey = y
-    #     dx = x - self.x 
-    #     dy = y - self.y
-
-    #     #adjust rotation state (gross)
-    #     if dx == 1:
-    #         if dy == 1:
-    #             self.direction = FaceDirection.UP_RIGHT
-    #         elif dy == -1:
-    #             self.direction = FaceDirection.DOWN_RIGHT
-    #         else:
-    #             self.direction = FaceDirection.RIGHT
-    #     elif dx == -1:
-    #         if dy == 1:
-    #             self.direction = FaceDirection.UP_LEFT
-    #         elif dy == -1:
-    #             self.direction = FaceDirection.DOWN_LEFT
-    #         else:
-    #             self.direction = FaceDirection.LEFT
-    #     else:
-    #         if dy == 1:
-    #             self.direction = FaceDirection.UP
-    #         elif dy == -1:
-    #             self.direction = FaceDirection.DOWN
-
-
-
-
-
 
 
 
@@ -481,11 +366,20 @@ class Player:
 
 
     def draw(self, batch, animation_presets, group, group_bg, group_fg):
-        base_x, base_y = 1152/2 -24 + self.offsetx*16*self.scale, 768/2-24 + self.offsety*16*self.scale #self.get_screen_position()
+        
         sprite = self.sprite
 
-        frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][int(self.animframe)]
+        if self.paralysis_visual > 0:
+            frame_index = self.spriteindex + self.direction.value * 8
+            paralyze_x = (1 - 2*((self.animframe*4) % 2))/2
+        else:
+            frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][math.floor(self.animframe)]
+            paralyze_x = 0
+
+        
         tile = self.grid[frame_index]
+
+        base_x, base_y = 1152/2 -24 + (self.offsetx*16 + paralyze_x)*self.scale, 768/2-24 + self.offsety*16*self.scale #self.get_screen_position()
 
         # Get texture and set filtering
         texture = tile.get_texture()
@@ -496,7 +390,7 @@ class Player:
         # Assign directly — no blitting, no texture creation
         sprite.image = texture
 
-        self.animframe = self.animframe + self.animmod*self.speed
+        self.animframe = self.animframe + self.animmod*self.speed_visual
         if self.animframe >= len(animation_presets[self.animtype]):
             self.animframe = 0
 

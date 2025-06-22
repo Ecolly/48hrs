@@ -43,6 +43,16 @@ def enemy_grid_to_use(level):
     else:
         return grid_entities4
 
+def refresh_all_visuals(entity):
+    entity.health_visual = entity.health
+    entity.maxhealth_visual = entity.maxhealth
+    if isinstance(entity, Enemy) == False:
+        entity.experience_visual = entity.experience
+        entity.strength_visual = entity.strength
+        entity.defense_visual = entity.defense
+    entity.level_visual = entity.level
+    entity.paralysis_visual = entity.paralysis_turns
+    entity.speed_visual = entity.speed
 
 
 
@@ -54,10 +64,10 @@ def create_sprite_enemy(image_grid, index):
 
 def generate_enemy(name, level, x, y, grid):
 
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "BUFFALO"]
-    enemy_hps = [20, 15, 18, 8, 10, 12, 20, 30, 20, 10]
-    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64, 9*64, 4*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 2]
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION"]
+    enemy_hps = [20, 15, 18, 8, 10, 12, 20, 30, 20, 10, 10]
+    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64, 9*64, 12*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1]
     enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8]
     enemy_exp = [0, 10, 10, 10, 10, 6, 35, 2, 60, 30, 30, 30]
     enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
@@ -99,7 +109,8 @@ class Enemy:
         self.health_visual = health
         self.maxhealth_visual = health
         self.level_visual = level
-
+        self.strength_visual = 10 
+        self.defense_visual = 5
 
         self.x = x # x coords are in 
         self.y = y
@@ -135,12 +146,17 @@ class Enemy:
         self.default_speed = speed
         self.turns_left_before_moving = speed
         self.speed_turns = 0
-    
+        self.speed_visual = speed
+
+        self.paralysis_turns = 0
+        self.paralysis_visual = 0
+
     def sign(self, x):
         return (x > 0) - (x < 0)  # returns 1, 0, or -1
 
     def do_AI(self, all_enemies, player, game_map):
-
+        if self.paralysis_turns > 0:
+            return Technique.STILL, self.x, self.y
         xtochk = player.x
         ytochk = player.y
 
@@ -152,7 +168,7 @@ class Enemy:
                 dy = self.sign(self.y - ytochk)
                 new_x = self.x + dx
                 new_y = self.y + dy
-                return Technique.MOVE, self.x, new_y    
+                return Technique.MOVE, new_x, new_y    
 
             else:
                 idle_action = random.choice([Technique.MOVE, Technique.STILL])
@@ -165,7 +181,7 @@ class Enemy:
                 # If not moving or can't move, stay still
                 return Technique.STILL, self.x, self.y
                     
-        elif self.name == "GOOSE" or self.name == "CHROME DOME" or self.name == "TETRAHEDRON":
+        elif self.name == "GOOSE" or self.name == "CHROME DOME" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 return Technique.HIT, xtochk, ytochk
             else:
@@ -186,8 +202,15 @@ class Enemy:
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 return Technique.HIT, player.x, player.y
             elif abs(player.x-self.x) < 5 and abs(player.y-self.y) < 5 and random.randint(0, 1) == 1:
-                    self.active_projectiles.append(Projectile("Spores", 0, self.x, self.y))
-                    return Technique.THROW, player.x, player.y 
+                if self.level == 2:
+                    self.active_projectiles.append(Projectile("Spores 2", 0, self.x, self.y, player.x, player.y))
+                elif self.level == 3:
+                    self.active_projectiles.append(Projectile("Spores 3", 0, self.x, self.y, player.x, player.y))
+                elif self.level == 4:
+                    self.active_projectiles.append(Projectile("Spores 4", 0, self.x, self.y, player.x, player.y))
+                else:
+                    self.active_projectiles.append(Projectile("Spores", 0, self.x, self.y, player.x, player.y))
+                return Technique.THROW, player.x, player.y 
             else:
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
@@ -267,14 +290,22 @@ class Enemy:
 
 
     def draw(self, batch, animation_presets, player, group):
-        base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.prevx*16 + 8)*self.scale + self.offsetx*16*self.scale
-        base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale + self.offsety*16*self.scale
+
 
 
 
         sprite = self.sprite
         self.grid = enemy_grid_to_use(self.level_visual)
-        frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][int(self.animframe)]
+        if self.paralysis_visual > 0:
+            frame_index = self.spriteindex + self.direction.value * 8
+            paralyze_x = (1 - 2*((self.animframe*4) % 2))/2
+        else:
+            frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][math.floor(self.animframe)]
+            paralyze_x = 0
+
+        base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.prevx*16 + 8)*self.scale + (self.offsetx*16 + paralyze_x)*self.scale
+        base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale + self.offsety*16*self.scale
+
         tile = self.grid[frame_index]
 
         # Get texture and set filtering
@@ -285,7 +316,7 @@ class Enemy:
         # Assign directly — no blitting, no texture creation
         sprite.image = texture
 
-        self.animframe = self.animframe + self.animmod*self.speed
+        self.animframe = self.animframe + self.animmod*self.speed_visual
         if self.animframe >= len(animation_presets[self.animtype]):
             self.animframe = 0
 

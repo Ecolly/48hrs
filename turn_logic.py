@@ -66,9 +66,29 @@ def can_move_to(x, y, game_map, player):
 
 
 def inflict_damage(attacker, target, player, chronology, list_of_animations, item, damage, damage_type):
+    strength_reduction = 0
+    defense_reduction = 0
     if target == None:
         return
     if damage_type == "physical":
+        if attacker.name == "SCORPION":
+            strength_reduction = 1
+            defense_reduction = 0
+            if attacker.level == 2:
+                strength_reduction = 3
+            elif attacker.level == 3:
+                strength_reduction = 3
+                defense_reduction = 3
+            elif attacker.level == 4:
+                strength_reduction = 5
+                defense_reduction = 5
+
+            target.strength = max(target.strength-strength_reduction, 1)
+            target.defense = max(target.defense-defense_reduction, 1)
+
+
+
+
         damage += attacker.strength
         if isinstance(item, Weapon) != False:
             if attacker.equipment_shield == None or attacker.equipment_shield.name != "Armor Plate":
@@ -94,7 +114,7 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
            attacker.level_up()
     #print(damage_type, damage)
 
-    anim = animations.Animation("-" + str(damage), 2, 0, (255, 0, 0, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage)
+    anim = animations.Animation("-" + str(damage), 2, 0, (255, 0, 0, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction)
     #when this anim happens...
 
     list_of_animations.append(anim)
@@ -102,34 +122,39 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
 
 
 
-
+def deduct_charges(entity, charges):
+    entity.inventory[entity.techniqueitem].charges -= charges
+    if entity.inventory[entity.techniqueitem].charges < 1:
+        entity.inventory[entity.techniqueitem].should_be_deleted = True
 
 
 def do_spell(entity, enemy_hit, player, spellname, charges, chronology, list_of_animations):
     if spellname == "Red Staff":
         if enemy_hit != None:
             inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, math.floor(enemy_hit.health/2), "magic")
-        entity.inventory[entity.techniqueitem].charges -= charges
-        if entity.inventory[entity.techniqueitem].charges < 1:
-            entity.inventory[entity.techniqueitem].should_be_deleted = True
-    if spellname == "Gold Staff":
+        deduct_charges(entity, charges)
+    elif spellname == "Gold Staff":
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges*2, "magic") #random.randint(charges, charges*3)
-        entity.inventory[entity.techniqueitem].charges -= charges
-        if entity.inventory[entity.techniqueitem].charges < 1:
-            entity.inventory[entity.techniqueitem].should_be_deleted = True
-    if spellname == "Green Staff":
+        deduct_charges(entity, charges)
+    elif spellname == "Green Staff":
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 3, "magic") #random.randint(charges, charges*3)
-        entity.inventory[entity.techniqueitem].charges -= charges
-        if entity.inventory[entity.techniqueitem].charges < 1:
-            entity.inventory[entity.techniqueitem].should_be_deleted = True
-    if spellname == "Teal Staff":
+        deduct_charges(entity, charges)
+    elif spellname == "Teal Staff":
         enemy_hit.speed = 1
         enemy_hit.speed_turns = charges
-        entity.inventory[entity.techniqueitem].charges -= charges
-        if entity.inventory[entity.techniqueitem].charges < 1:
-            entity.inventory[entity.techniqueitem].should_be_deleted = True
-    elif spellname == "Spores":
+        deduct_charges(entity, charges)
+    elif spellname == "Blue Staff": #paralysis
+        enemy_hit.paralysis_turns = charges
+        deduct_charges(entity, charges)
+    elif spellname == "Spores": #damage
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic")
+    elif spellname == "Spores 2": #decrease attack
+        enemy_hit.strength += -1
+    elif spellname == "Spores 3": #slow
+        enemy_hit.speed = 1
+        enemy_hit.speed_turns = 6
+    elif spellname == "Spores 4": #paralysis
+        enemy_hit.paralysis_turns = 3
     elif spellname == "Dragon Fire":
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 10, "magic")
 
@@ -347,7 +372,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                                 inflict_damage(entity, enemy_hit, player, chronology+chron_i, list_of_animations, item, 0, "physical")
                         
                         
-                        anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item)
+                        anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, enemy_hit, 0, item)
                         list_of_animations.append(anim3)
                         entity.active_projectiles[itemi] = -1
                         projectiles_remaining += -1
@@ -368,6 +393,8 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             inflict_damage(entity, player, player, chronology, list_of_animations, item, 15, "magic")
             for enemy in floor.all_enemies:
                 inflict_damage(entity, enemy, player, chronology, list_of_animations, item, 15, "magic")
+        elif item.name == "Light Blue Staff":
+            pass
         
         chronology += 10
         return Technique.CAST, chronology
@@ -406,6 +433,13 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
 
 
+def refresh_entity_states(entity):
+    entity.speed_turns += -1
+    entity.paralysis_turns += -1
+    if entity.speed_turns < 1:
+        entity.speed = entity.default_speed
+    
+
 
 
 
@@ -413,6 +447,8 @@ def do_turns(all_enemies, player, floor):
     list_of_animations = []
     chronology = 0
     prevtechnique = Technique.STILL
+    if player.paralysis_turns > 0:
+        player.technique = Technique.STILL
     prevtechnique, chronology = do_individual_turn(player, floor, player, list_of_animations, chronology, prevtechnique)
     player.turns_left_before_moving += -1
 
@@ -431,25 +467,19 @@ def do_turns(all_enemies, player, floor):
                 enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
                 prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
                 if player.turns_left_before_moving == 0:
-                    enemy.speed_turns += -1
-                    if enemy.speed_turns < 1:
-                        enemy.speed = enemy.default_speed
+                    refresh_entity_states(enemy)
         elif enemy.speed == player.speed: #normal speed
             if enemy.should_be_deleted != True: #if enemy isnt already dead...
                 enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
                 prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
                 if player.turns_left_before_moving == 0:
-                    enemy.speed_turns += -1
-                    if enemy.speed_turns < 1:
-                        enemy.speed = enemy.default_speed
+                    refresh_entity_states(enemy)
         else: #1/2 speed
             if player.turns_left_before_moving == 0:
                 if enemy.should_be_deleted != True: #if enemy isnt already dead...
                     enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
                     prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
-                    enemy.speed_turns += -1
-                    if enemy.speed_turns < 1:
-                        enemy.speed = enemy.default_speed
+                    refresh_entity_states(enemy)
 
 
 
@@ -468,8 +498,11 @@ def do_turns(all_enemies, player, floor):
     if player.turns_left_before_moving == 0:
         player.turns_left_before_moving = player.speed
         player.speed_turns += -(player.speed/2)
+        enemy.paralysis_turns += -(player.speed/2)
         if player.speed_turns < 1:
             player.speed = player.default_speed
+        player.speed_visual = player.speed
+        player.paralysis_visual = player.paralysis_turns
         
     return list_of_animations
 

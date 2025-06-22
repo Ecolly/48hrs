@@ -159,15 +159,15 @@ class Map:
         elif name == "Orange Staff":
             return Staff(name, grid_items, sprite_locs = 2, damage=10, projectile=False) #deducts 15 from all enemy hp on floor
         elif name == "Gold Staff":
-            return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=True)
+            return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=True) #deals set damage according to # of charges used
         elif name == "Green Staff":
             return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=True) #bounces
         elif name == "Teal Staff":
             return Staff(name, grid_items, sprite_locs = 13, damage=10, projectile=True) #slows down enemy
         elif name == "Blue Staff":
-            return Staff(name, grid_items, sprite_locs = 16, damage=10, projectile=False)
+            return Staff(name, grid_items, sprite_locs = 16, damage=10, projectile=True) #paralyzes enemy
         elif name == "Light Blue Staff":
-            return Staff(name, grid_items, sprite_locs = 17, damage=10, projectile=False)
+            return Staff(name, grid_items, sprite_locs = 17, damage=10, projectile=False) #levels up all enemies on a floor, including you
         elif name == "Magenta Staff":
             return Staff(name, grid_items, sprite_locs = 22, damage=10, projectile=False) #wins game
         elif name == "Black Staff":

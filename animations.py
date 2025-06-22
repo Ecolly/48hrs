@@ -23,7 +23,7 @@ grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
 
 class Animation:
-    def __init__(self, spriteindex, animtype, animspeed, color, start_time, duration, startx, starty, endx, endy, rot, associated_object, technique, attacker, target, damage, item=None):
+    def __init__(self, spriteindex, animtype, animspeed, color, start_time, duration, startx, starty, endx, endy, rot, associated_object, technique, attacker, target, damage, item=None, strength_reduction=0, defense_reduction=0):
         global grid_items
         global grid_font
         # 1. move player
@@ -71,6 +71,8 @@ class Animation:
         self.damage = damage
         self.item = item
         self.proceed = False #if this is true for all animations, game will switch back to gamestate 1. useful for damage nums
+        self.strength_reduction = strength_reduction
+        self.defense_reduction = defense_reduction
 
         self.spriteindex = spriteindex
         if self.spriteindex != None:
@@ -102,8 +104,9 @@ class Animation:
 
 
 
-                    if self.associated_object == player and frame > self.duration:
-                        player.pick_up_item(floor.floor_items)
+                    if frame > self.duration:
+                        if self.associated_object == player:
+                            player.pick_up_item(floor.floor_items)
             else:
                 self.color = (self.color[0], self.color[1], self.color[2], 255)
 
@@ -154,6 +157,9 @@ class Animation:
                                     #pass
                                     #update attacker sprite to reflect current level
                             self.target.health_visual = self.target.health_visual - self.damage
+                            self.target.strength_visual = self.target.strength_visual - self.strength_reduction
+                            self.target.defense_visual = self.target.defense_visual - self.defense_reduction
+
                             
 
                     elif frame > 20:
@@ -161,7 +167,16 @@ class Animation:
                 
                 
                 if self.animtype == 3 or self.animtype == 4: #projectiles
-                    
+                    if frame > self.duration:
+                        if self.target != None: #for spells
+                            if self.item.name == "Teal Staff" or self.item.name == "Spores 3":
+                                self.target.speed_visual = self.target.speed
+                            if self.item.name == "Blue Staff" or self.item.name == "Spores 4":
+                                self.target.paralysis_visual = self.target.paralysis_turns
+                            if self.item.name == "Spores 2":
+                                self.target.strength_visual = self.target.strength
+
+
                     self.color = (self.color[0], self.color[1], self.color[2], 255)           
                     distance_x = self.endx - self.startx
                     distance_y = self.endy - self.starty
