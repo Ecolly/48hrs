@@ -121,6 +121,7 @@ animation_presets = [
 dragging_item = None
 dragging_from_slot = None
 drag_offset = (0, 0)
+right_click_menu_enabled = False
 
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
@@ -208,12 +209,13 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global all_buttons
     global gamestate
     global dragging_item, drag_offset
+    global right_click_menu_enabled
     if button == pyglet.window.mouse.LEFT:
 
         if gamestate == 5:
             gamestate = 6 #6 means power bar mode
             create_power_bar(all_buttons, player.inventory[player.techniqueitem], mouse_x, mouse_y)
-        if gamestate == 3:  # Inventory state
+        if gamestate == 3 and right_click_menu_enabled == False:  # Inventory state
         # Check if an item is clicked in the inventory
             inventory_x = math.floor((mouse_x - int((1152)/48)*12)/(48+9)) 
             inventory_y = math.floor((-mouse_y + int((768)/48)*32)/(48+9)) + 1
@@ -262,10 +264,11 @@ def on_mouse_release(x, y, button, modifiers):
     global floor
     global has_won
     global sound_magic
+    global right_click_menu_enabled
     if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6: #this stuff can only happen between turns or in inventory
         print("mouse release", button, x, y)
         if button == pyglet.window.mouse.LEFT:
-            
+            right_click_menu_enabled = False
             was_button_clicked = 0
             for button in all_buttons:
                 button.clicked = False 
@@ -380,6 +383,7 @@ def on_mouse_release(x, y, button, modifiers):
 
 
         elif button == pyglet.window.mouse.RIGHT:
+            right_click_menu_enabled = True
             delete_buttons_supertype(all_buttons, 'rclick')
             #get rclick options
             rclick_options = []
