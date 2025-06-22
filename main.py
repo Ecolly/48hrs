@@ -14,6 +14,7 @@ from game_classes.item import Item
 import turn_logic
 import delete_object
 
+from config import WINDOW_HEIGHT, WINDOW_WIDTH, INVENTORY_SLOT_SIZE, INVENTORY_SPACING
 
 pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
 pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
@@ -196,17 +197,17 @@ window.push_handlers(keys)
 mouse_state = pyglet.window.mouse.MouseStateHandler()
 window.push_handlers(mouse_state)
 
+
 @window.event
 def on_mouse_motion(x, y, dx, dy):
     global mouse_x, mouse_y
     mouse_x, mouse_y = x, y
 
 @window.event
-def on_mouse_press(x, y, button, modifiers):
+def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global all_buttons
     global gamestate
     global dragging_item, drag_offset
-    mouse_x, mouse_y = x, y
     if button == pyglet.window.mouse.LEFT:
 
         if gamestate == 5:
@@ -214,8 +215,8 @@ def on_mouse_press(x, y, button, modifiers):
             create_power_bar(all_buttons, player.inventory[player.techniqueitem], mouse_x, mouse_y)
         if gamestate == 3:  # Inventory state
         # Check if an item is clicked in the inventory
-            inventory_x = math.floor((x - int((1152)/48)*12)/(48+9)) 
-            inventory_y = math.floor((-y + int((768)/48)*32)/(48+9)) + 1
+            inventory_x = math.floor((mouse_x - int((1152)/48)*12)/(48+9)) 
+            inventory_y = math.floor((-mouse_y + int((768)/48)*32)/(48+9)) + 1
 
             # Calculate the inventory slot based on x and y coordinates
             inventory_slot = inventory_y*10 + inventory_x
@@ -409,9 +410,10 @@ def on_mouse_release(x, y, button, modifiers):
                     rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
                     print(math.floor(mouse_x_tilemap - player.x))
                     print(math.floor(mouse_y_tilemap - player.y))
+            
             elif gamestate == 3:
-                inventory_x = math.floor((mouse_x - int((1152)/48)*12)/48) 
-                inventory_y = math.floor((-mouse_y + int((768)/48)*32)/48) + 1
+                inventory_x = math.floor((mouse_x - int((1152)/48)*12)/(48+INVENTORY_SPACING)) 
+                inventory_y = math.floor((-mouse_y + int((768)/48)*32)/(48+INVENTORY_SPACING)) + 1
                 inventory_slot = inventory_y*10 + inventory_x
                 
                 #print(inventory_slot, player.inventory)
@@ -657,8 +659,6 @@ create_gui(all_buttons, player)
 create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
-print("I AM HRE NOW")
-
 player.add_to_inventory(floor.create_item("Blue Staff", grid_items))
 # player.add_to_inventory(floor.create_item("Stick", grid_items))
 # player.add_to_inventory(floor.create_item("Light Blue Staff", grid_items))
@@ -878,7 +878,7 @@ def on_draw():
     delete_object.delobj(floor.floor_items)
     # delete_object.delobj(player.active_projectiles)
     delete_object.delobj(all_anims)
-    #delete_object.delobj(player.inventory)
+    delete_object.delobj(player.inventory)
     delete_object.delobj(all_buttons)
 
     for button in all_buttons:
