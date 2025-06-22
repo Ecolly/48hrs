@@ -65,6 +65,7 @@ class Item:
         sprite.scale = self.scale
         sprite.group = group
         sprite.batch = batch
+       
     
     # def draw_projectiles(self, batch, player, group):
     #     base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
@@ -77,11 +78,12 @@ class Item:
     #     sprite.batch = batch
 
     def draw_inventory(self, batch, player, group, invslot, gamestate):
+        spacing = 9 #spacing between items in the inventory
         if self is not None:
             sprite = self.sprite
             if gamestate == 3: #if in the inventory menu
-                base_x = (invslot % 10)*48 + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
-                base_y = -(invslot // 10)*48 + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+                base_x = (invslot % 10)*(48+spacing) + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+                base_y = -(invslot // 10)*(48+spacing)+ spacing + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
                 sprite.x = base_x
                 sprite.y = base_y
                 sprite.color = (255, 255, 255, 255)

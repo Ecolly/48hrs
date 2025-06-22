@@ -214,11 +214,12 @@ def on_mouse_press(x, y, button, modifiers):
             create_power_bar(all_buttons, player.inventory[player.techniqueitem], mouse_x, mouse_y)
         if gamestate == 3:  # Inventory state
         # Check if an item is clicked in the inventory
-            inventory_x = math.floor((x - int((1152)/48)*12)/48) 
-            inventory_y = math.floor((-y + int((768)/48)*32)/48) + 1
+            inventory_x = math.floor((x - int((1152)/48)*12)/(48+9)) 
+            inventory_y = math.floor((-y + int((768)/48)*32)/(48+9)) + 1
 
             # Calculate the inventory slot based on x and y coordinates
             inventory_slot = inventory_y*10 + inventory_x
+            print(inventory_slot)
 
         
             if inventory_slot > -1 and len(player.inventory) > inventory_slot:

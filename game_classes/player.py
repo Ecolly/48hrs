@@ -270,12 +270,10 @@ class Player:
         """Pick up an item and add it to the player's inventory."""
         for item in item_list:
             if item.x == self.x and item.y == self.y:
-                if len(self.inventory) < 30:  # Arbitrary limit for inventory size
-                    self.inventory.append(item)
+                if self.add_to_inventory(item):
                     item_list.remove(item)  # Remove item from the map
                     print(f"Picked up {item.name} at {item.x}, {item.y}")
                     print(f"player{self.x}, {self.y}")
-                    print(f"inventory: {[i.name for i in self.inventory]}")
                 else:
                     print("Inventory full. Cannot pick up item.")
 
