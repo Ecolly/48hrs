@@ -54,13 +54,13 @@ def create_sprite_enemy(image_grid, index):
 
 def generate_enemy(name, level, x, y, grid):
 
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON"]
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "BUFFALO"]
     enemy_hps = [20, 15, 18, 8, 10, 12, 20, 30, 20, 10]
-    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64, 9*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3]
-    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8]
-    enemy_exp = [0, 10, 10, 10, 10, 6, 35, 2, 60, 30, 30]
-    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4] #1 - slow, 2 - default speed, 4 - fast
+    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64, 9*64, 4*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 2]
+    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8]
+    enemy_exp = [0, 10, 10, 10, 10, 6, 35, 2, 60, 30, 30, 30]
+    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
 
     id = enemy_names.index(name)
     enemy = Enemy(

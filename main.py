@@ -94,7 +94,9 @@ grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 from pyglet.graphics import Group
 group_bg = Group(order=0)
 group_items = Group(order=20)
+group_enemies_bg = Group(order=39)
 group_enemies = Group(order=40)
+group_enemies_fg = Group(order=41)
 
 group_effects = Group(order=42)
 
@@ -169,11 +171,10 @@ player = Player(
     y = 30,
     sprite = create_sprite(grid_entities1, 20*8*8),
     spritegrid = grid_entities1,
+    itemgrid = grid_items,
     spriteindex = 20*8*8,
     color = (255, 255, 255, 255),
     animtype = 1,
-    animmod = 1/8,
-    animframe = 0,
 )
 
 
@@ -631,6 +632,7 @@ create_mouse_overlay(all_buttons)
 # player.inventory.append(floor.create_item("Stick", grid_items))
 # player.inventory.append(floor.create_item("Light Blue Staff", grid_items))
 player.inventory.append(floor.create_item("Armor Plate", grid_items))
+player.inventory.append(floor.create_item("Knife", grid_items))
 player.inventory.append(floor.create_item("Red Staff", grid_items))
 player.inventory.append(floor.create_item("Orange Staff", grid_items))
 player.inventory.append(floor.create_item("Gold Staff", grid_items))
@@ -790,7 +792,7 @@ def on_draw():
     bg.batch = batch
 
     #sprite.image = texture
-    player.draw(batch, animation_presets, group_enemies)
+    player.draw(batch, animation_presets, group_enemies, group_enemies_bg, group_enemies_fg)
     for enemy in all_enemies:
         enemy.draw(batch, animation_presets, player, group_enemies)
 

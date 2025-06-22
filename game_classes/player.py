@@ -9,9 +9,10 @@ from game_classes.item import *
 from game_classes.projectiles import *
 import animations
 import turn_logic
+import image_handling
 
 class Player:
-    def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y):
+    def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, itemgrid, color, animtype, x, y):
         self.name = name
         self.health = health
         self.maxhealth = health
@@ -54,6 +55,13 @@ class Player:
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
         self.grid = spritegrid
+
+        self.sprite_weapon = image_handling.create_sprite(itemgrid, 0)
+        self.sprite_shield = image_handling.create_sprite(itemgrid, 0)
+        self.sprite_weapon.color = (0, 0, 0, 0)
+        self.sprite_shield.color = (0, 0, 0, 0)
+        self.itemgrid = itemgrid
+
         self.color = color #4 entry tuple for the sprite to be colored as; white is default
         self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
         self.animframe = 0 #what frame of the animation it's on
@@ -379,11 +387,100 @@ class Player:
                 else:
                     print("Inventory full. Cannot pick up item.")
 
+    
+    def get_helditem_coordanites(self, base_x, base_y, frame_index, group_bg, group_fg, type, hand):
+        coordlist = [[4, 4, 13, 4], [5, 4, 14, 4], [5, 4, 14, 5], [3, 4, 12, 4], [3, 5, 12, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [5, 4, 12, 4], [4, 4, 13, 4], [4, 4, 14, 4], [8, 4, 11, 4], [8, 4, 10, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [8, 3, 8, 3], [7, 4, 9, 4], [6, 3, 11, 3], [9, 4, 7, 4], [11, 4, 6, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [12, 4, 5, 4], [13, 4, 4, 4], [14, 4, 4, 4], [11, 4, 8, 4], [10, 4, 8, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [13, 4, 4, 4], [14, 4, 3, 4], [15, 5, 3, 4], [14, 4, 3, 4], [14, 4, 2, 5], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [12, 4, 5, 4], [13, 4, 4, 4], [14, 4, 4, 4], [11, 4, 8, 4], [10, 4, 8, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [9, 3, 9, 3], [8, 4, 10, 4], [7, 3, 12, 3], [10, 4, 8, 4], [12, 3, 6, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [5, 4, 12, 4], [4, 4, 13, 4], [4, 4, 14, 4], [8, 4, 11, 4], [8, 4, 10, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+
+        
+        coords_on_player = coordlist[frame_index - self.spriteindex]
+
+        if type == "weapon":
+            item_coords = [5, 5, 12, 5]
+        elif type == "shield":
+            item_coords = [8, 7, 8, 7]
+        else: #staff coords:
+            item_coords = [6, 4, 11, 4]
+
+        if hand == "right":
+            if self.direction == FaceDirection.DOWN:
+                scale = -1
+                group = group_fg
+            elif self.direction == FaceDirection.DOWN_RIGHT:
+                scale = -1
+                group = group_fg
+            elif self.direction == FaceDirection.RIGHT:
+                scale = 1
+                group = group_fg
+            elif self.direction == FaceDirection.UP_RIGHT:
+                scale = 1
+                group = group_fg
+            elif self.direction == FaceDirection.UP:
+                scale = 1
+                group = group_bg
+            elif self.direction == FaceDirection.UP_LEFT:
+                scale = 1
+                group = group_bg
+            elif self.direction == FaceDirection.LEFT:
+                scale = -1
+                group = group_bg
+            else: #down left
+                scale = -1
+                group = group_bg
+            if scale == 1:
+                coords = [-item_coords[0] + coords_on_player[0], -item_coords[1] + coords_on_player[1]]
+            else:
+                coords = [-item_coords[2] + coords_on_player[0] + 16, -item_coords[3] + coords_on_player[1]]
+        else:
+            if self.direction == FaceDirection.DOWN:
+                scale = 1
+                group = group_fg
+            elif self.direction == FaceDirection.DOWN_RIGHT:
+                scale = 1
+                group = group_fg
+            elif self.direction == FaceDirection.RIGHT:
+                scale = 1
+                group = group_bg
+            elif self.direction == FaceDirection.UP_RIGHT:
+                scale = -1
+                group = group_bg
+            elif self.direction == FaceDirection.UP:
+                scale = -1
+                group = group_bg
+            elif self.direction == FaceDirection.UP_LEFT:
+                scale = -1
+                group = group_bg
+            elif self.direction == FaceDirection.LEFT:
+                scale = -1
+                group = group_fg
+            else: #down left
+                scale = 1
+                group = group_fg
+            if scale == 1:
+                coords = [-item_coords[0] + coords_on_player[2], -item_coords[1] + coords_on_player[3]]
+            else:
+                coords = [-item_coords[2] + coords_on_player[2] + 16, -item_coords[3] + coords_on_player[3]]
 
 
 
 
-    def draw(self, batch, animation_presets, group):
+
+
+        return base_x + coords[0]*self.scale, base_y + coords[1]*self.scale, scale, group
+
+
+
+
+
+
+
+    def draw(self, batch, animation_presets, group, group_bg, group_fg):
         base_x, base_y = 1152/2 -24 + self.offsetx*16*self.scale, 768/2-24 + self.offsety*16*self.scale #self.get_screen_position()
         sprite = self.sprite
 
@@ -402,6 +499,28 @@ class Player:
         self.animframe = self.animframe + self.animmod*self.speed
         if self.animframe >= len(animation_presets[self.animtype]):
             self.animframe = 0
+
+        if self.equipment_weapon != None:
+            tile2 = self.itemgrid[self.equipment_weapon.spriteindex]
+            self.sprite_weapon.image = tile2.get_texture()
+            self.sprite_weapon.color = (255, 255, 255, 255)
+            self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "weapon", "right")
+            # self.sprite_weapon.x = base_x - 24
+            # self.sprite_weapon.y = base_y
+            self.sprite_weapon.scale = self.scale
+            self.sprite_weapon.batch = batch
+        else:
+            self.sprite_weapon.color = (0, 0, 0, 0)
+
+        if self.equipment_shield != None:
+            tile3 = self.itemgrid[self.equipment_shield.spriteindex]
+            self.sprite_shield.image = tile3.get_texture()
+            self.sprite_shield.color = (255, 255, 255, 255)
+            self.sprite_shield.x, self.sprite_shield.y, self.sprite_shield.scale_x, self.sprite_shield.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "shield", "left")
+            self.sprite_shield.scale = self.scale
+            self.sprite_shield.batch = batch
+        else:
+            self.sprite_shield.color = (0, 0, 0, 0)
 
         sprite.group = group
         sprite.x = base_x

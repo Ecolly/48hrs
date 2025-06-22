@@ -173,9 +173,9 @@ class Map:
         elif name == "Black Staff":
             return Staff(name, grid_items, sprite_locs = 25, damage=10, projectile=False)
         elif name == "Blue Shield":
-            return Shield(name, grid_items, sprite_locs=0, defense=8)
+            return Shield(name, grid_items, sprite_locs=1, defense=8)
         elif name == "Wood Shield":
-            return Shield(name, grid_items, sprite_locs=2, defense=5)
+            return Shield(name, grid_items, sprite_locs=3, defense=5)
         elif name == "Steel Shield":
             return Shield(name, grid_items, sprite_locs=4, defense=12)
         elif name == "Armor Plate":
