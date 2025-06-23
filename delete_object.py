@@ -1,4 +1,7 @@
 #this explicitly exists only to delete objects from lists
+from game_classes.item import Weapon, Consumable
+from game_classes.item import Item
+
 def delobj(objlist):
     i = 0
     while i < len(objlist):

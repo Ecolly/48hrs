@@ -1,11 +1,17 @@
 
 import pyglet
 from enum import Enum, auto
+import pyglet
+import image_handling
+from font import grid_font, letter_order
+
 
 def create_sprite_item(image_grid, index): #dumb. literally the same as the image handling function
     tex = pyglet.image.Texture.create(16, 16)
     tex.blit_into(image_grid[index], 0, 0, 0)
     return pyglet.sprite.Sprite(tex, x=0, y=0)
+
+spr3 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles("E", grid_font, letter_order), 8, 8, 2))
 
 
 class Item:
@@ -19,6 +25,7 @@ class Item:
         # self.index = item_names.index(name)
         # self.fakename = item_fakenames[self.index]
         self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
+        #self.equppedsprite
         self.spriteindex = 29*10+sprite_locs
         self.color = (255, 255, 255, 255)
         self.x = x
@@ -97,9 +104,29 @@ class Item:
                 sprite.scale = self.scale
                 sprite.group = group
                 sprite.batch = batch
+                if self is player.equipment_weapon or self is player.equipment_shield:
+                    e_sprite = spr3
+                    e_sprite.x = base_x + 2
+                    e_sprite.y = base_y + 30
+                    e_sprite.color = (255, 255, 0, 255)
+                    e_sprite.scale = 3  # Adjust as needed
+                    e_sprite.group = group  # Or use a higher group if you want it on top
+                    e_sprite.batch = batch
             else:
                 sprite.color = (0, 0, 0, 0)
-                sprite.batch = batch            
+                sprite.batch = batch       
+
+    # if self.type == 'equip sword':
+    #                 sprite.group = group6
+    #                 if player.equipment_weapon == None:
+    #                     sprite.color = (0, 189, 66, 0)
+    #                 else:
+    #                     sprite.color = (0, 189, 66, 255)
+    #                     id = player.inventory.index(player.equipment_weapon)
+    #                     inventory_x = id % 10
+    #                     inventory_y = id // 10
+    #                     self.x = inventory_x*48 + int(1152/48)*12
+    #                     self.y = -inventory_y*48 + int(768/48)*32 - 1   
 
 class Weapon(Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True):

@@ -241,6 +241,8 @@ class Enemy:
         elif self.name == "S'MORE":
             print(self.x, self.y)
             
+            if self.can_see_player(player,8):
+                return self.movement_to_entity(player, game_map)
             #tries to hunt other player + entities down as soon as they spawn on the map
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 print("The smore is hitting player")
@@ -252,9 +254,7 @@ class Enemy:
                         return Technique.HIT, enemy.x, enemy.y
 
             #Otherwise check if  can see the player
-            if self.can_see_player(player,8):
-                return self.movement_to_entity(player, game_map)
-
+            
             nearest_enemy = None
             min_dist = float('inf')
             for enemy in game_map.all_enemies:
