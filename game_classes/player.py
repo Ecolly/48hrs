@@ -46,13 +46,15 @@ class Player:
         self.techniquecharges = 0
         self.should_be_deleted = False #unused; do not delete player ever
         
-        self.strength = 10  # Default strength
-        self.maxstrength = 10
-        self.strength_visual = 10
+        self.strength = 5  # Default strength
+        self.maxstrength = 5
+        self.strength_visual = 5
+        self.maxstrength_visual = 5
 
         self.defense = 5  # Default defense
         self.maxdefense = 5
         self.defense_visual = 5
+        self.maxdefense_visual = 5
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
@@ -88,16 +90,6 @@ class Player:
         print("Inventory full. Cannot pick up item.")
         return False  # Inventory was full
 
-    # def get_screen_position(self):
-    #     return self.scale*(self.prevx*16-8), self.scale*(self.prevy*16-8)
-
-    # def is_mouse_over(self, mouse_x, mouse_y):
-    #     """Check if a point is within this object's interactive bounds."""
-    #     base_x, base_y = self.get_screen_position()
-    #     #print(mouse_x, mouse_y, base_x, base_y)
-    #     return (base_x <= mouse_x <= base_x + self.width*self.scale and
-    #             base_y <= mouse_y <= base_y + self.height*self.scale)
-
     def increase_experience(self, incoming_experience):
         self.experience +=incoming_experience
         new_level = int(self.experience**(1/3))
@@ -108,7 +100,12 @@ class Player:
     
     def level_up(self):
         self.level+=1
-        self.maxhealth +=3
+        
+        self.maxhealth += 4
+        self.health += 4
+
+        self.strength += 1
+        self.maxstrength += 1
         
 
     
@@ -175,6 +172,7 @@ class Player:
         item.distance_to_travel = math.sqrt(abs(item.x - item.xend)**2 + abs(item.y - item.yend)**2)
         item.prevx = self.x + 0.5
         item.prevy = self.y + 0.5
+        item.entity = self
         self.technique = Technique.THROW
         self.techniquex = x
         self.techniquey = y
@@ -184,10 +182,11 @@ class Player:
 
     def cast(self, x, y):
         item = self.inventory[self.techniqueitem]
-        self.active_projectiles.append(turn_logic.Projectile(item.name, 0, self.x + 0.5, self.y + 0.5, x, y))
+        self.active_projectiles.append(turn_logic.Projectile(item.name, self.techniquecharges, self.x + 0.5, self.y + 0.5, x, y, self))
         self.technique = Technique.THROW
         self.techniquex = x 
         self.techniquey = y
+        
 
     def cast_static(self):
         self.technique = Technique.CAST
@@ -200,13 +199,17 @@ class Player:
 
 
 
-    def drop_item(self, inv_slot, floor_items):
-        if self.detect_item(floor_items) == False:
-            item = self.inventory.pop(inv_slot)
-            floor_items.append(item)
-            item.x = self.x
-            item.y = self.y    
-        self.technique = Technique.STILL 
+    def drop_item(self, inv_slot, floor):
+        coords_to_check = [[0, 0], [1, 1], [0, 1], [0, -1], [1, 0], [-1, 0], [1, -1], [0, -1], [-1, -1]]
+        for coords in coords_to_check:
+            x = item.x + coords[0]
+            y = item.y + coords[1]
+            if self.detect_item(floor.floor_items, x, y) == False and (y,x) in floor.valid_tiles:
+                item = self.inventory.pop(inv_slot)
+                floor.floor_items.append(item)
+                item.x = self.x
+                item.y = self.y    
+            self.technique = Technique.STILL 
 
     def consume_item(self, inv_slot, list_of_animations):
         item = self.inventory.pop(inv_slot)
@@ -257,10 +260,10 @@ class Player:
 
 
     # returns True if the item is detected at the player's current position
-    def detect_item(self, item_list):
+    def detect_item(self, item_list, x, y):
         for i in item_list:
             # Check if the item is at the player's current position
-            if i.x == self.x and i.y == self.y:
+            if i.x == x and i.y == y:
                 print(f"Detected item: {i.name} at ({i.x}, {i.y})")
                 return True
         return False

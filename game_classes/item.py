@@ -20,6 +20,7 @@ class Item:
         # self.fakename = item_fakenames[self.index]
         self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
         self.spriteindex = 29*10+sprite_locs
+        self.color = (255, 255, 255, 255)
         self.x = x
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
@@ -29,6 +30,7 @@ class Item:
         self.distance_to_travel = 0
         self.xend = x
         self.yend = y
+        self.entity = None
         self.chron_offset = 0
         self.friendly_fire = False 
         self.quantity = quantity
@@ -40,6 +42,7 @@ class Item:
         self.is_piercing = False #default to false
         self.should_be_deleted = False
         self.num_of_bounces = 0
+        self.num_of_pierces = 0
 
     def use(self, target):
         pass
@@ -59,7 +62,11 @@ class Item:
         
         base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+        
         sprite = self.sprite
+        if self.color == None:
+            self.color = (255, 255, 255, 255)
+        sprite.color = self.color
         sprite.x = base_x
         sprite.y = base_y
         sprite.scale = self.scale
@@ -103,6 +110,7 @@ class Weapon(Item):
         self.durability = durability  # Default durability
         self.damage_type = "slashing"  # Default damage type
         self.is_equipable = is_equipable
+        self.bonus = 0
         
 class Staff(Item):
     def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30):
@@ -133,6 +141,7 @@ class Shield (Item):
         self.spriteindex = 29*8+sprite_locs
         self.defense = defense  # Default defense value
         self.is_equipable = is_equipable
+        self.bonus = 0
 
 class Miscellanious(Item):
     def __init__(self, name, grid_items, sprite_locs, description, x=0, y=0, quantity=1):

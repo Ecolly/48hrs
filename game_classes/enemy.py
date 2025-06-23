@@ -66,6 +66,8 @@ def generate_enemy(name, level, x, y, grid):
 
     enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION"]
     enemy_hps = [20, 15, 18, 8, 10, 12, 20, 30, 20, 10, 10]
+    # enemy_strength = [0, ]
+    # enemy_defense = []
     enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64, 9*64, 12*64]
     enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1]
     enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8]
@@ -110,10 +112,15 @@ class Enemy:
         self.maxhealth_visual = health
         self.level_visual = level
 
-        self.strength = 0 #unused, only here to stop bugs
-        self.defense = 0
-        self.strength_visual = 10 
+        self.strength = 5  # Default strength
+        self.maxstrength = 5
+        self.strength_visual = 5
+        self.maxstrength_visual = 5
+
+        self.defense = 5  # Default defense
+        self.maxdefense = 5
         self.defense_visual = 5
+        self.maxdefense_visual = 5
 
         self.x = x # x coords are in 
         self.y = y
@@ -206,13 +213,13 @@ class Enemy:
                 return Technique.HIT, player.x, player.y
             elif abs(player.x-self.x) < 5 and abs(player.y-self.y) < 5 and random.randint(0, 1) == 1:
                 if self.level == 2:
-                    self.active_projectiles.append(Projectile("Spores 2", 0, self.x, self.y, player.x, player.y))
+                    self.active_projectiles.append(Projectile("Spores 2", 0, self.x, self.y, player.x, player.y, self))
                 elif self.level == 3:
-                    self.active_projectiles.append(Projectile("Spores 3", 0, self.x, self.y, player.x, player.y))
+                    self.active_projectiles.append(Projectile("Spores 3", 0, self.x, self.y, player.x, player.y, self))
                 elif self.level == 4:
-                    self.active_projectiles.append(Projectile("Spores 4", 0, self.x, self.y, player.x, player.y))
+                    self.active_projectiles.append(Projectile("Spores 4", 0, self.x, self.y, player.x, player.y, self))
                 else:
-                    self.active_projectiles.append(Projectile("Spores", 0, self.x, self.y, player.x, player.y))
+                    self.active_projectiles.append(Projectile("Spores", 0, self.x, self.y, player.x, player.y, self))
                 return Technique.THROW, player.x, player.y 
             else:
                 new_x = self.x + self.sign(player.x - self.x)
@@ -223,7 +230,7 @@ class Enemy:
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 return Technique.HIT, player.x, player.y
             elif abs(player.x-self.x) < 8 and abs(player.y-self.y) < 8 and random.randint(0, 4) == 1:
-                self.active_projectiles.append(Projectile("Dragon Fire", 0, self.x, self.y))
+                self.active_projectiles.append(Projectile("Dragon Fire", 10*self.level, self.x, self.y, player.x, player.y, self))
                 return Technique.THROW, player.x, player.y
             else:
                 new_x = self.x + self.sign(player.x - self.x)

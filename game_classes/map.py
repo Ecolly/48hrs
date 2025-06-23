@@ -8,7 +8,7 @@ from game_classes.enemy import*
 
 
 
-def make_floor():
+def make_floor(type):
     number_of_rooms = random.randint(5, 9)  # Random number of rooms between 5 and 10
     test_map = Map(60, 60, number_of_rooms, default_tile='#')
     test_map.check_generate_room(test_map.rooms)
@@ -17,10 +17,10 @@ def make_floor():
     test_map.create_stairs() # Populate valid tiles after room generation
     test_map.assign_spawnpoint()
 
-    if random.randint(0,1)==0:
+    if type=="Complex":
         test_map.auto_tile_ascii()
         test_map.map_type = "Complex"
-        return test_map
+        test_map.map_grid = test_map.textured_map
     test_map.assign_textures_to_all_floor_tiles()
     print(test_map)
     return test_map
@@ -28,6 +28,7 @@ def make_floor():
 class Map:
     def __init__(self, width, height, number_of_rooms, default_tile='#'):
         self.map_type = "Simple"
+        self.wall_type = "Solid"
         self.width = width
         self.height = height
         self.number_of_rooms = number_of_rooms
@@ -44,6 +45,7 @@ class Map:
         self.all_enemies = []
         self.spawnpoint = set()
         self.stairs = set() #stairs location on the map
+        
         
     
     #set the room tiles to be '.' (empty space)
@@ -139,67 +141,69 @@ class Map:
         # Example dummy factory
 
         if name == "Knife":
-            return Weapon(name, grid_items, sprite_locs = 0, damage=5, durability=100)
+            return Weapon(name, grid_items, sprite_locs = 0, damage=5, durability=100, description="A common household chef's knife.")
         elif name == "Machete":
-            return Weapon(name, grid_items, sprite_locs = 1, damage=6, durability=100)
+            return Weapon(name, grid_items, sprite_locs = 1, damage=6, durability=100, description="A long-bladed knife useful for cutting plants.")
         elif name == "Scimitar":
-            return Weapon(name, grid_items, sprite_locs = 2, damage=7, durability=100)
+            return Weapon(name, grid_items, sprite_locs = 2, damage=8, durability=100, description="A sharp, curved blade.")
         elif name == "Sickle":
-            return Weapon(name, grid_items, sprite_locs = 4, damage=4, durability=100)
+            return Weapon(name, grid_items, sprite_locs = 4, damage=4, durability=100, description="A crescent-shaped blade that can reach three enemies at once.")
         elif name == "Rapier":
-            return Weapon(name, grid_items, sprite_locs = 5, damage=9, durability=100)
+            return Weapon(name, grid_items, sprite_locs = 5, damage=7, durability=100, description="A thin, slender weapon that can reach two tiles in front.")
         elif name == "Stick":
-            return Weapon(name, grid_items, sprite_locs = 6, damage=1, durability=100)
+            return Weapon(name, grid_items, sprite_locs = 6, damage=1, durability=100, description="A thick tree branch that can be used as a crude weapon.")
         elif name == "Fury Cutter":
-            return Weapon(name, grid_items, sprite_locs = 9, damage=30, durability=100) #deducts 1/4 of attack damage from your hp
+            return Weapon(name, grid_items, sprite_locs = 9, damage=30, durability=100, description="Ominous energy seeps off the cutting edge. The weapon returns 1/4 of damage dealt to the bearer.") #deducts 1/4 of attack damage from your hp
         elif name == "Windsword":
-            return Weapon(name, grid_items, sprite_locs = 10, damage=16, durability=100)
+            return Weapon(name, grid_items, sprite_locs = 10, damage=12, durability=100, description="Imbued with magical runes, this longsword is more powerful than the average weapon.")
         elif name == "Red Staff":
-            return Staff(name, grid_items, sprite_locs = 1, damage=10, projectile=True) #divides enemy's hp by 2
+            return Staff(name, grid_items, sprite_locs = 1, damage=10, projectile=True, description="Divides the target's HP by 2.") #divides enemy's hp by 2
         elif name == "Orange Staff":
-            return Staff(name, grid_items, sprite_locs = 2, damage=10, projectile=False) #deducts 15 from all enemy hp on floor
+            return Staff(name, grid_items, sprite_locs = 2, damage=10, projectile=False, description="Deducts 15 from HP of all enemies on the floor.") #deducts 15 from all enemy hp on floor
         elif name == "Gold Staff":
-            return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=True) #deals set damage according to # of charges used
+            return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=True, description="Damage depends on mana used.") #deals set damage according to # of charges used
         elif name == "Green Staff":
-            return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=True) #bounces
+            return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=True, descrption="Projectile bounces off walls.") #bounces
         elif name == "Teal Staff":
-            return Staff(name, grid_items, sprite_locs = 13, damage=10, projectile=True) #slows down enemy
+            return Staff(name, grid_items, sprite_locs = 13, damage=10, projectile=True, description="Target's speed is reduced to 1/2. Duration depends on mana used.") #slows down enemy
         elif name == "Blue Staff":
-            return Staff(name, grid_items, sprite_locs = 16, damage=10, projectile=True) #paralyzes enemy
+            return Staff(name, grid_items, sprite_locs = 16, damage=10, projectile=True, description="Paralyzes target. Duration depends on mana used.") #paralyzes enemy
         elif name == "Light Blue Staff":
-            return Staff(name, grid_items, sprite_locs = 17, damage=10, projectile=False) #levels up all enemies on a floor, including you
+            return Staff(name, grid_items, sprite_locs = 17, damage=10, projectile=False, description="Levels up all creatures on the floor.") #levels up all enemies on a floor, including you
         elif name == "Magenta Staff":
-            return Staff(name, grid_items, sprite_locs = 22, damage=10, projectile=False) #wins game
+            return Staff(name, grid_items, sprite_locs = 22, damage=10, projectile=True, description="Target pierces a number of enemies equal to mana used.") #pierces enemies
         elif name == "Black Staff":
-            return Staff(name, grid_items, sprite_locs = 25, damage=10, projectile=False)
+            return Staff(name, grid_items, sprite_locs = 25, damage=10, projectile=False, description="That's strange. This one doesn't seem to do anything.") 
         elif name == "Blue Shield":
-            return Shield(name, grid_items, sprite_locs=1, defense=8)
+            return Shield(name, grid_items, sprite_locs=1, defense=8, description="A sturdy, shield painted with the emblem of a government.")
+        elif name == "Mirror Shield":
+            return Shield(name, grid_items, sprite_locs=2, defense=2, description="This shield is weak but will reflect projectiles.")
         elif name == "Wood Shield":
-            return Shield(name, grid_items, sprite_locs=3, defense=5)
+            return Shield(name, grid_items, sprite_locs=3, defense=5, description="A crude wooden shield usually used for training.")
         elif name == "Steel Shield":
-            return Shield(name, grid_items, sprite_locs=4, defense=12)
+            return Shield(name, grid_items, sprite_locs=4, defense=12, description="A thick, heavy shield made from a tough alloy.")
         elif name == "Armor Plate":
-            return Shield(name, grid_items, sprite_locs=5, defense=24) #prevents weapons from adding to strength
+            return Shield(name, grid_items, sprite_locs=5, defense=24, description="Industrial plating once used to shield a tank from artillery fire. Holding it prevents weapons from being used.") #prevents weapons from adding to strength
         elif name == "Rock":
-            return Miscellanious(name, grid_items, sprite_locs = 0, description = "")
+            return Miscellanious(name, grid_items, sprite_locs = 0, description = "A rock.")
         elif name == "Note":
-            return Miscellanious(name, grid_items, sprite_locs = 1, description = "")
+            return Miscellanious(name, grid_items, sprite_locs = 1, description = "You already know what's on this.")
         elif name == "Poultry":
-            return Consumable(name, grid_items, sprite_locs = 0, nutrition_value=100)
+            return Consumable(name, grid_items, sprite_locs = 0, nutrition_value=100, description="Irregularly charred bird meat. Heals 100 HP.")
         elif name == "Mushrooms":
-            return Consumable(name, grid_items, sprite_locs = 1, nutrition_value=5) #increases maximum hp
+            return Consumable(name, grid_items, sprite_locs = 1, nutrition_value=5, description="Nutritious brown mushrooms. Heals 5 HP.") #increases maximum hp
         elif name == "Leaves":
-            return Consumable(name, grid_items, sprite_locs = 3, nutrition_value=1)
+            return Consumable(name, grid_items, sprite_locs = 3, nutrition_value=1, description="These probably won't do much if eaten.")
         elif name == "Apple":
-            return Consumable(name, grid_items, sprite_locs = 4, nutrition_value=50)
+            return Consumable(name, grid_items, sprite_locs = 4, nutrition_value=40, description="Crisp and crunchy. Heals 40 HP.")
         elif name == "Cherry":
-            return Consumable(name, grid_items, sprite_locs = 5, nutrition_value=25)
+            return Consumable(name, grid_items, sprite_locs = 5, nutrition_value=20, description="These would be more useful in a pie or pastry. Heals 20 HP.")
         elif name == "Starfruit":
-            return Consumable(name, grid_items, sprite_locs = 6, nutrition_value=1000) #gain xp to get to next level
+            return Consumable(name, grid_items, sprite_locs = 6, nutrition_value=1000, description="Only grown under perfect conditions in a rare, faraway valley. Restores HP to full and increases speed to 2x.") #gain xp to get to next level
         elif name == "Durian":
-            return Consumable(name, grid_items, sprite_locs = 7, nutrition_value=50) #gives temporary hp beyond max
+            return Consumable(name, grid_items, sprite_locs = 7, nutrition_value=50, description="Mercurial, spiky, and divisive, this fruit can restore your HP above its normal amount.") #gives temporary hp beyond max
         elif name == "Dragonfruit":
-            return Consumable(name, grid_items, sprite_locs = 8, nutrition_value=12) #increase a random stat by 1
+            return Consumable(name, grid_items, sprite_locs = 8, nutrition_value=12, description="Messes with your stats.") #increase a random stat by 1
 
     #self, name, grid_items, x, y, quantity
     def random_create_item(self, grid_items):
@@ -286,13 +290,13 @@ class Map:
 
         def get_bitmask(x, y):
             bitmask = 0
-            if y > 0 and self.map_grid[y-1][x] == target_char:      # Up
+            if y > 0 and (self.map_grid[y-1][x] == target_char):      # Up
                 bitmask |= 1
-            if x < self.width-1 and self.map_grid[y][x+1] == target_char: # Right
+            if x < self.width-1 and (self.map_grid[y][x+1] == target_char): # Right
                 bitmask |= 2
-            if y < self.height-1 and self.map_grid[y+1][x] == target_char: # Down
+            if y < self.height-1 and (self.map_grid[y+1][x] == target_char): # Down
                 bitmask |= 4
-            if x > 0 and self.map_grid[y][x-1] == target_char:      # Left
+            if x > 0 and (self.map_grid[y][x-1] == target_char):      # Left
                 bitmask |= 8
             return bitmask
 

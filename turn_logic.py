@@ -68,7 +68,7 @@ def can_move_to(x, y, game_map, player):
 def inflict_damage(attacker, target, player, chronology, list_of_animations, item, damage, damage_type):
     strength_reduction = 0
     defense_reduction = 0
-    if target == None:
+    if target == None or target.should_be_deleted == True:
         return
     if damage_type == "physical":
         if attacker.name == "SCORPION":
@@ -89,7 +89,7 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
         damage += attacker.strength
         if isinstance(item, Weapon) != False:
             if attacker.equipment_shield == None or attacker.equipment_shield.name != "Armor Plate":
-                damage += attacker.equipment_weapon.damage
+                damage += item.damage
                 if item.name == "Fury Cutter":
                     attacker.health = attacker.health - math.floor(damage/4)
         if target.equipment_shield != None:
@@ -134,8 +134,8 @@ def do_spell(entity, enemy_hit, player, spellname, charges, chronology, list_of_
     elif spellname == "Gold Staff":
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges*2, "magic") #random.randint(charges, charges*3)
         deduct_charges(entity, charges)
-    elif spellname == "Green Staff":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 3, "magic") #random.randint(charges, charges*3)
+    elif spellname == "Green Staff" or spellname == "Magenta Staff":
+        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 3, "magic")
         deduct_charges(entity, charges)
     elif spellname == "Teal Staff":
         enemy_hit.speed = 1
@@ -147,14 +147,17 @@ def do_spell(entity, enemy_hit, player, spellname, charges, chronology, list_of_
     elif spellname == "Spores": #damage
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic")
     elif spellname == "Spores 2": #decrease attack
-        enemy_hit.strength += -1
+        if enemy_hit != None:
+            enemy_hit.strength += -1
     elif spellname == "Spores 3": #slow
-        enemy_hit.speed = 1
-        enemy_hit.speed_turns = 6
+        if enemy_hit != None:
+            enemy_hit.speed = 1
+            enemy_hit.speed_turns = 6
     elif spellname == "Spores 4": #paralysis
-        enemy_hit.paralysis_turns = 3
+        if enemy_hit != None:
+            enemy_hit.paralysis_turns = 3
     elif spellname == "Dragon Fire":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 10, "magic")
+        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges, "magic")
 
 
 def find_reflection_angle(x, y, dx, dy, floor, targx, targy):
@@ -201,17 +204,19 @@ def do_reflection(entity, item, enemy_hit, distance_x_normalized, distance_y_nor
     item.num_of_bounces += -1
     reflection_result = find_reflection_angle(item.x, item.y, distance_x_normalized, distance_y_normalized, floor, enem_x, enem_y)
     if reflection_result == "x": #if the tile hit was a vertical wall...
-        entity.techniquex = tilex + tilex - entity.techniquex
+        item.xend = math.floor(tilex + (abs(tilex - item.xend) + 100*abs(distance_x_normalized))*math.copysign(1, item.xinit - item.xend))
+        item.yend = math.floor(tiley + (abs(item.yend - tiley) + 100*abs(distance_y_normalized))*math.copysign(1, item.yend - item.yinit))
     elif reflection_result == "y":
-        entity.techniquey = tiley + tiley - entity.techniquey
+        item.yend = math.floor(tiley + (abs(tiley - item.yend) + 100*abs(distance_y_normalized))*math.copysign(1, item.yinit - item.yend))
+        item.xend = math.floor(tilex + (abs(item.xend - tilex) + 100*abs(distance_x_normalized))*math.copysign(1, item.xend - item.xinit))
     projectiles_remaining += 1
 
     if isinstance(item, Projectile) == True:
-        entity.active_projectiles.append(Projectile(item.name, 0, tilex, tiley, entity.techniquex, entity.techniquey, chron_i))
+        entity.active_projectiles.append(Projectile(item.name, 0, tilex, tiley, item.xend, item.yend, entity, chron_i))
     else:
         entity.active_projectiles.append(item)
         item.x, item.y = tilex, tiley
-        item.xend, item.yend = entity.techniquex + 0.5, entity.techniquey + 0.5
+        item.xend, item.yend = item.xend + 0.5, item.yend + 0.5
         item.xinit, item.yinit = tilex, tiley
         item.distance_to_travel = math.sqrt(abs(item.x - item.xend)**2 + abs(item.y - item.yend)**2)
 
@@ -289,9 +294,6 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                     else:
                         animtype = 3
 
-                    # print("fgfggfgfg")
-                    # print(entity.x, entity.y, entity.techniquex, entity.techniquey)
-                    # print(item.xinit, item.yinit, item.xend, item.yend)
                     distance_x = item.xend - item.xinit
                     distance_y = item.yend - item.yinit
                     distance_total = math.sqrt(distance_x*distance_x + distance_y*distance_y) + 0.5
@@ -310,16 +312,16 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         list_of_animations.append(animations.Animation(29*2, 1, 5, (255, 255, 255, 0), chronology+chron_i, 5, tilex, tiley, tilex, tiley, rot, None, None, None, None, 0, None))
 
                     enemy_hit = None
-                    if (entity != player or item.friendly_fire == True) and tilex == player.x and tiley == player.y: #if hit the player and player isnt the source entity
+                    if (player != item.entity or item.friendly_fire == True) and tilex == player.x and tiley == player.y: #if hit the player and player isnt the source entity
                         enemy_hit = player
                     else:
                         for enemy in floor.all_enemies:
-                            if (enemy != entity or item.friendly_fire == True) and enemy.x == math.floor(item.x) and enemy.y == math.floor(item.y) and entity.should_be_deleted == False: #if hit an enemy and enemy isnt the source entity
+                            if (enemy != item.entity or item.friendly_fire == True) and enemy.x == math.floor(item.x) and enemy.y == math.floor(item.y) and entity.should_be_deleted == False: #if hit an enemy and enemy isnt the source entity
                                 enemy_hit = enemy
                     
                     if enemy_hit == None: #if no creature was hit
                         
-                        if (tiley,tilex) not in floor.valid_tiles: #if a wall is hit...
+                        if floor.wall_type == "Solid" and ((tiley,tilex) not in floor.valid_tiles): #if a wall is hit...
                             i = 0
                             while (tiley,tilex) not in floor.valid_tiles: #go backwards until finding a free space
                                 item.x = item.x - distance_x_normalized 
@@ -337,20 +339,15 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                                 if isinstance(item, Projectile) == True:
                                     do_spell(entity, None, player, item.name, entity.techniquecharges, chronology+chron_i, list_of_animations)
 
-                            anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item)
+                            anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item, drop_item=True)
                             list_of_animations.append(anim3)
                             entity.active_projectiles[itemi] = -1
                             projectiles_remaining += -1
-
-
-
-
-
                         else:
                             #if nothing was hit
                             distance_travelled = math.sqrt(abs(tilex - entity.x)**2 + abs(tiley - entity.y)**2)
                             if distance_travelled > distance_total:
-                                anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item)
+                                anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item, drop_item=True)
                                 list_of_animations.append(anim3)
                                 entity.active_projectiles[itemi] = -1
                                 projectiles_remaining += -1 
@@ -359,21 +356,33 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                             
                     else: #if a creature was hit inflict damage on them
                         #if the enemy is reflective (i.e. chrome dome) then simply reflect the projectile
-                        #items cannot bounce (they are bugged...)
-                        if enemy_hit.name == "CHROME DOME" and item.num_of_bounces > -3 and isinstance(item, Projectile):
-                            #print("testetetet")
+                        #items cannot bounce (if set to bounce, are bugged...)
+
+                        enemy_shield = None if enemy_hit.equipment_shield == None else enemy_hit.equipment_shield.name
+                        if (enemy_hit.name == "CHROME DOME" or enemy_shield == "Mirror Shield") and item.num_of_bounces > -3 and isinstance(item, Projectile):
                             projectiles_remaining = do_reflection(entity, item, enemy_hit, distance_x_normalized, distance_y_normalized, floor, chron_i, projectiles_remaining)
+                        
+                            anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, enemy_hit, 0, item)
+                            list_of_animations.append(anim3)
+                            entity.active_projectiles[itemi] = -1
+                            projectiles_remaining += -1
                         else:
                             if isinstance(item, Projectile) == True:
                                 do_spell(entity, enemy_hit, player, item.name, entity.techniquecharges, chronology+chron_i, list_of_animations)
                             else:
                                 inflict_damage(entity, enemy_hit, player, chronology+chron_i, list_of_animations, item, 0, "physical")
-                        
-                        
-                        anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, enemy_hit, 0, item)
-                        list_of_animations.append(anim3)
-                        entity.active_projectiles[itemi] = -1
-                        projectiles_remaining += -1
+                            #if the projectile is piercing and didn't bounce, don't delete it and instead just set its entity of origin as the entity it just hit
+                            #should this be changed to pierce enemies so long as the projectile killed the enemy it's trying to pierce?
+                            if item.num_of_pierces > 0:
+                                item.num_of_pierces += -1
+                                if enemy_hit.should_be_deleted == False:
+                                    item.entity = enemy_hit
+                                    item.friendly_fire = False
+                            else:
+                                anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, enemy_hit, 0, item)
+                                list_of_animations.append(anim3)
+                                entity.active_projectiles[itemi] = -1
+                                projectiles_remaining += -1
 
                 
                 
@@ -391,8 +400,12 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             inflict_damage(entity, player, player, chronology, list_of_animations, item, 15, "magic")
             for enemy in floor.all_enemies:
                 inflict_damage(entity, enemy, player, chronology, list_of_animations, item, 15, "magic")
-        elif item.name == "Light Blue Staff":
+        elif item.name == "Light Blue Staff": #level up all enemies
             pass
+
+
+        #confuse all enemies
+        #shuffle all enemy positions randomly?
         
         chronology += 10
         return Technique.CAST, chronology

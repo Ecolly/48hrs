@@ -30,6 +30,21 @@ def text_to_background(text, image_grid, letter_order, width, justify):
 
 
 
+
+def tesselate(character, image_grid, width, height):
+    # output_txt = ""
+    # output_txt.zfill(width*height)
+    # return text_to_floor(output_txt, image_grid, ["0"], [character], width)
+    tile_list = []
+    i = 0
+    while i < width*height:
+        tile_list.append(image_grid[character])
+        i = i + 1
+    return tile_list
+
+
+
+
 def text_to_floor(text, image_grid, letter_order, letter_tile, width):
     tile_list = []
     for s in text:

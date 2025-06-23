@@ -23,7 +23,7 @@ grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
 
 class Animation:
-    def __init__(self, spriteindex, animtype, animspeed, color, start_time, duration, startx, starty, endx, endy, rot, associated_object, technique, attacker, target, damage, item=None, strength_reduction=0, defense_reduction=0):
+    def __init__(self, spriteindex, animtype, animspeed, color, start_time, duration, startx, starty, endx, endy, rot, associated_object, technique, attacker, target, damage, item=None, strength_reduction=0, defense_reduction=0, drop_item=False):
         global grid_items
         global grid_font
         # 1. move player
@@ -73,6 +73,7 @@ class Animation:
         self.proceed = False #if this is true for all animations, game will switch back to gamestate 1. useful for damage nums
         self.strength_reduction = strength_reduction
         self.defense_reduction = defense_reduction
+        self.drop_item = drop_item
 
         self.spriteindex = spriteindex
         if self.spriteindex != None:
@@ -150,7 +151,10 @@ class Animation:
                                     new_level = int(self.attacker.experience_visual**(1/3))
                                     while new_level>self.attacker.level_visual:
                                         self.attacker.level_visual+= 1
-                                        self.attacker.maxhealth_visual += 3
+                                        self.attacker.maxhealth_visual += 4
+                                        self.attacker.health_visual += 4
+                                        self.attacker.strength_visual += 1
+                                        self.attacker.maxstrength_visual += 1
                             else:
                                 if is_dead == 1:
                                     self.attacker.level_visual += 1
@@ -214,10 +218,29 @@ class Animation:
                     sprite.group = group
                     sprite.batch = batch
                     if self.item != None:
-                        if isinstance(self.item, Item):
-                            self.item.sprite.delete()
-                            del self.item.sprite
-                        del self.item
+                        if self.drop_item == True and isinstance(self.item, Item):
+                            self.item.x = math.floor(self.x)
+                            self.item.y = math.floor(self.y)
+                            coords_to_check = [[0, 0], [1, 1], [0, 1], [0, -1], [1, 0], [-1, 0], [1, -1], [0, -1], [-1, -1]]
+                            for coords in coords_to_check:
+                                x = self.item.x + coords[0]
+                                y = self.item.y + coords[1]
+                                itemchk = False
+                                for i in floor.floor_items:
+                                    if i.x == x and i.y == y:
+                                        itemchk = True
+                                if itemchk == False and (y,x) in floor.valid_tiles:
+                                    floor.floor_items.append(self.item)
+                                    self.item.x = x
+                                    self.item.y = y 
+                                    #self.item.sprite.color = (255, 255, 255, 255) 
+                                    self.item.color = None
+                                    break
+                        else:
+                            if isinstance(self.item, Item):
+                                self.item.sprite.delete()
+                                del self.item.sprite
+                            del self.item
                 self.should_be_deleted = True
 
 

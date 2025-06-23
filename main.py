@@ -22,6 +22,8 @@ pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
 #made by zero and eco :)
 
 
+
+
 #from button_object import *
 #from shaders import *
 has_won = 0
@@ -34,7 +36,6 @@ window = pyglet.window.Window(1152, 768, config=config)
 
 gamestate = 1
 partition_entity = -2
-floor_level = 1
 #current_entity_turn = -1
 
 
@@ -78,6 +79,11 @@ columns_bg = sprite_bg.width // 16
 rows_bg = sprite_bg.height // 16
 grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 
+sprite_liq = pyglet.image.load('bg_liquids.png')
+columns_liq = sprite_liq.width // 256
+rows_liq = sprite_liq.height // 256
+grid_liq = pyglet.image.ImageGrid(sprite_liq, rows_liq, columns_liq)
+
 # def enemy_grid_to_use(level):
 #     global grid_entities1 
 #     global grid_entities2
@@ -93,7 +99,9 @@ grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 #         return grid_entities4
 
 from pyglet.graphics import Group
-group_bg = Group(order=0)
+
+group_bg_pits = Group(order=5)
+group_bg = Group(order=10)
 group_items = Group(order=20)
 group_enemies_bg = Group(order=39)
 group_enemies = Group(order=40)
@@ -131,36 +139,6 @@ all_anims = []
 #floor_items = [item]
 inventory_items = []
 
-# string_to_draw = "The quick brown fox jumpeeeeeeeeeeeed over the lazy dog. This is the story of a man named Stanley. Stanley worked for a company at an office where he sat in room 427. etc etc buttons"
-# tiles_to_draw = text_to_tiles_wrapped(string_to_draw, grid_font, letter_order, 20, "center")
-# bg_to_draw = text_to_background(string_to_draw, grid_font, letter_order, 20, "center")
-
-# combined_image = combine_tiles(tiles_to_draw, 8, 8, 20)
-# combined_image_2 = combine_tiles(bg_to_draw, 8, 8, 20)
-
-# mysprite = pyglet.sprite.Sprite(combined_image, x=0, y=0)
-# mysprite2 = pyglet.sprite.Sprite(combined_image_2, x=0, y=0)
-
-# my_object = InteractiveObject(
-#     x=100,
-#     y=200,
-#     width=mysprite2.width,
-#     height=mysprite2.height,
-#     sprites=[mysprite2, mysprite],
-#     colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
-#     animtype = [None, None],
-#     animmod = [None, None],
-#     text = [None, None],
-#     alignment_x='center',
-#     alignment_y='top',
-#     depth=1,
-#     obj_type="label",
-#     draggable=True,
-#     extra_1 = 0,
-#     extra_2 = 0,
-#     rclick = 0
-# )
-# all_buttons.append(my_object)
 
 
 
@@ -282,7 +260,7 @@ def on_mouse_release(x, y, button, modifiers):
                         gamestate = 2
                         #partition_entity = construct_partitions()
                     elif button.type == "DROP":
-                        player.drop_item(button.extra_1, floor.floor_items)
+                        player.drop_item(button.extra_1, floor)
                         gamestate = 2
 
                         all_anims = turn_logic.do_turns(all_enemies, player, floor)
@@ -490,92 +468,44 @@ def on_mouse_release(x, y, button, modifiers):
                 all_buttons.append(option_obj)
                 i = i + 1
 
+floor_level = 0
 
-floor = make_floor()
-floor.random_create_item(grid_items)
-floor.generate_enemies(grid_entities1, floor_level)
-all_enemies = floor.all_enemies
-print(f"BEFORE{player.x, player.y}")
-player.x, player.y = floor.spawnpoint
-player.prevx, player.prevy = floor.spawnpoint
-print(player.x, player.y)
-print(floor.map_type)
-
-fl_string = ""
-if floor.map_type == "Simple":
-    #Simple Map Initiation
-    simple_color_sets = [(26,26), (29,29), (27,27)]
-    wall_texture_value, floor_texture_base_value = random.choice(simple_color_sets)
-    bg_order = ["#", ".", "*", "~", '%', '<', '>', "@"] #Filler, #Walls, #Space, @Stairs
-    bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13]
-    for s in floor.map_grid:
-        for s2 in s:
-            fl_string += s2
-else:
-    #wall, floor, floorcodes,
-    complex_wall_sets = [(12, 31, 4,4,4,4,4,4), (22,30,2,2,10,2,2,2), (21,31,1,9,10,11,0,3), (17, 24, 5,5+32,5+48,5+64,5+80,5+96)]
-    #Map Initiation
-    bg_order = [
-        "#",   #filler
-        '.',   #space
-        '*',   #space texture
-        '~',    #space texture
-        '%',
-        '<',
-        '>',
-
-    'a',   # 0: isolated
-    'b',   # 1: up
-    'c',   # 2: right
-    'd',   # 3: up + right
-
-    'e',   # 4: down
-    'f',   # 5: up + down
-    'g',  # 6: right + down
-    'h',   # 7: up + right + down
-
-    'i',   # 8: left
-    'j',   # 9: up + left
-    'k',   # 10: right + left
-    'l',   # 11: up + right + left
-    
-    'm',  # 12: down + left
-    'n',   # 13: up + down + left
-    'o',   # 14: right + down + left
-    'p',   # 15: all sides
-
-        "@"    # stairs
-    ]
-
-    wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = random.choice(complex_wall_sets)
-    bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,floor_texture_base_value*16+floor_texture_code3, floor_texture_base_value*16+floor_texture_code4, floor_texture_base_value*16+floor_texture_code5,
-                  
-                wall_texture_value*16, wall_texture_value*16+15, wall_texture_value*16+13, wall_texture_value*16+9,
-                wall_texture_value*16+12, wall_texture_value*16+8, wall_texture_value*16+6, wall_texture_value*16+2,
-                wall_texture_value*16+14, wall_texture_value*16+11, wall_texture_value*16+10, wall_texture_value*16+5,
-                wall_texture_value*16+7, wall_texture_value*16+4, wall_texture_value*16+1,wall_texture_value*16+3,
-                floor_texture_base_value*16+13]
-    
-    for s in floor.textured_map:
-        for s2 in s:
-            fl_string += s2
-#bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
-bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
+bg = pyglet.sprite.Sprite(grid_bg[0])
 bg.scale = 3
-bg.z = 0
+
+bg_pits = pyglet.sprite.Sprite(grid_bg[0])
+bg_pits.scale = 3
 
 def go_to_next_level():
-    global floor, all_enemies, player, bg, floor_level
+    global floor, all_enemies, player, bg, bg_pits, floor_level
+    floor_level +=1
+    if floor_level < 3: #1, 2 (26, 26)
+        sc, tileset, walltype = "Simple", (26, 26), "Solid"     #(15, 22, 5,5+32,5+48,5+64,5+80,5+96) ##"Simple", (26, 26)##
+    elif floor_level < 6: #3, 4, 5
+        sc, tileset, walltype = "Complex", (4,27,0,6,6,6,6,1), "Water"    #(18,27,6,7,9,10,0,3), "Solid"
+    elif floor_level < 9:
+        sc, tileset, walltype = "Simple", (27, 27), "Solid"
+    elif floor_level < 12:
+        sc, tileset, walltype = "Complex", (20,30,2,9,10,11,0,3), "Solid"
+    elif floor_level < 15:
+        sc, tileset, walltype = "Complex", (19,31,1,1,10,1,1,1), "Solid"
+    elif floor_level < 18:
+        sc, tileset, walltype = "Complex", (7,23,1,6,6,6,6,0), "Pit"
+    elif floor_level < 21:
+        sc, tileset, walltype = "Complex", (8,23,2,2,2,2,2,2), "Lava"
+    else:
+        sc, tileset, walltype = "Complex", (15, 22, 5,5+32,5+48,5+64,5+80,5+96), "Solid"
 
     player.strength = player.maxstrength
     player.strength_visual = player.strength
 
     player.defense = player.maxdefense 
     player.defense_visual = player.defense
-    floor_level +=1
-    print(floor_level)
+    
+    
     #Triggered after Detects stairs
-    floor = make_floor()
+    floor = make_floor(sc)
+
     floor.random_create_item(grid_items)
     floor.generate_enemies(grid_entities1, floor_level)
     print(f"BEFORE{player.x, player.y}")
@@ -583,13 +513,19 @@ def go_to_next_level():
     player.prevx, player.prevy = floor.spawnpoint
     all_enemies = floor.all_enemies
     #floor_level +=1
-    print(floor.map_type)
+    floor.map_type = sc
+    floor.wall_type = walltype
+
+    
+    # print(floor)
+    # print(floor.textured_map)
+    # print(1/0)
 
     fl_string = ""
     if floor.map_type == "Simple":
         #Simple Map Initiation
-        simple_color_sets = [(26,26), (29,29), (27,27)]
-        wall_texture_value, floor_texture_base_value = random.choice(simple_color_sets)
+        #simple_color_sets = [(26,26), (29,29), (27,27)]
+        wall_texture_value, floor_texture_base_value = tileset#random.choice(simple_color_sets)
         bg_order = ["#", ".", "*", "~", '%', '<', '>', "@"] #Filler, #Walls, #Space, @Stairs
         bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13]
        
@@ -598,7 +534,7 @@ def go_to_next_level():
                 fl_string += s2
     else:
         #wall, floor, floorcodes,
-        complex_wall_sets = [(12, 31, 4,4,4,4,4,4), (22,30,2,2,10,2,2,2), (21,31,1,9,10,11,0,3), (17, 24, 5,5+32,5+48,5+64,5+80,5+96)]
+        #complex_wall_sets = [(12, 31, 4,4,4,4,4,4), (22,30,2,2,10,2,2,2), (21,31,1,9,10,11,0,3), (17, 24, 5,5+32,5+48,5+64,5+80,5+96)]
         #Map Initiation
         bg_order = [
             "#",   #filler
@@ -632,7 +568,7 @@ def go_to_next_level():
             "@"    # stairs
         ]
 
-        wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = random.choice(complex_wall_sets)
+        wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = tileset
         bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,floor_texture_base_value*16+floor_texture_code3, floor_texture_base_value*16+floor_texture_code4, floor_texture_base_value*16+floor_texture_code5,
                     
                     wall_texture_value*16, wall_texture_value*16+15, wall_texture_value*16+13, wall_texture_value*16+9,
@@ -645,11 +581,40 @@ def go_to_next_level():
             for s2 in s:
                 fl_string += s2
     #bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
-    bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
+    
+    
+    
+    #print(fl_string)
+    bg.image = combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60) #pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
     bg.scale = 3
-    bg.z = 0
 
 
+    # frameindexes = [4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3]
+
+    # frames = [
+    #     pyglet.image.AnimationFrame(combine_tiles(tesselate(5*8 + i, grid_liq, 90, 90), 16, 16, 90), 0.3)
+    #     for i in frameindexes
+    # ]
+
+    if floor.wall_type == "Solid":
+        if floor.map_type == "Complex":
+            bg_pits.image = combine_tiles(tesselate(wall_texture_value*16+3, grid_bg, 90, 90), 16, 16, 90)
+        else:
+            bg_pits.image = combine_tiles(tesselate(wall_texture_value*16+8, grid_bg, 90, 90), 16, 16, 90)
+        bg_pits.scale = 3
+    elif floor.wall_type == "Water":
+        bg_pits.image = combine_tiles(tesselate(1, grid_liq, 6, 6), 256, 256, 6)
+        bg_pits.scale = 3
+    elif floor.wall_type == "Lava":
+        bg_pits.image = combine_tiles(tesselate(0, grid_liq, 6, 6), 256, 256, 6)
+        bg_pits.scale = 3
+    elif floor.wall_type == "Pit":
+        pass
+
+
+
+
+go_to_next_level()
 
 
 
@@ -659,21 +624,21 @@ create_gui(all_buttons, player)
 create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
+player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 player.add_to_inventory(floor.create_item("Blue Staff", grid_items))
 # player.add_to_inventory(floor.create_item("Stick", grid_items))
 # player.add_to_inventory(floor.create_item("Light Blue Staff", grid_items))
 player.add_to_inventory(floor.create_item("Armor Plate", grid_items))
 #player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
 player.add_to_inventory(floor.create_item("Wood Shield", grid_items))
-#player.add_to_inventory(floor.create_item("Steel Shield", grid_items))
+player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
 player.add_to_inventory(floor.create_item("Knife", grid_items))
 # player.add_to_inventory(floor.create_item("Machete", grid_items))
 # player.add_to_inventory(floor.create_item("Scimitar", grid_items))
 # player.add_to_inventory(floor.create_item("Sickle", grid_items))
 # player.add_to_inventory(floor.create_item("Rapier", grid_items))
-player.add_to_inventory(floor.create_item("Stick", grid_items))
 # player.add_to_inventory(floor.create_item("Fury Cutter", grid_items))
-# player.add_to_inventory(floor.create_item("Windsword", grid_items))
+player.add_to_inventory(floor.create_item("Windsword", grid_items))
 
 player.add_to_inventory(floor.create_item("Red Staff", grid_items))
 player.add_to_inventory(floor.create_item("Orange Staff", grid_items))
@@ -741,6 +706,9 @@ keypress_chk = 0
 #3 = inventory?
 #4 = pause menu?
 
+
+bg_animframe = 0
+
 @window.event
 def on_draw():
     global keypress_chk
@@ -749,12 +717,16 @@ def on_draw():
     global all_buttons
     global has_won
     global all_anims
+    global bg
+    global bg_pits
+    global grid_liq
+    global bg_animframe
 
     window.clear()
 
     diry = 0
     dirx = 0
-
+    bg_animframe += 1
 
     # mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
     # mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
@@ -834,22 +806,43 @@ def on_draw():
 
     bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
     bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
-
+    bg.group = group_bg
     bg.batch = batch
+    
+    bg_pits.color = (255, 255, 255, 255)
+    if floor.wall_type == "Solid":
+        frame_x = [0]
+        frame_y = [0]
+    elif floor.wall_type == "Water":
+        frame_x = [4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3]
+        frame_y = [0]
+    elif floor.wall_type == "Lava":
+        frame_x = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+        frame_y = [15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0]
+        #frame_color = [255, 250, 245, 230, 220, 195, 205, 200, 205, 215, 225, 235, 245, 250, 255]
+
+        bg_pits.color = (255, 255, 255, 255 - int(30*(math.sin(bg_animframe/15)+1)))
+        # frame_x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        # frame_y = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15]
+    else: #pits
+        frame_x = [0]
+        frame_y = [0]
+        bg_pits.color = (0, 0, 0, 0)
+
+
+    bg_pits.x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale + frame_x[int(bg_animframe/10) % len(frame_x)]*player.scale
+    bg_pits.y = 768/2 - (player.prevy*16 + 8)*player.scale - 16*15*player.scale + frame_y[int(bg_animframe/10) % len(frame_y)]*player.scale
+    bg_pits.group = group_bg_pits
+    bg_pits.batch = batch
 
     #sprite.image = texture
     player.draw(batch, animation_presets, group_enemies, group_enemies_bg, group_enemies_fg)
     for enemy in all_enemies:
         enemy.draw(batch, animation_presets, player, group_enemies)
 
+
     for item in floor.floor_items:
         item.draw(batch, player, group_items)
-
-    # for item in player.active_projectiles:
-    #     item.draw_projectiles(batch, player, group_items)
-
-    # for spell in player.active_spells:
-    #     spell.draw(batch, player, group_items)
 
     i = 0 #theres probably a more pythonic way to do this, sowwy
     for item in player.inventory:
@@ -860,7 +853,6 @@ def on_draw():
             dragging_item.sprite.y = mouse_y - drag_offset[1]
         i = i + 1
 
-
     if keys[pyglet.window.key.Q]:
         while len(all_anims) > 0:
             for anim in all_anims:
@@ -870,6 +862,7 @@ def on_draw():
         for anim in all_anims:
             anim.draw(batch, player, group_effects, floor)
         delete_object.delobj(all_anims)
+
 
 
     if gamestate != 2:
