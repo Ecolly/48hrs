@@ -163,7 +163,7 @@ class Map:
         elif name == "Gold Staff":
             return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=True, description="Damage depends on mana used.") #deals set damage according to # of charges used
         elif name == "Green Staff":
-            return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=True, descrption="Projectile bounces off walls.") #bounces
+            return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=True, description="Projectile bounces off walls.") #bounces
         elif name == "Teal Staff":
             return Staff(name, grid_items, sprite_locs = 13, damage=10, projectile=True, description="Target's speed is reduced to 1/2. Duration depends on mana used.") #slows down enemy
         elif name == "Blue Staff":

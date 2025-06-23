@@ -51,6 +51,7 @@ class Item:
         self.num_of_bounces = 0
         self.num_of_pierces = 0
 
+
     def use(self, target):
         pass
 
@@ -129,7 +130,7 @@ class Item:
     #                     self.y = -inventory_y*48 + int(768/48)*32 - 1   
 
 class Weapon(Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True, description=""):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
         self.spriteindex = 29*10+sprite_locs
@@ -138,9 +139,10 @@ class Weapon(Item):
         self.damage_type = "slashing"  # Default damage type
         self.is_equipable = is_equipable
         self.bonus = 0
+        self.description=description
         
 class Staff(Item):
-    def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30):
+    def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30, description=""):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*9+ sprite_locs)
         self.spriteindex = 29*9+sprite_locs
@@ -150,28 +152,31 @@ class Staff(Item):
         self.damage_type = "slashing"  # Default damage type
         self.is_castable = True
         self.is_castable_projectile = projectile
+        self.description=description
         #self.is_equipable = is_equipable
 
 class Consumable(Item):
-    def __init__(self, name, grid_items, sprite_locs, nutrition_value, x=0, y=0, quantity=1):
+    def __init__(self, name, grid_items, sprite_locs, nutrition_value, x=0, y=0, quantity=1, description=""):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*6+ sprite_locs)
         self.spriteindex = 29*6+sprite_locs
         self.nutrition_value = nutrition_value
         self.is_consumable = True
+        self.description=description
 
 
 class Shield (Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0, is_equipable = True):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0, is_equipable = True, description=""):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*8+ sprite_locs)
         self.spriteindex = 29*8+sprite_locs
         self.defense = defense  # Default defense value
         self.is_equipable = is_equipable
         self.bonus = 0
+        self.description=description
 
 class Miscellanious(Item):
-    def __init__(self, name, grid_items, sprite_locs, description, x=0, y=0, quantity=1):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, description=""):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*7+ sprite_locs)
         self.spriteindex = 29*7+sprite_locs
