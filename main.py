@@ -29,7 +29,15 @@ pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
 has_won = 0
 has_lost = 0
 config = pyglet.gl.Config(double_buffer=True, sample_buffers=0, samples=0)
-window = pyglet.window.Window(1152, 768, config=config)
+
+
+win_x = 384 #pixel-perfect size of window, without scaling
+win_y = 256
+scale = 3
+win_true_x = win_x*scale
+win_true_y = win_y*scale
+
+window = pyglet.window.Window(win_true_x, win_true_y, config=config)
 
 #pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
 #pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -79,10 +87,15 @@ columns_bg = sprite_bg.width // 16
 rows_bg = sprite_bg.height // 16
 grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 
-sprite_liq = pyglet.image.load('bg_liquids.png')
-columns_liq = sprite_liq.width // 256
-rows_liq = sprite_liq.height // 256
+sprite_liq = pyglet.image.load('all_liquid_animations.png')
+columns_liq = sprite_liq.width // 128
+rows_liq = sprite_liq.height // 128
 grid_liq = pyglet.image.ImageGrid(sprite_liq, rows_liq, columns_liq)
+
+sprite_deeper = pyglet.image.load('deeper_bgs.png')
+columns_deeper = sprite_deeper.width // 128
+rows_deeper = sprite_deeper.height // 128
+grid_deeper = pyglet.image.ImageGrid(sprite_deeper, rows_deeper, columns_deeper)
 
 # def enemy_grid_to_use(level):
 #     global grid_entities1 
@@ -100,6 +113,7 @@ grid_liq = pyglet.image.ImageGrid(sprite_liq, rows_liq, columns_liq)
 
 from pyglet.graphics import Group
 
+group_deeper = Group(order=4)
 group_bg_pits = Group(order=5)
 group_bg = Group(order=10)
 group_items = Group(order=20)
@@ -482,25 +496,45 @@ bg.scale = 3
 bg_pits = pyglet.sprite.Sprite(grid_bg[0])
 bg_pits.scale = 3
 
+bg_deeper = pyglet.sprite.Sprite(grid_bg[0])
+bg_deeper.scale = 3
+
 def go_to_next_level():
-    global floor, all_enemies, player, bg, bg_pits, floor_level
+    global floor, all_enemies, player, bg, bg_pits, bg_deeper, floor_level
     floor_level +=1
     if floor_level < 3: #1, 2 (26, 26)
-        sc, tileset, walltype = "Simple", (26, 26), "Solid"     #(15, 22, 5,5+32,5+48,5+64,5+80,5+96) ##"Simple", (26, 26)##
+        sc, tileset, walltype = "Simple", (26, 26), "Solid"                                     #normal grass
     elif floor_level < 6: #3, 4, 5
-        sc, tileset, walltype = "Complex", (4,27,0,6,6,6,6,1), "Water"    #(18,27,6,7,9,10,0,3), "Solid"
+        sc, tileset, walltype = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water"                     #river zone
     elif floor_level < 9:
-        sc, tileset, walltype = "Simple", (27, 27), "Solid"
+        sc, tileset, walltype = "Simple", (27, 27), "Solid"                                        #seafoam grass (replace? too much grass?)
     elif floor_level < 12:
-        sc, tileset, walltype = "Complex", (20,30,2,9,10,11,0,3), "Solid"
+        sc, tileset, walltype = "Complex", (4,25,3,3,3,6,6,1), "Water"                              #lake zone
     elif floor_level < 15:
-        sc, tileset, walltype = "Complex", (19,31,1,1,10,1,1,1), "Solid"
+        sc, tileset, walltype = "Complex", (19,31,1,1,10,1,1,1), "Solid"                          #brown basalt
     elif floor_level < 18:
-        sc, tileset, walltype = "Complex", (7,23,1,6,6,6,6,0), "Pit"
+        sc, tileset, walltype = "Complex", (17,31,1,1,0,0,6,9), "Solid"                          #coal vein
     elif floor_level < 21:
-        sc, tileset, walltype = "Complex", (8,23,2,2,2,2,2,2), "Lava"
+        sc, tileset, walltype = "Complex", (8,29,1,1,0,0,6,9), "Petroleum"                         #petroleum zone
+    elif floor_level < 24:
+        sc, tileset, walltype = "Complex", (8,22,1,1,9,9,6,9), "Aquifer"                        #aquifer
+    elif floor_level < 27:
+        sc, tileset, walltype = "Complex", (6,30,1,6,6,6,6,0), "Mud"                            #mud zone
+    elif floor_level < 30:
+        sc, tileset, walltype = "Complex", (18,30,1,1,0,0,6,9), "Solid"                          #teal & gold
+    elif floor_level < 33:
+        sc, tileset, walltype = "Complex", (20,30,2,9,10,11,0,3), "Solid"                         #purple & gold
+    elif floor_level < 36:
+        sc, tileset, walltype = "Complex", (7,23,1,6,6,6,6,0), "Pit"                             #grey pits
+    elif floor_level < 39:
+        sc, tileset, walltype = "Complex", (7,23,1,6,6,6,6,0), "Glowing"                             #grey pits
+    elif floor_level < 42:
+        sc, tileset, walltype = "Complex", (8,23,2,2,2,2,2,2), "Lava"                            #wavy lava
+    elif floor_level < 45:
+        sc, tileset, walltype = "Complex", (7, 22, 5,5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Pit"           #multicolored porcelain pits
     else:
-        sc, tileset, walltype = "Complex", (15, 22, 5,5+32,5+48,5+64,5+80,5+96), "Solid"
+        sc, tileset, walltype = "Complex", (15, 22, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid"        #multicolored porcelain
+    
 
     player.strength = player.maxstrength
     player.strength_visual = player.strength
@@ -593,31 +627,62 @@ def go_to_next_level():
     #print(fl_string)
     bg.image = combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60) #pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
     bg.scale = 3
+    
 
+    frameindexes = [31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]#[4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3]
 
-    # frameindexes = [4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3]
-
-    # frames = [
-    #     pyglet.image.AnimationFrame(combine_tiles(tesselate(5*8 + i, grid_liq, 90, 90), 16, 16, 90), 0.3)
-    #     for i in frameindexes
-    # ]
+        #bg_pits.image = combine_tiles(tesselate(4, grid_liq, 6, 6), 256, 256, 6)
 
     if floor.wall_type == "Solid":
         if floor.map_type == "Complex":
             bg_pits.image = combine_tiles(tesselate(wall_texture_value*16+3, grid_bg, 90, 90), 16, 16, 90)
         else:
             bg_pits.image = combine_tiles(tesselate(wall_texture_value*16+8, grid_bg, 90, 90), 16, 16, 90)
-        bg_pits.scale = 3
+    elif floor.wall_type == "Glowing":
+        bg_deeper.image = combine_tiles(tesselate(2, grid_deeper, 12, 12), 128, 128, 12)
     elif floor.wall_type == "Water":
-        bg_pits.image = combine_tiles(tesselate(1, grid_liq, 6, 6), 256, 256, 6)
-        bg_pits.scale = 3
+        frames = [
+            pyglet.image.AnimationFrame(combine_tiles(tesselate(i + 32*14, grid_liq, 12, 12), 128, 128, 12), 5/60)
+            for i in frameindexes
+        ]
+        bg_pits.image = pyglet.image.Animation(frames)
+        bg_deeper.image = combine_tiles(tesselate(1, grid_deeper, 12, 12), 128, 128, 12)
+    elif floor.wall_type == "Aquifer":
+        frames = [
+            pyglet.image.AnimationFrame(combine_tiles(tesselate(i + 32*15, grid_liq, 12, 12), 128, 128, 12), 5/60)
+            for i in frameindexes
+        ]
+        bg_pits.image = pyglet.image.Animation(frames)
+        bg_deeper.image = combine_tiles(tesselate(3, grid_deeper, 12, 12), 128, 128, 12)
     elif floor.wall_type == "Lava":
-        bg_pits.image = combine_tiles(tesselate(0, grid_liq, 6, 6), 256, 256, 6)
-        bg_pits.scale = 3
+        frames = [
+            pyglet.image.AnimationFrame(combine_tiles(tesselate(i + 32*11, grid_liq, 12, 12), 128, 128, 12), 5/60)
+            for i in frameindexes
+        ]
+        bg_pits.image = pyglet.image.Animation(frames)
+    elif floor.wall_type == "Flowing Water":
+        frames = [
+            pyglet.image.AnimationFrame(combine_tiles(tesselate(i + 32*12, grid_liq, 12, 12), 128, 128, 12), 5/60)
+            for i in frameindexes
+        ]
+        bg_pits.image = pyglet.image.Animation(frames)
+        bg_deeper.image = combine_tiles(tesselate(0, grid_deeper, 12, 12), 128, 128, 12)
+    elif floor.wall_type == "Mud":
+        frames = [
+            pyglet.image.AnimationFrame(combine_tiles(tesselate(i + 32*10, grid_liq, 12, 12), 128, 128, 12), 5/60)
+            for i in frameindexes
+        ]
+        bg_pits.image = pyglet.image.Animation(frames)
+    elif floor.wall_type == "Petroleum":
+        frames = [
+            pyglet.image.AnimationFrame(combine_tiles(tesselate(i + 32*8, grid_liq, 12, 12), 128, 128, 12), 5/60)
+            for i in frameindexes
+        ]
+        bg_pits.image = pyglet.image.Animation(frames)
     elif floor.wall_type == "Pit":
         pass
 
-
+    bg_pits.scale = 3
 
 
 go_to_next_level()
@@ -702,16 +767,7 @@ keypress_chk = 0
 
 
 
-
-
-
-
-#0 = main menu
-#1 = your turn in the game world
-#2 = turn is happening
-#3 = inventory?
-#4 = pause menu?
-
+#render_texture = pyglet.image.Texture.create(win_x, win_y)
 
 bg_animframe = 0
 
@@ -725,10 +781,23 @@ def on_draw():
     global all_anims
     global bg
     global bg_pits
+    global bg_deeper
     global grid_liq
+    global grid_deeper
     global bg_animframe
+    global win_true_x, win_true_y, win_x, win_y
+
+    # framebuffer.get_texture().bind()
+    # glViewport(0, 0, win_x, win_y)
+    # glClearColor(0, 0, 0, 1)
+    # glClear(GL_COLOR_BUFFER_BIT)
 
     window.clear()
+
+    # render_texture.bind()
+    # pyglet.gl.glViewport(0, 0, win_x, win_y)
+    # pyglet.gl.glClearColor(0, 0, 0, 1)
+    # pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT)
 
     diry = 0
     dirx = 0
@@ -816,30 +885,42 @@ def on_draw():
     bg.batch = batch
     
     bg_pits.color = (255, 255, 255, 255)
+    bg_deeper.color = (255, 255, 255, 0)
+
+    if floor.wall_type == "Water" or floor.wall_type == "Flowing Water" or floor.wall_type == "Aquifer":
+        bg_deeper.color = (255, 255, 255, 200)
+        #bg_pits.color = (255, 255, 255, 200)
+
     if floor.wall_type == "Solid":
         frame_x = [0]
         frame_y = [0]
-    elif floor.wall_type == "Water":
-        frame_x = [4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3]
+    elif floor.wall_type == "Water" or floor.wall_type == "Petroleum" or floor.wall_type == "Aquifer":
+        frame_x = [0]#[4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3]
         frame_y = [0]
     elif floor.wall_type == "Lava":
-        frame_x = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
-        frame_y = [15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0]
-        #frame_color = [255, 250, 245, 230, 220, 195, 205, 200, 205, 215, 225, 235, 245, 250, 255]
-
+        frame_x = [0]#[15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+        frame_y = [0]#[15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0]
         bg_pits.color = (255, 255, 255, 255 - int(30*(math.sin(bg_animframe/15)+1)))
-        # frame_x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-        # frame_y = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15]
+    elif floor.wall_type == "Flowing Water" or floor.wall_type == "Mud":
+        frame_x = [0]#[15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+        frame_y = [0]#[15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0]
     else: #pits
         frame_x = [0]
         frame_y = [0]
         bg_pits.color = (0, 0, 0, 0)
 
+    if floor.wall_type == "Glowing":
+        bg_deeper.color = (255, 128, 0, 0 + int(30*(math.sin(bg_animframe/15)+1)))
 
     bg_pits.x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale + frame_x[int(bg_animframe/10) % len(frame_x)]*player.scale
     bg_pits.y = 768/2 - (player.prevy*16 + 8)*player.scale - 16*15*player.scale + frame_y[int(bg_animframe/10) % len(frame_y)]*player.scale
     bg_pits.group = group_bg_pits
     bg_pits.batch = batch
+
+    bg_deeper.x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale + frame_x[int(bg_animframe/10) % len(frame_x)]*player.scale
+    bg_deeper.y = 768/2 - (player.prevy*16 + 8)*player.scale - 16*15*player.scale + frame_y[int(bg_animframe/10) % len(frame_y)]*player.scale
+    bg_deeper.group = group_deeper
+    bg_deeper.batch = batch
 
     #sprite.image = texture
     player.draw(batch, animation_presets, group_enemies, group_enemies_bg, group_enemies_fg)
@@ -919,8 +1000,44 @@ def on_draw():
                 
             
 
+    # render_texture.bind()
+    # pyglet.gl.glViewport(0, 0, win_x, win_y)
+    # pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT)
+
+    # batch.draw()  # All your normal drawing happens here
+
+    # # Step 2: Now draw the offscreen texture to the actual window
+    # pyglet.gl.glBindFramebuffer(pyglet.gl.GL_FRAMEBUFFER, 0)
+    # pyglet.gl.glViewport(0, 0, win_true_x, win_true_y)
+    # #window.clear()
+    # render_texture.blit(0, 0, width=win_true_x, height=win_true_y)
+    # 3. Blit offscreen buffer to window (upscaled)
 
     batch.draw()
+
+    # pyglet.gl.glBindFramebuffer(pyglet.gl.GL_FRAMEBUFFER, 0)  # Unbind FBO
+    # pyglet.gl.glViewport(0, 0, win_true_x, win_true_y)
+    # window.clear()
+    # render_texture.blit(0, 0, width=win_true_x, height=win_true_y)
+    
+
+    # Draw something simple
+    # render_texture.bind()
+    # pyglet.gl.glViewport(0, 0, win_x, win_y)
+    # pyglet.gl.glClearColor(1, 0, 0, 1)  # RED for testing
+    # pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT)
+
+    # # Unbind
+
+    # pyglet.gl.glBindFramebuffer(pyglet.gl.GL_FRAMEBUFFER, 0)  # Unbind FBO
+    # pyglet.gl.glViewport(0, 0, win_true_x, win_true_y)
+    # window.clear()
+    # render_texture.blit(0, 0, width=win_true_x, height=win_true_y)
+
+
+    # window.clear()
+    # glViewport(0, 0, win_true_x, win_true_y)
+    # framebuffer.get_texture().blit(0, 0, width=win_true_x, height=win_true_y)
     
 
 

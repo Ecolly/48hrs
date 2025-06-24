@@ -290,13 +290,13 @@ class Map:
 
         def get_bitmask(x, y):
             bitmask = 0
-            if y > 0 and (self.map_grid[y-1][x] == target_char):      # Up
+            if y == 0 or (self.map_grid[y-1][x] == target_char):      # Up
                 bitmask |= 1
-            if x < self.width-1 and (self.map_grid[y][x+1] == target_char): # Right
+            if x == self.width-1 or (self.map_grid[y][x+1] == target_char): # Right
                 bitmask |= 2
-            if y < self.height-1 and (self.map_grid[y+1][x] == target_char): # Down
+            if y == self.height-1 or (self.map_grid[y+1][x] == target_char): # Down
                 bitmask |= 4
-            if x > 0 and (self.map_grid[y][x-1] == target_char):      # Left
+            if x == 0 or (self.map_grid[y][x-1] == target_char):      # Left
                 bitmask |= 8
             return bitmask
 
