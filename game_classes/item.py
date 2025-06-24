@@ -12,6 +12,7 @@ def create_sprite_item(image_grid, index): #dumb. literally the same as the imag
     return pyglet.sprite.Sprite(tex, x=0, y=0)
 
 spr3 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles("E", grid_font, letter_order), 8, 8, 2))
+spr4 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles("E", grid_font, letter_order), 8, 8, 2))
 
 
 class Item:
@@ -96,6 +97,8 @@ class Item:
         spacing = 9 #spacing between items in the inventory
         if self is not None:
             sprite = self.sprite
+            e_weapon_equip = spr3
+            e_shield_equip = spr4
             if gamestate == 3: #if in the inventory menu
                 base_x = (invslot % 10)*(48+spacing) + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
                 base_y = -(invslot // 10)*(48+spacing)+ spacing + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
@@ -105,17 +108,27 @@ class Item:
                 sprite.scale = self.scale
                 sprite.group = group
                 sprite.batch = batch
-                if self is player.equipment_weapon or self is player.equipment_shield:
-                    e_sprite = spr3
-                    e_sprite.x = base_x + 2
-                    e_sprite.y = base_y + 30
-                    e_sprite.color = (255, 255, 0, 255)
-                    e_sprite.scale = 3  # Adjust as needed
-                    e_sprite.group = group  # Or use a higher group if you want it on top
-                    e_sprite.batch = batch
+
+                #this code here is a disgrace to humanity, but it works
+                if self is player.equipment_weapon:
+                    e_weapon_equip.x = base_x + 2
+                    e_weapon_equip.y = base_y + 30
+                    e_weapon_equip.color = (255, 255, 0, 255)
+                    e_weapon_equip.scale = 3  # Adjust as needed
+                    e_weapon_equip.group = group  # Or use a higher group if you want it on top
+                    e_weapon_equip.batch = batch
+                if self is player.equipment_shield:
+                    e_shield_equip.x = base_x + 2
+                    e_shield_equip.y = base_y + 30
+                    e_shield_equip.color = (255, 255, 0, 255)
+                    e_shield_equip.scale = 3  # Adjust as needed
+                    e_shield_equip.group = group  # Or use a higher group if you want it on top
+                    e_shield_equip.batch = batch
             else:
-                sprite.color = (0, 0, 0, 0)
-                sprite.batch = batch       
+                e_shield_equip.batch = None
+                e_weapon_equip.batch = None
+                sprite.batch = None    
+                  
 
     # if self.type == 'equip sword':
     #                 sprite.group = group6
