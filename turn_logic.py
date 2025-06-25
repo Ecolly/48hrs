@@ -226,6 +226,14 @@ def do_reflection(entity, item, enemy_hit, distance_x_normalized, distance_y_nor
     return projectiles_remaining
 
 
+def clamp(n, min, max): #why the fuck isnt this inbuilt
+    if n < min:
+        return min
+    elif n > max:
+        return max
+    else:
+        return n
+    
 
 def do_individual_turn(entity, floor, player, list_of_animations, chronology, prevtechnique):
     if entity.technique == Technique.STILL:
@@ -278,7 +286,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
         return Technique.HIT, chronology
     elif entity.technique == Technique.THROW: #works for throwing items, casting projectile spells, and other projectiles
-        rot = adjust_rotation(entity, entity.techniquex-entity.x, entity.techniquey-entity.y)
+        #print(entity.x, entity.y, entity.techniquex, entity.techniquey)
+
+        rot = adjust_rotation(entity, clamp(-entity.x+entity.techniquex, -1, 1), clamp(-entity.y+entity.techniquey, -1, 1))
         anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
         list_of_animations.append(anim2)
         #chronology += 16
@@ -395,6 +405,13 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
         return Technique.THROW, chronology
     elif entity.technique == Technique.CAST: #this is for static castings (not projectiles)
+
+
+
+        anim2 = animations.Animation(None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 24), entity.x, entity.y, entity.techniquex, entity.techniquey, entity.direction, entity, Technique.CAST, None, None, None)
+        list_of_animations.append(anim2)
+        chronology += 24
+    
         item = entity.inventory[entity.techniqueitem]
         if item.name == "Orange Staff":
             inflict_damage(entity, player, player, chronology, list_of_animations, item, 15, "magic")
@@ -407,7 +424,10 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         #confuse all enemies
         #shuffle all enemy positions randomly?
         
-        chronology += 10
+        
+
+
+        #chronology += 10
         return Technique.CAST, chronology
 
 

@@ -140,6 +140,7 @@ class Enemy:
         self.equipment_weapon = None
         self.equipment_shield = None
         self.should_be_deleted = False
+        self.current_holding = False
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid

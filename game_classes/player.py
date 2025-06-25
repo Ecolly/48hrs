@@ -45,7 +45,7 @@ class Player:
         self.techniquefinished = 0
         self.techniquecharges = 0
         self.should_be_deleted = False #unused; do not delete player ever
-        
+        self.current_holding = False
         self.strength = 5  # Default strength
         self.maxstrength = 5
         self.strength_visual = 5
@@ -209,7 +209,7 @@ class Player:
                 item = self.inventory[inv_slot]
                 if item is not None:
                     self.inventory[inv_slot] = None  # Remove item from inventory
-                    floor_items.append(item)
+                    floor.floor_items.append(item)
                     item.x = self.x
                     item.y = self.y 
             self.technique = Technique.STILL 
@@ -386,6 +386,7 @@ class Player:
             frame_index = self.spriteindex + self.direction.value * 8
             paralyze_x = (1 - 2*((self.animframe*4) % 2))/2
         else:
+            #print(self.direction)
             frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][math.floor(self.animframe)]
             paralyze_x = 0
 
@@ -402,7 +403,19 @@ class Player:
         if self.animframe >= len(animation_presets[self.animtype]):
             self.animframe = 0
 
-        if self.equipment_weapon != None:
+
+
+        if self.current_holding != False:
+            tile2 = self.itemgrid[self.current_holding.spriteindex]
+            self.sprite_weapon.image = tile2.get_texture()
+            self.sprite_weapon.color = (255, 255, 255, 255)
+            self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
+            # self.sprite_weapon.x = base_x - 24
+            # self.sprite_weapon.y = base_y
+            self.sprite_weapon.scale = self.scale
+            self.sprite_weapon.batch = batch
+
+        elif self.equipment_weapon != None:# and self.technique != Technique.CAST:
             tile2 = self.itemgrid[self.equipment_weapon.spriteindex]
             self.sprite_weapon.image = tile2.get_texture()
             self.sprite_weapon.color = (255, 255, 255, 255)

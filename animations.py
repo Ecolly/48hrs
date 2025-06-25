@@ -3,6 +3,7 @@ import pyglet
 import image_handling
 import math
 import random
+from game_classes.face_direction import *
 from game_classes.techniques import *
 from enum import Enum, auto
 from game_classes.item import *
@@ -90,8 +91,8 @@ class Animation:
             frame = self.current_time - self.start_time
             if self.associated_object != None and self.technique != Technique.THROW:
                 obj = self.associated_object
-                obj.direction = self.rot
-                if self.animtype == 1:
+                if self.animtype == 1: #hit anims
+                    obj.direction = self.rot
                     quartic_eq = (-0.19*(0.25*frame)**4 + (0.25*frame)**3 - (0.25*frame)**2)/2.5
                     if obj == player:
                         obj.offsetx = round((abs(obj.techniquex - obj.x)/(obj.techniquex - obj.x + 0.01)))*quartic_eq
@@ -100,12 +101,31 @@ class Animation:
                         obj.prevx = obj.x + round((abs(obj.techniquex - obj.x)/(obj.techniquex - obj.x + 0.01)))*quartic_eq
                         obj.prevy = obj.y + round((abs(obj.techniquey - obj.y)/(obj.techniquey - obj.y + 0.01)))*quartic_eq
                 else:
-                    obj.prevx = obj.prevx + round((abs(obj.techniquex - obj.prevx)/(obj.techniquex - obj.prevx+0.01)))/8
-                    obj.prevy = obj.prevy + round((abs(obj.techniquey - obj.prevy)/(obj.techniquey - obj.prevy+0.01)))/8
+                    if self.technique == Technique.CAST:
+                        #obj.direction = self.rot
+                        #print(obj.direction)
+                        #print("gwefewfwe")
+                        obj.direction = FaceDirection((obj.direction.value + 1) % 8)
+                        obj.current_holding = obj.inventory[obj.techniqueitem]
+                        # tile2 = self.itemgrid[self.equipment_weapon.spriteindex]
+                        # self.sprite_weapon.image = tile2.get_texture()
+                        # self.sprite_weapon.color = (255, 255, 255, 255)
+                        # self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
+                        # # self.sprite_weapon.x = base_x - 24
+                        # # self.sprite_weapon.y = base_y
+                        # self.sprite_weapon.scale = self.scale
+                        # self.sprite_weapon.batch = batch
+                                
+                        #print(obj.direction)
+                    else:
+                        obj.direction = self.rot
+                        obj.prevx = obj.prevx + round((abs(obj.techniquex - obj.prevx)/(obj.techniquex - obj.prevx+0.01)))/8
+                        obj.prevy = obj.prevy + round((abs(obj.techniquey - obj.prevy)/(obj.techniquey - obj.prevy+0.01)))/8
 
 
 
                     if frame > self.duration:
+                        obj.current_holding = False
                         if self.associated_object == player:
                             player.pick_up_item(floor.floor_items)
             else:
@@ -171,7 +191,11 @@ class Animation:
                 
                 
                 if self.animtype == 3 or self.animtype == 4: #projectiles
+                    if self.animtype == 4:
+                        self.associated_object.current_holding = self.associated_object.inventory[self.associated_object.techniqueitem]
+                    
                     if frame > self.duration:
+                        self.associated_object.current_holding = False
                         if self.target != None: #for spells
                             if self.item.name == "Teal Staff" or self.item.name == "Spores 3":
                                 self.target.speed_visual = self.target.speed

@@ -889,7 +889,7 @@ def on_draw():
 
     if floor.wall_type == "Water" or floor.wall_type == "Flowing Water" or floor.wall_type == "Aquifer":
         bg_deeper.color = (255, 255, 255, 200)
-        #bg_pits.color = (255, 255, 255, 200)
+        bg_pits.color = (255, 255, 255, 200)
 
     if floor.wall_type == "Solid":
         frame_x = [0]
