@@ -33,7 +33,7 @@ class Player:
         self.prevy = y 
         self.offsetx = 0
         self.offsety = 0
-        self.inventory = [None]*30
+        self.inventory = [None]*40
         self.active_projectiles = []
         #self.active_spells = []
         self.direction = FaceDirection.DOWN  # Default direction

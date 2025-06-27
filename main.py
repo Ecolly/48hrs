@@ -11,6 +11,10 @@ from game_classes.map import *
 from game_classes.item import Weapon, Consumable
 from game_classes.item import Item
 from font import *
+import cProfile
+import tracemalloc
+from game_classes.hotbar import Hotbar
+#from memory_profiler import profile
 
 import turn_logic
 import delete_object
@@ -28,6 +32,8 @@ pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
 # grid_tinyfont = pyglet.image.ImageGrid(sprite_tinyfont, rows_tinyfont, columns_tinyfont)
 
 # letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "", "", "", "", "", "", "", "", "ä"]
+
+tracemalloc.start()
 
 
 
@@ -131,6 +137,9 @@ group_enemies_fg = Group(order=41)
 
 group_effects = Group(order=42)
 
+group_hotbar = Group(order=43)
+group_hotbar_selection = Group(order=44)
+
 group_overlay = Group(order=45)
 
 group_inv_bg = Group(order=50)
@@ -195,9 +204,10 @@ mouse_y = 0
 
 keys = pyglet.window.key.KeyStateHandler()
 window.push_handlers(keys)
-
+hotbar = Hotbar(player.inventory, batch, group_hotbar)
 mouse_state = pyglet.window.mouse.MouseStateHandler()
 window.push_handlers(mouse_state)
+
 
 
 @window.event
@@ -228,7 +238,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
             inventory_slot = inventory_y*10 + inventory_x
             print(inventory_slot)
 
-            if 0 <= inventory_x < 10 and 0 <= inventory_y < 3:
+            if 0 <= inventory_x < 10 and 0 <= inventory_y < 4:
                 if inventory_slot > -1 and len(player.inventory) > inventory_slot:
                     # Check if the clicked position corresponds to an inventory slot
                     if dragging_item is None:
@@ -236,6 +246,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                         print()
                         if item_to_eval:
                             dragging_item = item_to_eval
+                            dragging_item.hotbar_sprite.visible = False
                             # Set the sprite position to the mouse position
                             drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
                             #remove the item from the inventory slot
@@ -251,12 +262,9 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                             item_to_eval = player.inventory[inventory_slot]
                             player.inventory[inventory_slot] = dragging_item #swap items
                             dragging_item = item_to_eval #set dragging item to the one that was in the slot
+                            dragging_item.hotbar_sprite.visible = False
                             drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
                         
-                
-
-    
-
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
@@ -498,6 +506,12 @@ def on_mouse_release(x, y, button, modifiers):
                 all_buttons.append(option_obj)
                 i = i + 1
 
+@window.event
+def on_mouse_scroll(x, y, scroll_x, scroll_y):
+    hotbar.change_selection(scroll_y)
+    hotbar.draw_selected_slot()
+
+
 floor_level = 0
 
 bg = pyglet.sprite.Sprite(grid_bg[0])
@@ -510,9 +524,10 @@ bg_deeper = pyglet.sprite.Sprite(grid_bg[0])
 bg_deeper.scale = 3
 
 def go_to_next_level():
+    
     global floor, all_enemies, player, bg, bg_pits, bg_deeper, floor_level
     floor_level +=1
-    if floor_level < 3: #1, 2 (26, 26)
+    if floor_level < 99: #1, 2 (26, 26)
         sc, tileset, walltype = "Simple", (26, 26), "Solid"                                     #normal grass
     elif floor_level < 6: #3, 4, 5
         sc, tileset, walltype = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water"                     #river zone
@@ -696,16 +711,20 @@ def go_to_next_level():
 
 
 go_to_next_level()
-
-
-
-
-
 create_gui(all_buttons, player)
 create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
 player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+
+player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+
+player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+
+player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+
+player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+
 player.add_to_inventory(floor.create_item("Blue Staff", grid_items))
 # player.add_to_inventory(floor.create_item("Stick", grid_items))
 # player.add_to_inventory(floor.create_item("Light Blue Staff", grid_items))
@@ -727,6 +746,24 @@ player.add_to_inventory(floor.create_item("Gold Staff", grid_items))
 player.add_to_inventory(floor.create_item("Green Staff", grid_items))
 player.add_to_inventory(floor.create_item("Teal Staff", grid_items))
 player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+
 player.add_to_inventory(floor.create_item("Starfruit", grid_items))
 
 # player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
@@ -765,7 +802,12 @@ keypress_chk = 0
         
 
     #     next_entity_turn += 1
-
+# def print_top_memory(dt):
+#     snapshot = tracemalloc.take_snapshot()
+#     top_stats = snapshot.statistics('lineno')
+#     print("[Top 10 memory-consuming lines]")
+#     for stat in top_stats[:10]:
+#         print(stat)
 # def draw_tiny_texts(text, x, y, batch, group):
 #     """
 #     Draws text at the specified position using the provided font grid.
@@ -791,6 +833,7 @@ keypress_chk = 0
 bg_animframe = 0
 
 @window.event
+
 def on_draw():
     global keypress_chk
     global gamestate
@@ -966,6 +1009,10 @@ def on_draw():
             #     
         slot = slot + 1
 
+    #Hot har stuff (updated after inventory)
+    hotbar.update_hotbar(player.inventory)
+    hotbar.draw_hotbar_items(batch, group_hotbar)
+    
     if keys[pyglet.window.key.Q]:
         while len(all_anims) > 0:
             for anim in all_anims:
@@ -986,6 +1033,7 @@ def on_draw():
     delete_object.delobj(all_anims)
     delete_object.delobj(player.inventory)
     delete_object.delobj(all_buttons)
+
 
     for button in all_buttons:
         button.hovered = button.is_mouse_over(mouse_x, mouse_y)
@@ -1020,6 +1068,7 @@ def on_draw():
                 
                 all_anims = turn_logic.do_turns(all_enemies, player, floor)
                 gamestate = 2
+    
 
 
                 
@@ -1064,10 +1113,6 @@ def on_draw():
     # glViewport(0, 0, win_true_x, win_true_y)
     # framebuffer.get_texture().blit(0, 0, width=win_true_x, height=win_true_y)
     
-
-
-
-
 pyglet.app.run()
-
+   
 
