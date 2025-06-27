@@ -3,7 +3,7 @@ import pyglet
 from enum import Enum, auto
 import pyglet
 import image_handling
-from font import grid_font, letter_order
+from font import *
 
 
 def create_sprite_item(image_grid, index): #dumb. literally the same as the image handling function
@@ -17,7 +17,7 @@ spr4 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_
 
 class Item:
     #very basics item class cause we dono what items there are
-    def __init__(self, name, grid_items, sprite_locs, x, y, quantity):
+    def __init__(self, name, grid_items, sprite_locs, x, y, quantity, description=""):
         # item_names = ["Kitchen Knife", "Machete", "Scimitar", "Screwdriver", "Sickle"]
         # item_fakenames = ["Kitchen Knife", "Machete", "Scimitar", "Screwdriver", "Sickle"]
         item_spritelocs = [29*10, 29*10+1, 29*10+2, 29*10+3, 29*10+4]
@@ -51,6 +51,8 @@ class Item:
         self.should_be_deleted = False
         self.num_of_bounces = 0
         self.num_of_pierces = 0
+        self.description = description
+        self.is_hovered = False
 
 
     def use(self, target):
@@ -81,7 +83,7 @@ class Item:
         sprite.scale = self.scale
         sprite.group = group
         sprite.batch = batch
-       
+    
     
     # def draw_projectiles(self, batch, player, group):
     #     base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
@@ -93,6 +95,29 @@ class Item:
     #     sprite.group = group
     #     sprite.batch = batch
 
+
+    def draw_description(self, batch, group, invslot, gamestate):
+        spacing = 9
+        if self.description and gamestate == 3: #if in the inventory menu
+            print(f"Drawing description: {self.description}")
+            # Draw the description text at the specified position
+            base_x = (invslot % 10)*(48+spacing) + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+            base_y = -(invslot // 10)*(48+spacing)+ spacing + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+            
+            
+            return draw_tiny_texts(self.description, base_x, base_y, batch, group)
+        return None
+
+    def test_hovering(self, mouse_x, mouse_y, invslot, gamestate):
+        spacing = 9
+        if self is not None:
+            if gamestate == 3: #if in the inventory menu
+                #print(f"Testing hovering for item: {self.name} at slot {invslot}")
+                base_x = (invslot % 10)*(48+spacing) + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+                base_y = -(invslot // 10)*(48+spacing)+ spacing + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+                return (base_x <= mouse_x <= base_x + 48) and (base_y <= mouse_y <= base_y + 48)
+        return False
+    
     def draw_inventory(self, batch, player, group, invslot, gamestate):
         spacing = 9 #spacing between items in the inventory
         if self is not None:
@@ -102,12 +127,19 @@ class Item:
             if gamestate == 3: #if in the inventory menu
                 base_x = (invslot % 10)*(48+spacing) + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
                 base_y = -(invslot // 10)*(48+spacing)+ spacing + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+                
                 sprite.x = base_x
                 sprite.y = base_y
+                #text = self.draw_description(batch, group2, invslot, gamestate) #draw the description text if it exists
+                
                 sprite.color = (255, 255, 255, 255)
                 sprite.scale = self.scale
+
                 sprite.group = group
                 sprite.batch = batch
+
+                
+                
 
                 #this code here is a disgrace to humanity, but it works
                 if self is player.equipment_weapon:
@@ -144,7 +176,7 @@ class Item:
 
 class Weapon(Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True, description=""):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity)
+        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
         self.spriteindex = 29*10+sprite_locs
         self.damage = damage
@@ -152,11 +184,10 @@ class Weapon(Item):
         self.damage_type = "slashing"  # Default damage type
         self.is_equipable = is_equipable
         self.bonus = 0
-        self.description=description
         
 class Staff(Item):
     def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30, description=""):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity)
+        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.sprite = create_sprite_item(grid_items, 29*9+ sprite_locs)
         self.spriteindex = 29*9+sprite_locs
         self.damage = damage
@@ -165,35 +196,31 @@ class Staff(Item):
         self.damage_type = "slashing"  # Default damage type
         self.is_castable = True
         self.is_castable_projectile = projectile
-        self.description=description
         #self.is_equipable = is_equipable
 
 class Consumable(Item):
     def __init__(self, name, grid_items, sprite_locs, nutrition_value, x=0, y=0, quantity=1, description=""):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity)
+        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.sprite = create_sprite_item(grid_items, 29*6+ sprite_locs)
         self.spriteindex = 29*6+sprite_locs
         self.nutrition_value = nutrition_value
         self.is_consumable = True
-        self.description=description
 
 
 class Shield (Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0, is_equipable = True, description=""):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity)
+        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.sprite = create_sprite_item(grid_items, 29*8+ sprite_locs)
         self.spriteindex = 29*8+sprite_locs
         self.defense = defense  # Default defense value
         self.is_equipable = is_equipable
         self.bonus = 0
-        self.description=description
 
 class Miscellanious(Item):
     def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, description=""):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.sprite = create_sprite_item(grid_items, 29*7+ sprite_locs)
         self.spriteindex = 29*7+sprite_locs
-        self.description = description
         #self.defense = defense  # Default defense value
         #self.is_equipable = is_equipable
 

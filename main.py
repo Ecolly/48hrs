@@ -10,6 +10,7 @@ from game_classes.enemy import *
 from game_classes.map import *
 from game_classes.item import Weapon, Consumable
 from game_classes.item import Item
+from font import *
 
 import turn_logic
 import delete_object
@@ -20,6 +21,13 @@ pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
 pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
 
 #made by zero and eco :)
+
+# sprite_tinyfont = pyglet.image.load('tinyfont.png')
+# columns_tinyfont = sprite_tinyfont.width // 5
+# rows_tinyfont = sprite_tinyfont.height // 8
+# grid_tinyfont = pyglet.image.ImageGrid(sprite_tinyfont, rows_tinyfont, columns_tinyfont)
+
+# letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "", "", "", "", "", "", "", "", "ä"]
 
 
 
@@ -132,6 +140,7 @@ group_inv_ext = Group(order=65)
 
 group_ui_bg = Group(order=70)
 group_ui = Group(order=80)
+group_ui_TEST = Group(order=100)
 
 animation_presets = [
     [0],
@@ -195,6 +204,7 @@ window.push_handlers(mouse_state)
 def on_mouse_motion(x, y, dx, dy):
     global mouse_x, mouse_y
     mouse_x, mouse_y = x, y
+
 
 @window.event
 def on_mouse_press(mouse_x, mouse_y, button, modifiers):
@@ -744,7 +754,7 @@ keypress_chk = 0
 
     
 
-    
+
     
     # while next_entity_turn < len(all_enemies):
     #     if all_enemies[next_entity_turn].name == "GOOSE":
@@ -756,15 +766,24 @@ keypress_chk = 0
 
     #     next_entity_turn += 1
 
+# def draw_tiny_texts(text, x, y, batch, group):
+#     """
+#     Draws text at the specified position using the provided font grid.
+#     """
+#     sprites = []
+#     for i, char in enumerate(text):
+#         if char in letter_order:
+#             index = letter_order.index(char)
+#             print(f"Drawing character '{char}' at index {index}.")
+#             sprite = pyglet.sprite.Sprite(grid_tinyfont[index], x + i * 10, y, batch=batch, group=group)
+#             sprites.append(sprite)
+#             sprite.scale = 2
+#         else:
+#             print(f"Character '{char}' not found in letter order.")
+#     return sprites
 
 
-
-
-
-
-
-
-
+#tiny_text_sprites = draw_tiny_texts("text", 200, 400, batch, group_inv_ext)
 
 
 #render_texture = pyglet.image.Texture.create(win_x, win_y)
@@ -826,6 +845,7 @@ def on_draw():
         if gamestate == 1:
             keypress_chk = 1
             create_inventory_menu(all_buttons)
+            
             gamestate = 3
 
             #enter inventory
@@ -931,15 +951,20 @@ def on_draw():
     for item in floor.floor_items:
         item.draw(batch, player, group_items)
 
-    i = 0 #theres probably a more pythonic way to do this, sowwy
+    slot = 0 #theres probably a more pythonic way to do this, sowwy
     for item in player.inventory:
         if dragging_item:
             dragging_item.sprite.x = mouse_x - drag_offset[0]
             dragging_item.sprite.y = mouse_y - drag_offset[1]
         if item is not None:
-            item.draw_inventory(batch, player, group_inv, i, gamestate)
-      
-        i = i + 1
+            # i is the slot at that position
+            item.draw_inventory(batch, player, group_inv, slot, gamestate)
+            if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
+                test = item.draw_description(batch, group_inv_ext, slot, gamestate)
+            #draw_tiny = draw_tiny_texts(item.description, 200, 400, batch, group_inv_ext)
+            # if is_hovered and not dragging_item:
+            #     
+        slot = slot + 1
 
     if keys[pyglet.window.key.Q]:
         while len(all_anims) > 0:
