@@ -38,10 +38,13 @@ class Map:
         self.textured_map = [[]]
         self.valid_entity_tiles = []
         #self.list_of_all_enemy_names = ["LEAFALOTTA", "HAMSTER", "GOOSE", "CHLOROSPORE", "FOX", "S'MORE"]
+        
+        
         #self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "SCORPION"], ["SCORPION", "S'MORE", "CHROME DOME"], ["DRAGON", "S'MORE", "TETRAHEDRON"]]
-        self.list_of_all_enemies = [["HAMSTER"], ["HAMSTER"], ["HAMSTER"], ["HAMSTER"], ["HAMSTER"]]
-        self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 1], [2, 2, 2], [2, 3, 2]]
-        self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+        #self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 1], [2, 2, 2], [2, 3, 2]]
+        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+        
+        
         self.floor_items = []  # List to hold items on the floor
         self.all_enemies = []
         self.spawnpoint = set()
@@ -78,8 +81,8 @@ class Map:
     #check if a room can be generated at the given coordinates
     #checks it against existing rooms list
     def check_generate_room(self, rooms):
-        max_possible_size = 18#min(self.width, self.height) // 2
-        min_possible_size = 12
+        max_possible_size = 12#18#min(self.width, self.height) // 2
+        min_possible_size = 6#12
 
         max_size = max(min_possible_size, int(max_possible_size * (1 - (self.number_of_rooms / 20))))
         min_size = max(min_possible_size, int(max_size * 0.6))
@@ -111,6 +114,7 @@ class Map:
                 self.generate_room(x, y, width, height)
                 #self.generate_border(x, y, width, height)
                 rooms.append(new_room)
+                rooms_created += 1
             attempts += 1
 
 
@@ -142,21 +146,21 @@ class Map:
         # Example dummy factory
 
         if name == "Knife":
-            return Weapon(name, grid_items, sprite_locs = 0, damage=5, durability=100, description="A common household chef's knife.")
+            return Weapon(name, grid_items, sprite_locs = 0, damage=4, durability=100, description="A common household chef's knife.")
         elif name == "Machete":
-            return Weapon(name, grid_items, sprite_locs = 1, damage=6, durability=100, description="A long-bladed knife useful for cutting plants.")
+            return Weapon(name, grid_items, sprite_locs = 1, damage=5, durability=100, description="A long-bladed knife useful for cutting plants.")
         elif name == "Scimitar":
-            return Weapon(name, grid_items, sprite_locs = 2, damage=8, durability=100, description="A sharp, curved blade.")
+            return Weapon(name, grid_items, sprite_locs = 2, damage=7, durability=100, description="A sharp, curved blade.")
         elif name == "Sickle":
-            return Weapon(name, grid_items, sprite_locs = 4, damage=4, durability=100, description="A crescent-shaped blade that can reach three enemies at once.")
+            return Weapon(name, grid_items, sprite_locs = 4, damage=3, durability=100, description="A crescent-shaped blade that can reach three enemies at once.")
         elif name == "Rapier":
-            return Weapon(name, grid_items, sprite_locs = 5, damage=7, durability=100, description="A thin, slender weapon that can reach two tiles in front.")
+            return Weapon(name, grid_items, sprite_locs = 5, damage=6, durability=100, description="A thin, slender weapon that can reach two tiles in front.")
         elif name == "Stick":
-            return Weapon(name, grid_items, sprite_locs = 6, damage=1, durability=100, description="A thick tree branch that can be used as a crude weapon.")
+            return Weapon(name, grid_items, sprite_locs = 6, damage=2, durability=100, description="A thick tree branch that can be used as a crude weapon.")
         elif name == "Fury Cutter":
-            return Weapon(name, grid_items, sprite_locs = 9, damage=30, durability=100, description="Ominous energy seeps off the cutting edge. The weapon returns 1/4 of damage dealt to the bearer.") #deducts 1/4 of attack damage from your hp
+            return Weapon(name, grid_items, sprite_locs = 9, damage=20, durability=100, description="Ominous energy seeps off the cutting edge. The weapon returns 1/4 of damage dealt to the bearer.") #deducts 1/4 of attack damage from your hp
         elif name == "Windsword":
-            return Weapon(name, grid_items, sprite_locs = 10, damage=12, durability=100, description="Imbued with magical runes, this longsword is more powerful than the average weapon.")
+            return Weapon(name, grid_items, sprite_locs = 10, damage=9, durability=100, description="Imbued with magical runes, this longsword is more powerful than the average weapon.")
         elif name == "Red Staff":
             return Staff(name, grid_items, sprite_locs = 1, damage=10, projectile=True, description="Divides the target's HP by 2.") #divides enemy's hp by 2
         elif name == "Orange Staff":
@@ -176,15 +180,15 @@ class Map:
         elif name == "Black Staff":
             return Staff(name, grid_items, sprite_locs = 25, damage=10, projectile=False, description="That's strange. This one doesn't seem to do anything.") 
         elif name == "Blue Shield":
-            return Shield(name, grid_items, sprite_locs=1, defense=8, description="A sturdy, shield painted with the emblem of a government.")
+            return Shield(name, grid_items, sprite_locs=1, defense=4, description="A sturdy, shield painted with the emblem of a government.")
         elif name == "Mirror Shield":
-            return Shield(name, grid_items, sprite_locs=2, defense=2, description="This shield is weak but will reflect projectiles.")
+            return Shield(name, grid_items, sprite_locs=2, defense=1, description="This shield is weak but will reflect projectiles.")
         elif name == "Wood Shield":
-            return Shield(name, grid_items, sprite_locs=3, defense=5, description="A crude wooden shield usually used for training.")
+            return Shield(name, grid_items, sprite_locs=3, defense=2, description="A crude wooden shield usually used for training.")
         elif name == "Steel Shield":
-            return Shield(name, grid_items, sprite_locs=4, defense=12, description="A thick, heavy shield made from a tough alloy.")
+            return Shield(name, grid_items, sprite_locs=4, defense=6, description="A thick, heavy shield made from a tough alloy.")
         elif name == "Armor Plate":
-            return Shield(name, grid_items, sprite_locs=5, defense=24, description="Industrial plating once used to shield a tank from artillery fire. Holding it prevents weapons from being used.") #prevents weapons from adding to strength
+            return Shield(name, grid_items, sprite_locs=5, defense=18, description="Industrial plating once used to shield a tank from artillery fire. Holding it prevents weapons from being used.") #prevents weapons from adding to strength
         elif name == "Rock":
             return Miscellanious(name, grid_items, sprite_locs = 0, description = "A rock.")
         elif name == "Note":
@@ -207,11 +211,11 @@ class Map:
             return Consumable(name, grid_items, sprite_locs = 8, nutrition_value=12, description="Messes with your stats.") #increase a random stat by 1
 
     #self, name, grid_items, x, y, quantity
-    def random_create_item(self, grid_items):
+    def random_create_item(self, grid_items, item_list):
         for _ in range(10):  # Generate 3 items
             random_location = random.choice(self.valid_tiles)
             y, x = random_location
-            item_name = random.choice(self.list_of_all_item_names)
+            item_name = random.choice(item_list)
             print(item_name)
             item = self.create_item(item_name, grid_items)
             item.x = x
@@ -219,8 +223,8 @@ class Map:
             self.floor_items.append(item)
             print(f"Created item: {item.name} at ({x}, {y})")
 
-    def generate_enemies(self, grid_entities1, floor_level):
-        enemy_Scale = min(floor_level // 3, len(self.list_of_all_enemies)-1)
+    def generate_enemies(self, floor_level, enemy_list, level_list):
+        enemy_Scale = min(floor_level // 3, len(enemy_list)-1)
         #enemies scale based on base stats
         # random_location = random.choice(self.valid_tiles)
         for _ in range(5):
@@ -228,9 +232,9 @@ class Map:
             y, x = random_location
 
             #choose a random enemy out of the enemy name & level options for this floor
-            rng_enemy = random.randint(0, len(self.list_of_all_enemies[enemy_Scale])-1)
-            enemy_name = self.list_of_all_enemies[enemy_Scale][rng_enemy]
-            enemy_level = self.list_of_all_levels[enemy_Scale][rng_enemy]
+            rng_enemy = random.randint(0, len(enemy_list)-1)
+            enemy_name = enemy_list[rng_enemy]
+            enemy_level = level_list[rng_enemy]
 
             self.valid_entity_tiles.remove(random_location)
             

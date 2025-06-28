@@ -6,28 +6,8 @@ import math
 import button_class
 import random
 from game_classes.projectiles import *
+from font import *
 
-
-#dumb dumb dumb dumb dumb dumb dumb
-sprite_entities1 = pyglet.image.load('entities_level1.png')
-columns_entities1 = sprite_entities1.width // 16
-rows_entities1 = sprite_entities1.height // 16
-grid_entities1 = pyglet.image.ImageGrid(sprite_entities1, rows_entities1, columns_entities1)
-
-sprite_entities2 = pyglet.image.load('entities_level2.png')
-columns_entities2 = sprite_entities2.width // 16
-rows_entities2 = sprite_entities2.height // 16
-grid_entities2 = pyglet.image.ImageGrid(sprite_entities2, rows_entities2, columns_entities2)
-
-sprite_entities3 = pyglet.image.load('entities_level3.png')
-columns_entities3 = sprite_entities3.width // 16
-rows_entities3 = sprite_entities3.height // 16
-grid_entities3 = pyglet.image.ImageGrid(sprite_entities3, rows_entities3, columns_entities3)
-
-sprite_entities4 = pyglet.image.load('entities_level4.png')
-columns_entities4 = sprite_entities4.width // 16
-rows_entities4 = sprite_entities4.height // 16
-grid_entities4 = pyglet.image.ImageGrid(sprite_entities4, rows_entities4, columns_entities4)
 
 def enemy_grid_to_use(level):
     global grid_entities1 
@@ -65,19 +45,21 @@ def create_sprite_enemy(image_grid, index):
 def generate_enemy(name, level, x, y, grid):
 
     enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION"]
-    enemy_hps = [20, 15, 18, 8, 10, 12, 20, 30, 20, 10, 10]
-    # enemy_strength = [0, ]
-    # enemy_defense = []
+    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 10]
+    enemy_strength = [0, 7, 3, 9, 9, 13, 9, 15, 11, 18, 10]
+    enemy_defense = [0, 2, 1, 1, 9, 1, 9, 5, 11, 3, 3]
     enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64, 9*64, 12*64]
     enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1]
     enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8]
-    enemy_exp = [0, 10, 10, 10, 10, 6, 35, 2, 60, 30, 30, 30]
+    enemy_exp = [0, 4, 15, 5, 10, 30, 1, 100, 60, 60, 30]
     enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
 
     id = enemy_names.index(name)
     enemy = Enemy(
         name = name,
-        health = enemy_hps[id],
+        health = enemy_hps[id]*(level),
+        strength = enemy_strength[id]*(level),
+        defense = enemy_defense[id]*(level),
         level = level,
         sprite = create_sprite_enemy(grid, enemy_sprites[id]), #this SUCKS
         spriteindex = enemy_sprites[id],
@@ -88,7 +70,7 @@ def generate_enemy(name, level, x, y, grid):
         animframe = 0,
         x = x,
         y = y,
-        experience = enemy_exp[id],
+        experience = enemy_exp[id]*(level),
         speed = enemy_speeds[id]
     ) 
 
@@ -97,14 +79,12 @@ def generate_enemy(name, level, x, y, grid):
 
 
 class Enemy:
-    def __init__(self, name, health, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y, experience, speed):
+    def __init__(self, name, health, strength, defense, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y, experience, speed):
+        global batch
+        global group_enemies
         self.name = name
         self.health = health
         self.maxhealth = health
-        self.strength = 10  # Default strength
-        self.maxstrength = 10
-        self.defense = 5  # Default defense
-        self.maxdefense = 5
         self.level = level
 
         #these are for displaying the stats during combat
@@ -112,15 +92,15 @@ class Enemy:
         self.maxhealth_visual = health
         self.level_visual = level
 
-        self.strength = 5  # Default strength
-        self.maxstrength = 5
-        self.strength_visual = 5
-        self.maxstrength_visual = 5
+        self.strength = strength  # Default strength
+        self.maxstrength = strength
+        self.strength_visual = strength
+        self.maxstrength_visual = strength
 
-        self.defense = 5  # Default defense
-        self.maxdefense = 5
-        self.defense_visual = 5
-        self.maxdefense_visual = 5
+        self.defense = defense  # Default defense
+        self.maxdefense = defense
+        self.defense_visual = defense
+        self.maxdefense_visual = defense
 
         self.x = x # x coords are in 
         self.y = y
@@ -143,8 +123,19 @@ class Enemy:
         self.current_holding = False
         
         self.sprite = sprite  # pyglet.sprite.Sprite
+        self.spriteindex_prev = -1
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
         self.grid = spritegrid
+
+        self.spriteset = []
+
+        i = 0
+        while i < 64:
+            self.spriteset.append(self.grid[self.spriteindex + i].get_texture())
+            i = i + 1
+
+        self.sprite.group = group_enemies
+        self.sprite.batch = batch
         self.color = color #4 entry tuple for the sprite to be colored as; white is default
         self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
         self.animframe = animframe #what frame of the animation it's on
@@ -308,36 +299,37 @@ class Enemy:
         sprite = self.sprite
         self.grid = enemy_grid_to_use(self.level_visual)
         if self.paralysis_visual > 0:
-            frame_index = self.spriteindex + self.direction.value * 8
+            frame_index = self.direction.value * 8
             paralyze_x = (1 - 2*((self.animframe*4) % 2))/2
         else:
-            frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][math.floor(self.animframe)]
+            frame_index = self.direction.value * 8 + animation_presets[self.animtype][math.floor(self.animframe)]
             paralyze_x = 0
 
         base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.prevx*16 + 8)*self.scale + (self.offsetx*16 + paralyze_x)*self.scale
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale + self.offsety*16*self.scale
 
-        tile = self.grid[frame_index]
+        if frame_index != self.spriteindex_prev:
+            # tile = self.grid[frame_index]
 
-        # Get texture and set filtering
-        texture = tile.get_texture()
-        texture.min_filter = pyglet.gl.GL_NEAREST
-        texture.mag_filter = pyglet.gl.GL_NEAREST
+            # # Get texture and set filtering
+            # texture = tile.get_texture()
+            # texture.min_filter = pyglet.gl.GL_NEAREST
+            # texture.mag_filter = pyglet.gl.GL_NEAREST
 
-        # Assign directly — no blitting, no texture creation
-        sprite.image = texture
+            # Assign directly — no blitting, no texture creation
+            sprite.image = self.spriteset[frame_index]#texture
 
         self.animframe = self.animframe + self.animmod*self.speed_visual
         if self.animframe >= len(animation_presets[self.animtype]):
             self.animframe = 0
 
-        sprite.group = group
+        #sprite.group = group
         sprite.x = base_x
         sprite.y = base_y
         sprite.scale = self.scale
         sprite.color = self.color
-        sprite.batch = batch
-        sprite.z = 40
+        #sprite.batch = batch
+        #sprite.z = 40
 
 
 

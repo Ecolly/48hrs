@@ -10,9 +10,12 @@ from game_classes.projectiles import *
 import animations
 import turn_logic
 import image_handling
+from font import *
 
 class Player:
     def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, itemgrid, color, animtype, x, y):
+        global batch 
+        global group_enemies
         self.name = name
         self.health = health
         self.maxhealth = health
@@ -65,6 +68,11 @@ class Player:
         self.sprite_weapon.color = (0, 0, 0, 0)
         self.sprite_shield.color = (0, 0, 0, 0)
         self.itemgrid = itemgrid
+
+        self.sprite_weapon.batch = batch 
+        self.sprite_shield.batch = batch
+        self.sprite.batch = batch
+        self.sprite.group = group_enemies
 
         self.color = color #4 entry tuple for the sprite to be colored as; white is default
         self.animtype = animtype #animation type. pulls from a set library of animation behaviors.

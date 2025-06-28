@@ -54,7 +54,7 @@ class Hotbar:
         for i, item in enumerate(self.slots):
             x = self.x + i * 56 + 10  # 48px slot + 8px spacing
             y = self.y + 5
-            print(f"Drawing item {i}: {item.name if item else 'None'} at position ({x}, {y})")
+            #print(f"Drawing item {i}: {item.name if item else 'None'} at position ({x}, {y})")
             #print(f"Drawing slot {i} at position ({x}, {y}) with item: {item}")
             # Draw slot background (rectangle or sprite)
             # Draw item sprite if item is not None
@@ -65,6 +65,7 @@ class Hotbar:
                 item.hotbar_sprite.visible = True
                 item.hotbar_sprite.x = x
                 item.hotbar_sprite.y = y
-                item.hotbar_sprite.batch = batch
-                item.hotbar_sprite.group = group
+                if item.hotbar_sprite.group != group:
+                    item.hotbar_sprite.batch = batch
+                    item.hotbar_sprite.group = group
                 item.hotbar_sprite.scale = 3

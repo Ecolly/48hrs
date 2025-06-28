@@ -564,8 +564,8 @@ def create_gui(all_buttons, player):
         obj_type="GUI_HP",
         draggable=False,
         supertype = "none",
-        extra_1 = player.health,
-        extra_2 = player.maxhealth
+        extra_1 = gui_string,
+        extra_2 = None
     )
     all_buttons.append(option_obj)
 
