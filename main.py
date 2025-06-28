@@ -21,6 +21,7 @@ from game_classes.hotbar import Hotbar
 from font import *
 import turn_logic
 import delete_object
+#import xdot
 
 from config import WINDOW_HEIGHT, WINDOW_WIDTH, INVENTORY_SLOT_SIZE, INVENTORY_SPACING
 
@@ -475,7 +476,7 @@ def go_to_next_level():
     global floor, all_enemies, player, bg, bg_liqs, bg_deeper, floor_level
     floor_level +=1
     if floor_level < 3: ##normal grass
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Water", ["HAMSTER", "HAMSTER", "HAMSTER"], [1, 2, 2], ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]                     #river zone
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Water", ["HAMSTER", "LEAFALOTTA", "HAMSTER"], [1, 2, 2], ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]                     #river zone
         
         #sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Water", ["LEAFALOTTA", "HAMSTER", "GOOSE"], [1, 1, 1], ["Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield"]     
     elif floor_level < 5: #river zone
@@ -1058,7 +1059,11 @@ def on_draw():
         sys._clear_internal_caches()
         print("allocated blocks: " + str(sys.getallocatedblocks()))
         objgraph.show_growth()
-
+        # textures = objgraph.by_type('Texture')
+        # for tex in textures[-5:]:
+        #     print(tex)
+        #objgraph.show_backrefs([textures[-1]], max_depth=5)
+    
     # pyglet.gl.glBindFramebuffer(pyglet.gl.GL_FRAMEBUFFER, 0)  # Unbind FBO
     # pyglet.gl.glViewport(0, 0, win_true_x, win_true_y)
     # window.clear()

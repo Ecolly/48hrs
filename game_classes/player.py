@@ -61,6 +61,7 @@ class Player:
         
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
+        self.spriteindex_prev = -1
         self.grid = spritegrid
 
         self.sprite_weapon = image_handling.create_sprite(itemgrid, 0)
@@ -391,21 +392,37 @@ class Player:
         sprite = self.sprite
 
         if self.paralysis_visual > 0:
-            frame_index = self.spriteindex + self.direction.value * 8
+            frame_index = self.direction.value * 8
             paralyze_x = (1 - 2*((self.animframe*4) % 2))/2
         else:
             #print(self.direction)
-            frame_index = self.spriteindex + self.direction.value * 8 + animation_presets[self.animtype][math.floor(self.animframe)]
+            frame_index = self.direction.value * 8 + animation_presets[self.animtype][math.floor(self.animframe)]
             paralyze_x = 0
 
         
-        tile = self.grid[frame_index]
+
 
         base_x, base_y = 1152/2 -24 + (self.offsetx*16 + paralyze_x)*self.scale, 768/2-24 + self.offsety*16*self.scale #self.get_screen_position()
 
 
-        texture = tile.get_texture()
-        sprite.image = texture
+        # texture = tile.get_texture()
+        # sprite.image = texture
+
+        if frame_index != self.spriteindex_prev:
+            # tile = self.grid[frame_index]
+
+            # # Get texture and set filtering
+            # texture = tile.get_texture()
+            # texture.min_filter = pyglet.gl.GL_NEAREST
+            # texture.mag_filter = pyglet.gl.GL_NEAREST
+
+            # Assign directly — no blitting, no texture creation
+
+            sprite.image.blit_into(self.grid[self.spriteindex + frame_index], 0, 0, 0)
+            self.spriteindex_prev = frame_index
+
+
+
 
         self.animframe = self.animframe + self.animmod*self.speed_visual
         if self.animframe >= len(animation_presets[self.animtype]):

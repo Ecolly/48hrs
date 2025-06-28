@@ -127,12 +127,12 @@ class Enemy:
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
         self.grid = spritegrid
 
-        self.spriteset = []
+        # self.spriteset = []
 
-        i = 0
-        while i < 64:
-            self.spriteset.append(self.grid[self.spriteindex + i].get_texture())
-            i = i + 1
+        # i = 0
+        # while i < 64:
+        #     self.spriteset.append(self.grid[self.spriteindex + i].get_texture())
+        #     i = i + 1
 
         self.sprite.group = group_enemies
         self.sprite.batch = batch
@@ -317,7 +317,11 @@ class Enemy:
             # texture.mag_filter = pyglet.gl.GL_NEAREST
 
             # Assign directly — no blitting, no texture creation
-            sprite.image = self.spriteset[frame_index]#texture
+
+            sprite.image.blit_into(self.grid[self.spriteindex + frame_index], 0, 0, 0)
+            self.spriteindex_prev = frame_index
+
+            #sprite.image = self.spriteset[frame_index]#texture
 
         self.animframe = self.animframe + self.animmod*self.speed_visual
         if self.animframe >= len(animation_presets[self.animtype]):
