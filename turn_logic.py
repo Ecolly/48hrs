@@ -72,16 +72,17 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
         return
     if damage_type == "physical":
         if attacker.name == "SCORPION":
-            strength_reduction = 1
-            defense_reduction = 0
+            #strength_reduction = 1
+            defense_reduction = 1
             if attacker.level == 2:
-                strength_reduction = 3
+                pass
+                #strength_reduction = 3
             elif attacker.level == 3:
+                strength_reduction = 1
+                defense_reduction = 1
+            elif attacker.level == 4:
                 strength_reduction = 3
                 defense_reduction = 3
-            elif attacker.level == 4:
-                strength_reduction = 5
-                defense_reduction = 5
 
             target.strength = max(target.strength-strength_reduction, 1)
             target.defense = max(target.defense-defense_reduction, 1)
@@ -148,7 +149,9 @@ def do_spell(entity, enemy_hit, player, spellname, charges, chronology, list_of_
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic")
     elif spellname == "Spores 2": #decrease attack
         if enemy_hit != None:
-            enemy_hit.strength += -1
+            enemy_hit.strength = max(enemy_hit.strength-1, 1)
+            enemy_hit.defense = max(enemy_hit.defense-1, 1)
+            #anim goes here?
     elif spellname == "Spores 3": #slow
         if enemy_hit != None:
             enemy_hit.speed = 1
@@ -157,8 +160,13 @@ def do_spell(entity, enemy_hit, player, spellname, charges, chronology, list_of_
         if enemy_hit != None:
             enemy_hit.paralysis_turns = 3
     elif spellname == "Dragon Fire":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges, "magic")
-
+        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 5, "magic")
+    elif spellname == "Dragon Fire 2":
+        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 20, "magic")
+    elif spellname == "Dragon Fire 3":
+        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 30, "magic")
+    elif spellname == "Dragon Fire 4":
+        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 40, "magic")
 
 def find_reflection_angle(x, y, dx, dy, floor, targx, targy):
     #targx, targy are for when a projectile is reflecting off of an entity

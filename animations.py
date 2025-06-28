@@ -102,28 +102,12 @@ class Animation:
                         obj.prevy = obj.y + round((abs(obj.techniquey - obj.y)/(obj.techniquey - obj.y + 0.01)))*quartic_eq
                 else:
                     if self.technique == Technique.CAST:
-                        #obj.direction = self.rot
-                        #print(obj.direction)
-                        #print("gwefewfwe")
                         obj.direction = FaceDirection((obj.direction.value + 1) % 8)
                         obj.current_holding = obj.inventory[obj.techniqueitem]
-                        # tile2 = self.itemgrid[self.equipment_weapon.spriteindex]
-                        # self.sprite_weapon.image = tile2.get_texture()
-                        # self.sprite_weapon.color = (255, 255, 255, 255)
-                        # self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
-                        # # self.sprite_weapon.x = base_x - 24
-                        # # self.sprite_weapon.y = base_y
-                        # self.sprite_weapon.scale = self.scale
-                        # self.sprite_weapon.batch = batch
-                                
-                        #print(obj.direction)
                     else:
                         obj.direction = self.rot
                         obj.prevx = obj.prevx + round((abs(obj.techniquex - obj.prevx)/(obj.techniquex - obj.prevx+0.01)))/8
                         obj.prevy = obj.prevy + round((abs(obj.techniquey - obj.prevy)/(obj.techniquey - obj.prevy+0.01)))/8
-
-
-
                     if frame > self.duration:
                         obj.current_holding = False
                         if self.associated_object == player:
@@ -142,12 +126,14 @@ class Animation:
 
 
                     tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 4)]
-                    # Get texture and set filtering
-                    texture = tile.get_texture()
-                    texture.min_filter = pyglet.gl.GL_NEAREST
-                    texture.mag_filter = pyglet.gl.GL_NEAREST
-                    # Assign directly — no blitting, no texture creation
-                    self.sprite.image = texture
+                    self.sprite.image.blit_into(tile, 0, 0, 0)
+
+                    # # Get texture and set filtering
+                    # texture = tile.get_texture()
+                    # texture.min_filter = pyglet.gl.GL_NEAREST
+                    # texture.mag_filter = pyglet.gl.GL_NEAREST
+                    # # Assign directly — no blitting, no texture creation
+                    # self.sprite.image = texture
 
 
                 elif self.animtype == 2: #point numbers
@@ -181,8 +167,8 @@ class Animation:
                                     #pass
                                     #update attacker sprite to reflect current level
                             self.target.health_visual = self.target.health_visual - self.damage
-                            self.target.strength_visual = self.target.strength_visual - self.strength_reduction
-                            self.target.defense_visual = self.target.defense_visual - self.defense_reduction
+                            self.target.strength_visual = max(self.target.strength_visual - self.strength_reduction, 1)
+                            self.target.defense_visual = max(self.target.defense_visual - self.defense_reduction, 1)
 
                             
 
@@ -191,7 +177,7 @@ class Animation:
                 
                 
                 if self.animtype == 3 or self.animtype == 4: #projectiles
-                    if self.animtype == 4:
+                    if self.animtype == 4 and self.associated_object.techniqueitem != None:
                         self.associated_object.current_holding = self.associated_object.inventory[self.associated_object.techniqueitem]
                     
                     if frame > self.duration:

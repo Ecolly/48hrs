@@ -45,9 +45,9 @@ def create_sprite_enemy(image_grid, index):
 def generate_enemy(name, level, x, y, grid):
 
     enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION"]
-    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 10]
-    enemy_strength = [0, 7, 3, 9, 9, 13, 9, 15, 11, 18, 10]
-    enemy_defense = [0, 2, 1, 1, 9, 1, 9, 5, 11, 3, 3]
+    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 8]
+    enemy_strength = [0, 7, 3, 9, 9, 14, 9, 15, 11, 18, 6]
+    enemy_defense = [0, 2, 1, 1, 9, 1, 1, 5, 11, 3, 2]
     enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64, 9*64, 12*64]
     enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1]
     enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8]
@@ -117,6 +117,7 @@ class Enemy:
         self.techniqueframe = 0
         self.techniquefinished = 0
         self.techniquecharges = 0
+        self.techniqueitem = None
         self.equipment_weapon = None
         self.equipment_shield = None
         self.should_be_deleted = False
@@ -222,7 +223,16 @@ class Enemy:
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 return Technique.HIT, player.x, player.y
             elif abs(player.x-self.x) < 8 and abs(player.y-self.y) < 8 and random.randint(0, 4) == 1:
-                self.active_projectiles.append(Projectile("Dragon Fire", 10*self.level, self.x, self.y, player.x, player.y, self))
+                if self.level == 2:
+                    self.active_projectiles.append(Projectile("Dragon Fire 2", 10*self.level, self.x, self.y, player.x, player.y, self))
+                elif self.level == 3:
+                    self.active_projectiles.append(Projectile("Dragon Fire 3", 10*self.level, self.x, self.y, player.x, player.y, self))
+                elif self.level == 4:
+                    self.active_projectiles.append(Projectile("Dragon Fire 4", 10*self.level, self.x, self.y, player.x, player.y, self))
+                else:
+                    self.active_projectiles.append(Projectile("Dragon Fire", 10*self.level, self.x, self.y, player.x, player.y, self))
+
+                
                 return Technique.THROW, player.x, player.y
             else:
                 new_x = self.x + self.sign(player.x - self.x)
@@ -233,12 +243,13 @@ class Enemy:
         elif self.name == "S'MORE":
             print(self.x, self.y)
             
-            if self.can_see_player(player,8):
-                return self.movement_to_entity(player, game_map)
+
             #tries to hunt other player + entities down as soon as they spawn on the map
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 print("The smore is hitting player")
                 return Technique.HIT, xtochk, ytochk
+            elif self.can_see_player(player,8):
+                return self.movement_to_entity(player, game_map)
             for enemy in game_map.all_enemies:
                 if enemy is not self and enemy.should_be_deleted == False:
                     if abs(enemy.x-self.x) < 2 and abs(enemy.y-self.y) < 2:

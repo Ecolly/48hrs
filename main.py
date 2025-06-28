@@ -15,6 +15,8 @@ import cProfile
 import tracemalloc
 import gc
 import sys 
+import psutil
+import os
 import objgraph
 from game_classes.hotbar import Hotbar
 #from memory_profiler import profile
@@ -22,6 +24,9 @@ from font import *
 import turn_logic
 import delete_object
 #import xdot
+
+process = psutil.Process(os.getpid())
+mem_info = process.memory_info()
 
 from config import WINDOW_HEIGHT, WINDOW_WIDTH, INVENTORY_SLOT_SIZE, INVENTORY_SPACING
 
@@ -438,7 +443,7 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
 
 
 
-floor_level = 0
+floor_level = 7
 
 bg = pyglet.sprite.Sprite(grid_bg[0])
 bg.scale = 3
@@ -474,41 +479,46 @@ bg_deeper.batch = batch
 
 def go_to_next_level():
     global floor, all_enemies, player, bg, bg_liqs, bg_deeper, floor_level
+
+
+    itemlist_beginner = ["Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield"]     
+    itemlist_beginner2 = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    itemlist_equal = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+
     floor_level +=1
     if floor_level < 3: ##normal grass
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Water", ["HAMSTER", "LEAFALOTTA", "HAMSTER"], [1, 2, 2], ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]                     #river zone
-        
-        #sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Water", ["LEAFALOTTA", "HAMSTER", "GOOSE"], [1, 1, 1], ["Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield"]     
+        #sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Water", ["HAMSTER", "LEAFALOTTA", "HAMSTER"], [1, 2, 2], ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]                     #river zone
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "HAMSTER", "GOOSE"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #river zone
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["LEAFALOTTA", "CHLOROSPORE", "FOX"], [1, 2, 2], ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]                     #river zone
-    elif floor_level < 7:
-        sc, tileset, walltype = "Simple", (27, 27), "Solid"                                        #seafoam grass (replace? too much grass?)
-    elif floor_level < 9:
-        sc, tileset, walltype = "Complex", (4,25,3,3,3,6,6,1), "Water"                              #lake zone
-    elif floor_level < 11:
-        sc, tileset, walltype = "Complex", (19,31,1,1,10,1,1,1), "Solid"                          #brown basalt
-    elif floor_level < 13:
-        sc, tileset, walltype = "Complex", (17,31,1,1,0,0,6,9), "Solid"                          #coal vein
-    elif floor_level < 15:
-        sc, tileset, walltype = "Complex", (8,29,1,1,0,0,6,9), "Petroleum"                         #petroleum zone
-    elif floor_level < 17:
-        sc, tileset, walltype = "Complex", (8,22,1,1,9,9,6,9), "Aquifer"                        #aquifer
-    elif floor_level < 19:
-        sc, tileset, walltype = "Complex", (6,30,1,6,6,6,6,0), "Mud"                            #mud zone
-    elif floor_level < 21:
-        sc, tileset, walltype = "Complex", (18,30,1,1,0,0,6,9), "Solid"                          #teal & gold
-    elif floor_level < 23:
-        sc, tileset, walltype = "Complex", (20,30,2,9,10,11,0,3), "Solid"                         #purple & gold
-    elif floor_level < 25:
-        sc, tileset, walltype = "Complex", (7,23,1,6,6,6,6,0), "Pit"                             #grey pits
-    elif floor_level < 27:
-        sc, tileset, walltype = "Complex", (7,23,1,6,6,6,6,0), "Glowing"                             #grey pits
-    elif floor_level < 29:
-        sc, tileset, walltype = "Complex", (8,23,2,2,2,2,2,2), "Lava"                            #wavy lava
-    elif floor_level < 31:
-        sc, tileset, walltype = "Complex", (7, 22, 5,5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Pit"           #multicolored porcelain pits
-    else:
-        sc, tileset, walltype = "Complex", (15, 22, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid"        #multicolored porcelain
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["LEAFALOTTA", "CHLOROSPORE", "FOX"], [1, 2, 2], itemlist_beginner2                      #river zone
+    elif floor_level < 7: #seafoam grass
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (27, 27), "Solid", ["S'MORE", "CHLOROSPORE", "SCORPION"], [1, 2, 1], itemlist_equal                      #river zone                                        #seafoam grass (replace? too much grass?)
+    elif floor_level < 9: #lake zone
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (4,25,3,3,3,6,6,1), "Water", ["S'MORE", "CHROME DOME", "SCORPION"], [2, 2, 2], itemlist_equal                                #lake zone
+    elif floor_level < 11: #brown basalt
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (19,31,1,1,10,1,1,1), "Solid", ["DRAGON", "S'MORE", "TETRAHEDRON"], [2, 3, 2], itemlist_equal                           #brown basalt
+    elif floor_level < 13: #coal vein
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (17,31,1,1,0,0,6,9), "Solid"                          #coal vein
+    elif floor_level < 15: #petroleum zonessssssssssss
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (8,29,1,1,0,0,6,9), "Petroleum"                         #petroleum zone
+    elif floor_level < 17: #aquifer
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (8,22,1,1,9,9,6,9), "Aquifer"                        #aquifer
+    elif floor_level < 19: #mud zone
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,30,1,6,6,6,6,0), "Mud"                            #mud zone
+    elif floor_level < 21: #teal & gold
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (18,30,1,1,0,0,6,9), "Solid"                          #teal & gold
+    elif floor_level < 23: #purple & gold
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (20,30,2,9,10,11,0,3), "Solid"                         #purple & gold
+    elif floor_level < 25: #grey pits
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (7,23,1,6,6,6,6,0), "Pit"                             #grey pits
+    elif floor_level < 27: #grey pits, glowing
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (7,23,1,6,6,6,6,0), "Glowing"                             #grey pits
+    elif floor_level < 29: #lava
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (8,23,2,2,2,2,2,2), "Lava"                            #wavy lava
+    elif floor_level < 31: #multicolored porcelain pits
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (7, 22, 5,5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Pit"           #multicolored porcelain pits
+    else: #multicolored porcelain wall
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (15, 22, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid"        #multicolored porcelain
     
 
     player.strength = player.maxstrength
@@ -683,56 +693,56 @@ create_gui(all_buttons, player)
 create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
-player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 
-player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 
-player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 
-player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 
-player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 
-player.add_to_inventory(floor.create_item("Blue Staff", grid_items))
-# player.add_to_inventory(floor.create_item("Stick", grid_items))
-# player.add_to_inventory(floor.create_item("Light Blue Staff", grid_items))
-player.add_to_inventory(floor.create_item("Armor Plate", grid_items))
-#player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
-player.add_to_inventory(floor.create_item("Wood Shield", grid_items))
-player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
-player.add_to_inventory(floor.create_item("Knife", grid_items))
-# player.add_to_inventory(floor.create_item("Machete", grid_items))
-# player.add_to_inventory(floor.create_item("Scimitar", grid_items))
-# player.add_to_inventory(floor.create_item("Sickle", grid_items))
-# player.add_to_inventory(floor.create_item("Rapier", grid_items))
-# player.add_to_inventory(floor.create_item("Fury Cutter", grid_items))
-player.add_to_inventory(floor.create_item("Windsword", grid_items))
+# player.add_to_inventory(floor.create_item("Blue Staff", grid_items))
+# # player.add_to_inventory(floor.create_item("Stick", grid_items))
+# # player.add_to_inventory(floor.create_item("Light Blue Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Armor Plate", grid_items))
+# #player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
+# player.add_to_inventory(floor.create_item("Wood Shield", grid_items))
+# player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
+# player.add_to_inventory(floor.create_item("Knife", grid_items))
+# # player.add_to_inventory(floor.create_item("Machete", grid_items))
+# # player.add_to_inventory(floor.create_item("Scimitar", grid_items))
+# # player.add_to_inventory(floor.create_item("Sickle", grid_items))
+# # player.add_to_inventory(floor.create_item("Rapier", grid_items))
+# # player.add_to_inventory(floor.create_item("Fury Cutter", grid_items))
+# player.add_to_inventory(floor.create_item("Windsword", grid_items))
 
-player.add_to_inventory(floor.create_item("Red Staff", grid_items))
-player.add_to_inventory(floor.create_item("Orange Staff", grid_items))
-player.add_to_inventory(floor.create_item("Gold Staff", grid_items))
-player.add_to_inventory(floor.create_item("Green Staff", grid_items))
-player.add_to_inventory(floor.create_item("Teal Staff", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Red Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Orange Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Gold Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Green Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Teal Staff", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+# # player.add_to_inventory(floor.create_item("Rock", grid_items))
 
-player.add_to_inventory(floor.create_item("Starfruit", grid_items))
+# player.add_to_inventory(floor.create_item("Starfruit", grid_items))
 
 # player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 
@@ -1003,7 +1013,8 @@ def on_draw():
             pass
             gui_string = get_gui_string(player)
             if gui_string != button.extra_1:
-                sprite = button.sprites[1]
+                sprite = button.sprites[1] 
+                #pyglet.gl.glDeleteTextures(1, pyglet.gl.GLuint(sprite.image.id))
                 sprite.image = combine_tiles(text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string)+1, "left"), 8, 8, len(gui_string)+1)
                 button.extra_1 = gui_string
             # if has_won == 1:
@@ -1058,35 +1069,10 @@ def on_draw():
         gc.collect(generation=2)
         sys._clear_internal_caches()
         print("allocated blocks: " + str(sys.getallocatedblocks()))
-        objgraph.show_growth()
-        # textures = objgraph.by_type('Texture')
-        # for tex in textures[-5:]:
-        #     print(tex)
-        #objgraph.show_backrefs([textures[-1]], max_depth=5)
-    
-    # pyglet.gl.glBindFramebuffer(pyglet.gl.GL_FRAMEBUFFER, 0)  # Unbind FBO
-    # pyglet.gl.glViewport(0, 0, win_true_x, win_true_y)
-    # window.clear()
-    # render_texture.blit(0, 0, width=win_true_x, height=win_true_y)
-    
+        print(f"RSS (Resident Set Size): {mem_info.rss / (1024 * 1024):.2f} MB")
+        print(f"VMS (Virtual Memory Size): {mem_info.vms / (1024 * 1024):.2f} MB")
+        #objgraph.show_growth()
 
-    # Draw something simple
-    # render_texture.bind()
-    # pyglet.gl.glViewport(0, 0, win_x, win_y)
-    # pyglet.gl.glClearColor(1, 0, 0, 1)  # RED for testing
-    # pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT)
-
-    # # Unbind
-
-    # pyglet.gl.glBindFramebuffer(pyglet.gl.GL_FRAMEBUFFER, 0)  # Unbind FBO
-    # pyglet.gl.glViewport(0, 0, win_true_x, win_true_y)
-    # window.clear()
-    # render_texture.blit(0, 0, width=win_true_x, height=win_true_y)
-
-
-    # window.clear()
-    # glViewport(0, 0, win_true_x, win_true_y)
-    # framebuffer.get_texture().blit(0, 0, width=win_true_x, height=win_true_y)
     
 pyglet.app.run()
 

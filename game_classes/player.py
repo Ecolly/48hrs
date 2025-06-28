@@ -306,7 +306,7 @@ class Player:
         [5, 4, 12, 4], [4, 4, 13, 4], [4, 4, 14, 4], [8, 4, 11, 4], [8, 4, 10, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
         
-        coords_on_player = coordlist[frame_index - self.spriteindex]
+        coords_on_player = coordlist[frame_index]
 
         if type == "weapon":
             item_coords = [5, 5, 12, 5]
