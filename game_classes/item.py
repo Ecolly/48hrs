@@ -96,7 +96,24 @@ class Item:
     #     sprite.group = group
     #     sprite.batch = batch
 
+    #Dont look at this oml
 
+    def wrap_text(text, max_chars_per_line):
+        words = text.split(' ')
+        lines = []
+        current_line = ""
+        for word in words:
+            if len(current_line) + len(word) + (1 if current_line else 0) <= max_chars_per_line:
+                if current_line:
+                    current_line += " "
+                current_line += word
+            else:
+                lines.append(current_line)
+                current_line = word
+        if current_line:
+            lines.append(current_line)
+        return lines
+    
     def draw_description(self, batch, group, invslot, gamestate):
         spacing = 9
         if self.description and gamestate == 3: #if in the inventory menu
@@ -104,10 +121,19 @@ class Item:
             # Draw the description text at the specified position
             base_x = (invslot % 10)*(48+spacing) + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
             base_y = -(invslot // 10)*(48+spacing)+ spacing + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
-            
-            
-            return draw_tiny_texts(self.description, base_x, base_y, batch, group)
-        return None
+            description = draw_tiny_texts(self.description, base_x, base_y, batch, group)
+            if isinstance(self, Weapon):
+                additional_info = f"Damage: {self.damage} Bonus: {self.bonus}"
+            elif isinstance(self, Shield):
+                additional_info = f"Defense: {self.defense} Bonus: {self.bonus}"
+            elif isinstance(self, Consumable):
+                additional_info = f"Nutrition: {self.nutrition_value}"
+            elif isinstance(self, Staff):
+                additional_info = f"Damage: {self.damage} Charges: {self.charges}/{self.maxcharges}"
+            if additional_info:
+                additional_info_drawn = draw_tiny_texts(additional_info, base_x, base_y - -20, batch, group)
+            return description, additional_info_drawn
+        return None, None
 
     def test_hovering(self, mouse_x, mouse_y, invslot, gamestate):
         spacing = 9
