@@ -297,7 +297,10 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         #print(entity.x, entity.y, entity.techniquex, entity.techniquey)
 
         rot = adjust_rotation(entity, clamp(-entity.x+entity.techniquex, -1, 1), clamp(-entity.y+entity.techniquey, -1, 1))
-        anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
+        if isinstance(entity.techniqueitem, Staff) == True:
+            anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None, item=entity.techniqueitem.spriteindex)
+        else:
+            anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
         list_of_animations.append(anim2)
         #chronology += 16
 
@@ -415,18 +418,20 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
     elif entity.technique == Technique.CAST: #this is for static castings (not projectiles)
 
 
+        item = entity.inventory[entity.techniqueitem]
 
-        anim2 = animations.Animation(None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 24), entity.x, entity.y, entity.techniquex, entity.techniquey, entity.direction, entity, Technique.CAST, None, None, None)
+        anim2 = animations.Animation(None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 24), entity.x, entity.y, entity.techniquex, entity.techniquey, entity.direction, entity, Technique.CAST, None, None, None, item=item.spriteindex)
         list_of_animations.append(anim2)
         chronology += 24
     
-        item = entity.inventory[entity.techniqueitem]
-        if item.name == "Orange Staff":
+        
+        if item.name == "Red Tome":
             inflict_damage(entity, player, player, chronology, list_of_animations, item, 15, "magic")
             for enemy in floor.all_enemies:
                 inflict_damage(entity, enemy, player, chronology, list_of_animations, item, 15, "magic")
-        elif item.name == "Light Blue Staff": #level up all enemies
-            pass
+            deduct_charges(entity, 1)
+        # elif item.name == "Light Blue Staff": #level up all enemies
+        #     pass
 
 
         #confuse all enemies

@@ -255,22 +255,25 @@ def on_mouse_release(x, y, button, modifiers):
                         player.techniqueitem = button.extra_1
                         delete_buttons_supertype(all_buttons, 'inventory')
                         pass
+                    elif button.type == "READ":
+                        player.techniqueitem = button.extra_1
+                        gamestate = 2
+                        player.cast_static()
+                        #has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
+                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+ 
+                        if has_won == 0:
+                            #partition_entity = construct_partitions()
+                            pass
+                        else:
+                            gamestate = 0
+                            create_win_lose_screen(all_buttons, "win")
+                        delete_buttons_supertype(all_buttons, 'inventory')
                     elif button.type == "CAST":
                         player.techniqueitem = button.extra_1
-                        if player.inventory[button.extra_1].is_castable_projectile == True:
-                            gamestate = 5
-                        else:
-                            gamestate = 2
-                            player.cast_static()
-                            #has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
-                            all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                        gamestate = 5
 
-                            if has_won == 0:
-                                #partition_entity = construct_partitions()
-                                pass
-                            else:
-                                gamestate = 0
-                                create_win_lose_screen(all_buttons, "win")
+
 
                 
                             
@@ -391,6 +394,11 @@ def on_mouse_release(x, y, button, modifiers):
 
                         if item_to_eval.is_castable == True:
                             rclick_options.append("CAST")
+                            rclick_extra_1.append(inventory_slot)
+                            rclick_extra_2.append(0)
+
+                        if item_to_eval.is_readable == True:
+                            rclick_options.append("READ")
                             rclick_extra_1.append(inventory_slot)
                             rclick_extra_2.append(0)
 
@@ -693,7 +701,7 @@ create_gui(all_buttons, player)
 create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
-# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+player.add_to_inventory(floor.create_item("Red Tome", grid_items))
 
 # player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 

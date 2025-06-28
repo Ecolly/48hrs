@@ -1,5 +1,5 @@
 import random
-from game_classes.item import Item, Weapon, Consumable, Shield, Staff, Miscellanious
+from game_classes.item import Item, Weapon, Consumable, Shield, Staff, Miscellanious, Tome
 from game_classes.enemy import*
 
 
@@ -164,7 +164,7 @@ class Map:
         elif name == "Red Staff":
             return Staff(name, grid_items, sprite_locs = 1, damage=10, projectile=True, description="Divides the target's HP by 2.") #divides enemy's hp by 2
         elif name == "Orange Staff":
-            return Staff(name, grid_items, sprite_locs = 2, damage=10, projectile=False, description="Deducts 15 from HP of all enemies on the floor.") #deducts 15 from all enemy hp on floor
+            return Staff(name, grid_items, sprite_locs = 2, damage=10, projectile=False, description="???")
         elif name == "Gold Staff":
             return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=True, description="Damage depends on mana used.") #deals set damage according to # of charges used
         elif name == "Green Staff":
@@ -179,6 +179,8 @@ class Map:
             return Staff(name, grid_items, sprite_locs = 22, damage=10, projectile=True, description="Target pierces a number of enemies equal to mana used.") #pierces enemies
         elif name == "Black Staff":
             return Staff(name, grid_items, sprite_locs = 25, damage=10, projectile=False, description="That's strange. This one doesn't seem to do anything.") 
+        elif name == "Red Tome":
+            return Tome(name, grid_items, sprite_locs = 1, damage=10, projectile=False, description="Deduct 15 HP from all creatures on the floor.")
         elif name == "Blue Shield":
             return Shield(name, grid_items, sprite_locs=1, defense=4, description="A sturdy, shield painted with the emblem of a government.")
         elif name == "Mirror Shield":

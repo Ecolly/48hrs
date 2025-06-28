@@ -431,7 +431,7 @@ class Player:
 
 
         if self.current_holding != False:
-            tile2 = self.itemgrid[self.current_holding.spriteindex]
+            tile2 = self.itemgrid[self.current_holding] #current_holding just holds the spriteindex
             self.sprite_weapon.image = tile2.get_texture()
             self.sprite_weapon.color = (255, 255, 255, 255)
             self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")

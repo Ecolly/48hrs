@@ -92,6 +92,8 @@ class Animation:
             if self.associated_object != None and self.technique != Technique.THROW:
                 obj = self.associated_object
                 if self.animtype == 1: #hit anims
+                    if self.item != None:
+                        obj.current_holding = self.item
                     obj.direction = self.rot
                     quartic_eq = (-0.19*(0.25*frame)**4 + (0.25*frame)**3 - (0.25*frame)**2)/2.5
                     if obj == player:
@@ -100,10 +102,12 @@ class Animation:
                     else:
                         obj.prevx = obj.x + round((abs(obj.techniquex - obj.x)/(obj.techniquex - obj.x + 0.01)))*quartic_eq
                         obj.prevy = obj.y + round((abs(obj.techniquey - obj.y)/(obj.techniquey - obj.y + 0.01)))*quartic_eq
+                    if frame > self.duration:
+                        obj.current_holding = False
                 else:
                     if self.technique == Technique.CAST:
                         obj.direction = FaceDirection((obj.direction.value + 1) % 8)
-                        obj.current_holding = obj.inventory[obj.techniqueitem]
+                        obj.current_holding = self.item#obj.inventory[obj.techniqueitem]
                     else:
                         obj.direction = self.rot
                         obj.prevx = obj.prevx + round((abs(obj.techniquex - obj.prevx)/(obj.techniquex - obj.prevx+0.01)))/8
@@ -176,12 +180,12 @@ class Animation:
                         self.color = (self.color[0], self.color[1], self.color[2], random.choice([0, 255]))
                 
                 
-                if self.animtype == 3 or self.animtype == 4: #projectiles
-                    if self.animtype == 4 and self.associated_object.techniqueitem != None:
-                        self.associated_object.current_holding = self.associated_object.inventory[self.associated_object.techniqueitem]
+                if self.animtype == 3 or self.animtype == 4: #thrown, casted projectiles
+                    #if self.animtype == 4 and isinstance(self.item, int) == True:
+                        #self.associated_object.current_holding = self.item#self.associated_object.inventory[self.associated_object.techniqueitem]
                     
                     if frame > self.duration:
-                        self.associated_object.current_holding = False
+                        #self.associated_object.current_holding = False
                         if self.target != None: #for spells
                             if self.item.name == "Teal Staff" or self.item.name == "Spores 3":
                                 self.target.speed_visual = self.target.speed
