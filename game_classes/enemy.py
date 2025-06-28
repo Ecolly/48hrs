@@ -44,15 +44,15 @@ def create_sprite_enemy(image_grid, index):
 
 def generate_enemy(name, level, x, y, grid):
 
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION"]
-    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 8]
-    enemy_strength = [0, 7, 3, 9, 9, 14, 9, 15, 11, 18, 6]
-    enemy_defense = [0, 2, 1, 1, 9, 1, 1, 5, 11, 3, 2]
-    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64, 9*64, 12*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1]
-    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8]
-    enemy_exp = [0, 4, 15, 5, 10, 30, 1, 100, 60, 60, 30]
-    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE"]
+    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 13, 6]
+    enemy_strength = [0, 7, 5, 9, 9, 14, 9, 15, 15, 18, 12, 1]
+    enemy_defense = [0, 2, 2, 1, 3, 1, 1, 5, 15, 3, 6, 30]
+    enemy_sprites = [20*64, 18*64, 17*64, 16*64, 15*64, 14*64, 6*64, 8*64, 3*64, 9*64, 12*64, 7*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1]
+    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16]
+    enemy_exp = [0, 4, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2]
+    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -163,7 +163,7 @@ class Enemy:
         xtochk = player.x
         ytochk = player.y
 
-        if self.name == "FOX":
+        if self.name == "HAMSTER" or self.name == "TURTLE":
 
             #always run away when sees the player, in sscared mode 
             if self.can_see_player(player=player, vision_range=5):
@@ -184,7 +184,7 @@ class Enemy:
                 # If not moving or can't move, stay still
                 return Technique.STILL, self.x, self.y
                     
-        elif self.name == "GOOSE" or self.name == "CHROME DOME" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
+        elif self.name == "FOX" or self.name == "GOOSE" or self.name == "CHROME DOME" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 return Technique.HIT, xtochk, ytochk
             else:

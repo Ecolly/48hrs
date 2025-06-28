@@ -443,7 +443,7 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
 
 
 
-floor_level = 7
+floor_level = 0
 
 bg = pyglet.sprite.Sprite(grid_bg[0])
 bg.scale = 3
@@ -490,21 +490,21 @@ def go_to_next_level():
         #sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Water", ["HAMSTER", "LEAFALOTTA", "HAMSTER"], [1, 2, 2], ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]                     #river zone
         sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "HAMSTER", "GOOSE"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #river zone
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["LEAFALOTTA", "CHLOROSPORE", "FOX"], [1, 2, 2], itemlist_beginner2                      #river zone
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                      #river zone
     elif floor_level < 7: #seafoam grass
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (27, 27), "Solid", ["S'MORE", "CHLOROSPORE", "SCORPION"], [1, 2, 1], itemlist_equal                      #river zone                                        #seafoam grass (replace? too much grass?)
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (27, 27), "Solid", ["LEAFALOTTA", "FOX", "TURTLE"], [2, 2, 1], itemlist_equal                      #river zone                                        #seafoam grass (replace? too much grass?)
     elif floor_level < 9: #lake zone
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (4,25,3,3,3,6,6,1), "Water", ["S'MORE", "CHROME DOME", "SCORPION"], [2, 2, 2], itemlist_equal                                #lake zone
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (4,25,3,3,3,6,6,1), "Water", ["CHLOROSPORE", "TURTLE", "FOX"], [2, 1, 2], itemlist_equal                                #lake zone
     elif floor_level < 11: #brown basalt
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (19,31,1,1,10,1,1,1), "Solid", ["DRAGON", "S'MORE", "TETRAHEDRON"], [2, 3, 2], itemlist_equal                           #brown basalt
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (19,31,1,1,10,1,1,1), "Solid", ["S'MORE", "SCORPION"], [2, 1], itemlist_equal                           #brown basalt
     elif floor_level < 13: #coal vein
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (17,31,1,1,0,0,6,9), "Solid"                          #coal vein
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (17,31,1,1,0,0,6,9), "Solid", ["SCORPION", "CHROME DOME"], [2, 1], itemlist_equal                          #coal vein
     elif floor_level < 15: #petroleum zonessssssssssss
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (8,29,1,1,0,0,6,9), "Petroleum"                         #petroleum zone
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (8,29,1,1,0,0,6,9), "Petroleum", ["DRAGON", "CHROME DOME"], [1, 2], itemlist_equal                         #petroleum zone
     elif floor_level < 17: #aquifer
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (8,22,1,1,9,9,6,9), "Aquifer"                        #aquifer
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (8,22,1,1,9,9,6,9), "Aquifer", ["CHLOROSPORE", "TURTLE", "SCORPION"], [3, 3, 2], itemlist_equal                        #aquifer
     elif floor_level < 19: #mud zone
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,30,1,6,6,6,6,0), "Mud"                            #mud zone
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,30,1,6,6,6,6,0), "Mud", ["CHLOROSPORE", "CHROME DOME"], [3, 2], itemlist_equal                            #mud zone
     elif floor_level < 21: #teal & gold
         sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (18,30,1,1,0,0,6,9), "Solid"                          #teal & gold
     elif floor_level < 23: #purple & gold
@@ -928,7 +928,7 @@ def on_draw():
     bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
 
     #bg_pits.color = color_templates[255]
-    bg_deeper.color = color_templates[0]
+    bg_deeper.color = color_templates[255]
     liqcolor = 0
     if floor.wall_type == "Water" or floor.wall_type == "Flowing Water" or floor.wall_type == "Aquifer":
         bg_deeper.color = color_templates[200]
@@ -937,6 +937,10 @@ def on_draw():
         liqcolor = 255 - int(30*(math.sin(bg_animframe/15)+1))#(255, 255, 255, 255 - int(30*(math.sin(bg_animframe/15)+1)))
     elif floor.wall_type == "Glowing":
         bg_deeper.color = color_templates[255 - int(30*(math.sin(bg_animframe/15)+1))]#(255, 128, 0, 0 + int(30*(math.sin(bg_animframe/15)+1)))
+    elif floor.wall_type == "Pits":
+        bg_deeper.color = color_templates[0]
+
+
     i = 0
     while i < 16:
         if int(bg_animframe/2) % 16 == i:

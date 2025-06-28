@@ -160,7 +160,7 @@ def do_spell(entity, enemy_hit, player, spellname, charges, chronology, list_of_
         if enemy_hit != None:
             enemy_hit.paralysis_turns = 3
     elif spellname == "Dragon Fire":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 5, "magic")
+        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 10, "magic")
     elif spellname == "Dragon Fire 2":
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 20, "magic")
     elif spellname == "Dragon Fire 3":
