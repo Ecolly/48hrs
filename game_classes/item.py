@@ -58,6 +58,7 @@ class Item:
         self.num_of_pierces = 0
         self.description = description
         self.is_hovered = False
+        self.reverse = ""
         
 
 
@@ -222,7 +223,7 @@ class Weapon(Item):
         self.bonus = 0
         
 class Staff(Item):
-    def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=7, description=""):
+    def __init__(self, name, grid_items, reverse, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=7, description=""):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*10+sprite_locs
         self.magic_color = sprite_locs
@@ -234,10 +235,11 @@ class Staff(Item):
         self.damage_type = "slashing"  # Default damage type
         self.is_castable = True
         self.is_castable_projectile = projectile
+        self.reverse = reverse
         #self.is_equipable = is_equipable
 
 class Tome(Item):
-    def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30, description=""):
+    def __init__(self, name, grid_items, reverse, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30, description=""):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*5+sprite_locs
         self.magic_color = sprite_locs
@@ -251,6 +253,7 @@ class Tome(Item):
         self.is_castable_projectile = False
         self.is_readable = True
         self.to_be_converted = None
+        self.reverse = reverse
 
 class Consumable(Item):
     def __init__(self, name, grid_items, sprite_locs, nutrition_value, x=0, y=0, quantity=1, description=""):

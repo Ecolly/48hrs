@@ -471,13 +471,13 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         list_of_animations.append(anim2)
         chronology += 24
     
-        if item.name == "Blank Tome":
-            i = 39 
-            while i > -1:
-                if isinstance(player.inventory[i], Tome) == True:
-                    item.name = player.inventory[i].name
-                    break
-                i = i - 1
+        # if item.name == "Blank Tome":
+        #     i = 39 
+        #     while i > -1:
+        #         if isinstance(player.inventory[i], Tome) == True:
+        #             item.name = player.inventory[i].name
+        #             break
+        #         i = i - 1
 
         if item.name == "Tome of Recovery":
             inflict_healing(15, player, player, list_of_animations, chronology)
@@ -534,6 +534,30 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                     break
                 i = i - 1
             deduct_charges(entity, 1)
+        elif item.name == "Tome of Reversal":
+            i = 39 
+            while i > -1:
+                if isinstance(player.inventory[i], Staff) == True or isinstance(player.inventory[i], Tome) == True:
+                    objlist = player.inventory
+                    charges, maxcharges = objlist[i].charges, objlist[i].maxcharges
+                    objlist[i].sprite.delete() 
+                    objlist[i].hotbar_sprite.delete() 
+                    objlist[i] = floor.create_item(objlist[i].reverse, objlist[i].grid)
+                    objlist[i].charges, objlist[i].maxcharges = charges, maxcharges
+                    break
+                i = i - 1
+            deduct_charges(entity, 1)
+        elif item.name == "Blank Tome":
+            i = 39 
+            while i > -1:
+                if isinstance(player.inventory[i], Tome) == True and player.inventory[i].name != "Blank Tome":
+                    objlist = player.inventory
+                    objlist[player.techniqueitem].sprite.delete() 
+                    objlist[player.techniqueitem].hotbar_sprite.delete() 
+                    objlist[player.techniqueitem] = floor.create_item(objlist[i].name, objlist[i].grid)
+                    break
+                i = i - 1
+            #deduct_charges(entity, 1)
         elif item.name == "Tome of Consolidation":
             weapons_1_2 = []
             shields_1_2 = []
@@ -572,17 +596,17 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         if isinstance(player.inventory[items_1_2[0]], Staff):
                             index = fakenames_staffs_key.index(color)
                             name = fakenames_staffs_realnames[index]
-
                         else:
                             index = fakenames_tomes_key.index(color)
                             name = fakenames_tomes_realnames[index]
 
 
                         objlist = player.inventory
+                        charges, maxcharges = objlist[items_1_2[0]].charges, objlist[items_1_2[0]].maxcharges
                         objlist[items_1_2[0]].sprite.delete() 
                         objlist[items_1_2[0]].hotbar_sprite.delete() 
                         objlist[items_1_2[0]] = floor.create_item(name, objlist[items_1_2[0]].grid)
-
+                        objlist[items_1_2[0]].charges, objlist[items_1_2[0]].maxcharges = charges, maxcharges
 
                         break
                 i = i - 1

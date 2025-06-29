@@ -173,58 +173,58 @@ class Map:
         
         
         elif name == "Greater Healing Staff":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[0], damage=10, projectile=True, description="Multiplies the target's HP by 2.") #multiplies enemy's hp by 2
+            return Staff(name, grid_items, reverse="Staff of Division",sprite_locs = fakenames_staffs_key[0], damage=10, projectile=True, description="Multiplies the target's HP by 2.") #multiplies enemy's hp by 2
         elif name == "Staff of Division":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[1], damage=10, projectile=True, description="Divides the target's HP by 2.") #divides enemy's hp by 2
+            return Staff(name, grid_items, reverse="Greater Healing Staff",sprite_locs = fakenames_staffs_key[1], damage=10, projectile=True, description="Divides the target's HP by 2.") #divides enemy's hp by 2
         elif name == "Staff of Swapping":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[2], damage=10, projectile=True, description="Swap places with target.") #swap places
+            return Staff(name, grid_items, reverse="Staff of Warping", sprite_locs = fakenames_staffs_key[2], damage=10, projectile=True, description="Swap places with target.") #swap places
         elif name == "Lesser Healing Staff":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[3], damage=10, projectile=True, description="Healing depends on mana used.") #deals set healing according to mana used
+            return Staff(name, grid_items, reverse="Staff of Mana",sprite_locs = fakenames_staffs_key[3], damage=10, projectile=True, description="Healing depends on mana used.") #deals set healing according to mana used
         elif name == "Energizing Staff":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[4], damage=10, projectile=True, description="Target's speed is doubled. Duration depends on mana used.") #deals set healing according to mana used
+            return Staff(name, grid_items, reverse="Staff of Lethargy",sprite_locs = fakenames_staffs_key[4], damage=10, projectile=True, description="Target's speed is doubled. Duration depends on mana used.") #deals set healing according to mana used
         elif name == "Staff of Mana":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[5], damage=10, projectile=True, description="Damage depends on mana used.") #deals set damage according to # of charges used
+            return Staff(name, grid_items, reverse="Lesser Healing Staff", sprite_locs = fakenames_staffs_key[5], damage=10, projectile=True, description="Damage depends on mana used.") #deals set damage according to # of charges used
         elif name == "Staff of Ricochet":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[6], damage=10, projectile=True, description="Projectile bounces off walls.") #bounces
+            return Staff(name, grid_items, reverse="Piercing Staff", sprite_locs = fakenames_staffs_key[6], damage=10, projectile=True, description="Projectile bounces off walls.") #bounces
         elif name == "Staff of Lethargy":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[7], damage=10, projectile=True, description="Target's speed is reduced to 1/2. Duration depends on mana used.") #slows down enemy
+            return Staff(name, grid_items, reverse="Energizing Staff",sprite_locs = fakenames_staffs_key[7], damage=10, projectile=True, description="Target's speed is reduced to 1/2. Duration depends on mana used.") #slows down enemy
         elif name == "Staff of Paralysis":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[8], damage=10, projectile=True, description="Paralyzes target. Duration depends on mana used.") #paralyzes enemy
+            return Staff(name, grid_items, reverse="Energizing Staff" ,sprite_locs = fakenames_staffs_key[8], damage=10, projectile=True, description="Paralyzes target. Duration depends on mana used.") #paralyzes enemy
         elif name == "Staff of Warping":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[9], damage=10, projectile=True, description="Warps target to a random location on the floor.") #levels up all enemies on a floor, including you
+            return Staff(name, grid_items, reverse="Staff of Swapping",sprite_locs = fakenames_staffs_key[9], damage=10, projectile=True, description="Warps target to a random location on the floor.") #levels up all enemies on a floor, including you
         elif name == "Piercing Staff":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[10], damage=10, projectile=True, description="Target pierces a number of enemies equal to mana used.") #pierces enemies
+            return Staff(name, grid_items, reverse="Staff of Ricochet",sprite_locs = fakenames_staffs_key[10], damage=10, projectile=True, description="Target pierces a number of enemies equal to mana used.") #pierces enemies
         elif name == "Black Staff":
-            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[11], damage=10, projectile=True, description="That's strange. This one doesn't seem to do anything.") 
+            return Staff(name, grid_items, reverse="Staff of Division", sprite_locs = fakenames_staffs_key[11], damage=10, projectile=True, description="That's strange. This one doesn't seem to do anything.") 
         
         
         
         
         
         elif name == "Tome of Recovery":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[0], damage=10, projectile=False, description="Heal 15 HP from all creatures on the floor.")
+            return Tome(name, grid_items, reverse="Tome of Injury", sprite_locs = fakenames_tomes_key[0], damage=10, projectile=False, description="Heal 15 HP from all creatures on the floor.")
         elif name == "Tome of Injury":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[1], damage=10, projectile=False, description="Deduct 15 HP from all creatures on the floor.")
+            return Tome(name, grid_items, reverse="Tome of Recovery", sprite_locs = fakenames_tomes_key[1], damage=10, projectile=False, description="Deduct 15 HP from all creatures on the floor.")
         elif name == "Tome of Promotion":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[2], damage=10, projectile=False, description="Level up all creatures on the floor.")
+            return Tome(name, grid_items, reverse="Tome of Demotion", sprite_locs = fakenames_tomes_key[2], damage=10, projectile=False, description="Level up all creatures on the floor.")
         elif name == "Tome of Demotion":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[3], damage=10, projectile=False, description="Level down all creatures on the floor.")
+            return Tome(name, grid_items, reverse="Tome of Promotion", sprite_locs = fakenames_tomes_key[3], damage=10, projectile=False, description="Level down all creatures on the floor.")
         elif name == "Immunity Tome":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[4], damage=10, projectile=False, description="Temporarily boost defense of all creatures on the floor to 100.")
+            return Tome(name, grid_items, reverse="Paperskin Tome", sprite_locs = fakenames_tomes_key[4], damage=10, projectile=False, description="Temporarily boost defense of all creatures on the floor to 100.")
         elif name == "Paperskin Tome":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[5], damage=10, projectile=False, description="Makes all creatures on the floor die to a single physical attack.")
+            return Tome(name, grid_items, reverse="Immunity Tome", sprite_locs = fakenames_tomes_key[5], damage=10, projectile=False, description="Makes all creatures on the floor die to a single physical attack.")
         elif name == "Sharpening Tome":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[6], damage=10, projectile=False, description="Finds the last weapon in your inventory and boosts attack by 1.")
+            return Tome(name, grid_items, reverse="Fortifying Tome", sprite_locs = fakenames_tomes_key[6], damage=10, projectile=False, description="Finds the last weapon in your inventory and boosts attack by 1.")
         elif name == "Fortifying Tome":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[7], damage=10, projectile=False, description="Finds the last shield in your inventory and boosts defense by 1.")
+            return Tome(name, grid_items, reverse="Staffboost Tome", sprite_locs = fakenames_tomes_key[7], damage=10, projectile=False, description="Finds the last shield in your inventory and boosts defense by 1.")
         elif name == "Staffboost Tome":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[8], damage=10, projectile=False, description="Finds the last staff in your inventory and boosts max mana by 1.")
+            return Tome(name, grid_items, reverse="Sharpening Tome", sprite_locs = fakenames_tomes_key[8], damage=10, projectile=False, description="Finds the last staff in your inventory and boosts max mana by 1.")
         elif name == "Tome of Consolidation":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[9], damage=10, projectile=False, description="Finds the last two staffs, shields, or weapons in your inventory. First item gains the bonus of the second item, or +1 to max mana in the case of a staff. Second item is destroyed.")
-        elif name == "Tome of Dispersion":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[10], damage=10, projectile=False, description="Finds the last staff or tome in your inventory. If able, split the item into its constituent colors.")
+            return Tome(name, grid_items, reverse="Coloring Tome", sprite_locs = fakenames_tomes_key[9], damage=10, projectile=False, description="Finds the last two staffs, shields, or weapons in your inventory. Last item gains the bonus of the first item, or +1 to max mana in the case of a staff. First item is destroyed.")
+        elif name == "Tome of Reversal":
+            return Tome(name, grid_items, reverse="Blank Tome", sprite_locs = fakenames_tomes_key[10], damage=10, projectile=False, description="Finds the last staff or tome in your inventory. Item effect is reversed or altered.")
         elif name == "Coloring Tome":
-            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[11], damage=10, projectile=False, description="Finds the last two staffs or tomes in your inventory. First item gains the color of the second item.")
+            return Tome(name, grid_items, reverse="Tome of Consolidation",sprite_locs = fakenames_tomes_key[11], damage=10, projectile=False, description="Finds the last two staffs or tomes in your inventory. Last item gains the color of the first item.")
         
         
         
@@ -237,7 +237,7 @@ class Map:
         
         
         elif name == "Blank Tome":
-            return Tome(name, grid_items, sprite_locs = 28, damage=10, projectile=False, description="Copies the effect of the last tome in your inventory.")
+            return Tome(name, grid_items, reverse="Tome of Reversal", sprite_locs = 28, damage=10, projectile=False, description="Finds the last tome in your inventory and turns into a copy.")
         
         
         
