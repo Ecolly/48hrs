@@ -140,7 +140,7 @@ class Animation:
 
             elif self.animtype == 1: #hit anim
                 obj = self.associated_object
-                print(self.item)
+                #print(self.item)
                 if self.item != None:
                     obj.current_holding = self.item
 

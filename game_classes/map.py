@@ -38,12 +38,16 @@ class Map:
         self.valid_tiles = []
         self.textured_map = [[]]
         self.valid_entity_tiles = []
+
+        self.item_list = None #these are lists of what enemies/items can spawn in a level
+        self.enemy_list = None 
+        self.level_list = None
         #self.list_of_all_enemy_names = ["LEAFALOTTA", "HAMSTER", "GOOSE", "CHLOROSPORE", "FOX", "S'MORE"]
         
         
         #self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "SCORPION"], ["SCORPION", "S'MORE", "CHROME DOME"], ["DRAGON", "S'MORE", "TETRAHEDRON"]]
         #self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 1], [2, 2, 2], [2, 3, 2]]
-        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         
         
         self.floor_items = []  # List to hold items on the floor
@@ -194,8 +198,12 @@ class Map:
             return Staff(name, grid_items, reverse="Staff of Swapping",sprite_locs = fakenames_staffs_key[9], damage=10, projectile=True, description="Warps target to a random location on the floor.") #levels up all enemies on a floor, including you
         elif name == "Piercing Staff":
             return Staff(name, grid_items, reverse="Staff of Ricochet",sprite_locs = fakenames_staffs_key[10], damage=10, projectile=True, description="Target pierces a number of enemies equal to mana used.") #pierces enemies
-        elif name == "Black Staff":
-            return Staff(name, grid_items, reverse="Staff of Division", sprite_locs = fakenames_staffs_key[11], damage=10, projectile=True, description="That's strange. This one doesn't seem to do anything.") 
+        elif name == "Execution Staff":
+            return Staff(name, grid_items, reverse="Staff of Division", sprite_locs = fakenames_staffs_key[11], damage=10, projectile=True, description="Deals 3 damage. Enemies killed by the staff have experience yields multiplied by mana used.") 
+        elif name == "Phobia Staff":
+            return Staff(name, grid_items, reverse="Staff of Violence",sprite_locs = fakenames_staffs_key[12], damage=10, projectile=True, description="Target flees from you. Duration depends on mana used.") #pierces enemies
+        elif name == "Staff of Violence":
+            return Staff(name, grid_items, reverse="Phobia Staff", sprite_locs = fakenames_staffs_key[13], damage=10, projectile=True, description="Target attempts to fight you and their attack is temporarily increased by 1.5x. Duration depends on mana used.") 
         
         
         
@@ -225,6 +233,11 @@ class Map:
             return Tome(name, grid_items, reverse="Blank Tome", sprite_locs = fakenames_tomes_key[10], damage=10, projectile=False, description="Finds the last staff or tome in your inventory. Item effect is reversed or altered.")
         elif name == "Coloring Tome":
             return Tome(name, grid_items, reverse="Tome of Consolidation",sprite_locs = fakenames_tomes_key[11], damage=10, projectile=False, description="Finds the last two staffs or tomes in your inventory. Last item gains the color of the first item.")
+        elif name == "Summoning Tome":
+            return Tome(name, grid_items, reverse="Banishing Tome", sprite_locs = fakenames_tomes_key[12], damage=10, projectile=False, description="Summons enemies around your position.")
+        elif name == "Banishing Tome":
+            return Tome(name, grid_items, reverse="Summoning Tome",sprite_locs = fakenames_tomes_key[13], damage=10, projectile=False, description="All enemies directly adjacent to you are teleported to a random location on the floor.")
+        
         
         
         
@@ -311,9 +324,9 @@ class Map:
 
             self.valid_entity_tiles.remove(random_location)
             
-            test_enemy = generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level))
+
             self.all_enemies.append(generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level)))
-            print(f"the experience{test_enemy.experience}")
+
 
 
     def check_valid_tile(self):

@@ -117,7 +117,7 @@ class InteractiveObject:
                     sprite.color = self.colors[i][0]
             else:
                 if gamestate == 6:
-                    speed = 2
+                    speed = 6
                     func = ((self.animframe - 0.0001)/speed % self.extra_2) #self.extra_2*(math.asin(((self.animframe/(math.pi*3)) % 2) - 1) + math.pi/2)/math.pi
                     #t = func
                     if ((self.animframe - 0.0001)/speed % (self.extra_2*2)) > self.extra_2 and func != self.extra_2:

@@ -299,10 +299,18 @@ def on_mouse_release(x, y, button, modifiers):
             if gamestate == 1 and was_button_clicked == 0:
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
-                if (mouse_x_tilemap != player.prevx or mouse_y_tilemap != player.prevy) and player.prevx - 2 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 2 < mouse_y_tilemap < player.prevy + 2:
+
+
+
+
+
+
+
+                if (abs(mouse_x_tilemap - player.prevx) < 2 and abs(mouse_y_tilemap - player.prevy) < 2) or (abs(mouse_x_tilemap - player.prevx) < 3 and abs(mouse_y_tilemap - player.prevy) < 3 and player.equipment_weapon.name == "Rapier"):
                     player.hit(mouse_x_tilemap, mouse_y_tilemap)
                     gamestate = 2
                     all_anims = turn_logic.do_turns(all_enemies, player, floor)
+
 
             
             if gamestate == 4 and was_button_clicked == 0:
@@ -318,7 +326,7 @@ def on_mouse_release(x, y, button, modifiers):
 
                 for button2 in all_buttons:
                     if button2.type == "power bar":
-                        speed = 2
+                        speed = 6
                         func = ((button2.animframe - 0.0001)/speed % button2.extra_2) #self.extra_2*(math.asin(((self.animframe/(math.pi*3)) % 2) - 1) + math.pi/2)/math.pi
                         #t = func
                         if ((button2.animframe - 0.0001)/speed % (button2.extra_2*2)) > button2.extra_2 and func != button2.extra_2:
@@ -488,7 +496,7 @@ bg_deeper.batch = batch
 
         #self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "SCORPION"], ["SCORPION", "S'MORE", "CHROME DOME"], ["DRAGON", "S'MORE", "TETRAHEDRON"]]
         #self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 1], [2, 2, 2], [2, 3, 2]]
-        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         
 
 
@@ -497,13 +505,13 @@ def go_to_next_level():
 
 
     itemlist_beginner = ["Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
-    itemlist_beginner2 = ["Knife", "Scimitar", "Rapier", "Machete", "Sickle", "Stick", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
-    itemlist_equal = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Black Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    itemlist_beginner2 = ["Knife", "Scimitar", "Rapier", "Machete", "Sickle", "Stick", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    itemlist_equal = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
 
     floor_level +=1
     if floor_level < 3: ##normal grass
         
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "HAMSTER", "GOOSE"], [1, 1, 1], itemlist_beginner
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["CHLOROSPORE", "HAMSTER", "GOOSE"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #river zone
         sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                      #river zone
     elif floor_level < 7: #seafoam grass
@@ -548,6 +556,11 @@ def go_to_next_level():
 
     floor.random_create_item(grid_items, item_list)
     floor.generate_enemies(floor_level, enemy_list, level_list)
+
+    floor.enemy_list = enemy_list 
+    floor.level_list = level_list 
+    floor.item_list = item_list 
+    
 
     player.x, player.y = floor.spawnpoint
     player.prevx, player.prevy = floor.spawnpoint
@@ -726,16 +739,17 @@ player.add_to_inventory(floor.create_item("Coloring Tome", grid_items))
 player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
 #player.add_to_inventory(floor.create_item("Tome of Dispersion", grid_items))
 
-player.add_to_inventory(floor.create_item("Energizing Staff", grid_items))
-player.add_to_inventory(floor.create_item("Staff of Swapping", grid_items))
-player.add_to_inventory(floor.create_item("Staff of Warping", grid_items))
+player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
+player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
+player.add_to_inventory(floor.create_item("Staff of Violence", grid_items))
+player.add_to_inventory(floor.create_item("Phobia Staff", grid_items))
 
 # player.add_to_inventory(floor.create_item("Piercing Staff", grid_items))
 
 # player.add_to_inventory(floor.create_item("Piercing Staff", grid_items))
 
 # player.add_to_inventory(floor.create_item("Staff of Paralysis", grid_items))
-player.add_to_inventory(floor.create_item("Stick", grid_items))
+player.add_to_inventory(floor.create_item("Sickle", grid_items))
 player.add_to_inventory(floor.create_item("Stick", grid_items))
 player.add_to_inventory(floor.create_item("Knife", grid_items))
 player.add_to_inventory(floor.create_item("Leaf Shield", grid_items))
@@ -955,8 +969,14 @@ def on_draw():
             for enemy in all_enemies:
                 refresh_all_visuals(enemy)
             if(player.x, player.y) == floor.stairs:
-                print("on stairs GOING TO NEXT LEVEL")
                 go_to_next_level()
+            #print("test")
+            if player.paralysis_turns > 0 or player.flee_ai_turns > 0 or player.rage_ai_turns > 0: #if the player's AI is no longer controlled by player, just do another turn
+                gamestate = 2
+                all_anims = turn_logic.do_turns(all_enemies, player, floor)
+
+
+
 
 
 

@@ -91,6 +91,9 @@ class Player:
         
         self.paralysis_turns = 0
         self.paralysis_visual = 0
+
+        self.flee_ai_turns = 0
+        self.rage_ai_turns = 0
     
     def add_to_inventory(self, item):
         for slot in range(len(self.inventory)):

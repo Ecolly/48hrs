@@ -114,8 +114,6 @@ class Enemy:
         self.basedefense = defense
 
 
-        print(self.health, self.defense)
-
 
 
 
@@ -174,6 +172,9 @@ class Enemy:
         self.paralysis_turns = 0
         self.paralysis_visual = 0
 
+        self.flee_ai_turns = 0
+        self.rage_ai_turns = 0
+
     def sign(self, x):
         return (x > 0) - (x < 0)  # returns 1, 0, or -1
 
@@ -183,7 +184,7 @@ class Enemy:
         xtochk = player.x
         ytochk = player.y
 
-        if self.name == "HAMSTER" or self.name == "TURTLE":
+        if self.name == "HAMSTER" or self.name == "TURTLE" or self.flee_ai_turns > 0:
 
             #always run away when sees the player, in sscared mode 
             if self.can_see_player(player=player, vision_range=5):
@@ -204,7 +205,7 @@ class Enemy:
                 # If not moving or can't move, stay still
                 return Technique.STILL, self.x, self.y
                     
-        elif self.name == "FOX" or self.name == "GOOSE" or self.name == "CHROME DOME" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
+        elif self.rage_ai_turns > 0 or self.name == "FOX" or self.name == "GOOSE" or self.name == "CHROME DOME" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 return Technique.HIT, xtochk, ytochk
             else:
