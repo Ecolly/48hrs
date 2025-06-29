@@ -135,8 +135,6 @@ class InteractiveObject:
                         sprite.color = (255, 255, 255, self.colors[0][0][3])
                     else:
                         sprite.color = (255, 255, 255, 0)
-                
-
 
             if self.supertype == 'rclick': #draw rclick buttons on top of other menus
                 if i == 0:
@@ -170,10 +168,7 @@ class InteractiveObject:
                     #     inventory_x = id % 10
                     #     inventory_y = id // 10
                     #     self.x = inventory_x*48 + int(1152/48)*12
-                    #     self.y = -inventory_y*48 + int(768/48)*32 - 1
-
-
-
+                    #     self.y = -inventory_y*48 + int(768/48)*32 - 
                 elif i == 0:
                     sprite.group = group3
                 else:
@@ -292,8 +287,6 @@ def create_inventory_menu(all_buttons):
     # combined = pyglet.image.Texture.create(190, 76)
 
     # combined.blit_into(sprite_inv, 0, 0, 0)
-
-
 
     spr2 = pyglet.sprite.Sprite(sprite_inv)
     obj = InteractiveObject(

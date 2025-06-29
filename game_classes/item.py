@@ -62,9 +62,6 @@ class Item:
         
 
 
-    def use(self, target):
-        pass
-
     def get_screen_position(self): #unused?
         if self.inventory_slot == -1:
             return self.scale*(self.prevx*16-8), self.scale*(self.prevy*16-8)
@@ -103,6 +100,7 @@ class Item:
     #     sprite.batch = batch
 
     #Dont look at this oml
+    
 
     def wrap_text(text, max_chars_per_line):
         words = text.split(' ')
@@ -215,6 +213,7 @@ class Weapon(Item):
 
         self.spriteindex = 29*11+sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
+        self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
 
         self.damage = damage
         self.durability = durability  # Default durability

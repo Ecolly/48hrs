@@ -135,9 +135,9 @@ def inflict_healing(amount, entity, player, list_of_animations, chronology):
 
 
 def deduct_charges(entity, charges):
-    entity.inventory[entity.techniqueitem].charges -= charges
-    if entity.inventory[entity.techniqueitem].charges < 1:
-        entity.inventory[entity.techniqueitem].should_be_deleted = True
+    entity.techniqueitem.charges -= charges
+    if entity.techniqueitem.charges < 1:
+        entity.techniqueitem.should_be_deleted = True
 
 
 def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, list_of_animations):
@@ -344,8 +344,8 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
         rot = adjust_rotation(entity, clamp(-entity.x+entity.techniquex, -1, 1), clamp(-entity.y+entity.techniquey, -1, 1))
         
-        if isinstance(entity.inventory[entity.techniqueitem], Staff) == True:
-            anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None, item=entity.inventory[entity.techniqueitem].spriteindex)
+        if isinstance(entity.techniqueitem, Staff) == True:
+            anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None, item=entity.techniqueitem.spriteindex)
         else:
             anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
         list_of_animations.append(anim2)
@@ -465,7 +465,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
     elif entity.technique == Technique.CAST: #this is for static castings (not projectiles)
 
 
-        item = entity.inventory[entity.techniqueitem]
+        item = entity.techniqueitem
 
         anim2 = animations.Animation(None, 5, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 24), entity.x, entity.y, entity.techniquex, entity.techniquey, entity.direction, entity, Technique.CAST, None, None, None, item=[item.spriteindex, item.name])
         list_of_animations.append(anim2)

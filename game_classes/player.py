@@ -94,11 +94,11 @@ class Player:
     
     def add_to_inventory(self, item):
         for slot in range(len(self.inventory)):
-            print(f"Checking slot {slot} for item {item.name}")
+            #print(f"Checking slot {slot} for item {item.name}")
             if self.inventory[slot] is None:
                 self.inventory[slot] = item
                 return True  # Success
-        print("Inventory full. Cannot pick up item.")
+        #print("Inventory full. Cannot pick up item.")
         return False  # Inventory was full
 
     def increase_experience(self, incoming_experience):
@@ -183,8 +183,10 @@ class Player:
 
 
     def throw(self, x, y):
-        item = self.inventory[self.techniqueitem]
-        self.inventory[self.techniqueitem] = None  # Remove item from inventory
+        # item = self.inventory[self.techniqueitem]
+        # self.inventory[self.techniqueitem] = None  # Remove item from inventory
+        item = self.techniqueitem
+        self.del_item_from_inventory(item)
         self.active_projectiles.append(item)
         item.sprite.color = (255, 255, 255, 0)
         item.x = self.x + 0.5
@@ -205,7 +207,7 @@ class Player:
 
 
     def cast(self, x, y):
-        item = self.inventory[self.techniqueitem]
+        item = self.techniqueitem
         self.active_projectiles.append(turn_logic.Projectile(item.name, self.techniquecharges, self.x + 0.5, self.y + 0.5, x, y, self))
         self.technique = Technique.THROW
         self.techniquex = x 
@@ -218,10 +220,12 @@ class Player:
 
 
 
-
-
-
-
+    def del_item_from_inventory(self, item):
+        for i in range(len(self.inventory)):
+            if self.inventory[i] == item:
+                item.hotbar_sprite.visible = False
+                print(f"Deleting item {item.name} from inventory slot {i}")
+                self.inventory[i] = None
 
     def drop_item(self, inv_slot, floor):
         coords_to_check = [[0, 0], [1, 1], [0, 1], [0, -1], [1, 0], [-1, 0], [1, -1], [0, -1], [-1, -1]]
@@ -237,10 +241,8 @@ class Player:
                     item.y = self.y 
             self.technique = Technique.STILL 
 
-    def consume_item(self, inv_slot, list_of_animations):
-        item = self.inventory[inv_slot]
-        if item is not None:
-            self.inventory[inv_slot] = None  
+    def consume_item(self, item, list_of_animations):
+        self.del_item_from_inventory(item)
         health_to_restore = item.nutrition_value
 
         print(health_to_restore, self.maxhealth, self.health, self.maxhealth_visual, self.health_visual)

@@ -128,7 +128,7 @@ all_anims = []
 
 #floor_items = [item]
 inventory_items = []
-
+item_selected = None
 
 
 
@@ -179,28 +179,29 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global gamestate
     global dragging_item, drag_offset
     global right_click_menu_enabled
+    global item_selected
+    
     if button == pyglet.window.mouse.LEFT:
-
-        if gamestate == 5:
+        item_selected = hotbar.get_selected_item()
+        if gamestate == 5 and isinstance(item_selected, Staff):
             gamestate = 6 #6 means power bar mode
-            create_power_bar(all_buttons, player.inventory[player.techniqueitem], mouse_x, mouse_y)
-        if gamestate == 3 and right_click_menu_enabled == False:  # Inventory state
-        # Check if an item is clicked in the inventory
-            
+            create_power_bar(all_buttons, item_selected, mouse_x, mouse_y)
+        if gamestate == 3:  # Inventory state
+        # Check if an item is clicked in the inventor
 
             inventory_x = math.floor((mouse_x - int((1152)/48)*12)/(48+9)) 
             inventory_y = math.floor((-mouse_y + int((768)/48)*32)/(48+9)) + 1
 
             # Calculate the inventory slot based on x and y coordinates
             inventory_slot = inventory_y*10 + inventory_x
-            print(inventory_slot)
+            
 
             if 0 <= inventory_x < 10 and 0 <= inventory_y < 4:
                 if inventory_slot > -1 and len(player.inventory) > inventory_slot:
                     # Check if the clicked position corresponds to an inventory slot
                     if dragging_item is None:
                         item_to_eval = player.inventory[inventory_slot]
-                        print()
+
                         if item_to_eval:
                             dragging_item = item_to_eval
                             dragging_item.hotbar_sprite.visible = False
@@ -234,77 +235,68 @@ def on_mouse_release(x, y, button, modifiers):
     global has_won
     global sound_magic
     global right_click_menu_enabled
+    global item_selected
     if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6: #this stuff can only happen between turns or in inventory
-        print("mouse release", button, x, y)
+
+        ###################### LEFT CLICK ##############################
         if button == pyglet.window.mouse.LEFT:
+            print("length of inventory")
+            print(len(player.inventory))
+            item_selected = hotbar.get_selected_item()
+            
             right_click_menu_enabled = False
             was_button_clicked = 0
-            for button in all_buttons:
-                button.clicked = False 
-                if button.hovered == True:
-                    if button.supertype != "overlay" and button.supertype != "power bar" and button.supertype != "power bar 2":
-                        was_button_clicked = 1
+            if gamestate == 1: #if the button is hovered, and the gamestate is 1, then it was clicked
+                if not isinstance(item_selected, Weapon):
+                    player.unequip_weapon()
+                # if button.type == "MOVE HERE":
+                #     dirx = button.extra_1
+                #     diry = button.extra_2
+                #     player.move(dirx, diry, floor)
+                #     gamestate = 2
+                #     #partition_entity = construct_partitions()
+                # elif button.type == "DROP":
+                #     player.drop_item(button.extra_1, floor)
+                #     gamestate = 2
 
-                    if button.type == "CANCEL":
-                        pass 
-                    elif button.type == "MOVE HERE":
-                        dirx = button.extra_1
-                        diry = button.extra_2
-                        player.move(dirx, diry, floor)
-                        gamestate = 2
-                        #partition_entity = construct_partitions()
-                    elif button.type == "DROP":
-                        player.drop_item(button.extra_1, floor)
-                        gamestate = 2
+                #     all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                    #partition_entity = construct_partitions()
+                    #delete_buttons_supertype(all_buttons, 'inventory')
+                if isinstance(item_selected, Consumable):
+                    player.technique = Technique.CONSUME 
+                    player.techniqueitem = item_selected                        
+                    gamestate = 2
+                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                    #partition_entity = construct_partitions()
+                elif isinstance(item_selected, Weapon):
+                    player.equip_weapon(item_selected)
+                elif isinstance(item_selected, Shield):
+                    if player.equipment_shield is None:
+                        player.equip_shield(item_selected)
+                    else:
+                        player.unequip_shield()
+                        
+                # elif button.type == "READ":
+                #     player.techniqueitem = button.extra_1
+                #     gamestate = 2
+                #     player.cast_static()
+                #     #has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
+                #     all_anims = turn_logic.do_turns(all_enemies, player, floor)
 
-                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
-                        #partition_entity = construct_partitions()
-                        delete_buttons_supertype(all_buttons, 'inventory')
-                    elif button.type == "CONSUME":
-                        player.technique = Technique.CONSUME 
-                        player.techniqueitem = button.extra_1
-                        gamestate = 2
-                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
-                        #partition_entity = construct_partitions()
-                        delete_buttons_supertype(all_buttons, 'inventory')
-                    elif button.type == "EQUIP": #Equipping/unequipping doesnt take up a turn
-                        if isinstance(player.inventory[button.extra_1], Weapon) == True:
-                            player.equip_weapon(player.inventory[button.extra_1])
-                        else:
-                          player.equip_shield(player.inventory[button.extra_1])
-                    elif button.type == "UNEQUIP":
-                        if isinstance(player.inventory[button.extra_1], Weapon) == True:
-                            player.unequip_weapon()
-                        else:
-                            player.unequip_shield()
-                    elif button.type == "THROW": #if throwing, switch to a "choose target" GUI with a different gamestate.
-                        gamestate = 4
-                        player.techniqueitem = button.extra_1
-                        delete_buttons_supertype(all_buttons, 'inventory')
-                        pass
-                    elif button.type == "READ":
-                        player.techniqueitem = button.extra_1
-                        gamestate = 2
-                        player.cast_static()
-                        #has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
-                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
- 
-                        if has_won == 0:
-                            #partition_entity = construct_partitions()
-                            pass
-                        else:
-                            gamestate = 0
-                            create_win_lose_screen(all_buttons, "win")
-                        delete_buttons_supertype(all_buttons, 'inventory')
-                    elif button.type == "CAST":
-                        player.techniqueitem = button.extra_1
-                        gamestate = 5
+                #     if has_won == 0:
+                #         #partition_entity = construct_partitions()
+                #         pass
+                #     else:
+                #         gamestate = 0
+                #         create_win_lose_screen(all_buttons, "win")
+                #     delete_buttons_supertype(all_buttons, 'inventory')
+                elif isinstance(item_selected, Staff):
+                    print("casting staff")
+                    player.techniqueitem = item_selected
+                    gamestate = 5
 
-
-
-                
-                            
-                        delete_buttons_supertype(all_buttons, 'inventory')
+                      
+                delete_buttons_supertype(all_buttons, 'inventory')
 
 
 
@@ -343,21 +335,22 @@ def on_mouse_release(x, y, button, modifiers):
                         #num of charges = func
                 player.techniquecharges = max(round(func), 1)
                 #print(button.extra_1)
-                if func > player.inventory[player.techniqueitem].charges: #if num of charges exceeds amount remaining, just choose a random amount
-                    func = random.randint(1, player.inventory[player.techniqueitem].charges)
+                if func > item_selected.charges: #if num of charges exceeds amount remaining, just choose a random amount
+                    func = random.randint(1, item_selected.charges)
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
                 player.cast(mouse_x_tilemap, mouse_y_tilemap)
                 gamestate = 7 #gamestate 7 is when power bar flashes, showing you what result you made it to
                 
         
-
+                
 
 
         elif button == pyglet.window.mouse.RIGHT:
             right_click_menu_enabled = True
             delete_buttons_supertype(all_buttons, 'rclick')
             #get rclick options
+            item_selected = hotbar.get_selected_item()
             rclick_options = []
             rclick_extra_1 = []
             rclick_extra_2 = []
@@ -378,72 +371,23 @@ def on_mouse_release(x, y, button, modifiers):
             #             rclick_options.append("USE")
             #             rclick_options.append("THROW")
             if gamestate == 1:
-                mouse_x_tilemap = mouse_x/48 - (1152/2)/48 + (player.x + 0.5)
-                mouse_y_tilemap = mouse_y/48 - (768/2)/48 + (player.y + 0.5)
-                if player.prevx - 1 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 1 < mouse_y_tilemap < player.prevy + 2:
-                    rclick_options.append("MOVE HERE")
-                    rclick_extra_1.append(math.floor(mouse_x_tilemap - player.x))
-                    rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
-                    print(math.floor(mouse_x_tilemap - player.x))
-                    print(math.floor(mouse_y_tilemap - player.y))
-            
-            elif gamestate == 3:
-                inventory_x = math.floor((mouse_x - int((1152)/48)*12)/(48+INVENTORY_SPACING)) 
-                inventory_y = math.floor((-mouse_y + int((768)/48)*32)/(48+INVENTORY_SPACING)) + 1
-                inventory_slot = inventory_y*10 + inventory_x
-                
-                #print(inventory_slot, player.inventory)
+                # mouse_x_tilemap = mouse_x/48 - (1152/2)/48 + (player.x + 0.5)
+                # mouse_y_tilemap = mouse_y/48 - (768/2)/48 + (player.y + 0.5)
+                # if player.prevx - 1 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 1 < mouse_y_tilemap < player.prevy + 2:
+                #     rclick_options.append("MOVE HERE")
+                #     rclick_extra_1.append(math.floor(mouse_x_tilemap - player.x))
+                #     rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
+                #     print(math.floor(mouse_x_tilemap - player.x))
+                #     print(math.floor(mouse_y_tilemap - player.y))
 
-                if inventory_slot > -1 and len(player.inventory) > inventory_slot:
-                    item_to_eval = player.inventory[inventory_slot]
+                #THROWING VIA RIGHT CLICK
+                if item_selected: #if throwing, switch to a "choose target" GUI with a different gamestate.
+                    gamestate = 4
+                    player.techniqueitem = item_selected
+                    delete_buttons_supertype(all_buttons, 'inventory')
+                    pass
 
-                    rclick_options.append("DROP")
-                    rclick_extra_1.append(inventory_slot)
-                    rclick_extra_2.append(0)
-
-                    rclick_options.append("THROW")
-                    rclick_extra_1.append(inventory_slot)
-                    rclick_extra_2.append(0)
-                    if item_to_eval is not None:
-                        if item_to_eval.is_equipable == True:
-                            if player.equipment_weapon == item_to_eval or player.equipment_shield == item_to_eval:
-                                rclick_options.append("UNEQUIP")
-                            else:
-                                rclick_options.append("EQUIP")
-
-                            rclick_extra_1.append(inventory_slot)
-                            rclick_extra_2.append(0)
-
-                        if item_to_eval.is_consumable == True:
-                            rclick_options.append("CONSUME")
-                            rclick_extra_1.append(inventory_slot)
-                            rclick_extra_2.append(0)
-
-                        if item_to_eval.is_castable == True:
-                            rclick_options.append("CAST")
-                            rclick_extra_1.append(inventory_slot)
-                            rclick_extra_2.append(0)
-
-                        if item_to_eval.is_readable == True:
-                            rclick_options.append("READ")
-                            rclick_extra_1.append(inventory_slot)
-                            rclick_extra_2.append(0)
-
-                        if item_to_eval.is_usable == True:
-                            rclick_options.append("USE")
-                            rclick_extra_1.append(inventory_slot)
-                            rclick_extra_2.append(0)
-
-                    #rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
-
-                #print(inventory_x, inventory_y, inventory_slot)
-                #pass
-
-            print(rclick_options)
-            rclick_extra_1.append(0)
-            rclick_extra_2.append(0)
-
-            print(rclick_options)
+        
 
             i = 0
             for option in rclick_options:
@@ -473,9 +417,29 @@ def on_mouse_release(x, y, button, modifiers):
 
 @window.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
+    global gamestate
+    global item_selected
     hotbar.change_selection(scroll_y)
+    print("Mouse scrolled", hotbar.selected)
     hotbar.draw_selected_slot()
+    item_selected = hotbar.get_selected_item()
 
+    global all_buttons
+    if item_selected is not None:
+        inventory_slot = hotbar.translate_to_inventory()
+        print(f"Inventory slot:", {inventory_slot})
+        print(f"inventory_item", player.inventory[inventory_slot])
+        if isinstance(item_selected, Weapon):
+            player.equip_weapon(item_selected)
+        elif isinstance(item_selected, Staff):
+            print("casting staff")
+            player.techniqueitem = item_selected
+            gamestate = 5
+        else:
+            player.unequip_weapon()
+    else:
+        player.unequip_weapon()
+        
 
 
 floor_level = 0
@@ -569,7 +533,6 @@ def go_to_next_level():
     floor.random_create_item(grid_items, item_list)
     floor.generate_enemies(floor_level, enemy_list, level_list)
 
-    print(f"BEFORE{player.x, player.y}")
     player.x, player.y = floor.spawnpoint
     player.prevx, player.prevy = floor.spawnpoint
     player.initx, player.inity = floor.spawnpoint
@@ -775,33 +738,33 @@ player.add_to_inventory(floor.create_item("Spiked Shield", grid_items))
 # # player.add_to_inventory(floor.create_item("Fury Cutter", grid_items))
 # player.add_to_inventory(floor.create_item("Windsword", grid_items))
 
-player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
-# player.add_to_inventory(floor.create_item("Staff of Swapping", grid_items))
-player.add_to_inventory(floor.create_item("Staff of Mana", grid_items))
-player.add_to_inventory(floor.create_item("Staff of Ricochet", grid_items))
-# player.add_to_inventory(floor.create_item("Staff of Lethargy", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
-# # player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Red Staff", grid_items))
+player.add_to_inventory(floor.create_item("Orange Staff", grid_items))
+player.add_to_inventory(floor.create_item("Gold Staff", grid_items))
+player.add_to_inventory(floor.create_item("Green Staff", grid_items))
+player.add_to_inventory(floor.create_item("Teal Staff", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
 
 player.add_to_inventory(floor.create_item("Starfruit", grid_items))
 
-player.add_to_inventory(floor.create_item("Piercing Staff", grid_items))
+player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
@@ -1038,10 +1001,11 @@ def on_draw():
             # if is_hovered and not dragging_item:
             #     
         slot = slot + 1
-
+    
     #Hot har stuff (updated after inventory)
     hotbar.update_hotbar(player.inventory)
     hotbar.draw_hotbar_items(batch, group_hotbar)
+    #hotbar.get_selected_item()
     
     if keys[pyglet.window.key.SPACE]:
         while len(all_anims) > 0:
