@@ -237,10 +237,12 @@ class Player:
             y = self.y + coords[1]
             if self.detect_item(floor.floor_items, x, y) == False and (y,x) in floor.valid_tiles:
                 if item is not None:
-                    self.del_item_from_inventory(item) # Remove item from inventory
-                    floor.floor_items.append(item)
                     item.x = self.x
                     item.y = self.y 
+                    self.del_item_from_inventory(item) # Remove item from inventory
+                    floor.floor_items.append(item)
+                    break
+                 # Exit after dropping the item in the first available spot
             self.technique = Technique.STILL 
 
     
@@ -292,22 +294,23 @@ class Player:
     # returns True if the item is detected at x and y location
     def detect_item(self, item_list, x, y):
         for i in item_list:
+            print(f"Checking item {i.name} at ({i.x}, {i.y}) against ({x}, {y})")
             if i.x == x and i.y == y:
                 print(f"Detected item: {i.name} at ({i.x}, {i.y})")
                 return True
         return False
     
     # Pick up an item and add it to the player's inventory if there's room
-    def pick_up_item(self, item_list):
+    def pick_up_item(self, floor_item_list):
         """Pick up an item and add it to the player's inventory."""
-        for item in item_list:
-            if item.x == self.x and item.y == self.y:
-                if self.add_to_inventory(item):
-                    item_list.remove(item)  # Remove item from the map
-                    print(f"Picked up {item.name} at {item.x}, {item.y}")
-                    print(f"player{self.x}, {self.y}")
-                else:
-                    print("Inventory full. Cannot pick up item.")
+        for item in floor_item_list:
+            if item.x == self.x and item.y == self.y and item is not None:
+                self.add_to_inventory(item)
+                floor_item_list.remove(item)  # Remove item from the map
+                print(f"Picked up {item.name} at {item.x}, {item.y}")
+                print(f"player{self.x}, {self.y}")
+            else:
+                pass  # Item not at player's position, do nothing
 
     
     def get_helditem_coordanites(self, base_x, base_y, frame_index, group_bg, group_fg, type, hand):

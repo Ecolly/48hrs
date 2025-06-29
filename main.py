@@ -255,13 +255,7 @@ def on_mouse_release(x, y, button, modifiers):
                 #     player.move(dirx, diry, floor)
                 #     gamestate = 2
                 #     #partition_entity = construct_partitions()
-                # elif button.type == "DROP":
-                #     player.drop_item(button.extra_1, floor)
-                #     gamestate = 2
 
-                #     all_anims = turn_logic.do_turns(all_enemies, player, floor)
-                    #partition_entity = construct_partitions()
-                    #delete_buttons_supertype(all_buttons, 'inventory')
                 if isinstance(item_selected, Consumable):
                     player.technique = Technique.CONSUME 
                     player.techniqueitem = item_selected                        
@@ -349,9 +343,9 @@ def on_mouse_release(x, y, button, modifiers):
             delete_buttons_supertype(all_buttons, 'rclick')
             #get rclick options
             item_selected = hotbar.get_selected_item()
-            rclick_options = []
-            rclick_extra_1 = []
-            rclick_extra_2 = []
+            # rclick_options = []
+            # rclick_extra_1 = []
+            # rclick_extra_2 = []
             #check what's here, such as...
             # 
             #   a button (e.g. in the case of a menu)
@@ -384,34 +378,31 @@ def on_mouse_release(x, y, button, modifiers):
                     player.techniqueitem = item_selected
                     delete_buttons_supertype(all_buttons, 'inventory')
                     pass
-
-        
-
-            i = 0
-            for option in rclick_options:
-                spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
-                spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
-                option_obj = InteractiveObject(
-                    x=mouse_x,
-                    y=mouse_y - i*8*3-16,
-                    width=spr2.width,
-                    height=spr2.height,
-                    sprites=[spr2, spr1],
-                    colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
-                    animtype = [0, 0],
-                    animmod = [None, None],
-                    text = [None, None],
-                    alignment_x='left',
-                    alignment_y='top',
-                    depth=1,
-                    obj_type=option,
-                    draggable=False,
-                    supertype = 'rclick',
-                    extra_1 = rclick_extra_1[i],
-                    extra_2 = rclick_extra_2[i]
-                )
-                all_buttons.append(option_obj)
-                i = i + 1
+            # i = 0
+            # for option in rclick_options:
+            #     spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
+            #     spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
+            #     option_obj = InteractiveObject(
+            #         x=mouse_x,
+            #         y=mouse_y - i*8*3-16,
+            #         width=spr2.width,
+            #         height=spr2.height,
+            #         sprites=[spr2, spr1],
+            #         colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
+            #         animtype = [0, 0],
+            #         animmod = [None, None],
+            #         text = [None, None],
+            #         alignment_x='left',
+            #         alignment_y='top',
+            #         depth=1,
+            #         obj_type=option,
+            #         draggable=False,
+            #         supertype = 'rclick',
+            #         extra_1 = rclick_extra_1[i],
+            #         extra_2 = rclick_extra_2[i]
+            #     )
+            #     all_buttons.append(option_obj)
+            #     i = i + 1
 
 @window.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
@@ -454,9 +445,18 @@ def on_key_press(symbol, modifiers):
                 all_anims = turn_logic.do_turns(all_enemies, player, floor)
         
         elif gamestate == 3:
-            pass
-            #throw the item in the inventory
-            #exit inventory
+            slot = 0 #theres probably a more pythonic way to do this, sowwy
+            for item in player.inventory:
+                if item is not None:
+                    print("Throwing item from inventory")
+                    # i is the slot at that position
+                    item.draw_inventory(batch, player, group_inv, slot, gamestate)
+                    #if mouse is hovering over that item, draw description
+                    if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
+                        player.drop_item(item, floor)
+                        gamestate = 2
+                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                slot = slot + 1
 
 floor_level = 0
 
@@ -1012,6 +1012,8 @@ def on_draw():
         if item is not None:
             # i is the slot at that position
             item.draw_inventory(batch, player, group_inv, slot, gamestate)
+
+            #if mouse is hovering over that item, draw description
             if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
                 test = item.draw_description(batch, group_inv_ext, slot, gamestate)
             #draw_tiny = draw_tiny_texts(item.description, 200, 400, batch, group_inv_ext)
