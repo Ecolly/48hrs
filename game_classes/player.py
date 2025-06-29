@@ -227,19 +227,23 @@ class Player:
                 print(f"Deleting item {item.name} from inventory slot {i}")
                 self.inventory[i] = None
 
-    def drop_item(self, inv_slot, floor):
+    def drop_item(self, item, floor):
+        #What is happening good lord
+        if item is None:
+            return
         coords_to_check = [[0, 0], [1, 1], [0, 1], [0, -1], [1, 0], [-1, 0], [1, -1], [0, -1], [-1, -1]]
         for coords in coords_to_check:
-            x = item.x + coords[0]
-            y = item.y + coords[1]
+            x = self.x + coords[0]
+            y = self.y + coords[1]
             if self.detect_item(floor.floor_items, x, y) == False and (y,x) in floor.valid_tiles:
-                item = self.inventory[inv_slot]
                 if item is not None:
-                    self.inventory[inv_slot] = None  # Remove item from inventory
+                    self.del_item_from_inventory(item) # Remove item from inventory
                     floor.floor_items.append(item)
                     item.x = self.x
                     item.y = self.y 
             self.technique = Technique.STILL 
+
+    
 
     def consume_item(self, item, list_of_animations):
         self.del_item_from_inventory(item)
@@ -285,10 +289,9 @@ class Player:
 
 
 
-    # returns True if the item is detected at the player's current position
+    # returns True if the item is detected at x and y location
     def detect_item(self, item_list, x, y):
         for i in item_list:
-            # Check if the item is at the player's current position
             if i.x == x and i.y == y:
                 print(f"Detected item: {i.name} at ({i.x}, {i.y})")
                 return True

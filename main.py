@@ -301,7 +301,6 @@ def on_mouse_release(x, y, button, modifiers):
 
                         #next_entity_turn = 0
                         #current_entity_turn, next_entity_turn = construct_partitions(current_entity_turn, next_entity_turn)
-            delete_buttons_supertype(all_buttons, 'rclick')
             #print(gamestate, was_button_clicked)
             if gamestate == 1 and was_button_clicked == 0:
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
@@ -438,8 +437,26 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
             player.unequip_weapon()
     else:
         player.unequip_weapon()
-        
 
+@window.event
+def on_key_press(symbol, modifiers):   
+    global gamestate
+
+    item_selected = hotbar.get_selected_item() 
+    if symbol == pyglet.window.key.Q:
+        #Throw items
+        if gamestate == 1:
+            print("Throwing item")
+            #throw the item in the hotbar
+            if item_selected is not None:
+                player.drop_item(item_selected, floor)
+                gamestate = 2
+                all_anims = turn_logic.do_turns(all_enemies, player, floor)
+        
+        elif gamestate == 3:
+            pass
+            #throw the item in the inventory
+            #exit inventory
 
 floor_level = 0
 
@@ -845,6 +862,7 @@ def on_draw():
     global grid_liq
     global grid_deeper
     global bg_animframe
+    global item_selected
     global win_true_x, win_true_y, win_x, win_y
 
     # framebuffer.get_texture().bind()
@@ -885,6 +903,7 @@ def on_draw():
         #enter inventory
         if gamestate == 1:
             keypress_chk = 1
+            print("Entering inventory")
             create_inventory_menu(all_buttons)
             
             gamestate = 3
@@ -894,8 +913,7 @@ def on_draw():
             keypress_chk = 1
             gamestate = 1
             delete_buttons_supertype(all_buttons, 'inventory')
-
-            #exit inventory
+    
     elif gamestate == 1:
 
         if keys[pyglet.window.key.W]:
