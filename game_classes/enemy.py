@@ -50,15 +50,15 @@ def create_sprite_enemy(image_grid, index):
 
 def generate_enemy(name, level, x, y, grid):
 
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE"]
-    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 13, 6, 20, 24]
-    enemy_strength = [0, 7, 5, 9, 9, 14, 9, 15, 15, 18, 12, 1, 1, 1]
-    enemy_defense = [0, 2, 2, 1, 3, 1, 1, 5, 15, 3, 6, 30, 2, 1]
-    enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1]
-    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16]
-    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4]
-    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE"]
+    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 13, 6, 20, 24, 18]
+    enemy_strength = [0, 7, 5, 9, 9, 14, 9, 15, 15, 18, 12, 1, 1, 1, 1]
+    enemy_defense = [0, 2, 2, 1, 3, 1, 1, 5, 15, 3, 6, 30, 2, 1, 3]
+    enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1]
+    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16]
+    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40]
+    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -216,7 +216,21 @@ class Enemy:
                 new_y = self.y + self.sign(ytochk - self.y)
                 return Technique.MOVE, new_x, new_y    
 
-                
+        elif self.name == "DEMON CORE":
+            #distance to approximate:
+            dist_target = 3
+            current_dist = math.floor(math.sqrt((self.x - player.x)**2 + (self.y - player.y)**2))
+
+            if current_dist < dist_target:
+                new_x = self.x + self.sign(-player.x + self.x)
+                new_y = self.y + self.sign(-player.y + self.y)
+            elif current_dist > dist_target:
+                new_x = self.x + self.sign(player.x - self.x)
+                new_y = self.y + self.sign(player.y - self.y)
+            else:
+                return Technique.STILL, self.x, self.y
+            return Technique.MOVE, new_x, new_y  
+            
         elif self.name == "LEAFALOTTA":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 return Technique.HIT, player.x, player.y

@@ -136,7 +136,7 @@ item_selected = None
 
 player = Player(
     name = "DAMIEN",
-    health = 20,
+    health = 200000,
     level = 1,
     experience = 0,
     x = 30,
@@ -510,7 +510,7 @@ def go_to_next_level():
     floor_level +=1
     if floor_level < 3: ##normal grass
         
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "HAMSTER", "GOOSE"], [1, 1, 1], itemlist_beginner
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #river zone
         sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                      #river zone
     elif floor_level < 7: #seafoam grass

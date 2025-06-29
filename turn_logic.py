@@ -313,9 +313,25 @@ def clamp(n, min, max): #why the fuck isnt this inbuilt
         return n
     
 
+
+def do_radioactivity(entity, player, chronology, list_of_animations, floor):
+    if entity.name == "DEMON CORE":
+        enemy = player
+        dist = math.sqrt((enemy.x - entity.x)**2 + (enemy.y - entity.y)**2)
+        damage = math.floor(((entity.level + 3)**2)/(dist*dist))
+        if damage > 0:
+            inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic")
+        for enemy in floor.all_enemies:
+            if enemy.name != "DEMON CORE":
+                dist = math.sqrt((enemy.x - entity.x)**2 + (enemy.y - entity.y)**2)
+                damage = math.floor(((entity.level + 3)**2)/(dist*dist))
+                if damage > 0:
+                    inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic")
+    
+
 def do_individual_turn(entity, floor, player, list_of_animations, chronology, prevtechnique):
     global fakenames_staffs_key, fakenames_tomes_key, fakenames_staffs_realnames, fakenames_tomes_realnames, grid_items
-
+    do_radioactivity(entity, player, chronology, list_of_animations, floor)
     if entity.technique == Technique.STILL:
         return Technique.STILL, chronology
     elif entity.technique == Technique.MOVE:
@@ -331,6 +347,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         rot = adjust_rotation(entity, entity.techniquex-entity.x, entity.techniquey-entity.y)
         anim = animations.Animation(None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 8), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.MOVE, None, None, None)
         list_of_animations.append(anim)
+
+
+
         #if previous technique was not 'move' or 'still', chronology must be incremented by 8
         if prevtechnique != Technique.MOVE and prevtechnique != Technique.STILL:
             chronology += check_if_entity_is_on_screen(entity, player, 1, 8)
@@ -370,9 +389,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         target = enemy
 
             if target != None:
-                inflict_damage(entity, target, player, chronology+16, list_of_animations, entity.equipment_weapon, 0, "physical")
+                inflict_damage(entity, target, player, chronology+check_if_entity_is_on_screen(entity, player, 1, 16), list_of_animations, entity.equipment_weapon, 0, "physical")
                 if target.equipment_shield != None and target.equipment_shield.name == "Spiked Shield":
-                    inflict_damage(entity, entity, player, chronology+16, list_of_animations, entity.equipment_weapon, 0, "recoil")
+                    inflict_damage(entity, entity, player, chronology+check_if_entity_is_on_screen(entity, player, 1, 16), list_of_animations, entity.equipment_weapon, 0, "recoil")
                 if target.name == "JUJUBE" and random.uniform(0, 1) < 0.3:
                     spawn_enemies_within_turn_execution(1, "JUJUBE", target.level, target, floor, player, chronology + check_if_entity_is_on_screen(entity, player, 1, 16))
 
@@ -728,11 +747,11 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
 
 
-        pass
-    elif entity.technique == Technique.CAST:
-        pass
+
     else:
         pass
+
+    
 
 
 
