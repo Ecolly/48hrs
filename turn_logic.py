@@ -10,7 +10,7 @@ from game_classes.id_shuffling import *
 
 
 
-def can_move_to_but_not_a_cancerous_growth_on_society(x, y, game_map):
+def can_move_to_but_not_a_cancerous_growth_on_society(x, y, game_map, player):
     #Detect walls
     if (y,x) not in game_map.valid_tiles:
         #print(f"Invalid tile cannot move{x, y}")
@@ -21,6 +21,8 @@ def can_move_to_but_not_a_cancerous_growth_on_society(x, y, game_map):
                 return False
             elif enemy.x == x and enemy.y == y:
                 return False
+        if player.x == x and player.y == y:
+            return False
         return True
 
 
@@ -152,9 +154,10 @@ def inflict_healing(amount, entity, player, list_of_animations, chronology):
 
 
 def deduct_charges(entity, charges):
-    entity.techniqueitem.charges -= charges
-    if entity.techniqueitem.charges < 1:
-        entity.techniqueitem.should_be_deleted = True
+    if entity.techniqueitem != None:
+        entity.techniqueitem.charges -= charges
+        if entity.techniqueitem.charges < 1:
+            entity.techniqueitem.should_be_deleted = True
 
 
 def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, list_of_animations):
@@ -330,7 +333,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         list_of_animations.append(anim)
         #if previous technique was not 'move' or 'still', chronology must be incremented by 8
         if prevtechnique != Technique.MOVE and prevtechnique != Technique.STILL:
-            chronology += 8
+            chronology += check_if_entity_is_on_screen(entity, player, 1, 8)
 
         entity.x = entity.techniquex
         entity.y = entity.techniquey
@@ -370,19 +373,26 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                 inflict_damage(entity, target, player, chronology+16, list_of_animations, entity.equipment_weapon, 0, "physical")
                 if target.equipment_shield != None and target.equipment_shield.name == "Spiked Shield":
                     inflict_damage(entity, entity, player, chronology+16, list_of_animations, entity.equipment_weapon, 0, "recoil")
+                if target.name == "JUJUBE" and random.uniform(0, 1) < 0.3:
+                    spawn_enemies_within_turn_execution(1, "JUJUBE", target.level, target, floor, player, chronology + check_if_entity_is_on_screen(entity, player, 1, 16))
+
+
+
+
+
             
 
 
         anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
         list_of_animations.append(anim2)
-        chronology += 16
+        chronology += check_if_entity_is_on_screen(entity, player, 1, 16)
 
         return Technique.HIT, chronology
     elif entity.technique == Technique.THROW: #works for throwing items, casting projectile spells, and other projectiles
         #print(entity.x, entity.y, entity.techniquex, entity.techniquey)
 
         rot = adjust_rotation(entity, clamp(-entity.x+entity.techniquex, -1, 1), clamp(-entity.y+entity.techniquey, -1, 1))
-        
+
         if entity.techniqueitem != None and isinstance(entity.inventory[entity.techniqueitem], Staff) == True:
             anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None, item=entity.inventory[entity.techniqueitem].spriteindex)
         else:
@@ -498,7 +508,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             chron_i += 1
         entity.active_projectiles = []
 
-        chronology = chronology + max(chron_i, 16)
+        chronology = chronology + max(chron_i, check_if_entity_is_on_screen(entity, player, 1, 16))
 
         return Technique.THROW, chronology
     elif entity.technique == Technique.CAST: #this is for static castings (not projectiles)
@@ -560,28 +570,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         i = i + 1
             deduct_charges(entity, 1)
         elif item.name == "Summoning Tome":
-            
-            
-            locs = ((1, 0), (1, 1), (0, 1), (1, -1), (-1, 1), (-1, -1), (-1, 0), (0, -1))
-            for loc in locs:
-                if can_move_to_but_not_a_cancerous_growth_on_society(entity.x + loc[0], entity.y+loc[1], floor) == True and random.uniform(0, 1) < 0.75:
-                    
-                    x, y = loc[0] + entity.x, loc[1] + entity.y
-                    #choose a random enemy out of the enemy name & level options for this floor
-                    rng_enemy = random.randint(0, len(floor.enemy_list)-1)
-                    enemy_name = floor.enemy_list[rng_enemy]
-                    enemy_level = min(floor.level_list[rng_enemy] + round(random.uniform(0, 0.7)), 4)
-
-                    floor.valid_entity_tiles.remove((y, x))
-                    
-                    test_enemy = generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level))
-                    test_enemy.paralysis_turns = 1
-
-                    floor.all_enemies.append(test_enemy)
-                
+            enemies_to_summon = random.randint(3, 6)
+            spawn_enemies_within_turn_execution(enemies_to_summon, None, None, entity, floor, player, chronology)
             deduct_charges(entity, 1)
-
-
         elif item.name == "Sharpening Tome":
             i = 39 
             while i > -1:
@@ -684,6 +675,11 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         break
                 i = i - 1
             deduct_charges(entity, 1)
+
+    if isinstance(entity, Enemy) and entity.techniqueitem != None:
+        entity.techniqueitem.sprite.delete() 
+        entity.techniqueitem.hotbar_sprite.delete() 
+        entity.techniqueitem = None
 
 
 
@@ -811,7 +807,34 @@ def do_turns(all_enemies, player, floor):
     return list_of_animations
 
 
+def spawn_enemies_within_turn_execution(enemies_to_summon, enemy_name, enemy_level, entity, floor, player, chronology):
+    locs = [(1, 0), (1, 1), (0, 1), (1, -1), (-1, 1), (-1, -1), (-1, 0), (0, -1)]
+    random.shuffle(locs)
+    for loc in locs:
+        if can_move_to_but_not_a_cancerous_growth_on_society(entity.x + loc[0], entity.y+loc[1], floor, player) == True and random.uniform(0, 1) < 0.75:
+            x, y = loc[0] + entity.x, loc[1] + entity.y
+            #choose a random enemy out of the enemy name & level options for this floor
+            if enemy_name == None:
+                rng_enemy = random.randint(0, len(floor.enemy_list)-1)
+                enemy_name = floor.enemy_list[rng_enemy]
+            
+            if enemy_level == None:
+                if isinstance(entity, Enemy) == False:
+                    enemy_level = min(floor.level_list[rng_enemy] + round(random.uniform(0, 0.7)), 4)
+                else:
+                    enemy_level = min(entity.level + round(random.uniform(0, 0.7)), 4)
+            #floor.valid_entity_tiles.remove((y, x)) this is suspect. maybe we shouldnt be using this at all
+            
+            test_enemy = generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level))
+            test_enemy.paralysis_turns = 1
+            test_enemy.invisible_frames = chronology
 
+            floor.all_enemies.append(test_enemy)
+            enemies_to_summon += -1
+            if enemies_to_summon == 0:
+                break
+
+            
 
 
 

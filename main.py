@@ -141,10 +141,10 @@ player = Player(
     experience = 0,
     x = 30,
     y = 30,
-    sprite = create_sprite(grid_entities1, 20*8*8),
+    sprite = create_sprite(grid_entities1, 23*8*8),
     spritegrid = grid_entities1,
     itemgrid = grid_items,
-    spriteindex = 20*8*8,
+    spriteindex = 23*8*8,
     color = (255, 255, 255, 255),
     animtype = 1,
 )
@@ -264,6 +264,13 @@ def on_mouse_release(x, y, button, modifiers):
                     #partition_entity = construct_partitions()
                 elif isinstance(item_selected, Weapon):
                     player.equip_weapon(item_selected)
+                    #attack with weapon
+                    mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+                    mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+                    if (abs(mouse_x_tilemap - player.prevx) < 2 and abs(mouse_y_tilemap - player.prevy) < 2) or (abs(mouse_x_tilemap - player.prevx) < 3 and abs(mouse_y_tilemap - player.prevy) < 3 and player.equipment_weapon.name == "Rapier"):
+                        player.hit(mouse_x_tilemap, mouse_y_tilemap)
+                        gamestate = 2
+                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
                 elif isinstance(item_selected, Shield):
                     if player.equipment_shield is None:
                         player.equip_shield(item_selected)
@@ -287,29 +294,21 @@ def on_mouse_release(x, y, button, modifiers):
                     print("casting staff")
                     player.techniqueitem = item_selected
                     gamestate = 5
-
+                else: #unarmed attack
+                    mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+                    mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+                    if (abs(mouse_x_tilemap - player.prevx) < 2 and abs(mouse_y_tilemap - player.prevy) < 2):
+                        player.hit(mouse_x_tilemap, mouse_y_tilemap)
+                        gamestate = 2
+                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
                       
                 delete_buttons_supertype(all_buttons, 'inventory')
 
 
 
-                        #next_entity_turn = 0
-                        #current_entity_turn, next_entity_turn = construct_partitions(current_entity_turn, next_entity_turn)
-            #print(gamestate, was_button_clicked)
-            if gamestate == 1 and was_button_clicked == 0:
-                mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
-                mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
 
+            #if gamestate == 1 and was_button_clicked == 0:
 
-
-
-
-
-
-                if (abs(mouse_x_tilemap - player.prevx) < 2 and abs(mouse_y_tilemap - player.prevy) < 2) or (abs(mouse_x_tilemap - player.prevx) < 3 and abs(mouse_y_tilemap - player.prevy) < 3 and player.equipment_weapon.name == "Rapier"):
-                    player.hit(mouse_x_tilemap, mouse_y_tilemap)
-                    gamestate = 2
-                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
 
 
             
@@ -511,7 +510,7 @@ def go_to_next_level():
     floor_level +=1
     if floor_level < 3: ##normal grass
         
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["CHLOROSPORE", "HAMSTER", "GOOSE"], [1, 1, 1], itemlist_beginner
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "HAMSTER", "GOOSE"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #river zone
         sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                      #river zone
     elif floor_level < 7: #seafoam grass
@@ -724,10 +723,10 @@ create_mouse_overlay(all_buttons)
 
 
 # player.add_to_inventory(floor.create_item("Tome of Recovery", grid_items))
-player.add_to_inventory(floor.create_item("Tome of Injury", grid_items))
-player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
+player.add_to_inventory(floor.create_item("Rapier", grid_items))
+player.add_to_inventory(floor.create_item("Sickle", grid_items))
+player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
+player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
 player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
 player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
 player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
@@ -773,24 +772,24 @@ player.add_to_inventory(floor.create_item("Orange Staff", grid_items))
 player.add_to_inventory(floor.create_item("Gold Staff", grid_items))
 player.add_to_inventory(floor.create_item("Green Staff", grid_items))
 player.add_to_inventory(floor.create_item("Teal Staff", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
-player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
+# player.add_to_inventory(floor.create_item("Rock", grid_items))
 
 player.add_to_inventory(floor.create_item("Starfruit", grid_items))
 
