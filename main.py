@@ -276,20 +276,19 @@ def on_mouse_release(x, y, button, modifiers):
                     else:
                         player.unequip_shield()
                         
-                # elif button.type == "READ":
-                #     player.techniqueitem = button.extra_1
-                #     gamestate = 2
-                #     player.cast_static()
-                #     #has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
-                #     all_anims = turn_logic.do_turns(all_enemies, player, floor)
-
-                #     if has_won == 0:
-                #         #partition_entity = construct_partitions()
-                #         pass
-                #     else:
-                #         gamestate = 0
-                #         create_win_lose_screen(all_buttons, "win")
-                #     delete_buttons_supertype(all_buttons, 'inventory')
+                elif isinstance(item_selected, Tome):
+                    player.techniqueitem = item_selected 
+                    gamestate = 2
+                    player.cast_static()
+                    #has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
+                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                    if has_won == 0:
+                        #partition_entity = construct_partitions()
+                        pass
+                    else:
+                        gamestate = 0
+                        create_win_lose_screen(all_buttons, "win")
+     
                 elif isinstance(item_selected, Staff):
                     print("casting staff")
                     player.techniqueitem = item_selected
