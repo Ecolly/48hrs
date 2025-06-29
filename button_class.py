@@ -529,13 +529,13 @@ def get_gui_string(player):
     defense = str(player.defense)
 
     if player.equipment_shield != None:
-        defense = defense + "+" + str(player.equipment_shield.defense)
+        defense = defense + "+" + str(player.equipment_shield.defense + player.equipment_shield.bonus) 
     if player.equipment_weapon != None:
         if player.equipment_shield != None:
             if player.equipment_shield.name != "Armor Plate":
-                strength = strength + "+" + str(player.equipment_weapon.damage)
+                strength = strength + "+" + str(player.equipment_weapon.damage + player.equipment_weapon.bonus)
         else:
-            strength = strength + "+" + str(player.equipment_weapon.damage)
+            strength = strength + "+" + str(player.equipment_weapon.damage + + player.equipment_weapon.bonus)
 
     #stats gui
     gui_string = str(player.health_visual) + "/" + str(player.maxhealth_visual) + " HP, " + str(strength) + "/" + str(player.maxstrength) + " STR, " + str(defense) + "/" + str(player.maxdefense) + " DEF, LV " + str(player.level_visual) + ", " + str(player.experience_visual) + " EXP"

@@ -36,6 +36,8 @@ class Player:
         self.prevy = y 
         self.offsetx = 0
         self.offsety = 0
+        self.initx = x
+        self.inity = y
         self.inventory = [None]*40
         self.active_projectiles = []
         #self.active_spells = []
@@ -100,13 +102,18 @@ class Player:
         return False  # Inventory was full
 
     def increase_experience(self, incoming_experience):
+        #can handle negative numbers
         self.experience +=incoming_experience
         new_level = int(self.experience**(1/3))
+        if new_level>self.level:
+            while new_level>self.level:
+                self.level_up()
+                new_level = int(self.experience**(1/3)) #unneeded?
+        elif new_level<self.level:
+            while new_level<self.level:
+                self.level_down()
+                new_level = int(self.experience**(1/3)) #unneeded?
 
-        while new_level>self.level:
-            self.level_up()
-            new_level = int (self.experience**(1/3))
-    
     def level_up(self):
         self.level+=1
         
@@ -116,7 +123,14 @@ class Player:
         self.strength += 1
         self.maxstrength += 1
         
+    def level_down(self):
+        self.level-=1
+        
+        self.maxhealth -= 4
+        self.health -= 4
 
+        self.strength -= 1
+        self.maxstrength -= 1
     
 
     def equip_weapon(self, weapon):
@@ -237,11 +251,7 @@ class Player:
         if (self.health + health_to_restore > self.maxhealth) and item.name != "Durian":
             health_to_restore = self.maxhealth - self.health
         self.health += health_to_restore
-        #button_class.create_point_number(self.x, self.y, "+" + str(health_to_restore), (0, 189, 66, 255), self, all_buttons)
-        #print("adqwd")
         anim = animations.Animation("+" + str(health_to_restore), 2, 0, (0, 189, 66, 0), 0, 50, self.x, self.y+0.5, self.x, self.y, 0, None, None, self, self, -health_to_restore)
-        #when this anim happens...
-
         list_of_animations.append(anim)
 
         if item.name == "Starfruit":
@@ -439,7 +449,6 @@ class Player:
             # self.sprite_weapon.y = base_y
             self.sprite_weapon.scale = self.scale
             self.sprite_weapon.batch = batch
-
         elif self.equipment_weapon != None:# and self.technique != Technique.CAST:
             tile2 = self.itemgrid[self.equipment_weapon.spriteindex]
             self.sprite_weapon.image = tile2.get_texture()

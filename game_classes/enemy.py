@@ -24,6 +24,12 @@ def enemy_grid_to_use(level):
         return grid_entities4
 
 def refresh_all_visuals(entity):
+    entity.prevx = entity.x
+    entity.prevy = entity.y
+    entity.offsetx = 0
+    entity.offsety = 0
+    entity.initx = entity.x
+    entity.inity = entity.y
     entity.health_visual = entity.health
     entity.maxhealth_visual = entity.maxhealth
     if isinstance(entity, Enemy) == False:
@@ -57,9 +63,9 @@ def generate_enemy(name, level, x, y, grid):
     id = enemy_names.index(name)
     enemy = Enemy(
         name = name,
-        health = enemy_hps[id]*(level),
-        strength = enemy_strength[id]*(level),
-        defense = enemy_defense[id]*(level),
+        health = enemy_hps[id],
+        strength = enemy_strength[id],
+        defense = enemy_defense[id],
         level = level,
         sprite = create_sprite_enemy(grid, enemy_sprites[id]), #this SUCKS
         spriteindex = enemy_sprites[id],
@@ -83,24 +89,36 @@ class Enemy:
         global batch
         global group_enemies
         self.name = name
-        self.health = health
-        self.maxhealth = health
+        self.health = health*level
+        self.maxhealth = health*level
         self.level = level
 
         #these are for displaying the stats during combat
-        self.health_visual = health
-        self.maxhealth_visual = health
+        self.health_visual = health*level
+        self.maxhealth_visual = health*level
         self.level_visual = level
 
-        self.strength = strength  # Default strength
-        self.maxstrength = strength
-        self.strength_visual = strength
-        self.maxstrength_visual = strength
+        self.strength = strength*level  # Default strength
+        self.maxstrength = strength*level
+        self.strength_visual = strength*level
+        self.maxstrength_visual = strength*level
 
-        self.defense = defense  # Default defense
-        self.maxdefense = defense
-        self.defense_visual = defense
-        self.maxdefense_visual = defense
+        self.defense = defense*level  # Default defense
+        self.maxdefense = defense*level
+        self.defense_visual = defense*level
+        self.maxdefense_visual = defense*level
+
+        #these stats are the base stats that are used to scale stats when increasing a level
+        self.basehealth = health
+        self.basestrength = strength
+        self.basedefense = defense
+
+
+        print(self.health, self.defense)
+
+
+
+
 
         self.x = x # x coords are in 
         self.y = y
@@ -108,6 +126,8 @@ class Enemy:
         self.prevy = y 
         self.offsetx = 0
         self.offsety = 0
+        self.initx = x
+        self.inity = y
         self.inventory = []
         self.active_projectiles = []
         self.direction = FaceDirection.DOWN  # Default direction
@@ -362,14 +382,32 @@ class Enemy:
         self.defense = level*self.defense
         self.strength = level*self.strength
     
+
+    #str, hp, def need to be scaled
     def level_up(self):
-        #more can be added later
         self.level += 1
-        if self.name == "S'MORE":
-            self.maxhealth += 5  # You can scale this however you want
-            self.health = self.maxhealth  # Heal to full on level up
-            self.strength += 2
-            self.defense += 1
+        if self.level > 4:
+            self.level = 4
+        self.health = self.basehealth*self.level
+        self.maxhealth = self.basehealth*self.level
+        self.strength = self.basestrength*self.level  # Default strength
+        self.maxstrength = self.basestrength*self.level
+        self.defense = self.basedefense*self.level  # Default defense
+        self.maxdefense = self.basedefense*self.level
+
+        
+
+    #str, hp, def need to be scaled
+    def level_down(self):
+        self.level -= 1
+        if self.level < 1:
+            self.level = 1
+        self.health = self.basehealth*self.level
+        self.maxhealth = self.basehealth*self.level
+        self.strength = self.basestrength*self.level  # Default strength
+        self.maxstrength = self.basestrength*self.level
+        self.defense = self.basedefense*self.level  # Default defense
+        self.maxdefense = self.basedefense*self.level
     
     
     def can_see_player(self, player, vision_range=5):

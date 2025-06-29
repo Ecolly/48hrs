@@ -27,9 +27,9 @@ class Projectile:
         else:
             self.spriteindex = 4*29
 
-        if name == "Green Staff":
+        if name == "Staff of Ricochet":
            self.num_of_bounces = damage
-        elif name == "Magenta Staff":
+        elif name == "Piercing Staff":
             self.num_of_pierces = damage
 
 

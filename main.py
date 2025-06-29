@@ -47,6 +47,33 @@ tracemalloc.start()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #from button_object import *
 #from shaders import *
 has_won = 0
@@ -481,7 +508,7 @@ bg_deeper.batch = batch
 
         #self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "SCORPION"], ["SCORPION", "S'MORE", "CHROME DOME"], ["DRAGON", "S'MORE", "TETRAHEDRON"]]
         #self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 1], [2, 2, 2], [2, 3, 2]]
-        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         
 
 
@@ -489,13 +516,13 @@ def go_to_next_level():
     global floor, all_enemies, player, bg, bg_liqs, bg_deeper, floor_level
 
 
-    itemlist_beginner = ["Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield"]     
-    itemlist_beginner2 = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
-    itemlist_equal = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    itemlist_beginner = ["Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
+    itemlist_beginner2 = ["Knife", "Scimitar", "Rapier", "Machete", "Sickle", "Stick", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    itemlist_equal = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Black Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
 
     floor_level +=1
     if floor_level < 3: ##normal grass
-        #sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Water", ["HAMSTER", "LEAFALOTTA", "HAMSTER"], [1, 2, 2], ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Stick", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]                     #river zone
+        
         sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "HAMSTER", "GOOSE"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #river zone
         sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                      #river zone
@@ -545,6 +572,7 @@ def go_to_next_level():
     print(f"BEFORE{player.x, player.y}")
     player.x, player.y = floor.spawnpoint
     player.prevx, player.prevy = floor.spawnpoint
+    player.initx, player.inity = floor.spawnpoint
     all_enemies = floor.all_enemies
     #floor_level +=1
     floor.map_type = sc
@@ -701,23 +729,44 @@ create_gui(all_buttons, player)
 create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
-player.add_to_inventory(floor.create_item("Red Tome", grid_items))
 
-# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 
-# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+# player.add_to_inventory(floor.create_item("Tome of Recovery", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Injury", grid_items))
+player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
+player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
+player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
+player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
+player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
+player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
+player.add_to_inventory(floor.create_item("Staffboost Tome", grid_items))
+player.add_to_inventory(floor.create_item("Blank Tome", grid_items))
 
-# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
 
-# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+player.add_to_inventory(floor.create_item("Coloring Tome", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
+#player.add_to_inventory(floor.create_item("Tome of Dispersion", grid_items))
 
-# player.add_to_inventory(floor.create_item("Blue Staff", grid_items))
-# # player.add_to_inventory(floor.create_item("Stick", grid_items))
-# # player.add_to_inventory(floor.create_item("Light Blue Staff", grid_items))
+player.add_to_inventory(floor.create_item("Energizing Staff", grid_items))
+player.add_to_inventory(floor.create_item("Staff of Swapping", grid_items))
+player.add_to_inventory(floor.create_item("Staff of Warping", grid_items))
+
+# player.add_to_inventory(floor.create_item("Piercing Staff", grid_items))
+
+# player.add_to_inventory(floor.create_item("Piercing Staff", grid_items))
+
+# player.add_to_inventory(floor.create_item("Staff of Paralysis", grid_items))
+player.add_to_inventory(floor.create_item("Stick", grid_items))
+player.add_to_inventory(floor.create_item("Stick", grid_items))
+player.add_to_inventory(floor.create_item("Knife", grid_items))
+player.add_to_inventory(floor.create_item("Leaf Shield", grid_items))
+# # player.add_to_inventory(floor.create_item("Staff of Warping", grid_items))
 # player.add_to_inventory(floor.create_item("Armor Plate", grid_items))
-# #player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
-# player.add_to_inventory(floor.create_item("Wood Shield", grid_items))
-# player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
+player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
+player.add_to_inventory(floor.create_item("Wood Shield", grid_items))
+player.add_to_inventory(floor.create_item("Spiked Shield", grid_items))
+# player.add_to_inventory(floor.create_item("Sun Shield", grid_items))
+# player.add_to_inventory(floor.create_item("Balance Shield", grid_items))
 # player.add_to_inventory(floor.create_item("Knife", grid_items))
 # # player.add_to_inventory(floor.create_item("Machete", grid_items))
 # # player.add_to_inventory(floor.create_item("Scimitar", grid_items))
@@ -726,11 +775,11 @@ player.add_to_inventory(floor.create_item("Red Tome", grid_items))
 # # player.add_to_inventory(floor.create_item("Fury Cutter", grid_items))
 # player.add_to_inventory(floor.create_item("Windsword", grid_items))
 
-# player.add_to_inventory(floor.create_item("Red Staff", grid_items))
-# player.add_to_inventory(floor.create_item("Orange Staff", grid_items))
-# player.add_to_inventory(floor.create_item("Gold Staff", grid_items))
-# player.add_to_inventory(floor.create_item("Green Staff", grid_items))
-# player.add_to_inventory(floor.create_item("Teal Staff", grid_items))
+player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
+# player.add_to_inventory(floor.create_item("Staff of Swapping", grid_items))
+player.add_to_inventory(floor.create_item("Staff of Mana", grid_items))
+player.add_to_inventory(floor.create_item("Staff of Ricochet", grid_items))
+# player.add_to_inventory(floor.create_item("Staff of Lethargy", grid_items))
 # # player.add_to_inventory(floor.create_item("Rock", grid_items))
 # # player.add_to_inventory(floor.create_item("Rock", grid_items))
 # # player.add_to_inventory(floor.create_item("Rock", grid_items))
@@ -750,9 +799,9 @@ player.add_to_inventory(floor.create_item("Red Tome", grid_items))
 # # player.add_to_inventory(floor.create_item("Rock", grid_items))
 # # player.add_to_inventory(floor.create_item("Rock", grid_items))
 
-# player.add_to_inventory(floor.create_item("Starfruit", grid_items))
+player.add_to_inventory(floor.create_item("Starfruit", grid_items))
 
-# player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+player.add_to_inventory(floor.create_item("Piercing Staff", grid_items))
 
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
@@ -994,7 +1043,7 @@ def on_draw():
     hotbar.update_hotbar(player.inventory)
     hotbar.draw_hotbar_items(batch, group_hotbar)
     
-    if keys[pyglet.window.key.Q]:
+    if keys[pyglet.window.key.SPACE]:
         while len(all_anims) > 0:
             for anim in all_anims:
                 anim.draw(batch, player, group_effects, floor)
@@ -1004,16 +1053,37 @@ def on_draw():
             anim.draw(batch, player, group_effects, floor)
         delete_object.delobj(all_anims)
 
-
-
     if gamestate != 2:
         delete_object.delobj(all_enemies)
     
     delete_object.delobj(floor.floor_items)
-    # delete_object.delobj(player.active_projectiles)
+    # delete_object.delobj(player.active_projectiles) projectiles get deleted somehow even without this. so. whatev.
     delete_object.delobj(all_anims)
-    delete_object.delobj(player.inventory)
+    #delete_object.delobj(player.inventory)
     delete_object.delobj(all_buttons)
+
+    #unique inventory deletion script
+    objlist = player.inventory
+    i = 0
+    while i < len(objlist):
+        if objlist[i] is not None:
+            if objlist[i].should_be_deleted == True: #this attribute exists in all classes; set to True to delete an object.
+                if hasattr(objlist[i], 'sprite') == True and objlist[i].sprite != None:
+                    objlist[i].sprite.delete()  
+                    del objlist[i].sprite
+                    del objlist[i].hotbar_sprite       
+                if hasattr(objlist[i], 'sprites') == True:
+                    for sprite in objlist[i].sprites:
+                        sprite.delete()  
+                        del sprite       
+                objlist[i] = None
+            else:
+                i += 1
+        else:
+                i += 1
+
+
+
 
 
     for button in all_buttons:
@@ -1078,11 +1148,12 @@ def on_draw():
     batch.draw()
 
     if bg_animframe%60 == 0:
-        gc.collect(generation=2)
-        sys._clear_internal_caches()
+        #gc.collect(generation=2)
+        #sys._clear_internal_caches()
         print("allocated blocks: " + str(sys.getallocatedblocks()))
-        print(f"RSS (Resident Set Size): {mem_info.rss / (1024 * 1024):.2f} MB")
-        print(f"VMS (Virtual Memory Size): {mem_info.vms / (1024 * 1024):.2f} MB")
+        #print(objgraph.count('Projectile'))
+        #print(f"RSS (Resident Set Size): {mem_info.rss / (1024 * 1024):.2f} MB")
+        #print(f"VMS (Virtual Memory Size): {mem_info.vms / (1024 * 1024):.2f} MB")
         #objgraph.show_growth()
 
     

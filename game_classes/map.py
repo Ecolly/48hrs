@@ -1,10 +1,11 @@
 import random
 from game_classes.item import Item, Weapon, Consumable, Shield, Staff, Miscellanious, Tome
 from game_classes.enemy import*
+from game_classes.id_shuffling import *
 
 
 
-
+#fakenames_staffs_names = ["Mahogany Staff", "Red Staff", "Orange Staff", ""]
 
 
 
@@ -42,7 +43,7 @@ class Map:
         
         #self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "SCORPION"], ["SCORPION", "S'MORE", "CHROME DOME"], ["DRAGON", "S'MORE", "TETRAHEDRON"]]
         #self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 1], [2, 2, 2], [2, 3, 2]]
-        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Red Staff", "Orange Staff", "Gold Staff", "Green Staff", "Teal Staff", "Blue Staff", "Light Blue Staff", "Magenta Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Black Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         
         
         self.floor_items = []  # List to hold items on the floor
@@ -86,7 +87,7 @@ class Map:
 
         max_size = max(min_possible_size, int(max_possible_size * (1 - (self.number_of_rooms / 20))))
         min_size = max(min_possible_size, int(max_size * 0.6))
-
+        #self.number_of_rooms = 2
         rooms_created = 0
         attempts = 0
         max_attempts = self.number_of_rooms * 10  # Limit attempts to avoid infinite loop
@@ -144,6 +145,9 @@ class Map:
 
     def create_item(self, name, grid_items):
         # Example dummy factory
+        global fakenames_staffs_key
+        global fakenames_tomes_key
+
 
         if name == "Knife":
             return Weapon(name, grid_items, sprite_locs = 0, damage=4, durability=100, description="A common household chef's knife.")
@@ -161,36 +165,103 @@ class Map:
             return Weapon(name, grid_items, sprite_locs = 9, damage=20, durability=100, description="Ominous energy seeps off the cutting edge. The weapon returns 1/4 of damage dealt to the bearer.") #deducts 1/4 of attack damage from your hp
         elif name == "Windsword":
             return Weapon(name, grid_items, sprite_locs = 10, damage=9, durability=100, description="Imbued with magical runes, this longsword is more powerful than the average weapon.")
-        elif name == "Red Staff":
-            return Staff(name, grid_items, sprite_locs = 1, damage=10, projectile=True, description="Divides the target's HP by 2.") #divides enemy's hp by 2
-        elif name == "Orange Staff":
-            return Staff(name, grid_items, sprite_locs = 2, damage=10, projectile=False, description="???")
-        elif name == "Gold Staff":
-            return Staff(name, grid_items, sprite_locs = 7, damage=10, projectile=True, description="Damage depends on mana used.") #deals set damage according to # of charges used
-        elif name == "Green Staff":
-            return Staff(name, grid_items, sprite_locs = 10, damage=10, projectile=True, description="Projectile bounces off walls.") #bounces
-        elif name == "Teal Staff":
-            return Staff(name, grid_items, sprite_locs = 13, damage=10, projectile=True, description="Target's speed is reduced to 1/2. Duration depends on mana used.") #slows down enemy
-        elif name == "Blue Staff":
-            return Staff(name, grid_items, sprite_locs = 16, damage=10, projectile=True, description="Paralyzes target. Duration depends on mana used.") #paralyzes enemy
-        elif name == "Light Blue Staff":
-            return Staff(name, grid_items, sprite_locs = 17, damage=10, projectile=False, description="Levels up all creatures on the floor.") #levels up all enemies on a floor, including you
-        elif name == "Magenta Staff":
-            return Staff(name, grid_items, sprite_locs = 22, damage=10, projectile=True, description="Target pierces a number of enemies equal to mana used.") #pierces enemies
+        
+        
+        
+        
+        
+        
+        
+        elif name == "Greater Healing Staff":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[0], damage=10, projectile=True, description="Multiplies the target's HP by 2.") #multiplies enemy's hp by 2
+        elif name == "Staff of Division":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[1], damage=10, projectile=True, description="Divides the target's HP by 2.") #divides enemy's hp by 2
+        elif name == "Staff of Swapping":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[2], damage=10, projectile=True, description="Swap places with target.") #swap places
+        elif name == "Lesser Healing Staff":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[3], damage=10, projectile=True, description="Healing depends on mana used.") #deals set healing according to mana used
+        elif name == "Energizing Staff":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[4], damage=10, projectile=True, description="Target's speed is doubled. Duration depends on mana used.") #deals set healing according to mana used
+        elif name == "Staff of Mana":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[5], damage=10, projectile=True, description="Damage depends on mana used.") #deals set damage according to # of charges used
+        elif name == "Staff of Ricochet":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[6], damage=10, projectile=True, description="Projectile bounces off walls.") #bounces
+        elif name == "Staff of Lethargy":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[7], damage=10, projectile=True, description="Target's speed is reduced to 1/2. Duration depends on mana used.") #slows down enemy
+        elif name == "Staff of Paralysis":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[8], damage=10, projectile=True, description="Paralyzes target. Duration depends on mana used.") #paralyzes enemy
+        elif name == "Staff of Warping":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[9], damage=10, projectile=True, description="Warps target to a random location on the floor.") #levels up all enemies on a floor, including you
+        elif name == "Piercing Staff":
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[10], damage=10, projectile=True, description="Target pierces a number of enemies equal to mana used.") #pierces enemies
         elif name == "Black Staff":
-            return Staff(name, grid_items, sprite_locs = 25, damage=10, projectile=False, description="That's strange. This one doesn't seem to do anything.") 
-        elif name == "Red Tome":
-            return Tome(name, grid_items, sprite_locs = 1, damage=10, projectile=False, description="Deduct 15 HP from all creatures on the floor.")
+            return Staff(name, grid_items, sprite_locs = fakenames_staffs_key[11], damage=10, projectile=True, description="That's strange. This one doesn't seem to do anything.") 
+        
+        
+        
+        
+        
+        elif name == "Tome of Recovery":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[0], damage=10, projectile=False, description="Heal 15 HP from all creatures on the floor.")
+        elif name == "Tome of Injury":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[1], damage=10, projectile=False, description="Deduct 15 HP from all creatures on the floor.")
+        elif name == "Tome of Promotion":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[2], damage=10, projectile=False, description="Level up all creatures on the floor.")
+        elif name == "Tome of Demotion":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[3], damage=10, projectile=False, description="Level down all creatures on the floor.")
+        elif name == "Immunity Tome":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[4], damage=10, projectile=False, description="Temporarily boost defense of all creatures on the floor to 100.")
+        elif name == "Paperskin Tome":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[5], damage=10, projectile=False, description="Makes all creatures on the floor die to a single physical attack.")
+        elif name == "Sharpening Tome":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[6], damage=10, projectile=False, description="Finds the last weapon in your inventory and boosts attack by 1.")
+        elif name == "Fortifying Tome":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[7], damage=10, projectile=False, description="Finds the last shield in your inventory and boosts defense by 1.")
+        elif name == "Staffboost Tome":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[8], damage=10, projectile=False, description="Finds the last staff in your inventory and boosts max mana by 1.")
+        elif name == "Tome of Consolidation":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[9], damage=10, projectile=False, description="Finds the last two staffs, shields, or weapons in your inventory. First item gains the bonus of the second item, or +1 to max mana in the case of a staff. Second item is destroyed.")
+        elif name == "Tome of Dispersion":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[10], damage=10, projectile=False, description="Finds the last staff or tome in your inventory. If able, split the item into its constituent colors.")
+        elif name == "Coloring Tome":
+            return Tome(name, grid_items, sprite_locs = fakenames_tomes_key[11], damage=10, projectile=False, description="Finds the last two staffs or tomes in your inventory. First item gains the color of the second item.")
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        elif name == "Blank Tome":
+            return Tome(name, grid_items, sprite_locs = 28, damage=10, projectile=False, description="Copies the effect of the last tome in your inventory.")
+        
+        
+        
         elif name == "Blue Shield":
-            return Shield(name, grid_items, sprite_locs=1, defense=4, description="A sturdy, shield painted with the emblem of a government.")
+            return Shield(name, grid_items, sprite_locs=1, defense=5, description="A sturdy shield painted with the emblem of a government.")
         elif name == "Mirror Shield":
             return Shield(name, grid_items, sprite_locs=2, defense=1, description="This shield is weak but will reflect projectiles.")
         elif name == "Wood Shield":
-            return Shield(name, grid_items, sprite_locs=3, defense=2, description="A crude wooden shield usually used for training.")
+            return Shield(name, grid_items, sprite_locs=3, defense=3, description="A crude wooden shield usually used for training.")
         elif name == "Steel Shield":
-            return Shield(name, grid_items, sprite_locs=4, defense=6, description="A thick, heavy shield made from a tough alloy.")
+            return Shield(name, grid_items, sprite_locs=4, defense=7, description="A thick, heavy shield made from a tough alloy.")
         elif name == "Armor Plate":
             return Shield(name, grid_items, sprite_locs=5, defense=18, description="Industrial plating once used to shield a tank from artillery fire. Holding it prevents weapons from being used.") #prevents weapons from adding to strength
+        elif name == "Leaf Shield":
+            return Shield(name, grid_items, sprite_locs=6, defense=1, description="A large, rubbery leaf.")
+        elif name == "Spiked Shield":
+            return Shield(name, grid_items, sprite_locs=0, defense=3, description="Studded with thorns, this shield will return damage back to any attackers.")
+        elif name == "Sun Shield":
+            return Shield(name, grid_items, sprite_locs=8, defense=4, description="Fractal networks of microcrystalline fiber adsorbs the effects of magical damage.")
+        elif name == "Balance Shield":
+            return Shield(name, grid_items, sprite_locs=7, defense=4, description="Shares damage between you and your attacker.")
+        
+        
+        
         elif name == "Rock":
             return Miscellanious(name, grid_items, sprite_locs = 0, description = "A rock.")
         elif name == "Note":

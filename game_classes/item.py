@@ -23,13 +23,16 @@ class Item:
         #item_spritelocs = [29*10, 29*10+1, 29*10+2, 29*10+3, 29*10+4]
 
         self.name = name
+        self.name_visual = self.name
         # self.index = item_names.index(name)
         # self.fakename = item_fakenames[self.index]
         self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
         self.hotbar_sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
+        self.grid = grid_items
         #self.equppedsprite
         self.spriteindex = 29*10+sprite_locs
         self.color = (255, 255, 255, 255)
+        self.magic_color = 0 #for tome and spell color mechanics
         self.x = x
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
@@ -55,6 +58,7 @@ class Item:
         self.num_of_pierces = 0
         self.description = description
         self.is_hovered = False
+        
 
 
     def use(self, target):
@@ -137,7 +141,7 @@ class Item:
                 additional_info_drawn = draw_tiny_texts(additional_info, base_x, base_y - -20, batch, group)
             else:
                 additional_info_drawn = ""
-                
+
             return description, additional_info_drawn
         return None, None
 
@@ -218,9 +222,10 @@ class Weapon(Item):
         self.bonus = 0
         
 class Staff(Item):
-    def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30, description=""):
+    def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=7, description=""):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*10+sprite_locs
+        self.magic_color = sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
         self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
         self.damage = damage
@@ -235,6 +240,7 @@ class Tome(Item):
     def __init__(self, name, grid_items, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30, description=""):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*5+sprite_locs
+        self.magic_color = sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
         self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
         self.damage = damage
@@ -244,6 +250,7 @@ class Tome(Item):
         self.is_castable = False
         self.is_castable_projectile = False
         self.is_readable = True
+        self.to_be_converted = None
 
 class Consumable(Item):
     def __init__(self, name, grid_items, sprite_locs, nutrition_value, x=0, y=0, quantity=1, description=""):
