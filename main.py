@@ -466,21 +466,44 @@ def on_key_press(symbol, modifiers):
                 gamestate = 2
                 all_anims = turn_logic.do_turns(all_enemies, player, floor)
         
-        elif gamestate == 3:
+        elif gamestate == 3: #kind of works but not really becasue the enemies dont take a turn after
             slot = 0 #theres probably a more pythonic way to do this, sowwy
             for item in player.inventory:
                 if item is not None:
                     # i is the slot at that position
-                    item.draw_inventory(batch, player, group_inv, slot, gamestate)
                     #if mouse is hovering over that item, draw description
                     if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
                         name_desc = get_display_name_and_description(item)
                         adventure_log.append(str(player.name) + " dropped " + name_desc[0] + ".")
                         player.drop_item(item, floor)
+<<<<<<< Updated upstream
                         gamestate = 2
                         all_anims = turn_logic.do_turns(all_enemies, player, floor)
                         delete_buttons_supertype(all_buttons, 'inventory')
+=======
+                        #gamestate = 2
+                        # all_anims = turn_logic.do_turns(all_enemies, player, floor)
+>>>>>>> Stashed changes
                 slot = slot + 1
+    if pyglet.window.key._1 <= symbol <= pyglet.window.key._9:
+        hotbar.selected = symbol - pyglet.window.key._1  # 0-8
+        hotbar.draw_selected_slot()
+        item_selected = hotbar.get_selected_item()
+        if item_selected is not None:
+            if isinstance(item_selected, Weapon):
+                player.equip_weapon(item_selected)
+            elif isinstance(item_selected, Staff):
+                print("casting staff")
+                player.techniqueitem = item_selected
+                gamestate = 5
+            else:
+                player.unequip_weapon()
+        else:
+            player.unequip_weapon()
+    elif symbol == pyglet.window.key._0:
+        hotbar.selected = 9  # Slot 9
+        hotbar.draw_selected_slot()
+        item_selected = hotbar.get_selected_item()
 
 floor_level = 0
 
@@ -940,6 +963,7 @@ def on_draw():
             dirx = 1
         elif keys[pyglet.window.key.A]:
             dirx = -1
+        
 
         if dirx == 0 and diry == 0 and keys[pyglet.window.key.E] == False and keys[pyglet.window.key.TAB] == False:
             keypress_chk = 0
