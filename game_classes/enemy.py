@@ -48,8 +48,8 @@ def create_sprite_enemy(image_grid, index):
     return pyglet.sprite.Sprite(tex, x=0, y=0)
 
 
-def generate_enemy(name, level, x, y, grid):
-
+def generate_enemy(name, level, x, y, grid, floor):
+    global grid_items
     enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE"]
     enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 13, 6, 20, 24, 18]
     enemy_strength = [0, 7, 5, 9, 9, 14, 9, 15, 15, 18, 12, 1, 1, 1, 1]
@@ -59,6 +59,8 @@ def generate_enemy(name, level, x, y, grid):
     enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16]
     enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40]
     enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
+    enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", None, "Rapier", None, None, None, "Staff of Mana", None, None]
+    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 0, 1, 0, 0, 0, 1, 0, 0]
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -77,8 +79,13 @@ def generate_enemy(name, level, x, y, grid):
         x = x,
         y = y,
         experience = enemy_exp[id]*(level)*(level),
-        speed = enemy_speeds[id]
+        speed = enemy_speeds[id],
     ) 
+
+    if random.uniform(0, 1) < enemy_drop_odds[id]:
+        enemy.current_holding = floor.create_item(enemy_drops[id], grid_items)  
+    else:
+        enemy.current_holding = None 
 
     return enemy
 
@@ -88,6 +95,7 @@ class Enemy:
     def __init__(self, name, health, strength, defense, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y, experience, speed):
         global batch
         global group_enemies
+        global grid_items
         self.name = name
         self.health = health*level
         self.maxhealth = health*level
@@ -139,8 +147,23 @@ class Enemy:
         self.equipment_weapon = None
         self.equipment_shield = None
         self.should_be_deleted = False
-        self.current_holding = False
         
+        self.current_holding = None
+
+
+        self.sprite_weapon = image_handling.create_sprite(grid_items, 0)
+        #self.sprite_shield = image_handling.create_sprite(itemgrid, 0)
+        self.sprite_weapon.color = (0, 0, 0, 0)
+        #self.sprite_shield.color = (0, 0, 0, 0)
+        self.itemgrid = grid_items
+        self.sprite_weapon.batch = batch 
+        #self.sprite_shield.batch = batch
+
+
+
+
+
+
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex_prev = -1
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
@@ -176,6 +199,7 @@ class Enemy:
         self.rage_ai_turns = 0
 
         self.invisible_frames = 0
+        #self.translucent_frames = 0
 
     def sign(self, x):
         return (x > 0) - (x < 0)  # returns 1, 0, or -1
@@ -208,7 +232,7 @@ class Enemy:
                 # If not moving or can't move, stay still
                 return Technique.STILL, self.x, self.y
                     
-        elif self.rage_ai_turns > 0 or self.name == "JUJUBE" or self.name == "FOX" or self.name == "GOOSE" or self.name == "CHROME DOME" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
+        elif self.rage_ai_turns > 0 or self.name == "JUJUBE" or self.name == "FOX" or self.name == "GOOSE" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 return Technique.HIT, xtochk, ytochk
             else:
@@ -276,7 +300,16 @@ class Enemy:
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
                 return Technique.MOVE, new_x, new_y    
-            
+        elif self.name == "CHROME DOME":
+            if (self.current_holding.name == "Rapier" and abs(xtochk-self.x) < 3 and abs(ytochk-self.y) < 3):
+                self.techniqueitem = game_map.create_item("Rapier", grid_items)
+                return Technique.HIT, xtochk, ytochk
+            elif (abs(xtochk-self.x) < 3 and abs(ytochk-self.y) < 3):
+                return Technique.HIT, xtochk, ytochk
+            else:
+                new_x = self.x + self.sign(xtochk - self.x)
+                new_y = self.y + self.sign(ytochk - self.y)
+                return Technique.MOVE, new_x, new_y    
         elif self.name == "CULTIST":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 if random.randint(0, 2) == 1 or self.defense < 0:
@@ -291,13 +324,16 @@ class Enemy:
                             self.techniqueitem = game_map.create_item("Paperskin Tome", grid_items)
                     return Technique.CAST, 0, 0
                 else:
+                    self.techniqueitem = game_map.create_item("Staff of Mana", grid_items) #suboptimal, this item is only being generated so the enemy looks like its holding something
                     self.active_projectiles.append(Projectile("Staff of Mana", 2, self.x, self.y, player.x, player.y, self))
                     self.techniquecharges = 2
                     return Technique.THROW, player.x, player.y
             elif abs(player.x-self.x) < 4 and abs(player.y-self.y) < 4 and random.randint(0, 4) == 1:
                 if self.level == 1 or self.level == 2:
+                    self.techniqueitem = game_map.create_item("Staff of Swapping", grid_items)
                     self.active_projectiles.append(Projectile("Staff of Swapping", 2, self.x, self.y, player.x, player.y, self))
                 else:
+                    self.techniqueitem = game_map.create_item("Staff of Division", grid_items)
                     self.active_projectiles.append(Projectile("Staff of Division", 2, self.x, self.y, player.x, player.y, self))
                 self.techniquecharges = 2
                 return Technique.THROW, player.x, player.y
@@ -371,11 +407,7 @@ class Enemy:
             return True
 
 
-    def draw(self, batch, animation_presets, player, group):
-
-
-
-
+    def draw(self, batch, animation_presets, player, group, group_bg, group_fg):
         sprite = self.sprite
         self.grid = enemy_grid_to_use(self.level_visual)
         if self.paralysis_visual > 0:
@@ -389,19 +421,14 @@ class Enemy:
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale + self.offsety*16*self.scale
 
         if frame_index != self.spriteindex_prev:
-            # tile = self.grid[frame_index]
-
-            # # Get texture and set filtering
-            # texture = tile.get_texture()
-            # texture.min_filter = pyglet.gl.GL_NEAREST
-            # texture.mag_filter = pyglet.gl.GL_NEAREST
-
-            # Assign directly — no blitting, no texture creation
-
             sprite.image.blit_into(self.grid[self.spriteindex + frame_index], 0, 0, 0)
             self.spriteindex_prev = frame_index
 
-            #sprite.image = self.spriteset[frame_index]#texture
+
+
+
+        self.sprite_weapon.scale = self.scale
+        self.sprite_weapon.batch = batch
 
         self.animframe = self.animframe + self.animmod*self.speed_visual
         if self.animframe >= len(animation_presets[self.animtype]):
@@ -414,9 +441,31 @@ class Enemy:
         sprite.color = self.color
         if self.invisible_frames > 0:
             sprite.color = (0, 0, 0, 0)
+            self.sprite_weapon.color = (0, 0, 0, 0)
+        else:
+            if self.techniqueitem != None:
+                self.sprite_weapon.image.blit_into(self.itemgrid[self.techniqueitem.spriteindex], 0, 0, 0)
+                self.sprite_weapon.color = (255, 255, 255, 255)
+                if isinstance(self.techniqueitem, Weapon):
+                    self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "weapon", "right")
+                else:
+                    self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
+            elif self.current_holding != None and isinstance(self.current_holding, Consumable) == False:
+                self.sprite_weapon.image.blit_into(self.itemgrid[self.current_holding.spriteindex], 0, 0, 0)
+                self.sprite_weapon.color = (255, 255, 255, 255)
+
+                if isinstance(self.current_holding, Weapon):
+                    self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "weapon", "right")
+                else:
+                    self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
+                
+                #self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, self.current_holding_type, "right")
+            else:
+                self.sprite_weapon.color = (0, 0, 0, 0)
         self.invisible_frames += -1
         #sprite.batch = batch
         #sprite.z = 40
+
 
 
 
@@ -467,6 +516,93 @@ class Enemy:
         px, py = player.x, player.y
         distance = ((ex - px) ** 2 + (ey - py) ** 2) ** 0.5
         return distance <= vision_range
+    
+    #duplicate of the player's version
+    def get_helditem_coordanites(self, base_x, base_y, frame_index, group_bg, group_fg, type, hand):
+        coordlist = [[4, 4, 13, 4], [5, 4, 14, 4], [5, 4, 14, 5], [3, 4, 12, 4], [3, 5, 12, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [5, 4, 12, 4], [4, 4, 13, 4], [4, 4, 14, 4], [8, 4, 11, 4], [8, 4, 10, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [8, 3, 8, 3], [7, 4, 9, 4], [6, 3, 11, 3], [9, 4, 7, 4], [11, 4, 6, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [12, 4, 5, 4], [13, 4, 4, 4], [14, 4, 4, 4], [11, 4, 8, 4], [10, 4, 8, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [13, 4, 4, 4], [14, 4, 3, 4], [15, 5, 3, 4], [14, 4, 3, 4], [14, 4, 2, 5], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [12, 4, 5, 4], [13, 4, 4, 4], [14, 4, 4, 4], [11, 4, 8, 4], [10, 4, 8, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [9, 3, 9, 3], [8, 4, 10, 4], [7, 3, 12, 3], [10, 4, 8, 4], [12, 3, 6, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+        [5, 4, 12, 4], [4, 4, 13, 4], [4, 4, 14, 4], [8, 4, 11, 4], [8, 4, 10, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+
+        
+        coords_on_player = coordlist[frame_index]
+
+        if type == "weapon":
+            item_coords = [5, 5, 12, 5]
+        elif type == "shield":
+            item_coords = [8, 7, 8, 7]
+        else: #staff coords:
+            item_coords = [6, 4, 11, 4]
+
+        if hand == "right":
+            if self.direction == FaceDirection.DOWN:
+                scale = -1
+                group = group_fg
+            elif self.direction == FaceDirection.DOWN_RIGHT:
+                scale = 1
+                group = group_fg
+            elif self.direction == FaceDirection.RIGHT:
+                scale = 1
+                group = group_fg
+            elif self.direction == FaceDirection.UP_RIGHT:
+                scale = 1
+                group = group_fg
+            elif self.direction == FaceDirection.UP:
+                scale = 1
+                group = group_bg
+            elif self.direction == FaceDirection.UP_LEFT:
+                scale = -1
+                group = group_bg
+            elif self.direction == FaceDirection.LEFT:
+                scale = -1
+                group = group_bg
+            else: #down left
+                scale = -1
+                group = group_bg
+            if scale == 1:
+                coords = [-item_coords[0] + coords_on_player[0], -item_coords[1] + coords_on_player[1]]
+            else:
+                coords = [-item_coords[2] + coords_on_player[0] + 16, -item_coords[3] + coords_on_player[1]]
+        else:
+            if self.direction == FaceDirection.DOWN:
+                scale = 1
+                group = group_fg
+            elif self.direction == FaceDirection.DOWN_RIGHT:
+                scale = 1
+                group = group_bg
+            elif self.direction == FaceDirection.RIGHT:
+                scale = 1
+                group = group_bg
+            elif self.direction == FaceDirection.UP_RIGHT:
+                scale = -1
+                group = group_bg
+            elif self.direction == FaceDirection.UP:
+                scale = -1
+                group = group_bg
+            elif self.direction == FaceDirection.UP_LEFT:
+                scale = -1
+                group = group_fg
+            elif self.direction == FaceDirection.LEFT:
+                scale = -1
+                group = group_fg
+            else: #down left
+                scale = 1
+                group = group_fg
+            if scale == 1:
+                coords = [-item_coords[0] + coords_on_player[2], -item_coords[1] + coords_on_player[3]]
+            else:
+                coords = [-item_coords[2] + coords_on_player[2] + 16, -item_coords[3] + coords_on_player[3]]
+
+
+
+
+
+
+        return base_x + coords[0]*self.scale, base_y + coords[1]*self.scale, scale, group
 
 
 

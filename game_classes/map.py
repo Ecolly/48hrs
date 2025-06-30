@@ -203,7 +203,7 @@ class Map:
         elif name == "Phobia Staff":
             return Staff(name, grid_items, reverse="Staff of Violence",sprite_locs = fakenames_staffs_key[12], damage=10, projectile=True, description="Target flees from you. Duration depends on mana used.") #pierces enemies
         elif name == "Staff of Violence":
-            return Staff(name, grid_items, reverse="Phobia Staff", sprite_locs = fakenames_staffs_key[13], damage=10, projectile=True, description="Target attempts to fight you and their attack is temporarily increased by 1.5x. Duration depends on mana used.") 
+            return Staff(name, grid_items, reverse="Phobia Staff", sprite_locs = fakenames_staffs_key[13], damage=10, projectile=True, description="Target attempts to fight you using physical attacks only. Duration depends on mana used.") 
         
         
         
@@ -325,7 +325,7 @@ class Map:
             self.valid_entity_tiles.remove(random_location)
             
 
-            self.all_enemies.append(generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level)))
+            self.all_enemies.append(generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level), self))
 
 
 

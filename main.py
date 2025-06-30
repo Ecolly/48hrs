@@ -183,7 +183,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     
     if button == pyglet.window.mouse.LEFT:
         item_selected = hotbar.get_selected_item()
-        if gamestate == 5 and isinstance(item_selected, Staff):
+        if gamestate == 1 and isinstance(item_selected, Staff):
             gamestate = 6 #6 means power bar mode
             create_power_bar(all_buttons, item_selected, mouse_x, mouse_y)
         if gamestate == 3:  # Inventory state
@@ -290,10 +290,10 @@ def on_mouse_release(x, y, button, modifiers):
                         gamestate = 0
                         create_win_lose_screen(all_buttons, "win")
      
-                elif isinstance(item_selected, Staff):
-                    print("casting staff")
-                    player.techniqueitem = item_selected
-                    gamestate = 5
+                # elif isinstance(item_selected, Staff): #this never happens because pressing lclick with staff brings gamestate to 6
+                #     print("casting staff")
+                #     player.techniqueitem = item_selected
+                #     gamestate = 5
                 else: #unarmed attack
                     mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                     mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
@@ -320,7 +320,7 @@ def on_mouse_release(x, y, button, modifiers):
                 all_anims = turn_logic.do_turns(all_enemies, player, floor)
                 
 
-
+            #print(gamestate, "fwefew")
             if gamestate == 6 and was_button_clicked == 0: #button was released; check powerbar values
 
                 for button2 in all_buttons:
@@ -333,6 +333,7 @@ def on_mouse_release(x, y, button, modifiers):
                         button2.animframe = -24
                         #num of charges = func
                 player.techniquecharges = max(round(func), 1)
+                player.techniqueitem = item_selected
                 #print(button.extra_1)
                 if func > item_selected.charges: #if num of charges exceeds amount remaining, just choose a random amount
                     func = random.randint(1, item_selected.charges)
@@ -428,9 +429,10 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
         if isinstance(item_selected, Weapon):
             player.equip_weapon(item_selected)
         elif isinstance(item_selected, Staff):
-            print("casting staff")
-            player.techniqueitem = item_selected
-            gamestate = 5
+            pass #sustonium
+            #print("casting staff")
+            #player.techniqueitem = item_selected
+            #gamestate = 5
         else:
             player.unequip_weapon()
     else:
@@ -510,7 +512,7 @@ def go_to_next_level():
     floor_level +=1
     if floor_level < 3: ##normal grass
         
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "CHLOROSPORE", "CHROME DOME"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #river zone
         sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                      #river zone
     elif floor_level < 7: #seafoam grass
@@ -740,7 +742,7 @@ player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
 
 player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
 player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
-player.add_to_inventory(floor.create_item("Staff of Violence", grid_items))
+player.add_to_inventory(floor.create_item("Staff of Mana", grid_items))
 player.add_to_inventory(floor.create_item("Phobia Staff", grid_items))
 
 # player.add_to_inventory(floor.create_item("Piercing Staff", grid_items))
@@ -767,33 +769,11 @@ player.add_to_inventory(floor.create_item("Spiked Shield", grid_items))
 # # player.add_to_inventory(floor.create_item("Fury Cutter", grid_items))
 # player.add_to_inventory(floor.create_item("Windsword", grid_items))
 
-player.add_to_inventory(floor.create_item("Red Staff", grid_items))
-player.add_to_inventory(floor.create_item("Orange Staff", grid_items))
-player.add_to_inventory(floor.create_item("Gold Staff", grid_items))
-player.add_to_inventory(floor.create_item("Green Staff", grid_items))
-player.add_to_inventory(floor.create_item("Teal Staff", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
-# player.add_to_inventory(floor.create_item("Rock", grid_items))
+
 
 player.add_to_inventory(floor.create_item("Starfruit", grid_items))
 
-player.add_to_inventory(floor.create_item("Magenta Staff", grid_items))
+\
 
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
@@ -1015,9 +995,10 @@ def on_draw():
 
 
     #sprite.image = texture
-    player.draw(batch, animation_presets, group_enemies, group_enemies_bg, group_enemies_fg)
+    player.draw(batch, animation_presets, group_enemies, group_enemies_bg, group_enemies_fg, hotbar.get_selected_item())
+
     for enemy in all_enemies:
-        enemy.draw(batch, animation_presets, player, group_enemies)
+        enemy.draw(batch, animation_presets, player, group_enemies, group_enemies_bg, group_enemies_fg)
 
 
     for item in floor.floor_items:

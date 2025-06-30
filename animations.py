@@ -7,6 +7,7 @@ from game_classes.face_direction import *
 from game_classes.techniques import *
 from enum import Enum, auto
 from game_classes.item import *
+from game_classes.enemy import *
 
 # def create_sprite_item(image_grid, index): #dumb. literally the same as the image handling function
 #     tex = pyglet.image.Texture.create(16, 16)
@@ -22,6 +23,11 @@ columns_font = sprite_font.width // 8
 rows_font = sprite_font.height // 8
 grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
+def wipe_techniqueitem(entity):
+    if isinstance(entity, Enemy) and entity.techniqueitem != None:
+        entity.techniqueitem.sprite.delete() 
+        entity.techniqueitem.hotbar_sprite.delete() 
+        entity.techniqueitem = None
 
 class Animation:
     def __init__(self, spriteindex, animtype, animspeed, color, start_time, duration, startx, starty, endx, endy, rot, associated_object, technique, attacker, target, damage, item=None, strength_reduction=0, defense_reduction=0, drop_item=False):
@@ -100,11 +106,12 @@ class Animation:
                     self.should_be_deleted = True
                     if self.associated_object == player:
                         player.pick_up_item(floor.floor_items)
+                    wipe_techniqueitem(obj)
 
             elif self.animtype == 5: #spinning when casting a spell
                 obj = self.associated_object
                 obj.direction = FaceDirection((obj.direction.value + 1) % 8)
-                obj.current_holding = self.item[0]
+                #obj.current_holding = self.item[0]
 
                 if frame > self.duration:
                     if self.item[1] == "Tome of Demotion":
@@ -131,8 +138,9 @@ class Animation:
 
 
                     obj.prevx, obj.prevy, obj.offsetx, obj.offsety = obj.x, obj.y, 0, 0
-                    obj.current_holding = False
+                    #obj.current_holding = False
                     self.should_be_deleted = True
+                    wipe_techniqueitem(obj)
 
 
 
@@ -141,8 +149,8 @@ class Animation:
             elif self.animtype == 1: #hit anim
                 obj = self.associated_object
                 #print(self.item)
-                if self.item != None:
-                    obj.current_holding = self.item
+                # if self.item != None:
+                #     obj.current_holding = self.item
 
                 obj.direction = self.rot
                 quartic_eq = (-0.19*(0.25*frame)**4 + (0.25*frame)**3 - (0.25*frame)**2)/2.5
@@ -155,7 +163,8 @@ class Animation:
                 if frame > self.duration:
                     obj.prevx, obj.prevy, obj.offsetx, obj.offsety = obj.initx, obj.inity, 0, 0
                     self.should_be_deleted = True
-                    obj.current_holding = False
+                    wipe_techniqueitem(obj)
+                    #obj.current_holding = False
 
 
             elif self.animtype == 2: #point number
@@ -169,8 +178,7 @@ class Animation:
                         #check if a death was caused
                         is_dead = 0
                         if self.target.should_be_deleted == True:
-                            self.target.color = (255, 255, 255, 0)
-                            self.target.sprite.color = (255, 255, 255, 0)
+                            self.target.invisible_frames = 9999999
                             is_dead = 1
                         if self.attacker == player:
                             #if the player attacked something and it died, update the UI to reflect their new experience amounts
@@ -206,7 +214,25 @@ class Animation:
                 sprite.group = group
                 sprite.batch = batch
                 
+            elif self.animtype == 6: #nonmoving graphical effect (e.g. smoke)
 
+                self.color = (self.color[0], self.color[1], self.color[2], 255)          
+                base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+                base_y =  768/2-24-(player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale #+768/2-24?
+                if frame > self.duration:
+                    self.should_be_deleted = True
+
+
+                tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 4)]
+                self.sprite.image.blit_into(tile, 0, 0, 0)
+
+                sprite = self.sprite
+                sprite.color = self.color
+                sprite.x = base_x
+                sprite.y = base_y
+                sprite.scale = self.scale
+                sprite.group = group
+                sprite.batch = batch
             elif self.animtype == 3 or self.animtype == 4: #thrown item, casted projectile
                 self.color = (self.color[0], self.color[1], self.color[2], 255)          
                 base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
@@ -265,6 +291,9 @@ class Animation:
                                 del self.item.sprite
                             del self.item
 
+                if self.animtype == 4:
+                    tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 4)]
+                    self.sprite.image.blit_into(tile, 0, 0, 0)
                 sprite = self.sprite
                 sprite.color = self.color
                 sprite.x = base_x

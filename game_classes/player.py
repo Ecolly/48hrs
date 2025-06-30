@@ -408,7 +408,7 @@ class Player:
 
 
 
-    def draw(self, batch, animation_presets, group, group_bg, group_fg):
+    def draw(self, batch, animation_presets, group, group_bg, group_fg, held_item):
         
         sprite = self.sprite
 
@@ -451,22 +451,14 @@ class Player:
 
 
 
-        if self.current_holding != False:
-            tile2 = self.itemgrid[self.current_holding] #current_holding just holds the spriteindex
-            self.sprite_weapon.image = tile2.get_texture()
+        if held_item != None:
+            self.sprite_weapon.image.blit_into(self.itemgrid[held_item.spriteindex], 0, 0, 0)
             self.sprite_weapon.color = (255, 255, 255, 255)
-            self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
-            # self.sprite_weapon.x = base_x - 24
-            # self.sprite_weapon.y = base_y
-            self.sprite_weapon.scale = self.scale
-            self.sprite_weapon.batch = batch
-        elif self.equipment_weapon != None:# and self.technique != Technique.CAST:
-            tile2 = self.itemgrid[self.equipment_weapon.spriteindex]
-            self.sprite_weapon.image = tile2.get_texture()
-            self.sprite_weapon.color = (255, 255, 255, 255)
-            self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "weapon", "right")
-            # self.sprite_weapon.x = base_x - 24
-            # self.sprite_weapon.y = base_y
+
+            if isinstance(held_item, Weapon):
+                self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "weapon", "right")
+            else:
+                self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
             self.sprite_weapon.scale = self.scale
             self.sprite_weapon.batch = batch
         else:
@@ -474,7 +466,7 @@ class Player:
 
         if self.equipment_shield != None:
             tile3 = self.itemgrid[self.equipment_shield.spriteindex]
-            self.sprite_shield.image = tile3.get_texture()
+            self.sprite_shield.image.blit_into(tile3, 0, 0, 0)
             self.sprite_shield.color = (255, 255, 255, 255)
             self.sprite_shield.x, self.sprite_shield.y, self.sprite_shield.scale_x, self.sprite_shield.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "shield", "left")
             self.sprite_shield.scale = self.scale

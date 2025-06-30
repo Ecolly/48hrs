@@ -51,7 +51,7 @@ class Hotbar:
         self.slots = player_inventory[-10:]
 
     def get_selected_item(self):
-        print(f"get_selected_item called, current selected={self.slots[self.selected]}")
+        #print(f"get_selected_item called, current selected={self.slots[self.selected]}")
         return self.slots[self.selected]
     
     def draw_hotbar_items(self, batch, group):
@@ -82,3 +82,5 @@ class Hotbar:
         # selected_item = self.get_selected_item()
         # if selected_item is not None:
         #     selected_item.sprite.x = self.x + self.selected * 56
+
+
