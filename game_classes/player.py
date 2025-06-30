@@ -97,8 +97,20 @@ class Player:
 
         self.flee_ai_turns = 0
         self.rage_ai_turns = 0
+
+        self.is_shopping = False
     
     def add_to_inventory(self, item):
+        if item.name == "3 Gold":
+            self.gold += 3
+            return True 
+        elif item.name == "15 Gold":
+            self.gold += 15
+            return True
+        elif item.name == "60 Gold":
+            self.gold += 50
+            return True
+        
         for slot in range(len(self.inventory)):
             #print(f"Checking slot {slot} for item {item.name}")
             if self.inventory[slot] is None:
@@ -208,6 +220,7 @@ class Player:
         self.technique = Technique.THROW
         self.techniquex = x
         self.techniquey = y
+        
         dx = x - self.x 
         dy = y - self.y
 
@@ -234,10 +247,15 @@ class Player:
                 print(f"Deleting item {item.name} from inventory slot {i}")
                 self.inventory[i] = None
 
-    def drop_item(self, item, floor):
+    def drop_item(self, item, floor, adventure_log):
+
         #What is happening good lord
         if item is None:
             return
+        name_desc = get_display_name_and_description(item)
+            
+        
+
         self.technique = Technique.STILL 
         coords_to_check = [[0, 0], [1, 1], [0, 1], [0, -1], [1, 0], [-1, 0], [1, -1], [-1, 1], [-1, -1]]
         for coords in coords_to_check:
@@ -249,10 +267,28 @@ class Player:
                     item.y = self.y + coords[1]
                     self.del_item_from_inventory(item) # Remove item from inventory
                     floor.floor_items.append(item)
-                    
+                    if floor.map_grid[floor.height-1-self.y][self.x] == "S":
+                        self.gold += item.price
+                        adventure_log.append(str(self.name) + " sold " + name_desc[0] + " for " + str(item.price) + " gold.")
+                        item.price = max(item.price+1, 1) #increase price by 1 after selling.
+                    else:
+                        adventure_log.append(str(self.name) + " dropped " + name_desc[0] + ".")
                     break
                  # Exit after dropping the item in the first available spot
             self.technique = Technique.STILL 
+
+
+
+                    #             if floor.map_grid[floor.height-1-self.y][self.x] == "S":
+                    #     self.gold += -item.price
+                    #     item.price = max(item.price-1, 1) #after buying an item, reduce its price by 1.
+                    #     adventure_log.append(str(self.name) + " purchased " + name_desc + " for " + str(item.price) + " gold.")
+                    #     if self.gold < 0:
+                    #         adventure_log.append(str(self.name) + " is now in debt.")
+                    # else:
+
+
+                    #     adventure_log.append(str(self.name) + " picked up " + name_desc + ".")
 
     
 
@@ -276,18 +312,8 @@ class Player:
             self.speed_turns = 12
             self.technique = Technique.STILL 
         elif item.name == "Dragonfruit":
-            #increase a random stat by 1
-            rand_result = random.choice([0, 1, 2])
-            if rand_result == 0:
-                self.maxhealth += 1
-                self.health += 1
-            elif rand_result == 1:
-                self.strength += 1
-                self.maxstrength += 1
-            elif rand_result == 2:
-                self.defense += 1
-                self.maxdefense += 1
-
+            self.increase_experience(((self.level + 1)**3) - self.experience) 
+            list_of_animations.append(animations.Animation(str(self.name) + " grew to level " + str(self.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), 0, 50, self.x, self.y, self.x, self.y, 0, None, None, None, None, None))
             self.technique = Technique.STILL
         else:
             self.technique = Technique.STILL 
@@ -310,14 +336,24 @@ class Player:
         return False
     
     # Pick up an item and add it to the player's inventory if there's room
-    def pick_up_item(self, floor_item_list, adventure_log):
+    def pick_up_item(self, floor_item_list, adventure_log, floor):
         """Pick up an item and add it to the player's inventory."""
         for item in floor_item_list:
             if item.x == self.x and item.y == self.y and item is not None:
                 if self.add_to_inventory(item) == True:
                     name_desc = get_display_name(item)
                     floor_item_list.remove(item)  # Remove item from the map 
-                    adventure_log.append(str(self.name) + " picked up " + name_desc + ".")
+
+                    if floor.map_grid[floor.height-1-self.y][self.x] == "S":
+                        self.gold += -item.price
+                        adventure_log.append(str(self.name) + " purchased " + name_desc + " for " + str(item.price) + " gold.")
+                        if self.gold < 0:
+                            adventure_log.append(str(self.name) + " is now in debt.")
+                        item.price = max(item.price-1, 1) #after buying an item, reduce its price by 1.
+                    else:
+
+
+                        adventure_log.append(str(self.name) + " picked up " + name_desc + ".")
                 else:
                     adventure_log.append(str(self.name) + "'s inventory was too full to pick up " + name_desc + ".")
                     #inventory was full

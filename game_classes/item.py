@@ -4,6 +4,7 @@ from enum import Enum, auto
 import pyglet
 import image_handling
 from font import *
+import random
 
 
 def create_sprite_item(image_grid, index): #dumb. literally the same as the image handling function
@@ -18,6 +19,7 @@ spr4 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_
 class Item:
     #very basics item class cause we dono what items there are
     def __init__(self, name, grid_items, sprite_locs, x, y, quantity, description=""):
+        #global group_items
         # item_names = ["Kitchen Knife", "Machete", "Scimitar", "Screwdriver", "Sickle"]
         # item_fakenames = ["Kitchen Knife", "Machete", "Scimitar", "Screwdriver", "Sickle"]
         #item_spritelocs = [29*10, 29*10+1, 29*10+2, 29*10+3, 29*10+4]
@@ -27,6 +29,7 @@ class Item:
         # self.index = item_names.index(name)
         # self.fakename = item_fakenames[self.index]
         self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
+        #self.sprite.group = group_items
         self.hotbar_sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
         self.grid = grid_items
         #self.equppedsprite
@@ -59,6 +62,8 @@ class Item:
         self.description = description
         self.is_hovered = False
         self.reverse = ""
+        self.price = 0
+        self.rarity = 0
         
 
 
@@ -85,8 +90,9 @@ class Item:
         sprite.x = base_x
         sprite.y = base_y
         sprite.scale = self.scale
-        sprite.group = group
-        sprite.batch = batch
+        if sprite.group != group:
+            sprite.group = group
+            sprite.batch = batch
     
     
     # def draw_projectiles(self, batch, player, group):
@@ -171,8 +177,9 @@ class Item:
                 sprite.color = (255, 255, 255, 255)
                 sprite.scale = self.scale
 
-                sprite.group = group
-                sprite.batch = batch
+                if sprite.group != group or sprite.batch != batch:
+                    sprite.group = group
+                    sprite.batch = batch
 
                 #this code here is a disgrace to humanity, but it works
                 if self is player.equipment_weapon:
@@ -208,7 +215,7 @@ class Item:
     #                     self.y = -inventory_y*48 + int(768/48)*32 - 1   
 
 class Weapon(Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True, description=""):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True, description="", price=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
 
         self.spriteindex = 29*11+sprite_locs
@@ -220,25 +227,28 @@ class Weapon(Item):
         self.damage_type = "slashing"  # Default damage type
         self.is_equipable = is_equipable
         self.bonus = 0
+        self.price = price
         
 class Staff(Item):
-    def __init__(self, name, grid_items, reverse, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=7, description=""):
+    def __init__(self, name, grid_items, reverse, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=7, description="", rarity=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*10+sprite_locs
         self.magic_color = sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
         self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
         self.damage = damage
-        self.charges = charges-1 #number of uses
+        self.charges = charges-random.randint(0, 3) #number of uses
         self.maxcharges = charges
         self.damage_type = "slashing"  # Default damage type
         self.is_castable = True
         self.is_castable_projectile = projectile
         self.reverse = reverse
+        self.rarity = rarity
+        self.price = 10 + rarity*5 + self.charges
         #self.is_equipable = is_equipable
 
 class Tome(Item):
-    def __init__(self, name, grid_items, reverse, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30, description=""):
+    def __init__(self, name, grid_items, reverse, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30, description="", price=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*5+sprite_locs
         self.magic_color = sprite_locs
@@ -253,19 +263,21 @@ class Tome(Item):
         self.is_readable = True
         self.to_be_converted = None
         self.reverse = reverse
+        self.price = price
 
 class Consumable(Item):
-    def __init__(self, name, grid_items, sprite_locs, nutrition_value, x=0, y=0, quantity=1, description=""):
+    def __init__(self, name, grid_items, sprite_locs, nutrition_value, x=0, y=0, quantity=1, description="", price=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*7+sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
         self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
         self.nutrition_value = nutrition_value
         self.is_consumable = True
+        self.price = price
 
 
 class Shield (Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0, is_equipable = True, description=""):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0, is_equipable = True, description="", price=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*9+sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
@@ -273,13 +285,15 @@ class Shield (Item):
         self.defense = defense  # Default defense value
         self.is_equipable = is_equipable
         self.bonus = 0
+        self.price = price
 
 class Miscellanious(Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, description=""):
+    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, description="", price=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity)
         self.spriteindex = 29*8+sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
         self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
+        self.price = price
         #self.defense = defense  # Default defense value
         #self.is_equipable = is_equipable
 

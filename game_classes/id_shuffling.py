@@ -39,6 +39,7 @@ def get_display_name_and_description(item):
         return item.name, item.description
 
 def get_display_name(item):
+    
     global discovered_staffs 
     global discovered_tomes 
     global fakenames_staffs_colornames

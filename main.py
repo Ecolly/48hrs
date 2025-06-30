@@ -460,9 +460,7 @@ def on_key_press(symbol, modifiers):
 
             #throw the item in the hotbar
             if item_selected is not None:
-                name_desc = get_display_name_and_description(item_selected)
-                adventure_log.append(str(player.name) + " dropped " + name_desc[0] + ".")
-                player.drop_item(item_selected, floor)
+                player.drop_item(item_selected, floor, adventure_log)
                 gamestate = 2
                 all_anims = turn_logic.do_turns(all_enemies, player, floor)
         
@@ -473,9 +471,7 @@ def on_key_press(symbol, modifiers):
                     # i is the slot at that position
                     #if mouse is hovering over that item, draw description
                     if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
-                        name_desc = get_display_name_and_description(item)
-                        adventure_log.append(str(player.name) + " dropped " + name_desc[0] + ".")
-                        player.drop_item(item, floor)
+                        player.drop_item(item, floor, adventure_log)
 
                         gamestate = 2
                         all_anims = turn_logic.do_turns(all_enemies, player, floor)
@@ -539,14 +535,15 @@ def go_to_next_level():
     global floor, all_enemies, player, bg, bg_liqs, bg_deeper, floor_level
 
 
-    itemlist_beginner = ["Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
-    itemlist_beginner2 = ["Knife", "Scimitar", "Rapier", "Machete", "Sickle", "Stick", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
-    itemlist_equal = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
+    itemlist_beginner2 = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Machete", "Sickle", "Stick", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    itemlist_equal = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    shop_list = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
 
     floor_level +=1
     if floor_level < 3: ##normal grass
         
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "CHLOROSPORE", "CHROME DOME"], [1, 1, 1], itemlist_beginner
+        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #river zone
         sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                      #river zone
     elif floor_level < 7: #seafoam grass
@@ -585,16 +582,16 @@ def go_to_next_level():
     player.defense = player.maxdefense 
     player.defense_visual = player.defense
     
-    
+
+
     #Triggered after Detects stairs
-    floor = make_floor(sc)
+    floor = make_floor(sc, item_list, enemy_list, level_list, shop_list)
+
 
     floor.random_create_item(grid_items, item_list)
     floor.generate_enemies(floor_level, enemy_list, level_list)
 
-    floor.enemy_list = enemy_list 
-    floor.level_list = level_list 
-    floor.item_list = item_list 
+
     
 
     player.x, player.y = floor.spawnpoint
@@ -615,8 +612,8 @@ def go_to_next_level():
         #Simple Map Initiation
         #simple_color_sets = [(26,26), (29,29), (27,27)]
         wall_texture_value, floor_texture_base_value = tileset#random.choice(simple_color_sets)
-        bg_order = ["#", ".", "*", "~", '%', '<', '>', "@"] #Filler, #Walls, #Space, @Stairs
-        bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13]
+        bg_order = ["#", ".", "*", "~", '%', '<', '>', "@", "S"] #Filler, #Walls, #Space, @Stairs
+        bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13, floor_texture_base_value*16+5]
        
         for s in floor.map_grid:
             for s2 in s:
@@ -633,6 +630,7 @@ def go_to_next_level():
             '%',
             '<',
             '>',
+            'S',    #shop
 
         'a',   # 0: isolated
         'b',   # 1: up
@@ -658,7 +656,7 @@ def go_to_next_level():
         ]
 
         wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = tileset
-        bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,floor_texture_base_value*16+floor_texture_code3, floor_texture_base_value*16+floor_texture_code4, floor_texture_base_value*16+floor_texture_code5,
+        bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,floor_texture_base_value*16+floor_texture_code3, floor_texture_base_value*16+floor_texture_code4, floor_texture_base_value*16+floor_texture_code5, floor_texture_base_value*16+5,
                     
                     wall_texture_value*16, wall_texture_value*16+15, wall_texture_value*16+13, wall_texture_value*16+9,
                     wall_texture_value*16+12, wall_texture_value*16+8, wall_texture_value*16+6, wall_texture_value*16+2,

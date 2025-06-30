@@ -60,8 +60,8 @@ def generate_enemy(name, level, x, y, grid, floor):
     enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16]
     enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40]
     enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
-    enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", None, "Rapier", None, None, None, "Staff of Mana", None, None]
-    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 0, 1, 0, 0, 0, 1, 0, 0]
+    enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None]
+    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 1, 1, 0, 0, 0, 1, 0, 0]
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -85,8 +85,12 @@ def generate_enemy(name, level, x, y, grid, floor):
 
     if random.uniform(0, 1) < enemy_drop_odds[id]:
         enemy.current_holding = floor.create_item(enemy_drops[id], grid_items)  
-    else:
-        enemy.current_holding = None 
+    elif random.uniform(0, 1) < 0.33:
+        enemy.current_holding = floor.create_item("3 Gold", grid_items)
+    elif random.uniform(0, 1) < 0.02:
+        enemy.current_holding = floor.create_item("15 Gold", grid_items)
+    elif random.uniform(0, 1) < 0.005:
+        enemy.current_holding = floor.create_item("60 Gold", grid_items)
 
     return enemy
 
@@ -205,6 +209,14 @@ class Enemy:
     def sign(self, x):
         return (x > 0) - (x < 0)  # returns 1, 0, or -1
 
+
+
+    def technique_filter_for_sanctuaries(self, technique, x, y, floor):
+        if floor.map_grid[floor.height-1-y][x] == "S":
+            return Technique.STILL, x, y
+        else:
+            return technique, x, y
+
     def do_AI(self, all_enemies, player, game_map):
         global grid_items
         if self.paralysis_turns > 0:
@@ -220,7 +232,8 @@ class Enemy:
                 dy = self.sign(self.y - ytochk)
                 new_x = self.x + dx
                 new_y = self.y + dy
-                return Technique.MOVE, new_x, new_y    
+                
+                return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)    
 
             else:
                 idle_action = random.choice([Technique.MOVE, Technique.STILL])
@@ -233,13 +246,13 @@ class Enemy:
                 # If not moving or can't move, stay still
                 return Technique.STILL, self.x, self.y
                     
-        elif self.rage_ai_turns > 0 or self.name == "JUJUBE" or self.name == "FOX" or self.name == "GOOSE" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
+        elif self.rage_ai_turns > 0 or self.name == "JUJUBE" or self.name == "LEAFALOTTA" or self.name == "FOX" or self.name == "GOOSE" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
-                return Technique.HIT, xtochk, ytochk
+                return self.technique_filter_for_sanctuaries(Technique.HIT, xtochk, ytochk, game_map)    
             else:
                 new_x = self.x + self.sign(xtochk - self.x)
                 new_y = self.y + self.sign(ytochk - self.y)
-                return Technique.MOVE, new_x, new_y    
+                return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)    
 
         elif self.name == "DEMON CORE":
             #distance to approximate:
@@ -254,19 +267,12 @@ class Enemy:
                 new_y = self.y + self.sign(player.y - self.y)
             else:
                 return Technique.STILL, self.x, self.y
-            return Technique.MOVE, new_x, new_y  
+            return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)    
             
-        elif self.name == "LEAFALOTTA":
-            if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
-                return Technique.HIT, player.x, player.y
-            else:
-                new_x = self.x + self.sign(player.x - self.x)
-                new_y = self.y + self.sign(player.y - self.y)
-                return Technique.MOVE, new_x, new_y    
-                
+
         elif self.name == "CHLOROSPORE":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
-                return Technique.HIT, player.x, player.y
+                return self.technique_filter_for_sanctuaries(Technique.HIT, player.x, player.y, game_map)   
             elif abs(player.x-self.x) < 5 and abs(player.y-self.y) < 5 and random.randint(0, 1) == 1:
                 if self.level == 2:
                     self.active_projectiles.append(Projectile("Spores 2", 0, self.x, self.y, player.x, player.y, self, self.name + " exhaled spores."))
@@ -280,11 +286,11 @@ class Enemy:
             else:
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
-                return Technique.MOVE, new_x, new_y    
+                return self.technique_filter_for_sanctuaries(Technique.MOVE, player.x, player.y, game_map)      
 
         elif self.name == "DRAGON":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
-                return Technique.HIT, player.x, player.y
+                return self.technique_filter_for_sanctuaries(Technique.HIT, player.x, player.y, game_map)   
             elif abs(player.x-self.x) < 8 and abs(player.y-self.y) < 8 and random.randint(0, 4) == 1:
                 if self.level == 2:
                     self.active_projectiles.append(Projectile("Dragon Fire 2", 10*self.level, self.x, self.y, player.x, player.y, self, self.name + " breathed fire."))
@@ -300,17 +306,17 @@ class Enemy:
             else:
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
-                return Technique.MOVE, new_x, new_y    
+                return self.technique_filter_for_sanctuaries(Technique.MOVE, player.x, player.y, game_map)     
         elif self.name == "CHROME DOME":
             if (self.current_holding.name == "Rapier" and abs(xtochk-self.x) < 3 and abs(ytochk-self.y) < 3):
                 self.techniqueitem = game_map.create_item("Rapier", grid_items)
-                return Technique.HIT, xtochk, ytochk
+                return self.technique_filter_for_sanctuaries(Technique.HIT, xtochk, ytochk, game_map)
             elif (abs(xtochk-self.x) < 3 and abs(ytochk-self.y) < 3):
-                return Technique.HIT, xtochk, ytochk
+                return self.technique_filter_for_sanctuaries(Technique.HIT, xtochk, ytochk, game_map)
             else:
                 new_x = self.x + self.sign(xtochk - self.x)
                 new_y = self.y + self.sign(ytochk - self.y)
-                return Technique.MOVE, new_x, new_y    
+                return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)    
         elif self.name == "CULTIST":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 if random.randint(0, 2) == 1 or self.defense < 0:
@@ -344,7 +350,7 @@ class Enemy:
             else:
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
-                return Technique.MOVE, new_x, new_y   
+                return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)   
             
 
 
@@ -356,14 +362,14 @@ class Enemy:
             #tries to hunt other player + entities down as soon as they spawn on the map
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 print("The smore is hitting player")
-                return Technique.HIT, xtochk, ytochk
+                return self.technique_filter_for_sanctuaries(Technique.HIT, xtochk, ytochk, game_map)
             elif self.can_see_player(player,8):
                 return self.movement_to_entity(player, game_map)
             for enemy in game_map.all_enemies:
                 if enemy is not self and enemy.should_be_deleted == False:
                     if abs(enemy.x-self.x) < 2 and abs(enemy.y-self.y) < 2:
                         print("The smore is hitting others")
-                        return Technique.HIT, enemy.x, enemy.y
+                        return self.technique_filter_for_sanctuaries(Technique.HIT, enemy.x, enemy.y, game_map)
 
             #Otherwise check if  can see the player
             
@@ -426,7 +432,7 @@ class Enemy:
         dy = self.sign(target.y- self.y)
         new_x = self.x + dx
         new_y = self.y + dy
-        return Technique.MOVE, new_x, new_y    
+        return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map) 
 
     
     def can_move_to(self, x, y, game_map):
@@ -486,7 +492,7 @@ class Enemy:
                     self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "weapon", "right")
                 else:
                     self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
-            elif self.current_holding != None and isinstance(self.current_holding, Consumable) == False:
+            elif self.current_holding != None and isinstance(self.current_holding, Consumable) == False and ("Gold" in self.current_holding.name) == False :
                 self.sprite_weapon.image.blit_into(self.itemgrid[self.current_holding.spriteindex], 0, 0, 0)
                 self.sprite_weapon.color = (255, 255, 255, 255)
 

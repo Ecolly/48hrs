@@ -107,7 +107,7 @@ class Animation:
 
                 #print(self.text)
 
-            if self.animtype == 0: #movement, or the 'spin' animation when casting a tome
+            if self.animtype == 0: #movement
                 obj = self.associated_object
 
                 obj.direction = self.rot
@@ -117,7 +117,16 @@ class Animation:
                     obj.prevx, obj.prevy, obj.offsetx, obj.offsety = obj.x, obj.y, 0, 0
                     self.should_be_deleted = True
                     if self.associated_object == player:
-                        player.pick_up_item(floor.floor_items, adventure_log)
+                        if player.is_shopping == False:
+                            if floor.map_grid[floor.height-1-player.y][player.x] == "S":
+                                adventure_log.append("Welcome to the shop! Pick up or drop items to buy and sell.")
+                                player.is_shopping = True
+                        else:
+                            if floor.map_grid[floor.height-1-player.y][player.x] != "S":
+                                adventure_log.append(str(player.name) + " left the shop.")
+                                player.is_shopping = False
+                        player.pick_up_item(floor.floor_items, adventure_log, floor)
+
 
                     wipe_techniqueitem(obj)
 
@@ -304,10 +313,27 @@ class Animation:
                                         itemchk = True
                                 if itemchk == False and (y,x) in floor.valid_tiles:
                                     floor.floor_items.append(self.item)
+
+                                    if self.attacker == player:
+                                        if floor.map_grid[floor.height-1-y][x] == "S":
+                                            name_desc = get_display_name(self.item)
+                                            self.attacker.gold += self.item.price
+                                            adventure_log.append(str(self.attacker.name) + " sold " + name_desc + " for " + str(self.item.price) + " gold.")
+                                            self.item.price = max(self.item.price+1, 1) #increase price by 1 after selling
+
+
                                     self.item.x = x
                                     self.item.y = y 
                                     self.item.color = None
                                     break
+
+
+
+
+
+
+
+
                         else:
                             if isinstance(self.item, Item):
                                 self.item.sprite.delete()
@@ -322,9 +348,10 @@ class Animation:
                     #         name_desc = get_display_name(self.item)
                     #         adventure_log.append(str(obj.name) + " swung the " + str(name_desc[0]) + "!")
                 else:
-                    if frame == 1:
-                        name_desc = get_display_name_and_description(self.item)
-                        adventure_log.append(str(obj.name) + " threw the " + str(name_desc[0]) + "!")
+                    pass
+                    # if frame == 1:
+                    #     name_desc = get_display_name_and_description(self.item)
+                    #     adventure_log.append(str(self.attacker.name) + " threw the " + str(name_desc[0]) + "!")
                 sprite = self.sprite
                 sprite.color = self.color
                 sprite.x = base_x

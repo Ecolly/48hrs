@@ -165,6 +165,7 @@ def inflict_healing(amount, entity, player, list_of_animations, chronology):
 def deduct_charges(entity, charges):
     if entity.techniqueitem != None:
         entity.techniqueitem.charges -= charges
+        entity.techniqueitem.price -= charges
         if entity.techniqueitem.charges < 1:
             entity.techniqueitem.should_be_deleted = True
 
@@ -610,12 +611,14 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             deduct_charges(entity, 1)
         elif item.name == "Tome of Promotion":
             player.increase_experience(((player.level + 1)**3) - player.experience) 
+            list_of_animations.append(animations.Animation(str(player.name) + " grew to level " + str(player.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
             for enemy in floor.all_enemies:
                 enemy.level_up()
                 list_of_animations.append(animations.Animation(str(enemy.name) + " leveled up!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
             deduct_charges(entity, 1)
         elif item.name == "Tome of Demotion":
             player.increase_experience(((player.level - 1)**3) - player.experience) 
+            list_of_animations.append(animations.Animation(str(player.name) + "'s level was reduced to " + str(player.level) + "...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
             for enemy in floor.all_enemies:
                 enemy.level_down()
                 list_of_animations.append(animations.Animation(str(enemy.name) + " lost a level!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
