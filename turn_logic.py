@@ -32,6 +32,9 @@ def can_move_to_but_not_a_cancerous_growth_on_society(x, y, game_map, player):
     #do turn
 
 def check_if_entity_is_on_screen(entity, player, result1, result2):
+    if entity == None:
+        return result1
+    
     if ((entity.x > player.x + 13 or entity.x < player.x - 13) or (entity.y > player.y + 9 or entity.y < player.y - 9)):
         return result1
     else:
@@ -120,24 +123,29 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
         if damage < 1:
             damage = 1
     else: #smoke
-        anim = animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 16), target.x, target.y, target.x, target.y, 0, None, None, None, None, None)
+        anim = animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 16), target.x, target.y, target.x, target.y, 0, None, None, None, None, None)
         list_of_animations.append(anim)
         pass
     
     target.health = target.health - damage
     #target.paralysis_turns = 0 #paralysis turns should be set to 0 if taking damage?
 
+    #damage number
+    anim = animations.Animation(str(target.name) + " took " + str(damage) + " damage from " + str(attacker.name) + "." ,"-" + str(damage), 2, 0, (255, 0, 0, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction)
+    list_of_animations.append(anim)
+
     if target != player and not target.is_alive():
         target.should_be_deleted = True
         if attacker == player:
+           temp_level = attacker.level
            attacker.increase_experience(target.experience*exp_multiplier)
+           if attacker.level != temp_level:
+               list_of_animations.append(animations.Animation(str(attacker.name) + " grew to level " + str(attacker.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
         else:
            attacker.level_up()
-           list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
+           list_of_animations.append(animations.Animation(str(attacker.name) + " leveled up!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
 
-    #damage number
-    anim = animations.Animation("-" + str(damage), 2, 0, (255, 0, 0, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction)
-    list_of_animations.append(anim)
+
 
 
 
@@ -148,8 +156,9 @@ def inflict_healing(amount, entity, player, list_of_animations, chronology):
         amount = entity.maxhealth - entity.health
     amount = math.floor(amount)
     entity.health += amount
-    anim = animations.Animation("+" + str(amount), 2, 0, (0, 189, 66, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 50), entity.x, entity.y+0.5, entity.x, entity.y, 0, None, None, entity, entity, -amount)
-    list_of_animations.append(anim)
+    if amount > 0:
+        anim = animations.Animation(str(entity.name) + " recovered " + str(amount) + " HP.", "+" + str(amount), 2, 0, (0, 189, 66, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 50), entity.x, entity.y+0.5, entity.x, entity.y, 0, None, None, entity, entity, -amount)
+        list_of_animations.append(anim)
 
 
 
@@ -164,12 +173,12 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
     if spellname == "Greater Healing Staff":
         if enemy_hit != None:
             inflict_healing(enemy_hit.health/2, enemy_hit, player, list_of_animations, chronology)
-            list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     if spellname == "Lesser Healing Staff":
         if enemy_hit != None:
             inflict_healing(charges*2, enemy_hit, player, list_of_animations, chronology)
-            list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     if spellname == "Staff of Division":
         if enemy_hit != None:
@@ -180,8 +189,8 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
             x, y = enemy_hit.x, enemy_hit.y
             enemy_hit.x, enemy_hit.y = entity.x, entity.y
             entity.x, entity.y = x, y
-            list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
-            list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(enemy_hit.name) + " swapped places with " + str(entity.name) + ".", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
 
         deduct_charges(entity, charges)
     if spellname == "Staff of Warping":
@@ -191,7 +200,7 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
                 y, x = random.choice(floor.valid_tiles)
                 if enemy_hit.can_move_to(x, y, floor) == True:
                     enemy_hit.x, enemy_hit.y = x, y
-                    list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+                    list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was teleported.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
                     break
                 i = i + 1
         deduct_charges(entity, charges)
@@ -207,43 +216,43 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
     elif spellname == "Staff of Lethargy":
         enemy_hit.speed = 1
         enemy_hit.speed_turns = charges
-        list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was slowed down.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     elif spellname == "Energizing Staff":
         enemy_hit.speed = 4
         enemy_hit.speed_turns = charges
-        list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was sped up.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     elif spellname == "Staff of Paralysis": #paralysis
         enemy_hit.paralysis_turns = charges
-        list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was paralyzed.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     elif spellname == "Staff of Violence": #rage
         enemy_hit.rage_ai_turns = charges
-        list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     elif spellname == "Phobia Staff": #fear
         enemy_hit.flee_ai_turns = charges
-        list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     elif spellname == "Spores": #damage
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic")
-        list_of_animations.append(animations.Animation(1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        list_of_animations.append(animations.Animation("", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
     elif spellname == "Spores 2": #decrease attack
         if enemy_hit != None:
             enemy_hit.strength = max(enemy_hit.strength-1, 1)
             enemy_hit.defense = max(enemy_hit.defense-1, 1)
             #anim goes here?
-        list_of_animations.append(animations.Animation(1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        list_of_animations.append(animations.Animation(str(enemy_hit.name) + "'s strength and defense dropped by 1!", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
     elif spellname == "Spores 3": #slow
         if enemy_hit != None:
             enemy_hit.speed = 1
             enemy_hit.speed_turns = 6
-        list_of_animations.append(animations.Animation(1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was slowed down.", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
     elif spellname == "Spores 4": #paralysis
         if enemy_hit != None:
             enemy_hit.paralysis_turns = 3
-        list_of_animations.append(animations.Animation(1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was paralyzed.", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
     elif spellname == "Dragon Fire":
         inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 10, "magic")
     elif spellname == "Dragon Fire 2":
@@ -305,7 +314,7 @@ def do_reflection(entity, item, enemy_hit, distance_x_normalized, distance_y_nor
     projectiles_remaining += 1
 
     if isinstance(item, Projectile) == True:
-        entity.active_projectiles.append(Projectile(item.name, 0, tilex, tiley, item.xend, item.yend, entity, chron_i))
+        entity.active_projectiles.append(Projectile(item.name, 0, tilex, tiley, item.xend, item.yend, entity, "", chron_i))
     else:
         entity.active_projectiles.append(item)
         item.x, item.y = tilex, tiley
@@ -360,7 +369,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             entity.techniquex = entity.x 
             entity.techniquey = entity.y
         rot = adjust_rotation(entity, entity.techniquex-entity.x, entity.techniquey-entity.y)
-        anim = animations.Animation(None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 8), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.MOVE, None, None, None)
+        anim = animations.Animation("", None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 8), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.MOVE, None, None, None)
         list_of_animations.append(anim)
 
 
@@ -417,7 +426,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             
 
 
-        anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
+        anim2 = animations.Animation("", None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
         list_of_animations.append(anim2)
         chronology += check_if_entity_is_on_screen(entity, player, 1, 16)
         return Technique.HIT, chronology
@@ -427,9 +436,11 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         rot = adjust_rotation(entity, clamp(-entity.x+entity.techniquex, -1, 1), clamp(-entity.y+entity.techniquey, -1, 1))
 
         if entity.techniqueitem != None and isinstance(entity.techniqueitem, Staff) == True:
-            anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None, item=entity.techniqueitem.spriteindex)
+            #
+           
+            anim2 = animations.Animation("", None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None, item=entity.techniqueitem.spriteindex)
         else:
-            anim2 = animations.Animation(None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
+            anim2 = animations.Animation("", None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
         list_of_animations.append(anim2)
         #chronology += 16
 
@@ -441,8 +452,13 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                 if item != -1:
                     if isinstance(item, Projectile) == True:
                         animtype = 4
+                        if chron_i == 1:
+                            list_of_animations.append(animations.Animation(item.text, 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
                     else:
                         animtype = 3
+                        if chron_i == 1:
+                            name_desc = get_display_name(item)
+                            list_of_animations.append(animations.Animation(str(entity.name) + " threw the " + name_desc + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
 
                     distance_x = item.xend - item.xinit
                     distance_y = item.yend - item.yinit
@@ -459,7 +475,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
                     if item.name == "Dragon Fire" and (tilex != math.floor(item.x - distance_x_normalized) or tiley != math.floor(item.y - distance_y_normalized)):
                         #if applicable, add a new animation at every single tile along the projectile's path
-                        list_of_animations.append(animations.Animation(29*2, 1, 5, (255, 255, 255, 0), chronology+chron_i, 5, tilex, tiley, tilex, tiley, rot, None, None, None, None, 0, None))
+                        list_of_animations.append(animations.Animation("", 29*2, 1, 5, (255, 255, 255, 0), chronology+chron_i, 5, tilex, tiley, tilex, tiley, rot, None, None, None, None, 0, None))
 
                     enemy_hit = None
                     if (player != item.entity or item.friendly_fire == True) and tilex == player.x and tiley == player.y: #if hit the player and player isnt the source entity
@@ -489,7 +505,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                                 if isinstance(item, Projectile) == True:
                                     do_spell(floor, entity, None, player, item.name, entity.techniquecharges, chronology+chron_i, list_of_animations)
 
-                            anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item, drop_item=True)
+                            anim3 = animations.Animation("", item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item, drop_item=True)
                             list_of_animations.append(anim3)
                             entity.active_projectiles[itemi] = -1
                             projectiles_remaining += -1
@@ -497,7 +513,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                             #if nothing was hit
                             distance_travelled = math.sqrt(abs(tilex - entity.x)**2 + abs(tiley - entity.y)**2)
                             if distance_travelled > distance_total:
-                                anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item, drop_item=True)
+                                anim3 = animations.Animation("", item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item, drop_item=True)
                                 list_of_animations.append(anim3)
                                 entity.active_projectiles[itemi] = -1
                                 projectiles_remaining += -1 
@@ -512,7 +528,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         if (enemy_hit.name == "CHROME DOME" or enemy_shield == "Mirror Shield") and item.num_of_bounces > -3 and isinstance(item, Projectile):
                             projectiles_remaining = do_reflection(entity, item, enemy_hit, distance_x_normalized, distance_y_normalized, floor, chron_i, projectiles_remaining)
                         
-                            anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, enemy_hit, 0, item)
+                            anim3 = animations.Animation("", item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, enemy_hit, 0, item)
                             list_of_animations.append(anim3)
                             entity.active_projectiles[itemi] = -1
                             projectiles_remaining += -1
@@ -529,7 +545,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                                     item.entity = enemy_hit
                                     item.friendly_fire = False
                             else:
-                                anim3 = animations.Animation(item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, enemy_hit, 0, item)
+                                anim3 = animations.Animation("", item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, enemy_hit, 0, item)
                                 list_of_animations.append(anim3)
                                 entity.active_projectiles[itemi] = -1
                                 projectiles_remaining += -1
@@ -548,10 +564,19 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
         item = entity.techniqueitem
 
-        anim2 = animations.Animation(None, 5, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 24), entity.x, entity.y, entity.techniquex, entity.techniquey, entity.direction, entity, Technique.CAST, None, None, None, item=[item.spriteindex, item.name])
-        list_of_animations.append(anim2)
+        name_desc = get_display_name(item)
+
+
+        list_of_animations.append(animations.Animation(str(entity.name) + " read the " + str(name_desc) + "!", None, 5, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 24), entity.x, entity.y, entity.techniquex, entity.techniquey, entity.direction, entity, Technique.CAST, None, None, None, item=[item.spriteindex, item.name]))
         chronology += 24
-    
+        #print(str(entity.name) + " read a " + str(name_desc) + "!")
+
+        if entity == player:
+            discoverstring = discover_item(item)
+            if discoverstring != False:
+                list_of_animations.append(animations.Animation(discoverstring, 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+
+        
         # if item.name == "Blank Tome":
         #     i = 39 
         #     while i > -1:
@@ -574,27 +599,27 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             player.increase_experience(((player.level + 1)**3) - player.experience) 
             for enemy in floor.all_enemies:
                 enemy.level_up()
-                list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
+                list_of_animations.append(animations.Animation(str(enemy.name) + " leveled up!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
             deduct_charges(entity, 1)
         elif item.name == "Tome of Demotion":
             player.increase_experience(((player.level - 1)**3) - player.experience) 
             for enemy in floor.all_enemies:
                 enemy.level_down()
-                list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
+                list_of_animations.append(animations.Animation(str(enemy.name) + " lost a level!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
             deduct_charges(entity, 1)
         elif item.name == "Immunity Tome":
             player.defense = 100
-            list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(player, player, 1, 16), player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(player.name) + "'s defenses skyrocketed!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(player, player, 1, 16), player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             for enemy in floor.all_enemies:
                 enemy.defense = 100
-                list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
+                list_of_animations.append(animations.Animation(str(enemy.name) + "'s defenses skyrocketed!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
             deduct_charges(entity, 1)
         elif item.name == "Paperskin Tome":
             player.defense = -100
-            list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(player, player, 1, 16), player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(player.name) + "'s defenses plummeted!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(player, player, 1, 16), player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             for enemy in floor.all_enemies:
                 enemy.defense = -100
-                list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
+                list_of_animations.append(animations.Animation(str(enemy.name) + "'s defenses plummeted!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
             deduct_charges(entity, 1)
         elif item.name == "Banishing Tome":
             for enemy in floor.all_enemies:
@@ -603,9 +628,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                     while i < 100:
                         y, x = random.choice(floor.valid_tiles)
                         if enemy.can_move_to(x, y, floor) == True:
-                            list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
+                            list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
                             enemy.x, enemy.y = x, y
-                            list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
+                            list_of_animations.append(animations.Animation(str(enemy.name) + " was teleported.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
                             break
                         i = i + 1
             deduct_charges(entity, 1)
@@ -825,7 +850,7 @@ def spawn_enemies_within_turn_execution(enemies_to_summon, enemy_name, enemy_lev
 
             floor.all_enemies.append(test_enemy)
 
-            list_of_animations.append(animations.Animation(1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(test_enemy, player, 1, 16), test_enemy.x, test_enemy.y, test_enemy.x, test_enemy.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation("A " + str(test_enemy.name) + " was summoned.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(test_enemy, player, 1, 16), test_enemy.x, test_enemy.y, test_enemy.x, test_enemy.y, 0, None, None, None, None, None))
 
             enemies_to_summon += -1
             if enemies_to_summon == 0:

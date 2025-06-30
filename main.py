@@ -180,6 +180,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global dragging_item, drag_offset
     global right_click_menu_enabled
     global item_selected
+    global discovered_staffs, discovered_tomes
     
     if button == pyglet.window.mouse.LEFT:
         item_selected = hotbar.get_selected_item()
@@ -236,6 +237,7 @@ def on_mouse_release(x, y, button, modifiers):
     global sound_magic
     global right_click_menu_enabled
     global item_selected
+    global adventure_log
     if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6: #this stuff can only happen between turns or in inventory
 
         ###################### LEFT CLICK ##############################
@@ -281,6 +283,9 @@ def on_mouse_release(x, y, button, modifiers):
                     player.techniqueitem = item_selected 
                     gamestate = 2
                     player.cast_static()
+                    #mark the tome as discovered
+
+                    
                     #has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
                     all_anims = turn_logic.do_turns(all_enemies, player, floor)
                     if has_won == 0:
@@ -445,15 +450,18 @@ def on_key_press(symbol, modifiers):
     global gamestate
     global all_anims
     global floor 
+    global adventure_log
 
 
     item_selected = hotbar.get_selected_item() 
     if symbol == pyglet.window.key.Q:
         #Throw items
         if gamestate == 1:
-            print("Throwing item")
+
             #throw the item in the hotbar
             if item_selected is not None:
+                name_desc = get_display_name_and_description(item_selected)
+                adventure_log.append(str(player.name) + " dropped " + name_desc[0] + ".")
                 player.drop_item(item_selected, floor)
                 gamestate = 2
                 all_anims = turn_logic.do_turns(all_enemies, player, floor)
@@ -462,11 +470,12 @@ def on_key_press(symbol, modifiers):
             slot = 0 #theres probably a more pythonic way to do this, sowwy
             for item in player.inventory:
                 if item is not None:
-                    print("Throwing item from inventory")
                     # i is the slot at that position
                     item.draw_inventory(batch, player, group_inv, slot, gamestate)
                     #if mouse is hovering over that item, draw description
                     if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
+                        name_desc = get_display_name_and_description(item)
+                        adventure_log.append(str(player.name) + " dropped " + name_desc[0] + ".")
                         player.drop_item(item, floor)
                         gamestate = 2
                         all_anims = turn_logic.do_turns(all_enemies, player, floor)
@@ -724,30 +733,33 @@ color_templates.append((33, 33, 33, 90))
 
 
 
-create_gui(all_buttons, player)
+create_gui(all_buttons, player, "Good luck!")
 create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
-
+adventure_log = ["PANDORIUM - A game by zeroBound and Econic", "Good luck!"]
 
 # player.add_to_inventory(floor.create_item("Tome of Recovery", grid_items))
 player.add_to_inventory(floor.create_item("Rapier", grid_items))
 player.add_to_inventory(floor.create_item("Sickle", grid_items))
-player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
-player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
-player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
-player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
+# player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
+# player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
+# player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
+# player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
 player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
-player.add_to_inventory(floor.create_item("Staffboost Tome", grid_items))
-player.add_to_inventory(floor.create_item("Blank Tome", grid_items))
+player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
+player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
+
+# player.add_to_inventory(floor.create_item("Staffboost Tome", grid_items))
+# player.add_to_inventory(floor.create_item("Blank Tome", grid_items))
 
 
-player.add_to_inventory(floor.create_item("Coloring Tome", grid_items))
-player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
-#player.add_to_inventory(floor.create_item("Tome of Dispersion", grid_items))
+# player.add_to_inventory(floor.create_item("Coloring Tome", grid_items))
+# player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
+# #player.add_to_inventory(floor.create_item("Tome of Dispersion", grid_items))
 
-player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
-player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
+# player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
+# player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
 player.add_to_inventory(floor.create_item("Staff of Mana", grid_items))
 player.add_to_inventory(floor.create_item("Phobia Staff", grid_items))
 
@@ -863,6 +875,7 @@ def on_draw():
     global bg_animframe
     global item_selected
     global win_true_x, win_true_y, win_x, win_y
+    global adventure_log
 
     # framebuffer.get_texture().bind()
     # glViewport(0, 0, win_x, win_y)
@@ -904,7 +917,6 @@ def on_draw():
             keypress_chk = 1
             print("Entering inventory")
             create_inventory_menu(all_buttons)
-            
             gamestate = 3
 
             #enter inventory
@@ -912,6 +924,10 @@ def on_draw():
             keypress_chk = 1
             gamestate = 1
             delete_buttons_supertype(all_buttons, 'inventory')
+
+
+
+
     
     elif gamestate == 1:
 
@@ -952,6 +968,7 @@ def on_draw():
     if gamestate == 2:
         if len(all_anims) == 0 or all(anim.proceed for anim in all_anims):
             gamestate = 1
+            #print(adventure_log)
             #we should refresh all visuals to match their actual counterparts here just for safety
             refresh_all_visuals(player)
             for enemy in all_enemies:
@@ -1038,11 +1055,11 @@ def on_draw():
     if keys[pyglet.window.key.LSHIFT]:
         while len(all_anims) > 0:
             for anim in all_anims:
-                anim.draw(batch, player, group_effects, floor)
+                anim.draw(batch, player, group_effects, floor, adventure_log)
             delete_object.delobj(all_anims)
     else:
         for anim in all_anims:
-            anim.draw(batch, player, group_effects, floor)
+            anim.draw(batch, player, group_effects, floor, adventure_log)
         delete_object.delobj(all_anims)
 
     if gamestate != 2:
@@ -1084,13 +1101,45 @@ def on_draw():
         button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player, gamestate)
 
         if button.type == "GUI_HP":
+            button.sprites[1].y = button.sprites[0].y-48
+
+            button.sprites[3].y = button.sprites[3].y-24
+            button.sprites[4].y = button.sprites[4].y-48
+            #button.sprites[2].y = button.sprites[2].y-24
+
+            button.sprites[0].group = group_hotbar_selection
+            button.sprites[1].group = group_inv
+            button.sprites[2].group = group_hotbar_selection
+            button.sprites[3].group = group_hotbar
+            button.sprites[4].group = group_overlay
+
+
             pass
             gui_string = get_gui_string(player)
             if gui_string != button.extra_1:
                 sprite = button.sprites[1] 
                 #pyglet.gl.glDeleteTextures(1, pyglet.gl.GLuint(sprite.image.id))
-                sprite.image = combine_tiles(text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string)+1, "left"), 8, 8, len(gui_string)+1)
+                sprite.image = combine_tiles(text_to_tiles_wrapped(gui_string, grid_tinyfont, letter_order, len(gui_string)+1, "left"), 5, 8, len(gui_string)+1)
                 button.extra_1 = gui_string
+            
+            
+
+            #if random.uniform(0, 100) < 1:
+            if len(adventure_log)-1 != button.extra_2 // 8:
+                button.extra_2 += 1
+                
+                if button.extra_2 % 8 == 1:
+                    button.extra_2 = int(button.extra_2)
+                    advlog_string =  adventure_log[(button.extra_2 // 8)+1] +"ε"+ adventure_log[(button.extra_2 // 8)]+"ε"+adventure_log[(button.extra_2 // 8)-1]
+                    sprite2 = button.sprites[2] 
+                    sprite2.image = combine_tiles(text_to_tiles_wrapped(advlog_string, grid_tinyfont, letter_order, len(advlog_string)+1, "left"), 5, 8, len(advlog_string)+1)
+                #button.sprites[2].y = button.sprites[2].y -24+ (button.extra_2 % 8)*6
+                    #button.extra_2 = advlog_string
+
+            button.sprites[2].y = button.sprites[2].y -24- ((button.extra_2 - 1) % 8 + 1)*3
+
+
+
             # if has_won == 1:
             #     player.health = 999
             #     player.maxhealth = 999
@@ -1142,7 +1191,8 @@ def on_draw():
     if bg_animframe%60 == 0:
         #gc.collect(generation=2)
         #sys._clear_internal_caches()
-        print("allocated blocks: " + str(sys.getallocatedblocks()))
+        pass
+        #print("allocated blocks: " + str(sys.getallocatedblocks()))
         #print(objgraph.count('Projectile'))
         #print(f"RSS (Resident Set Size): {mem_info.rss / (1024 * 1024):.2f} MB")
         #print(f"VMS (Virtual Memory Size): {mem_info.vms / (1024 * 1024):.2f} MB")

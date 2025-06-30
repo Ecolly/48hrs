@@ -169,7 +169,7 @@ class InteractiveObject:
                     #     inventory_y = id // 10
                     #     self.x = inventory_x*48 + int(1152/48)*12
                     #     self.y = -inventory_y*48 + int(768/48)*32 - 
-                elif i == 0:
+                elif i == 0:# or i == 3 or i == 4:
                     sprite.group = group3
                 else:
                     sprite.group = group4
@@ -531,34 +531,75 @@ def get_gui_string(player):
             strength = strength + "+" + str(player.equipment_weapon.damage + + player.equipment_weapon.bonus)
 
     #stats gui
-    gui_string = str(player.health_visual) + "/" + str(player.maxhealth_visual) + " HP, " + str(strength) + "/" + str(player.maxstrength) + " STR, " + str(defense) + "/" + str(player.maxdefense) + " DEF, LV " + str(player.level_visual) + ", " + str(player.experience_visual) + " EXP"
+    gui_string = str(player.health_visual) + "/" + str(player.maxhealth_visual) + " HP, " + str(strength) + "/" + str(player.maxstrength) + " STR, " + str(defense) + "/" + str(player.maxdefense) + " DEF, LV " + str(player.level_visual) + ", " + str(player.experience_visual) + " EXP, " + str(player.gold) + " GOLD"
     return gui_string
 
 
-def create_gui(all_buttons, player):
-    global grid_font 
+
+def create_gui(all_buttons, player, advlog_string):
+    global grid_tinyfont
     global letter_order
     gui_string = get_gui_string(player)
-    spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string), "left"), 8, 8, len(gui_string)+1))
-    spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background((gui_string+"______"), grid_font, letter_order, len(gui_string)+7, "left"), 8, 8, len(gui_string)+7))
+
+    #advlog_string = adventure_log[len(adventure_log)-1]
+    spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(gui_string, grid_tinyfont, letter_order, len(gui_string), "left"), 5, 8, len(gui_string)+1))
+    spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.tesselate(7*16, grid_tinyfont, 90, 1), 5, 8, 90))
+    spr3 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(advlog_string, grid_tinyfont, letter_order, len(advlog_string)+1, "left"), 5, 8, len(advlog_string)+1))
+    spr4 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.tesselate(7*16, grid_tinyfont, 90, 1), 5, 8, 90))
+    spr5 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.tesselate(7*16, grid_tinyfont, 90, 1), 5, 8, 90))
+
     option_obj = InteractiveObject(
-        x=24,
-        y=768-16,
+        x=0,
+        y=768-20,
         width=spr2.width,
         height=spr2.height,
-        sprites=[spr2, spr1],
-        colors=[[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)], [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255)]],
+        sprites=[spr2, spr1, spr3, spr4, spr5],
+        colors=[[(33, 33, 33, 255), (33, 33, 33, 255), (33, 33, 33, 255)], [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255)], [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255)], [(33, 33, 33, 255), (33, 33, 33, 255), (33, 33, 33, 255)], [(33, 33, 33, 255), (33, 33, 33, 255), (33, 33, 33, 255)]],
         animtype = [0, 0],
         animmod = [None, None],
         text = [None, None],
         alignment_x='left',
-        alignment_y='top',
+        alignment_y='center',
         depth=1,
         obj_type="GUI_HP",
         draggable=False,
         supertype = "none",
         extra_1 = gui_string,
-        extra_2 = None
+        extra_2 = 0#advlog_string
+
     )
     all_buttons.append(option_obj)
+
+
+
+
+# def create_gui(all_buttons, player):
+#     global grid_font 
+#     global letter_order
+#     gui_string = get_gui_string(player)
+#     spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string), "left"), 8, 8, len(gui_string)+1))
+#     spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background((gui_string+"______"), grid_font, letter_order, len(gui_string)+7, "left"), 8, 8, len(gui_string)+7))
+#     option_obj = InteractiveObject(
+#         x=24,
+#         y=768-16,
+#         width=spr2.width,
+#         height=spr2.height,
+#         sprites=[spr2, spr1],
+#         colors=[[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)], [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255)]],
+#         animtype = [0, 0],
+#         animmod = [None, None],
+#         text = [None, None],
+#         alignment_x='left',
+#         alignment_y='top',
+#         depth=1,
+#         obj_type="GUI_HP",
+#         draggable=False,
+#         supertype = "none",
+#         extra_1 = gui_string,
+#         extra_2 = None
+#     )
+#     all_buttons.append(option_obj)
+
+
+
 

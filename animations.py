@@ -8,6 +8,7 @@ from game_classes.techniques import *
 from enum import Enum, auto
 from game_classes.item import *
 from game_classes.enemy import *
+from game_classes.id_shuffling import *
 
 # def create_sprite_item(image_grid, index): #dumb. literally the same as the image handling function
 #     tex = pyglet.image.Texture.create(16, 16)
@@ -30,7 +31,7 @@ def wipe_techniqueitem(entity):
         entity.techniqueitem = None
 
 class Animation:
-    def __init__(self, spriteindex, animtype, animspeed, color, start_time, duration, startx, starty, endx, endy, rot, associated_object, technique, attacker, target, damage, item=None, strength_reduction=0, defense_reduction=0, drop_item=False):
+    def __init__(self, text, spriteindex, animtype, animspeed, color, start_time, duration, startx, starty, endx, endy, rot, associated_object, technique, attacker, target, damage, item=None, strength_reduction=0, defense_reduction=0, drop_item=False):
         global grid_items
         global grid_font
         # 1. move player
@@ -55,6 +56,7 @@ class Animation:
         # starting x/y (same as their x/y)
         # ending x/y
         # animation type (0 = interpolate from starting x/y to ending x/y, 1 = use quartic formula to do striking anim)
+        self.text = text
         self.scale = 3 
         self.color = (color[0], color[1], color[2], 0)
         self.spriteindex = spriteindex
@@ -91,10 +93,20 @@ class Animation:
                 self.sprite = image_handling.create_sprite(grid_items, spriteindex)
                 self.grid = grid_items
 
-    def draw(self, batch, player, group, floor):
+    def draw(self, batch, player, group, floor, adventure_log):
         self.current_time += 1
+
+        # if self.text != "":
+        #     print(self.text, self.current_time, self.start_time)
+        if (self.current_time == self.start_time or (self.current_time == 1 and self.start_time == 0)) and self.text != "":
+            adventure_log.append(self.text)
+            
+        
         if self.current_time > self.start_time: #if the animation has started...
             frame = self.current_time - self.start_time
+
+                #print(self.text)
+
             if self.animtype == 0: #movement, or the 'spin' animation when casting a tome
                 obj = self.associated_object
 
@@ -105,13 +117,20 @@ class Animation:
                     obj.prevx, obj.prevy, obj.offsetx, obj.offsety = obj.x, obj.y, 0, 0
                     self.should_be_deleted = True
                     if self.associated_object == player:
-                        player.pick_up_item(floor.floor_items)
+                        player.pick_up_item(floor.floor_items, adventure_log)
+
                     wipe_techniqueitem(obj)
 
             elif self.animtype == 5: #spinning when casting a spell
                 obj = self.associated_object
                 obj.direction = FaceDirection((obj.direction.value + 1) % 8)
                 #obj.current_holding = self.item[0]
+                # if frame == 1:
+                #     name_desc = get_display_name(self.item)
+                #     adventure_log.append(str(obj.name) + " read a " + str(name_desc) + "!")
+                #     if obj == player:
+                #         discover_item(self.item, adventure_log)
+
 
                 if frame > self.duration:
                     if self.item[1] == "Tome of Demotion":
@@ -236,6 +255,8 @@ class Animation:
                 sprite.group = group
                 sprite.batch = batch
             elif self.animtype == 3 or self.animtype == 4: #thrown item, casted projectile
+
+
                 self.color = (self.color[0], self.color[1], self.color[2], 255)          
                 base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
                 base_y =  768/2-24-(player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale #+768/2-24?
@@ -296,6 +317,14 @@ class Animation:
                 if self.animtype == 4:
                     tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 4)]
                     self.sprite.image.blit_into(tile, 0, 0, 0)
+                    # if frame == 1:
+                    #     if ("Staff" in item.name)  == True:
+                    #         name_desc = get_display_name(self.item)
+                    #         adventure_log.append(str(obj.name) + " swung the " + str(name_desc[0]) + "!")
+                else:
+                    if frame == 1:
+                        name_desc = get_display_name_and_description(self.item)
+                        adventure_log.append(str(obj.name) + " threw the " + str(name_desc[0]) + "!")
                 sprite = self.sprite
                 sprite.color = self.color
                 sprite.x = base_x

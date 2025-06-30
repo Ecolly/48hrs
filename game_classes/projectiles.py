@@ -4,7 +4,7 @@
 import math 
 
 class Projectile:
-    def __init__(self, name, damage, x, y, xend, yend, entity, chron=0):
+    def __init__(self, name, damage, x, y, xend, yend, entity, text, chron=0):
         self.name = name
         self.damage = damage
         self.x = math.floor(x)
@@ -19,6 +19,7 @@ class Projectile:
         self.num_of_bounces = 0
         self.num_of_pierces = 0
         self.friendly_fire = False
+        self.text = text
         if name == "Spores":
             self.spriteindex = 29 + 8
         elif name == "Dragon Fire":

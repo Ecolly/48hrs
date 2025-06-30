@@ -10,6 +10,7 @@ from game_classes.projectiles import *
 import animations
 import turn_logic
 import image_handling
+from game_classes.id_shuffling import *
 from font import *
 
 class Player:
@@ -61,6 +62,8 @@ class Player:
         self.defense_visual = 5
         self.maxdefense_visual = 5
         
+        self.gold = 0
+
         self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
         self.spriteindex_prev = -1
@@ -211,7 +214,8 @@ class Player:
 
     def cast(self, x, y):
         item = self.techniqueitem
-        self.active_projectiles.append(turn_logic.Projectile(item.name, self.techniquecharges, self.x + 0.5, self.y + 0.5, x, y, self))
+        name_desc = get_display_name(item)
+        self.active_projectiles.append(turn_logic.Projectile(item.name, self.techniquecharges, self.x + 0.5, self.y + 0.5, x, y, self, str(self.name)+" swung the " + name_desc + "!"))
         self.technique = Technique.THROW
         self.techniquex = x 
         self.techniquey = y
@@ -306,14 +310,18 @@ class Player:
         return False
     
     # Pick up an item and add it to the player's inventory if there's room
-    def pick_up_item(self, floor_item_list):
+    def pick_up_item(self, floor_item_list, adventure_log):
         """Pick up an item and add it to the player's inventory."""
         for item in floor_item_list:
             if item.x == self.x and item.y == self.y and item is not None:
-                self.add_to_inventory(item)
-                floor_item_list.remove(item)  # Remove item from the map
-                print(f"Picked up {item.name} at {item.x}, {item.y}")
-                print(f"player{self.x}, {self.y}")
+                if self.add_to_inventory(item) == True:
+                    name_desc = get_display_name(item)
+                    floor_item_list.remove(item)  # Remove item from the map 
+                    adventure_log.append(str(self.name) + " picked up " + name_desc + ".")
+                else:
+                    adventure_log.append(str(self.name) + "'s inventory was too full to pick up " + name_desc + ".")
+                    #inventory was full
+                
             else:
                 pass  # Item not at player's position, do nothing
 

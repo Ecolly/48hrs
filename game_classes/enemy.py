@@ -8,6 +8,7 @@ import random
 from game_classes.projectiles import *
 from font import *
 from game_classes.item import *
+from game_classes.id_shuffling import *
 
 def enemy_grid_to_use(level):
     global grid_entities1 
@@ -268,13 +269,13 @@ class Enemy:
                 return Technique.HIT, player.x, player.y
             elif abs(player.x-self.x) < 5 and abs(player.y-self.y) < 5 and random.randint(0, 1) == 1:
                 if self.level == 2:
-                    self.active_projectiles.append(Projectile("Spores 2", 0, self.x, self.y, player.x, player.y, self))
+                    self.active_projectiles.append(Projectile("Spores 2", 0, self.x, self.y, player.x, player.y, self, self.name + " exhaled spores."))
                 elif self.level == 3:
-                    self.active_projectiles.append(Projectile("Spores 3", 0, self.x, self.y, player.x, player.y, self))
+                    self.active_projectiles.append(Projectile("Spores 3", 0, self.x, self.y, player.x, player.y, self, self.name + " exhaled spores."))
                 elif self.level == 4:
-                    self.active_projectiles.append(Projectile("Spores 4", 0, self.x, self.y, player.x, player.y, self))
+                    self.active_projectiles.append(Projectile("Spores 4", 0, self.x, self.y, player.x, player.y, self, self.name + " exhaled spores."))
                 else:
-                    self.active_projectiles.append(Projectile("Spores", 0, self.x, self.y, player.x, player.y, self))
+                    self.active_projectiles.append(Projectile("Spores", 0, self.x, self.y, player.x, player.y, self, self.name + " exhaled spores."))
                 return Technique.THROW, player.x, player.y 
             else:
                 new_x = self.x + self.sign(player.x - self.x)
@@ -286,13 +287,13 @@ class Enemy:
                 return Technique.HIT, player.x, player.y
             elif abs(player.x-self.x) < 8 and abs(player.y-self.y) < 8 and random.randint(0, 4) == 1:
                 if self.level == 2:
-                    self.active_projectiles.append(Projectile("Dragon Fire 2", 10*self.level, self.x, self.y, player.x, player.y, self))
+                    self.active_projectiles.append(Projectile("Dragon Fire 2", 10*self.level, self.x, self.y, player.x, player.y, self, self.name + " breathed fire."))
                 elif self.level == 3:
-                    self.active_projectiles.append(Projectile("Dragon Fire 3", 10*self.level, self.x, self.y, player.x, player.y, self))
+                    self.active_projectiles.append(Projectile("Dragon Fire 3", 10*self.level, self.x, self.y, player.x, player.y, self, self.name + " breathed fire."))
                 elif self.level == 4:
-                    self.active_projectiles.append(Projectile("Dragon Fire 4", 10*self.level, self.x, self.y, player.x, player.y, self))
+                    self.active_projectiles.append(Projectile("Dragon Fire 4", 10*self.level, self.x, self.y, player.x, player.y, self, self.name + " breathed fire."))
                 else:
-                    self.active_projectiles.append(Projectile("Dragon Fire", 10*self.level, self.x, self.y, player.x, player.y, self))
+                    self.active_projectiles.append(Projectile("Dragon Fire", 10*self.level, self.x, self.y, player.x, player.y, self, self.name + " breathed fire."))
 
                 
                 return Technique.THROW, player.x, player.y
@@ -325,16 +326,19 @@ class Enemy:
                     return Technique.CAST, 0, 0
                 else:
                     self.techniqueitem = game_map.create_item("Staff of Mana", grid_items) #suboptimal, this item is only being generated so the enemy looks like its holding something
-                    self.active_projectiles.append(Projectile("Staff of Mana", 2, self.x, self.y, player.x, player.y, self))
+                    name_desc = get_display_name(self.techniqueitem)
+                    self.active_projectiles.append(Projectile("Staff of Mana", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
                     self.techniquecharges = 2
                     return Technique.THROW, player.x, player.y
             elif abs(player.x-self.x) < 4 and abs(player.y-self.y) < 4 and random.randint(0, 4) == 1:
                 if self.level == 1 or self.level == 2:
                     self.techniqueitem = game_map.create_item("Staff of Swapping", grid_items)
-                    self.active_projectiles.append(Projectile("Staff of Swapping", 2, self.x, self.y, player.x, player.y, self))
+                    name_desc = get_display_name(self.techniqueitem)
+                    self.active_projectiles.append(Projectile("Staff of Swapping", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
                 else:
                     self.techniqueitem = game_map.create_item("Staff of Division", grid_items)
-                    self.active_projectiles.append(Projectile("Staff of Division", 2, self.x, self.y, player.x, player.y, self))
+                    name_desc = get_display_name(self.techniqueitem)
+                    self.active_projectiles.append(Projectile("Staff of Division", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
                 self.techniquecharges = 2
                 return Technique.THROW, player.x, player.y
             else:

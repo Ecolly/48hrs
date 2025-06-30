@@ -23,7 +23,7 @@ class Item:
         #item_spritelocs = [29*10, 29*10+1, 29*10+2, 29*10+3, 29*10+4]
 
         self.name = name
-        self.name_visual = self.name
+        #self.name_visual = self.name
         # self.index = item_names.index(name)
         # self.fakename = item_fakenames[self.index]
         self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
@@ -32,7 +32,7 @@ class Item:
         #self.equppedsprite
         self.spriteindex = 29*10+sprite_locs
         self.color = (255, 255, 255, 255)
-        self.magic_color = 0 #for tome and spell color mechanics
+        self.magic_color = sprite_locs #for tome and spell color mechanics
         self.x = x
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
