@@ -312,13 +312,7 @@ def on_mouse_release(x, y, button, modifiers):
 
 
             
-            if gamestate == 4 and was_button_clicked == 0:
-                mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
-                mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
-                player.throw(mouse_x_tilemap, mouse_y_tilemap)
-                gamestate = 2
-                all_anims = turn_logic.do_turns(all_enemies, player, floor)
-                
+
 
             #print(gamestate, "fwefew")
             if gamestate == 6 and was_button_clicked == 0: #button was released; check powerbar values
@@ -381,11 +375,19 @@ def on_mouse_release(x, y, button, modifiers):
                 #     print(math.floor(mouse_y_tilemap - player.y))
 
                 #THROWING VIA RIGHT CLICK
-                if item_selected: #if throwing, switch to a "choose target" GUI with a different gamestate.
-                    gamestate = 4
+                if item_selected:
+
+                    mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+                    mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
                     player.techniqueitem = item_selected
-                    delete_buttons_supertype(all_buttons, 'inventory')
-                    pass
+                    player.throw(mouse_x_tilemap, mouse_y_tilemap)
+                    gamestate = 2
+                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                    
+
+                    
+                    #delete_buttons_supertype(all_buttons, 'inventory')
+                    #pass
             # i = 0
             # for option in rclick_options:
             #     spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
@@ -441,6 +443,9 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
 @window.event
 def on_key_press(symbol, modifiers):   
     global gamestate
+    global all_anims
+    global floor 
+
 
     item_selected = hotbar.get_selected_item() 
     if symbol == pyglet.window.key.Q:
@@ -465,6 +470,7 @@ def on_key_press(symbol, modifiers):
                         player.drop_item(item, floor)
                         gamestate = 2
                         all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                        delete_buttons_supertype(all_buttons, 'inventory')
                 slot = slot + 1
 
 floor_level = 0
@@ -773,7 +779,7 @@ player.add_to_inventory(floor.create_item("Spiked Shield", grid_items))
 
 player.add_to_inventory(floor.create_item("Starfruit", grid_items))
 
-\
+
 
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
@@ -932,10 +938,13 @@ def on_draw():
             keypress_chk = 0
     
     if diry != 0 or dirx != 0:
-        #keypress_chk = 1
-        player.move(dirx, diry, floor)
-        gamestate = 2
-        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+        if keys[pyglet.window.key.LCTRL] and (diry == 0 or dirx == 0):
+            #if holding ctrl, pass if the direction isnt diagonal
+            pass
+        else:
+            player.move(dirx, diry, floor)
+            gamestate = 2
+            all_anims = turn_logic.do_turns(all_enemies, player, floor)
 
         #partition_entity = construct_partitions()
         #current_entity_turn = -1
@@ -1026,7 +1035,7 @@ def on_draw():
     hotbar.draw_hotbar_items(batch, group_hotbar)
     #hotbar.get_selected_item()
     
-    if keys[pyglet.window.key.SPACE]:
+    if keys[pyglet.window.key.LSHIFT]:
         while len(all_anims) > 0:
             for anim in all_anims:
                 anim.draw(batch, player, group_effects, floor)

@@ -721,7 +721,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
         return Technique.CAST, chronology
     else:
-        pass
+        return Technique.STILL, chronology
 
     
 

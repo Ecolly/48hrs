@@ -377,13 +377,45 @@ class Enemy:
         return Technique.STILL, self.x, self.y 
         
 
-    def drop_item(self, game_map):
-        item = random.choice(self.loot)
-        game_map.floor_items.append(item)
-        item.x = self.x
-        item.y = self.y    
-        self.technique = Technique.STILL 
+    # def drop_item(self, game_map):
+    #     item = random.choice(self.loot)
+    #     game_map.floor_items.append(item)
+    #     item.x = self.x
+    #     item.y = self.y    
+    #     self.technique = Technique.STILL 
         #maybe randomize a loot table
+
+
+    # returns True if the item is detected at x and y location
+    def detect_item(self, item_list, x, y):
+        for i in item_list:
+            print(f"Checking item {i.name} at ({i.x}, {i.y}) against ({x}, {y})")
+            if i.x == x and i.y == y:
+                print(f"Detected item: {i.name} at ({i.x}, {i.y})")
+                return True
+        return False
+    
+
+    def drop_item(self, item, floor):
+        #What is happening good lord
+        if item is None:
+            return
+        #self.technique = Technique.STILL 
+        coords_to_check = [[0, 0], [1, 1], [0, 1], [0, -1], [1, 0], [-1, 0], [1, -1], [-1, 1], [-1, -1]]
+        for coords in coords_to_check:
+            x = self.x + coords[0]
+            y = self.y + coords[1]
+            if self.detect_item(floor.floor_items, x, y) == False and (y,x) in floor.valid_tiles:
+                if item is not None:
+                    item.x = self.x + coords[0]
+                    item.y = self.y + coords[1]
+                    #self.del_item_from_inventory(item) # Remove item from inventory
+                    floor.floor_items.append(item)
+                    
+                    break
+                 # Exit after dropping the item in the first available spot
+            #self.technique = Technique.STILL 
+
 
     def movement_to_entity(self, target, game_map):
         dx = self.sign(target.x - self.x)

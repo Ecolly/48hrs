@@ -234,16 +234,18 @@ class Player:
         #What is happening good lord
         if item is None:
             return
-        coords_to_check = [[0, 0], [1, 1], [0, 1], [0, -1], [1, 0], [-1, 0], [1, -1], [0, -1], [-1, -1]]
+        self.technique = Technique.STILL 
+        coords_to_check = [[0, 0], [1, 1], [0, 1], [0, -1], [1, 0], [-1, 0], [1, -1], [-1, 1], [-1, -1]]
         for coords in coords_to_check:
             x = self.x + coords[0]
             y = self.y + coords[1]
             if self.detect_item(floor.floor_items, x, y) == False and (y,x) in floor.valid_tiles:
                 if item is not None:
-                    item.x = self.x
-                    item.y = self.y 
+                    item.x = self.x + coords[0]
+                    item.y = self.y + coords[1]
                     self.del_item_from_inventory(item) # Remove item from inventory
                     floor.floor_items.append(item)
+                    
                     break
                  # Exit after dropping the item in the first available spot
             self.technique = Technique.STILL 
@@ -451,7 +453,7 @@ class Player:
 
 
 
-        if held_item != None:
+        if held_item != None and held_item != self.equipment_shield:
             self.sprite_weapon.image.blit_into(self.itemgrid[held_item.spriteindex], 0, 0, 0)
             self.sprite_weapon.color = (255, 255, 255, 255)
 

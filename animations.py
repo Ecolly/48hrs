@@ -179,6 +179,8 @@ class Animation:
                         is_dead = 0
                         if self.target.should_be_deleted == True:
                             self.target.invisible_frames = 9999999
+                            if isinstance(self.target, Enemy) == True:
+                                self.target.drop_item(self.target.current_holding, floor)
                             is_dead = 1
                         if self.attacker == player:
                             #if the player attacked something and it died, update the UI to reflect their new experience amounts
