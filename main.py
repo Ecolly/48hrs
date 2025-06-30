@@ -476,14 +476,14 @@ def on_key_press(symbol, modifiers):
                         name_desc = get_display_name_and_description(item)
                         adventure_log.append(str(player.name) + " dropped " + name_desc[0] + ".")
                         player.drop_item(item, floor)
-<<<<<<< Updated upstream
+
                         gamestate = 2
                         all_anims = turn_logic.do_turns(all_enemies, player, floor)
                         delete_buttons_supertype(all_buttons, 'inventory')
-=======
+
                         #gamestate = 2
                         # all_anims = turn_logic.do_turns(all_enemies, player, floor)
->>>>>>> Stashed changes
+
                 slot = slot + 1
     if pyglet.window.key._1 <= symbol <= pyglet.window.key._9:
         hotbar.selected = symbol - pyglet.window.key._1  # 0-8
@@ -492,10 +492,6 @@ def on_key_press(symbol, modifiers):
         if item_selected is not None:
             if isinstance(item_selected, Weapon):
                 player.equip_weapon(item_selected)
-            elif isinstance(item_selected, Staff):
-                print("casting staff")
-                player.techniqueitem = item_selected
-                gamestate = 5
             else:
                 player.unequip_weapon()
         else:
