@@ -205,62 +205,75 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
                 i = i + 1
         deduct_charges(entity, charges)
     elif spellname == "Staff of Mana":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges*2, "magic") #random.randint(charges, charges*3)
+        if enemy_hit != None:
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges*2, "magic") #random.randint(charges, charges*3)
         deduct_charges(entity, charges)
     elif spellname == "Staff of Ricochet" or spellname == "Piercing Staff":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 3, "magic")
+        if enemy_hit != None:
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 3, "magic")
         deduct_charges(entity, charges)
     elif spellname == "Execution Staff":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges, "execution")
+        if enemy_hit != None:
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges, "execution")
         deduct_charges(entity, charges)
     elif spellname == "Staff of Lethargy":
-        enemy_hit.speed = 1
-        enemy_hit.speed_turns = charges
-        list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was slowed down.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        if enemy_hit != None:
+            enemy_hit.speed = 1
+            enemy_hit.speed_turns = charges
+            list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was slowed down.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     elif spellname == "Energizing Staff":
-        enemy_hit.speed = 4
-        enemy_hit.speed_turns = charges
-        list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was sped up.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        if enemy_hit != None:
+            enemy_hit.speed = 4
+            enemy_hit.speed_turns = charges
+            list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was sped up.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     elif spellname == "Staff of Paralysis": #paralysis
-        enemy_hit.paralysis_turns = charges
-        list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was paralyzed.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        if enemy_hit != None:
+            enemy_hit.paralysis_turns = charges
+            list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was paralyzed.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     elif spellname == "Staff of Violence": #rage
-        enemy_hit.rage_ai_turns = charges
-        list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        if enemy_hit != None:
+            enemy_hit.rage_ai_turns = charges
+            list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     elif spellname == "Phobia Staff": #fear
-        enemy_hit.flee_ai_turns = charges
-        list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        if enemy_hit != None:
+            enemy_hit.flee_ai_turns = charges
+            list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
         deduct_charges(entity, charges)
     elif spellname == "Spores": #damage
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic")
-        list_of_animations.append(animations.Animation("", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+        if enemy_hit != None:
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic")
+            list_of_animations.append(animations.Animation("", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
     elif spellname == "Spores 2": #decrease attack
         if enemy_hit != None:
             enemy_hit.strength = max(enemy_hit.strength-1, 1)
             enemy_hit.defense = max(enemy_hit.defense-1, 1)
             #anim goes here?
-        list_of_animations.append(animations.Animation(str(enemy_hit.name) + "'s strength and defense dropped by 1!", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(enemy_hit.name) + "'s strength and defense dropped by 1!", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
     elif spellname == "Spores 3": #slow
         if enemy_hit != None:
             enemy_hit.speed = 1
             enemy_hit.speed_turns = 6
-        list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was slowed down.", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was slowed down.", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
     elif spellname == "Spores 4": #paralysis
         if enemy_hit != None:
             enemy_hit.paralysis_turns = 3
-        list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was paralyzed.", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was paralyzed.", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
     elif spellname == "Dragon Fire":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 10, "magic")
+        if enemy_hit != None:
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 10, "magic")
     elif spellname == "Dragon Fire 2":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 20, "magic")
+        if enemy_hit != None:
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 20, "magic")
     elif spellname == "Dragon Fire 3":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 30, "magic")
+        if enemy_hit != None:
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 30, "magic")
     elif spellname == "Dragon Fire 4":
-        inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 40, "magic")
+        if enemy_hit != None:
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 40, "magic")
 
 def find_reflection_angle(x, y, dx, dy, floor, targx, targy):
     #targx, targy are for when a projectile is reflecting off of an entity

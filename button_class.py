@@ -3,6 +3,7 @@ import pyglet
 import math
 import image_handling
 import game_classes.map
+from font import *
 
 sprite_font = pyglet.image.load('font.png')
 columns_font = sprite_font.width // 8
@@ -143,32 +144,15 @@ class InteractiveObject:
                     sprite.group = group2
             elif self.supertype == "overlay" or self.type == "power bar 2":
                 sprite.group = group5
+            elif self.type == "GUI_HP":
+                pass
             else:
                 if self.type == 'equip sword':
                     sprite.group = group6
                     if player.equipment_weapon == None:
                         pass
-                    #     sprite.color = (0, 189, 66, 0)
-                    # else:
-                    #     sprite.color = (0, 189, 66, 255)
-                    #     id = player.inventory.index(player.equipment_weapon)
-                    #     inventory_x = id % 10
-                    #     inventory_y = id // 10
-                    #     self.x = inventory_x*48 + int(1152/48)*12
-                    #     self.y = -inventory_y*48 + int(768/48)*32 - 1
-
                 elif self.type == 'equip shield':
                     pass
-                    # sprite.group = group6
-                    # if player.equipment_shield == None:
-                    #     sprite.color = (0, 189, 66, 0)
-                    # else:
-                    #     sprite.color = (0, 189, 66, 255)
-                    #     id = player.inventory.index(player.equipment_shield)
-                    #     inventory_x = id % 10
-                    #     inventory_y = id // 10
-                    #     self.x = inventory_x*48 + int(1152/48)*12
-                    #     self.y = -inventory_y*48 + int(768/48)*32 - 
                 elif i == 0:# or i == 3 or i == 4:
                     sprite.group = group3
                 else:
@@ -539,6 +523,7 @@ def get_gui_string(player):
 def create_gui(all_buttons, player, advlog_string):
     global grid_tinyfont
     global letter_order
+    global group_hotbar_selection, group_inv, group_hotbar_selection, group_hotbar, group_overlay
     gui_string = get_gui_string(player)
 
     #advlog_string = adventure_log[len(adventure_log)-1]
@@ -547,6 +532,13 @@ def create_gui(all_buttons, player, advlog_string):
     spr3 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(advlog_string, grid_tinyfont, letter_order, len(advlog_string)+1, "left"), 5, 8, len(advlog_string)+1))
     spr4 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.tesselate(7*16, grid_tinyfont, 90, 1), 5, 8, 90))
     spr5 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.tesselate(7*16, grid_tinyfont, 90, 1), 5, 8, 90))
+
+    spr2.group = group_hotbar
+    spr4.group = group_hotbar
+    spr5.group = group_overlay
+
+    spr1.group = group_inv
+    spr3.group = group_hotbar_selection
 
     option_obj = InteractiveObject(
         x=0,
@@ -568,6 +560,11 @@ def create_gui(all_buttons, player, advlog_string):
         extra_2 = 0#advlog_string
 
     )
+
+
+    
+
+
     all_buttons.append(option_obj)
 
 

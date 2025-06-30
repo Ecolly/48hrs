@@ -1127,11 +1127,11 @@ def on_draw():
             button.sprites[4].y = button.sprites[4].y-48
             #button.sprites[2].y = button.sprites[2].y-24
 
-            button.sprites[0].group = group_hotbar_selection
-            button.sprites[1].group = group_inv
-            button.sprites[2].group = group_hotbar_selection
-            button.sprites[3].group = group_hotbar
-            button.sprites[4].group = group_overlay
+            # button.sprites[0].group = group_hotbar_selection
+            # button.sprites[1].group = group_inv
+            # button.sprites[2].group = group_hotbar_selection
+            # button.sprites[3].group = group_hotbar
+            # button.sprites[4].group = group_overlay
 
 
             pass
