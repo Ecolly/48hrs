@@ -529,10 +529,10 @@ bg_deeper.batch = batch
         #self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 1], [2, 2, 2], [2, 3, 2]]
         #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         
-
+adventure_log = ["PANDORIUM - A game by zeroBound and Econic", "Good luck!"]
 
 def go_to_next_level():
-    global floor, all_enemies, player, bg, bg_liqs, bg_deeper, floor_level
+    global floor, all_enemies, player, bg, bg_liqs, bg_deeper, floor_level, adventure_log
 
 
     itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
@@ -541,40 +541,43 @@ def go_to_next_level():
     shop_list = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
 
     floor_level +=1
-    if floor_level < 3: ##normal grass
-        
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
-    elif floor_level < 5: #river zone
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                      #river zone
-    elif floor_level < 7: #seafoam grass
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Simple", (27, 27), "Solid", ["LEAFALOTTA", "FOX", "TURTLE"], [2, 2, 1], itemlist_equal                      #river zone                                        #seafoam grass (replace? too much grass?)
-    elif floor_level < 9: #lake zone
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (4,25,3,3,3,6,6,1), "Water", ["CHLOROSPORE", "TURTLE", "FOX"], [2, 1, 2], itemlist_equal                                #lake zone
-    elif floor_level < 11: #brown basalt
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (19,31,1,1,10,1,1,1), "Solid", ["S'MORE", "SCORPION"], [2, 1], itemlist_equal                           #brown basalt
-    elif floor_level < 13: #coal vein
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (17,31,1,1,0,0,6,9), "Solid", ["SCORPION", "CHROME DOME"], [2, 1], itemlist_equal                          #coal vein
-    elif floor_level < 15: #petroleum zonessssssssssss
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (8,29,1,1,0,0,6,9), "Petroleum", ["DRAGON", "CHROME DOME"], [1, 2], itemlist_equal                         #petroleum zone
-    elif floor_level < 17: #aquifer
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (8,22,1,1,9,9,6,9), "Aquifer", ["CHLOROSPORE", "TURTLE", "SCORPION"], [3, 3, 2], itemlist_equal                        #aquifer
-    elif floor_level < 19: #mud zone
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (6,30,1,6,6,6,6,0), "Mud", ["CHLOROSPORE", "CHROME DOME"], [3, 2], itemlist_equal                            #mud zone
-    elif floor_level < 21: #teal & gold
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (18,30,1,1,0,0,6,9), "Solid"                          #teal & gold
-    elif floor_level < 23: #purple & gold
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (20,30,2,9,10,11,0,3), "Solid"                         #purple & gold
-    elif floor_level < 25: #grey pits
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (7,23,1,6,6,6,6,0), "Pit"                             #grey pits
-    elif floor_level < 27: #grey pits, glowing
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (7,23,1,6,6,6,6,0), "Glowing"                             #grey pits
-    elif floor_level < 29: #lava
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (8,23,2,2,2,2,2,2), "Lava"                            #wavy lava
-    elif floor_level < 31: #multicolored porcelain pits
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (7, 22, 5,5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Pit"           #multicolored porcelain pits
-    else: #multicolored porcelain wall
-        sc, tileset, walltype, enemy_list, level_list, item_list = "Complex", (15, 22, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid"        #multicolored porcelain
+
+    if floor_level < 1:
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Entrance to the Exclusion Zone", "Complex", (7,26,0,6,6,6,6,1), "Pits", ["GOOSE"], [1], itemlist_beginner
+    elif floor_level < 3: #Abandoned Woods
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Abandoned Woods", "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
+    elif floor_level < 5: #Silent Tributary
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silent Tributary", "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                      #river zone
+    elif floor_level < 7: #Dense Woods
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Dense Woods", "Simple", (27, 27), "Solid", ["LEAFALOTTA", "FOX", "TURTLE"], [2, 2, 1], itemlist_equal                      #river zone                                        #seafoam grass (replace? too much grass?)
+    elif floor_level < 9: #Reservoir
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Reservoir", "Complex", (4,25,3,3,3,6,6,1), "Water", ["CHLOROSPORE", "TURTLE", "FOX"], [2, 1, 2], itemlist_equal                                #lake zone
+    elif floor_level < 11: #Topsoil Cavern
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Topsoil Cavern", "Complex", (19,31,1,1,10,1,1,1), "Solid", ["S'MORE", "SCORPION"], [2, 1], itemlist_equal                           #brown basalt
+    elif floor_level < 13: #Coal Vein
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Coal Vein", "Complex", (17,31,1,1,0,0,6,9), "Solid", ["SCORPION", "CHROME DOME"], [2, 1], itemlist_equal                          #coal vein
+    elif floor_level < 15: #Petroleum Deposit
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Petroleum Deposit", "Complex", (8,29,1,1,0,0,6,9), "Petroleum", ["DRAGON", "CHROME DOME"], [1, 2], itemlist_equal                         #petroleum zone
+    elif floor_level < 17: #Aquifer
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Aquifer", "Complex", (8,22,1,1,9,9,6,9), "Aquifer", ["CHLOROSPORE", "TURTLE", "SCORPION"], [3, 3, 2], itemlist_equal                        #aquifer
+    elif floor_level < 19: #Subterranean Mudflow
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Subterraean Mudflow", "Complex", (6,30,1,6,6,6,6,0), "Mud", ["CHLOROSPORE", "CHROME DOME"], [3, 2], itemlist_equal                            #mud zone
+    elif floor_level < 21: #Silt Stratum
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silt Stratum", "Complex", (18,30,1,1,0,0,6,9), "Solid"                          #teal & gold
+    elif floor_level < 23: #Silt Stratum
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silt Stratum", "Complex", (20,30,2,9,10,11,0,3), "Solid"                         #purple & gold
+    elif floor_level < 25: #Ash Pits
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Pit"                             #grey pits
+    elif floor_level < 27: #Ash Pits
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Glowing"                             #grey pits
+    elif floor_level < 29: #Magma Chamber
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm Bottom", "Complex", (8,23,2,2,2,2,2,2), "Lava"                            #wavy lava
+    elif floor_level < 31: #Workshop Remnants
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Workshop Remnant", "Complex", (7, 22, 5,5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Pit"           #multicolored porcelain pits
+    else: #Infested Workshop 
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Infested Workshop", "Complex", (15, 22, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid"        #multicolored porcelain
     
+    adventure_log.append("Progressed to floor " + str(floor_level) + " (" + str(floor_name) + ").")
 
     player.strength = player.maxstrength
     player.strength_visual = player.strength
@@ -583,6 +586,11 @@ def go_to_next_level():
     player.defense_visual = player.defense
     
 
+    if player.gold < 0:
+        adventure_log.append("Paid " + str(player.gold - round(player.gold*1.1)) + " in interest.")
+        player.gold = round(player.gold*1.1) #interest payments
+        enemy_list.append("DEBT COLLECTOR")
+        level_list.append(1)
 
     #Triggered after Detects stairs
     floor = make_floor(sc, item_list, enemy_list, level_list, shop_list)
@@ -591,7 +599,7 @@ def go_to_next_level():
     floor.random_create_item(grid_items, item_list)
     floor.generate_enemies(floor_level, enemy_list, level_list)
 
-
+    floor.name = floor_name
     
 
     player.x, player.y = floor.spawnpoint
@@ -750,11 +758,11 @@ color_templates.append((33, 33, 33, 90))
 
 
 
-create_gui(all_buttons, player, "Good luck!")
+create_gui(all_buttons, player, "Good luck!", floor_level)
 create_overlay(all_buttons)
 create_mouse_overlay(all_buttons)
 
-adventure_log = ["PANDORIUM - A game by zeroBound and Econic", "Good luck!"]
+
 
 # player.add_to_inventory(floor.create_item("Tome of Recovery", grid_items))
 player.add_to_inventory(floor.create_item("Rapier", grid_items))
@@ -777,7 +785,11 @@ player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
 
 # player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
 # player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
-player.add_to_inventory(floor.create_item("Staff of Mana", grid_items))
+player.add_to_inventory(floor.create_item("Energizing Staff", grid_items))
+player.add_to_inventory(floor.create_item("Energizing Staff", grid_items))
+player.add_to_inventory(floor.create_item("Energizing Staff", grid_items))
+player.add_to_inventory(floor.create_item("Energizing Staff", grid_items))
+
 player.add_to_inventory(floor.create_item("Phobia Staff", grid_items))
 
 # player.add_to_inventory(floor.create_item("Piercing Staff", grid_items))
@@ -893,6 +905,7 @@ def on_draw():
     global item_selected
     global win_true_x, win_true_y, win_x, win_y
     global adventure_log
+    global floor_level
 
     # framebuffer.get_texture().bind()
     # glViewport(0, 0, win_x, win_y)
@@ -1133,7 +1146,7 @@ def on_draw():
 
 
             pass
-            gui_string = get_gui_string(player)
+            gui_string = get_gui_string(player, floor_level)
             if gui_string != button.extra_1:
                 sprite = button.sprites[1] 
                 #pyglet.gl.glDeleteTextures(1, pyglet.gl.GLuint(sprite.image.id))

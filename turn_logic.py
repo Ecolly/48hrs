@@ -382,9 +382,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         else:
             entity.techniquex = entity.x 
             entity.techniquey = entity.y
+
         rot = adjust_rotation(entity, entity.techniquex-entity.x, entity.techniquey-entity.y)
-        anim = animations.Animation("", None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 8), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.MOVE, None, None, None)
-        list_of_animations.append(anim)
+        list_of_animations.append(animations.Animation("", None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 8), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.MOVE, None, None, None))
 
 
 
@@ -396,9 +396,13 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         entity.y = entity.techniquey
         return Technique.MOVE, chronology
     elif entity.technique == Technique.CONSUME:
+        if prevtechnique == Technique.MOVE or prevtechnique == Technique.STILL:
+            chronology += check_if_entity_is_on_screen(entity, player, 1, 8)
         entity.consume_item(entity.techniqueitem, list_of_animations)
         return Technique.CONSUME, chronology+10
     elif entity.technique == Technique.HIT:
+        if prevtechnique == Technique.MOVE or prevtechnique == Technique.STILL:
+            chronology += check_if_entity_is_on_screen(entity, player, 1, 8)
         rot = adjust_rotation(entity, clamp(entity.techniquex-entity.x, -1, 1), clamp(entity.techniquey-entity.y, -1, 1))
         target_list = [[entity.techniquex, entity.techniquey]]
 
@@ -440,13 +444,14 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             
 
 
-        anim2 = animations.Animation("", None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
-        list_of_animations.append(anim2)
+
+        list_of_animations.append(animations.Animation("", None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None))
         chronology += check_if_entity_is_on_screen(entity, player, 1, 16)
         return Technique.HIT, chronology
     elif entity.technique == Technique.THROW: #works for throwing items, casting projectile spells, and other projectiles
         #print(entity.x, entity.y, entity.techniquex, entity.techniquey)
-
+        if prevtechnique == Technique.MOVE or prevtechnique == Technique.STILL:
+            chronology += check_if_entity_is_on_screen(entity, player, 1, 8)
         rot = adjust_rotation(entity, clamp(-entity.x+entity.techniquex, -1, 1), clamp(-entity.y+entity.techniquey, -1, 1))
 
         if entity.techniqueitem != None and isinstance(entity.techniqueitem, Staff) == True:
@@ -574,7 +579,8 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         chronology = chronology + max(chron_i, check_if_entity_is_on_screen(entity, player, 1, 16))
         return Technique.THROW, chronology
     elif entity.technique == Technique.CAST: #this is for static castings (not projectiles)
-
+        if prevtechnique == Technique.MOVE or prevtechnique == Technique.STILL:
+            chronology += check_if_entity_is_on_screen(entity, player, 1, 8)
 
         item = entity.techniqueitem
 
@@ -806,12 +812,15 @@ def do_turns(all_enemies, player, floor):
 
     for enemy in all_enemies:
         if enemy.speed > player.speed: #double speed
+
             if enemy.should_be_deleted != True: #if enemy isnt already dead...
                 enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
                 prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
+                #print(chronology)
             if enemy.should_be_deleted != True: #if enemy isnt already dead...
                 enemy.technique, enemy.techniquex, enemy.techniquey = enemy.do_AI(all_enemies, player, floor)
                 prevtechnique, chronology = do_individual_turn(enemy, floor, player, list_of_animations, chronology, prevtechnique)
+                #print(chronology)
                 if player.turns_left_before_moving == 0:
                     refresh_entity_states(enemy)
         elif enemy.speed == player.speed: #normal speed

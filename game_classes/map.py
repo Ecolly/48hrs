@@ -54,6 +54,7 @@ class Map:
         self.textured_map = [[]]
         self.valid_entity_tiles = []
         self.valid_tiles_noshop = []
+        self.name = "Strange Floor"
 
         self.item_list = None #these are lists of what enemies/items can spawn in a level
         self.enemy_list = None 
@@ -240,7 +241,7 @@ class Map:
         elif name == "Lesser Healing Staff":
             return Staff(name, grid_items, reverse="Staff of Mana",sprite_locs = fakenames_staffs_key[3], damage=10, projectile=True, description="Healing depends on mana used.", charges=12, rarity=1) #deals set healing according to mana used
         elif name == "Energizing Staff":
-            return Staff(name, grid_items, reverse="Staff of Lethargy",sprite_locs = fakenames_staffs_key[4], damage=10, projectile=True, description="Target's speed is doubled. Duration depends on mana used.", charges=5, rarity=1) #deals set healing according to mana used
+            return Staff(name, grid_items, reverse="Staff of Lethargy",sprite_locs = fakenames_staffs_key[4], damage=10, projectile=True, description="Target's speed is doubled. Duration depends on mana used.", charges=30, rarity=1) #deals set healing according to mana used
         elif name == "Staff of Mana":
             return Staff(name, grid_items, reverse="Lesser Healing Staff", sprite_locs = fakenames_staffs_key[5], damage=10, projectile=True, description="Damage depends on mana used.", charges=12, rarity=1) #deals set damage according to # of charges used
         elif name == "Staff of Ricochet":
@@ -372,17 +373,18 @@ class Map:
         # random_location = random.choice(self.valid_tiles)
         for _ in range(5):
             random_location = random.choice(self.valid_entity_tiles)
-            y, x = random_location
+            if (random_location in self.valid_tiles_noshop) == True:
+                y, x = random_location
 
-            #choose a random enemy out of the enemy name & level options for this floor
-            rng_enemy = random.randint(0, len(enemy_list)-1)
-            enemy_name = enemy_list[rng_enemy]
-            enemy_level = level_list[rng_enemy]
+                #choose a random enemy out of the enemy name & level options for this floor
+                rng_enemy = random.randint(0, len(enemy_list)-1)
+                enemy_name = enemy_list[rng_enemy]
+                enemy_level = level_list[rng_enemy]
 
-            self.valid_entity_tiles.remove(random_location)
-            
+                self.valid_entity_tiles.remove(random_location)
+                
 
-            self.all_enemies.append(generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level), self))
+                self.all_enemies.append(generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level), self))
 
 
 

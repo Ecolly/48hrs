@@ -501,7 +501,7 @@ def create_mouse_overlay(all_buttons):
 #     )
 #     all_buttons.append(obj)
 
-def get_gui_string(player):
+def get_gui_string(player, floor_level):
     strength = str(player.strength)
     defense = str(player.defense)
 
@@ -515,16 +515,16 @@ def get_gui_string(player):
             strength = strength + "+" + str(player.equipment_weapon.damage + + player.equipment_weapon.bonus)
 
     #stats gui
-    gui_string = str(player.health_visual) + "/" + str(player.maxhealth_visual) + " HP, " + str(strength) + "/" + str(player.maxstrength) + " STR, " + str(defense) + "/" + str(player.maxdefense) + " DEF, LV " + str(player.level_visual) + ", " + str(player.experience_visual) + " EXP, " + str(player.gold) + " GOLD"
+    gui_string = str(player.health_visual) + "/" + str(player.maxhealth_visual) + " HP, " + str(strength) + "/" + str(player.maxstrength) + " STR, " + str(defense) + "/" + str(player.maxdefense) + " DEF, LV " + str(player.level_visual) + ", " + str(player.experience_visual) + " EXP, " + str(player.gold) + " GOLD, " + str(floor_level) + "F"
     return gui_string
 
 
 
-def create_gui(all_buttons, player, advlog_string):
+def create_gui(all_buttons, player, advlog_string, floor_level):
     global grid_tinyfont
     global letter_order
     global group_hotbar_selection, group_inv, group_hotbar_selection, group_hotbar, group_overlay
-    gui_string = get_gui_string(player)
+    gui_string = get_gui_string(player, floor_level)
 
     #advlog_string = adventure_log[len(adventure_log)-1]
     spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(gui_string, grid_tinyfont, letter_order, len(gui_string), "left"), 5, 8, len(gui_string)+1))

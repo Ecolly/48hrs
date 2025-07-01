@@ -72,6 +72,8 @@ class Animation:
         self.rot = rot
         self.x = startx 
         self.y = starty
+        self.endx = endx 
+        self.endy = endy
         self.associated_object = associated_object
         self.should_be_deleted = False
         self.technique = technique
@@ -109,12 +111,15 @@ class Animation:
 
             if self.animtype == 0: #movement
                 obj = self.associated_object
-
+                # if obj.speed == 4:
+                #     print("move", self.current_time, self.start_time, self.duration)
                 obj.direction = self.rot
-                obj.prevx = obj.prevx + round((abs(obj.techniquex - obj.prevx)/(obj.techniquex - obj.prevx+0.01)))/8
-                obj.prevy = obj.prevy + round((abs(obj.techniquey - obj.prevy)/(obj.techniquey - obj.prevy+0.01)))/8
+                obj.prevx = obj.prevx + round((abs(self.endx- obj.prevx)/(self.endx - obj.prevx+0.01)))/8
+                obj.prevy = obj.prevy + round((abs(self.endy - obj.prevy)/(self.endy - obj.prevy+0.01)))/8
+
                 if frame > self.duration:
-                    obj.prevx, obj.prevy, obj.offsetx, obj.offsety = obj.x, obj.y, 0, 0
+                    #print(self.endx, self.endy, obj.x, obj.y, obj.techniquex, obj.techniquey)
+                    obj.prevx, obj.prevy, obj.offsetx, obj.offsety = self.endx, self.endy, 0, 0
                     self.should_be_deleted = True
                     if self.associated_object == player:
                         if player.is_shopping == False:
@@ -176,23 +181,22 @@ class Animation:
 
             elif self.animtype == 1: #hit anim
                 obj = self.associated_object
-                #print(self.item)
-                # if self.item != None:
-                #     obj.current_holding = self.item
 
+                # if obj.speed == 4:
+                #     print("hit", self.current_time, self.start_time, self.duration)
                 obj.direction = self.rot
                 quartic_eq = (-0.19*(0.25*frame)**4 + (0.25*frame)**3 - (0.25*frame)**2)/2.5
                 if obj == player:
-                    obj.offsetx = round((abs(obj.techniquex - obj.initx)/(obj.techniquex - obj.initx + 0.01)))*quartic_eq
-                    obj.offsety = round((abs(obj.techniquey - obj.inity)/(obj.techniquey - obj.inity + 0.01)))*quartic_eq
+                    obj.offsetx = round((abs(self.endx - self.startx)/(self.endx - self.startx + 0.01)))*quartic_eq
+                    obj.offsety = round((abs(self.endy - self.starty)/(self.endy - self.starty + 0.01)))*quartic_eq
                 else:
-                    obj.prevx = obj.initx + round((abs(obj.techniquex - obj.initx)/(obj.techniquex - obj.initx + 0.01)))*quartic_eq
-                    obj.prevy = obj.inity + round((abs(obj.techniquey - obj.inity)/(obj.techniquey - obj.inity + 0.01)))*quartic_eq
+                    obj.prevx = self.startx + round((abs(self.endx - self.startx)/(self.endx - self.startx + 0.01)))*quartic_eq
+                    obj.prevy = self.starty + round((abs(self.endy - self.starty)/(self.endy - self.starty + 0.01)))*quartic_eq
                 if frame > self.duration:
-                    obj.prevx, obj.prevy, obj.offsetx, obj.offsety = obj.initx, obj.inity, 0, 0
+                    obj.prevx, obj.prevy, obj.offsetx, obj.offsety = self.startx, self.starty, 0, 0
                     self.should_be_deleted = True
                     wipe_techniqueitem(obj)
-                    #obj.current_holding = False
+
 
 
             elif self.animtype == 2: #point number

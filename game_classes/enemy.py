@@ -51,17 +51,17 @@ def create_sprite_enemy(image_grid, index):
 
 def generate_enemy(name, level, x, y, grid, floor):
     global grid_items
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE"]
-    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 13, 6, 20, 24, 18]
-    enemy_strength = [0, 7, 5, 9, 9, 14, 9, 15, 15, 18, 12, 1, 1, 1, 1]
-    enemy_defense = [0, 2, 2, 1, 3, 1, 1, 5, 15, 3, 6, 30, 2, 1, 3]
-    enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1]
-    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16]
-    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40]
-    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
-    enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None]
-    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 1, 1, 0, 0, 0, 1, 0, 0]
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR"]
+    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 13, 6, 20, 24, 18, 100]
+    enemy_strength = [0, 7, 5, 9, 9, 14, 9, 15, 15, 18, 12, 1, 1, 1, 1, 70]
+    enemy_defense = [0, 2, 2, 1, 3, 1, 1, 5, 15, 3, 6, 30, 2, 1, 3, 70]
+    enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64, 1*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1]
+    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16, 1/16]
+    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40, 1]
+    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1, 4] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
+    enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold"]
+    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 1, 1, 0, 0, 0, 1, 0, 0, 1]
 
     id = enemy_names.index(name)
     enemy = Enemy(
@@ -154,6 +154,7 @@ class Enemy:
         self.should_be_deleted = False
         
         self.current_holding = None
+        self.has_been_hit = False #for enemies that only hit if you retaliate
 
 
         self.sprite_weapon = image_handling.create_sprite(grid_items, 0)
@@ -242,7 +243,7 @@ class Enemy:
                     new_x = self.x + dx
                     new_y = self.y + dy
                     if self.can_move_to(new_x, new_y, game_map):
-                        return Technique.MOVE, new_x, new_y
+                        return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)
                 # If not moving or can't move, stay still
                 return Technique.STILL, self.x, self.y
                     
@@ -254,6 +255,23 @@ class Enemy:
                 new_y = self.y + self.sign(ytochk - self.y)
                 return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)    
 
+
+
+        elif self.name == "DEBT COLLECTOR":
+            if player.gold < 0:
+                if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
+                    
+                    return Technique.HIT, xtochk, ytochk
+                else:
+                    new_x = self.x + self.sign(xtochk - self.x)
+                    new_y = self.y + self.sign(ytochk - self.y)
+                    return Technique.MOVE, new_x, new_y
+            else:
+                dx, dy = random.choice([(1,0), (-1,0), (0,1), (0,-1)])
+                new_x = self.x + dx
+                new_y = self.y + dy
+                if self.can_move_to(new_x, new_y, game_map):
+                    return Technique.MOVE, new_x, new_y
         elif self.name == "DEMON CORE":
             #distance to approximate:
             dist_target = 3
@@ -286,7 +304,7 @@ class Enemy:
             else:
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
-                return self.technique_filter_for_sanctuaries(Technique.MOVE, player.x, player.y, game_map)      
+                return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)      
 
         elif self.name == "DRAGON":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
@@ -306,7 +324,7 @@ class Enemy:
             else:
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
-                return self.technique_filter_for_sanctuaries(Technique.MOVE, player.x, player.y, game_map)     
+                return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)     
         elif self.name == "CHROME DOME":
             if (self.current_holding.name == "Rapier" and abs(xtochk-self.x) < 3 and abs(ytochk-self.y) < 3):
                 self.techniqueitem = game_map.create_item("Rapier", grid_items)
