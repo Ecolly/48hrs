@@ -257,9 +257,13 @@ class Map:
         elif name == "Execution Staff":
             return Staff(name, grid_items, reverse="Staff of Division", sprite_locs = fakenames_staffs_key[11], damage=10, projectile=True, description="Deals 3 damage. Enemies killed by the staff have experience yields multiplied by mana used.", charges=5, rarity=1) 
         elif name == "Phobia Staff":
-            return Staff(name, grid_items, reverse="Staff of Violence",sprite_locs = fakenames_staffs_key[12], damage=10, projectile=True, description="Target flees from you. Duration depends on mana used.", charges=5, rarity=1) #pierces enemies
+            return Staff(name, grid_items, reverse="Staff of Violence",sprite_locs = fakenames_staffs_key[12], damage=10, projectile=True, description="Target flees from you. Duration depends on mana used.", charges=5, rarity=1) 
         elif name == "Staff of Violence":
             return Staff(name, grid_items, reverse="Phobia Staff", sprite_locs = fakenames_staffs_key[13], damage=10, projectile=True, description="Target attempts to fight you using physical attacks only. Duration depends on mana used.", charges=5, rarity=1) 
+        elif name == "Staff of Cloning":
+            return Staff(name, grid_items, reverse="Staff of Cloning",sprite_locs = fakenames_staffs_key[14], damage=10, projectile=True, description="A duplicate of the target is created.", charges=5, rarity=2)
+        elif name == "Staff of Metamorphosis":
+            return Staff(name, grid_items, reverse="Staff of Metamorphosis", sprite_locs = fakenames_staffs_key[15], damage=10, projectile=True, description="Target is transformed into a random enemy at a random level.", charges=5, rarity=2) 
         
         
         
@@ -293,6 +297,15 @@ class Map:
             return Tome(name, grid_items, reverse="Banishing Tome", sprite_locs = fakenames_tomes_key[12], damage=10, projectile=False, description="Summons enemies around your position.",price=20)
         elif name == "Banishing Tome":
             return Tome(name, grid_items, reverse="Summoning Tome",sprite_locs = fakenames_tomes_key[13], damage=10, projectile=False, description="All enemies directly adjacent to you are teleported to a random location on the floor.",price=30)
+        elif name == "Tome of Pizzazz":
+            return Tome(name, grid_items, reverse="Bankruptcy Tome", sprite_locs = fakenames_tomes_key[14], damage=10, projectile=False, description="Find the last item in your inventory. Sell price is boosted by 50%.",price=40)
+        elif name == "Bankruptcy Tome":
+            return Tome(name, grid_items, reverse="Tome of Pizzazz",sprite_locs = fakenames_tomes_key[15], damage=10, projectile=False, description="Gold is set to 0.",price=20)
+        
+        
+        
+        
+        
         elif name == "Blank Tome":
             return Tome(name, grid_items, reverse="Tome of Reversal", sprite_locs = 28, damage=10, projectile=False, description="Finds the last tome in your inventory and turns into a copy.",price=30)
         

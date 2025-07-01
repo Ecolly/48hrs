@@ -785,10 +785,10 @@ player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
 
 # player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
 # player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
-player.add_to_inventory(floor.create_item("Energizing Staff", grid_items))
-player.add_to_inventory(floor.create_item("Energizing Staff", grid_items))
-player.add_to_inventory(floor.create_item("Energizing Staff", grid_items))
-player.add_to_inventory(floor.create_item("Energizing Staff", grid_items))
+player.add_to_inventory(floor.create_item("Staff of Cloning", grid_items))
+player.add_to_inventory(floor.create_item("Staff of Metamorphosis", grid_items))
+player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Pizzazz", grid_items))
 
 player.add_to_inventory(floor.create_item("Phobia Staff", grid_items))
 

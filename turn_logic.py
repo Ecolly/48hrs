@@ -17,9 +17,9 @@ def can_move_to_but_not_a_cancerous_growth_on_society(x, y, game_map, player):
         return False
     else:
         for enemy in game_map.all_enemies:
-            if enemy.technique == Technique.MOVE and enemy.techniquefinished == 0 and enemy.techniquex == x and enemy.techniquey == y:#x == enemy.x and y == enemy.y:
+            if enemy.technique == Technique.MOVE and enemy.techniquefinished == 0 and enemy.techniquex == x and enemy.techniquey == y and enemy.should_be_deleted == False:#x == enemy.x and y == enemy.y:
                 return False
-            elif enemy.x == x and enemy.y == y:
+            elif enemy.x == x and enemy.y == y and enemy.should_be_deleted == False:
                 return False
         if player.x == x and player.y == y:
             return False
@@ -171,6 +171,19 @@ def deduct_charges(entity, charges):
 
 
 def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, list_of_animations):
+    if spellname == "Staff of Cloning":
+        if enemy_hit != None:
+            spawn_enemies_within_turn_execution(1, enemy_hit.name, enemy_hit.level, enemy_hit, floor, player, chronology, list_of_animations)
+            deduct_charges(entity, 1)
+    if spellname == "Staff of Metamorphosis":
+        if enemy_hit != None:
+            enemy_hit.should_be_deleted = True 
+            name_to_spawn = random.choice(["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR"])
+            level_to_spawn = random.randint(1, 4)
+            spawn_enemies_within_turn_execution(1, name_to_spawn, level_to_spawn, enemy_hit, floor, player, chronology, list_of_animations)
+            
+            #spawn_enemies_within_turn_execution(1, enemy_hit.name, enemy_hit.level, enemy_hit, floor, player, chronology, list_of_animations)
+            deduct_charges(entity, 1)
     if spellname == "Greater Healing Staff":
         if enemy_hit != None:
             inflict_healing(enemy_hit.health/2, enemy_hit, player, list_of_animations, chronology)
@@ -604,8 +617,18 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         #             item.name = player.inventory[i].name
         #             break
         #         i = i - 1
-
-        if item.name == "Tome of Recovery":
+        if item.name == "Bankruptcy Tome":
+            player.gold = 0 
+            deduct_charges(entity, 1)
+        elif item.name == "Tome of Pizzazz":
+            i = 39 
+            while i > -1:
+                if isinstance(player.inventory[i], Item) == True:
+                    player.inventory[i].price = math.ceil(player.inventory[i].price*1.5)
+                    break
+                i = i - 1
+            deduct_charges(entity, 1)
+        elif item.name == "Tome of Recovery":
             inflict_healing(15, player, player, list_of_animations, chronology)
             for enemy in floor.all_enemies:
                 inflict_healing(15, enemy, player, list_of_animations, chronology)
@@ -854,6 +877,7 @@ def do_turns(all_enemies, player, floor):
 def spawn_enemies_within_turn_execution(enemies_to_summon, enemy_name, enemy_level, entity, floor, player, chronology, list_of_animations):
     locs = [(1, 0), (1, 1), (0, 1), (1, -1), (-1, 1), (-1, -1), (-1, 0), (0, -1)]
     random.shuffle(locs)
+    locs.insert(0, (0, 0))
     for loc in locs:
         if can_move_to_but_not_a_cancerous_growth_on_society(entity.x + loc[0], entity.y+loc[1], floor, player) == True and random.uniform(0, 1) < 0.75:
             x, y = loc[0] + entity.x, loc[1] + entity.y
