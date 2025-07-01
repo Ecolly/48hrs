@@ -24,6 +24,15 @@ def enemy_grid_to_use(level):
     else:
         return grid_entities4
 
+def check_if_entity_is_on_screen(entity, player, result1, result2):
+    if entity == None:
+        return result1
+    
+    if ((entity.x > player.x + 13 or entity.x < player.x - 13) or (entity.y > player.y + 9 or entity.y < player.y - 9)):
+        return result1
+    else:
+        return result2
+    
 def refresh_all_visuals(entity):
     entity.prevx = entity.x
     entity.prevy = entity.y
@@ -44,9 +53,9 @@ def refresh_all_visuals(entity):
 
 
 def create_sprite_enemy(image_grid, index):
-    tex = pyglet.image.Texture.create(16, 16)
-    tex.blit_into(image_grid[index], 0, 0, 0)
-    return pyglet.sprite.Sprite(tex, x=0, y=0)
+    #tex = pyglet.image.Texture.create(16, 16)
+    #tex.blit_into(image_grid[index], 0, 0, 0)
+    return pyglet.sprite.Sprite(image_grid[index], x=0, y=0)
 
 
 def generate_enemy(name, level, x, y, grid, floor):
@@ -99,7 +108,8 @@ def generate_enemy(name, level, x, y, grid, floor):
 
 class Enemy:
     def __init__(self, name, health, strength, defense, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y, experience, speed, type):
-        global batch
+        global batch#, batch, batch, batch, batch
+
         global group_enemies
         global grid_items
         self.name = name
@@ -111,8 +121,8 @@ class Enemy:
         self.health_visual = health*level
         self.maxhealth_visual = health*level
         self.level_visual = level
-
-        self.strength = strength*level  # Default strength
+  # Default strength
+        self.strength = strength*level
         self.maxstrength = strength*level
         self.strength_visual = strength*level
         self.maxstrength_visual = strength*level
@@ -159,12 +169,15 @@ class Enemy:
 
 
         self.sprite_weapon = image_handling.create_sprite(grid_items, 0)
+
+
+
         #self.sprite_shield = image_handling.create_sprite(itemgrid, 0)
         self.sprite_weapon.color = (0, 0, 0, 0)
         #self.sprite_shield.color = (0, 0, 0, 0)
         self.itemgrid = grid_items
-        self.sprite_weapon.batch = batch 
-        #self.sprite_shield.batch = batch
+        self.sprite_weapon.batch = batch
+
 
 
 
@@ -184,7 +197,16 @@ class Enemy:
         #     i = i + 1
 
         self.sprite.group = group_enemies
+
+        # if level == 1:
+        #     self.sprite.batch = batch
+        # elif level == 2:
+        #     self.sprite.batch = batch
+        # elif level == 3:
+        #     self.sprite.batch = batch
+        # elif level == 4:
         self.sprite.batch = batch
+
         self.color = color #4 entry tuple for the sprite to be colored as; white is default
         self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
         self.animframe = animframe #what frame of the animation it's on
@@ -470,7 +492,7 @@ class Enemy:
             return True
 
 
-    def draw(self, batch, animation_presets, player, group, group_bg, group_fg):
+    def draw(self, animation_presets, player, group, group_bg, group_fg):
         sprite = self.sprite
         self.grid = enemy_grid_to_use(self.level_visual)
         if self.paralysis_visual > 0:
@@ -484,14 +506,16 @@ class Enemy:
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.prevy*16 + 8)*self.scale + self.offsety*16*self.scale
 
         if frame_index != self.spriteindex_prev:
-            sprite.image.blit_into(self.grid[self.spriteindex + frame_index], 0, 0, 0)
+            self.sprite.image = self.grid[self.spriteindex + frame_index]
+
+            #sprite.image.blit_into(self.grid[self.spriteindex + frame_index], 0, 0, 0)
+            
             self.spriteindex_prev = frame_index
 
 
 
 
         self.sprite_weapon.scale = self.scale
-        self.sprite_weapon.batch = batch
 
         self.animframe = self.animframe + self.animmod*self.speed_visual
         if self.animframe >= len(animation_presets[self.animtype]):
@@ -507,15 +531,20 @@ class Enemy:
             self.sprite_weapon.color = (0, 0, 0, 0)
         else:
             if self.techniqueitem != None:
-                self.sprite_weapon.image.blit_into(self.itemgrid[self.techniqueitem.spriteindex], 0, 0, 0)
-                self.sprite_weapon.color = (255, 255, 255, 255)
+                if self.sprite_weapon.color != (255, 255, 255, 255):
+                    self.sprite_weapon.image = self.itemgrid[self.techniqueitem.spriteindex]
+                    self.sprite_weapon.color = (255, 255, 255, 255)
+                    self.sprite_weapon.batch = batch
+
                 if isinstance(self.techniqueitem, Weapon):
                     self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "weapon", "right")
                 else:
                     self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
             elif self.current_holding != None and isinstance(self.current_holding, Consumable) == False and ("Gold" in self.current_holding.name) == False :
-                self.sprite_weapon.image.blit_into(self.itemgrid[self.current_holding.spriteindex], 0, 0, 0)
-                self.sprite_weapon.color = (255, 255, 255, 255)
+                if self.sprite_weapon.color != (255, 255, 255, 255):
+                    self.sprite_weapon.image = self.itemgrid[self.current_holding.spriteindex]
+                    self.sprite_weapon.color = (255, 255, 255, 255)
+                    self.sprite_weapon.batch = batch
 
                 if isinstance(self.current_holding, Weapon):
                     self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "weapon", "right")
@@ -524,9 +553,15 @@ class Enemy:
                 
                 #self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, self.current_holding_type, "right")
             else:
-                self.sprite_weapon.color = (0, 0, 0, 0)
+                if self.sprite_weapon.color != (0, 0, 0, 0):
+                    self.sprite_weapon.color = (0, 0, 0, 0)
+                    self.sprite_weapon.batch = None
         self.invisible_frames += -1
-        #sprite.batch = batch
+
+        if check_if_entity_is_on_screen(self, player, False, True) == False:
+            sprite.batch = None 
+        elif sprite.batch != batch:
+            sprite.batch = batch
         #sprite.z = 40
 
 

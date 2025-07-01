@@ -5,12 +5,25 @@ import pyglet
 import image_handling
 from font import *
 import random
+import gc
+
+def check_if_on_screen(x, y, player):
+    if ((x > player.x + 13 or x < player.x - 13) or (y > player.y + 9 or y < player.y - 9)):
+        return False
+    else:
+        return True
+    
 
 
 def create_sprite_item(image_grid, index): #dumb. literally the same as the image handling function
-    tex = pyglet.image.Texture.create(16, 16)
-    tex.blit_into(image_grid[index], 0, 0, 0)
-    return pyglet.sprite.Sprite(tex, x=0, y=0)
+    # tex = pyglet.image.Texture.create(16, 16)
+    # tex.blit_into(image_grid[index], 0, 0, 0)
+    #print("a")
+    #print(sum(1 for obj in gc.get_objects() if isinstance(obj, pyglet.image.Texture)))
+    spr = pyglet.sprite.Sprite(image_grid[index], x=0, y=0)
+    
+    #print(sum(1 for obj in gc.get_objects() if isinstance(obj, pyglet.image.Texture)))
+    return spr
 
 spr3 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles("E", grid_font, letter_order), 8, 8, 2))
 spr4 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles("E", grid_font, letter_order), 8, 8, 2))
@@ -78,8 +91,8 @@ class Item:
         return (base_x <= mouse_x <= base_x + self.width*self.scale and
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
-    def draw(self, batch, player, group):
-        
+    def draw(self, player, group):
+        global batch
         base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
         base_y = 768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
         
@@ -92,7 +105,12 @@ class Item:
         sprite.scale = self.scale
         if sprite.group != group:
             sprite.group = group
+
+        if check_if_on_screen(self.x, self.y, player) == False:
+            sprite.batch = None 
+        elif sprite.batch != batch:
             sprite.batch = batch
+        
     
     
     # def draw_projectiles(self, batch, player, group):
@@ -124,31 +142,6 @@ class Item:
             lines.append(current_line)
         return lines
     
-    def draw_description(self, batch, group, invslot, gamestate):
-        spacing = 9
-        if self.description and gamestate == 3: #if in the inventory menu
-            #print(f"Drawing description: {self.description}")
-            # Draw the description text at the specified position
-            base_x = (invslot % 10)*(48+spacing) + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
-            base_y = -(invslot // 10)*(48+spacing)+ spacing + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
-            description = draw_tiny_texts(self.description, base_x, base_y, batch, group)
-            if isinstance(self, Weapon):
-                additional_info = f"Damage: {self.damage} Bonus: {self.bonus}"
-            elif isinstance(self, Shield):
-                additional_info = f"Defense: {self.defense} Bonus: {self.bonus}"
-            elif isinstance(self, Consumable):
-                additional_info = f"Nutrition: {self.nutrition_value}"
-            elif isinstance(self, Staff):
-                additional_info = f"Damage: {self.damage} Charges: {self.charges}/{self.maxcharges}"
-            else:
-                additional_info = "" #for tomes or Miscellanious?
-            if additional_info:
-                additional_info_drawn = draw_tiny_texts(additional_info, base_x, base_y - -20, batch, group)
-            else:
-                additional_info_drawn = ""
-
-            return description, additional_info_drawn
-        return None, None
 
     def test_hovering(self, mouse_x, mouse_y, invslot, gamestate):
         spacing = 9
@@ -160,7 +153,8 @@ class Item:
                 return (base_x <= mouse_x <= base_x + 48) and (base_y <= mouse_y <= base_y + 48)
         return False
     
-    def draw_inventory(self, batch, player, group, invslot, gamestate):
+    def draw_inventory(self, player, group, invslot, gamestate):
+        global batch
         spacing = 9 #spacing between items in the inventory
         if self is not None:
             sprite = self.sprite
@@ -185,17 +179,19 @@ class Item:
                 if self is player.equipment_weapon:
                     e_weapon_equip.x = base_x + 2
                     e_weapon_equip.y = base_y + 30
-                    e_weapon_equip.color = (255, 255, 0, 255)
+                    e_weapon_equip.color = (255, 255, 0, 0)
                     e_weapon_equip.scale = 3  # Adjust as needed
-                    e_weapon_equip.group = group  # Or use a higher group if you want it on top
-                    e_weapon_equip.batch = batch
+                    #do not use E for weapons anymore, only shields
+                    #e_weapon_equip.group = group  # Or use a higher group if you want it on top
+                    #e_weapon_equip.batch = batch
                 if self is player.equipment_shield:
                     e_shield_equip.x = base_x + 2
                     e_shield_equip.y = base_y + 30
                     e_shield_equip.color = (255, 255, 0, 255)
                     e_shield_equip.scale = 3  # Adjust as needed
-                    e_shield_equip.group = group  # Or use a higher group if you want it on top
-                    e_shield_equip.batch = batch
+                    if e_shield_equip.group != group or e_shield_equip.batch != batch:
+                        e_shield_equip.group = group  # Or use a higher group if you want it on top
+                        e_shield_equip.batch = batch
             else:
                 e_shield_equip.batch = None
                 e_weapon_equip.batch = None

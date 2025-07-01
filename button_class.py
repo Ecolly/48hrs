@@ -5,25 +5,7 @@ import image_handling
 import game_classes.map
 from font import *
 
-sprite_font = pyglet.image.load('font.png')
-columns_font = sprite_font.width // 8
-rows_font = sprite_font.height // 8
-grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
-sprite_tinyfont = pyglet.image.load('tinyfont.png')
-columns_tinyfont = sprite_tinyfont.width // 5
-rows_tinyfont = sprite_tinyfont.height // 8
-grid_tinyfont = pyglet.image.ImageGrid(sprite_tinyfont, rows_tinyfont, columns_tinyfont)
-
-sprite_bg = pyglet.image.load('bgtiles.png')
-columns_bg = sprite_bg.width // 16
-rows_bg = sprite_bg.height // 16
-grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
-
-sprite_items = pyglet.image.load('items_and_fx.png')
-columns_items = sprite_items.width // 16
-rows_items = sprite_items.height // 16
-grid_items = pyglet.image.ImageGrid(sprite_items, rows_items, columns_items)
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "", "", "", "", "", "", "", "", "ä"]
 
@@ -93,18 +75,18 @@ class InteractiveObject:
         return (base_x <= mouse_x <= base_x + self.width*self.scale and
                 base_y <= mouse_y <= base_y + self.height*self.scale)
     
-    def draw(self, batch, group1, group2, group3, group4, group5, group6, player, gamestate):
-        global grid_items
+    def draw(self, group1, group2, group3, group4, group5, group6, player, gamestate):
+        global grid_items, batch
         
         base_x, base_y = self.get_screen_position()
-
+        self.animframe = self.animframe + 1
         for i, sprite in enumerate(self.sprites):
             #sprite.z = 100
             sprite.x = base_x
             sprite.y = base_y
             sprite.scale = self.scale
 
-            self.animframe = self.animframe + 1
+            
 
 
             
@@ -125,7 +107,7 @@ class InteractiveObject:
                         func = -func + self.extra_2
 
                     
-                    if self.extra_1 > func:
+                    if self.extra_1 > max(round(func), 1)-1:
                         self.colors = [[(self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 0)]]
                         sprite.color = self.colors[0][0]
                     else:
@@ -137,27 +119,28 @@ class InteractiveObject:
                     else:
                         sprite.color = (255, 255, 255, 0)
 
-            if self.supertype == 'rclick': #draw rclick buttons on top of other menus
-                if i == 0:
-                    sprite.group = group1
-                else:
-                    sprite.group = group2
-            elif self.supertype == "overlay" or self.type == "power bar 2":
-                sprite.group = group5
-            elif self.type == "GUI_HP":
-                pass
-            else:
-                if self.type == 'equip sword':
-                    sprite.group = group6
-                    if player.equipment_weapon == None:
-                        pass
-                elif self.type == 'equip shield':
+            if self.animframe == 1:
+                if self.supertype == 'rclick': #draw rclick buttons on top of other menus
+                    if i == 0:
+                        sprite.group = group1
+                    else:
+                        sprite.group = group2
+                elif self.supertype == "overlay" or self.type == "power bar 2":
+                    sprite.group = group5
+                elif self.type == "GUI_HP":
                     pass
-                elif i == 0:# or i == 3 or i == 4:
-                    sprite.group = group3
                 else:
-                    sprite.group = group4
-            sprite.batch = batch
+                    if self.type == 'equip sword':
+                        sprite.group = group6
+                        if player.equipment_weapon == None:
+                            pass
+                    elif self.type == 'equip shield':
+                        pass
+                    elif i == 0:# or i == 3 or i == 4:
+                        sprite.group = group3
+                    else:
+                        sprite.group = group4
+                sprite.batch = batch
 
 
             #sprite.draw()
@@ -258,16 +241,19 @@ def create_power_bar(all_buttons, item, x, y):
 
 
 
+sprite_inv = pyglet.image.load('inventory.png')
+
 
 def create_inventory_menu(all_buttons):
     global grid_font
     global letter_order
+    global sprite_inv
     color = (255, 255, 255)
     w = int((1152)/48)
     h = int((768)/48)
     txt = ""
     txt = txt.zfill(w*h)
-    sprite_inv = pyglet.image.load('inventory.png')
+    
     # combined = pyglet.image.Texture.create(190, 76)
 
     # combined.blit_into(sprite_inv, 0, 0, 0)
@@ -294,7 +280,7 @@ def create_inventory_menu(all_buttons):
     )
     all_buttons.append(obj)
 
-    spr3 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles("E", grid_font, letter_order), 8, 8, 2))
+    spr3 = pyglet.sprite.Sprite(grid_font[32+5])
     color2 = (0, 0, 0, 0)
     obj = InteractiveObject(
         x=0, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
@@ -316,7 +302,7 @@ def create_inventory_menu(all_buttons):
         extra_2 = 0
     )
     all_buttons.append(obj)
-    spr4 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles("E", grid_font, letter_order), 8, 8, 2))
+    spr4 = pyglet.sprite.Sprite(grid_font[32+5])
     obj = InteractiveObject(
         x=0, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
         y=0, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
@@ -527,11 +513,13 @@ def create_gui(all_buttons, player, advlog_string, floor_level):
     gui_string = get_gui_string(player, floor_level)
 
     #advlog_string = adventure_log[len(adventure_log)-1]
-    spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(gui_string, grid_tinyfont, letter_order, len(gui_string), "left"), 5, 8, len(gui_string)+1))
+    spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.tesselate(0, grid_tinyfont, 90, 1), 5, 8, 90))
     spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.tesselate(7*16, grid_tinyfont, 90, 1), 5, 8, 90))
-    spr3 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(advlog_string, grid_tinyfont, letter_order, len(advlog_string)+1, "left"), 5, 8, len(advlog_string)+1))
+    spr3 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.tesselate(0, grid_tinyfont, 90, 3), 5, 8, 90))
     spr4 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.tesselate(7*16, grid_tinyfont, 90, 1), 5, 8, 90))
     spr5 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.tesselate(7*16, grid_tinyfont, 90, 1), 5, 8, 90))
+    image_handling.combine_tiles_efficient(image_handling.text_to_tiles_wrapped(gui_string, grid_tinyfont, letter_order, len(gui_string)+1, "left"), 5, 8, len(gui_string)+1, spr1)
+    image_handling.combine_tiles_efficient(image_handling.text_to_tiles_wrapped(advlog_string, grid_tinyfont, letter_order, len(advlog_string)+1, "left"), 5, 8, len(advlog_string)+1, spr3)
 
     spr2.group = group_hotbar
     spr4.group = group_hotbar

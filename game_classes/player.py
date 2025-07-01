@@ -15,7 +15,7 @@ from font import *
 
 class Player:
     def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, itemgrid, animtype, x, y):
-        global batch 
+        global batch, batch
         global group_enemies
         self.name = name
         self.health = health
@@ -76,7 +76,7 @@ class Player:
         self.sprite_shield.color = (0, 0, 0, 0)
         self.itemgrid = itemgrid
 
-        self.sprite_weapon.batch = batch 
+        self.sprite_weapon.batch = batch
         self.sprite_shield.batch = batch
         self.sprite.batch = batch
         self.sprite.group = group_enemies
@@ -99,6 +99,7 @@ class Player:
         self.rage_ai_turns = 0
 
         self.is_shopping = False
+        self.haswon = False
     
     def add_to_inventory(self, item):
         if item.name == "3 Gold":
@@ -460,8 +461,8 @@ class Player:
 
 
 
-    def draw(self, batch, animation_presets, group, group_bg, group_fg, held_item):
-        
+    def draw(self, animation_presets, group, group_bg, group_fg, held_item):
+        global batch
         sprite = self.sprite
 
         if self.paralysis_visual > 0:
@@ -482,16 +483,7 @@ class Player:
         # sprite.image = texture
 
         if frame_index != self.spriteindex_prev:
-            # tile = self.grid[frame_index]
-
-            # # Get texture and set filtering
-            # texture = tile.get_texture()
-            # texture.min_filter = pyglet.gl.GL_NEAREST
-            # texture.mag_filter = pyglet.gl.GL_NEAREST
-
-            # Assign directly — no blitting, no texture creation
-
-            sprite.image.blit_into(self.grid[self.spriteindex + frame_index], 0, 0, 0)
+            sprite.image = self.grid[self.spriteindex + frame_index] #.blit_into(self.grid[self.spriteindex + frame_index], 0, 0, 0)
             self.spriteindex_prev = frame_index
 
 
@@ -504,34 +496,41 @@ class Player:
 
 
         if held_item != None and held_item != self.equipment_shield:
-            self.sprite_weapon.image.blit_into(self.itemgrid[held_item.spriteindex], 0, 0, 0)
-            self.sprite_weapon.color = (255, 255, 255, 255)
+            if self.sprite_weapon.image != self.itemgrid[held_item.spriteindex]:
+                self.sprite_weapon.image = self.itemgrid[held_item.spriteindex]#.blit_into(self.itemgrid[held_item.spriteindex], 0, 0, 0)
+                self.sprite_weapon.color = (255, 255, 255, 255)
+                self.sprite_weapon.batch = batch
 
-            if isinstance(held_item, Weapon):
-                self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "weapon", "right")
-            else:
-                self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
-            self.sprite_weapon.scale = self.scale
-            self.sprite_weapon.batch = batch
+                if isinstance(held_item, Weapon):
+                    self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "weapon", "right")
+                else:
+                    self.sprite_weapon.x, self.sprite_weapon.y, self.sprite_weapon.scale_x, self.sprite_weapon.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "staff", "right")
+                self.sprite_weapon.scale = self.scale
+                
         else:
-            self.sprite_weapon.color = (0, 0, 0, 0)
+            if self.sprite_weapon.color != (0, 0, 0, 0):
+                self.sprite_weapon.color = (0, 0, 0, 0)
+                self.sprite_weapon.batch = None
 
         if self.equipment_shield != None:
-            tile3 = self.itemgrid[self.equipment_shield.spriteindex]
-            self.sprite_shield.image.blit_into(tile3, 0, 0, 0)
-            self.sprite_shield.color = (255, 255, 255, 255)
+            if self.sprite_shield.image != self.itemgrid[self.equipment_shield.spriteindex]:
+                self.sprite_shield.image = self.itemgrid[self.equipment_shield.spriteindex]#.blit_into(tile3, 0, 0, 0)
+                self.sprite_shield.color = (255, 255, 255, 255)
+                self.sprite_shield.batch = batch
             self.sprite_shield.x, self.sprite_shield.y, self.sprite_shield.scale_x, self.sprite_shield.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "shield", "left")
             self.sprite_shield.scale = self.scale
-            self.sprite_shield.batch = batch
+            
         else:
-            self.sprite_shield.color = (0, 0, 0, 0)
+            if self.sprite_shield.color != (0, 0, 0, 0):
+                self.sprite_shield.color = (0, 0, 0, 0)
+                self.sprite_shield.batch = None
 
-        sprite.group = group
+
         sprite.x = base_x
         sprite.y = base_y
         sprite.scale = self.scale
-        sprite.z = 40
-        sprite.batch = batch
+        #sprite.z = 40
+
 
 
         

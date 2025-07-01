@@ -1,12 +1,13 @@
 import pyglet
 from game_classes.item import Item  # Assuming Item class is defined in item.py
-
+from font import *
 hotbar_image = pyglet.image.load("hotbar.png")
 hotbar_selected_image = pyglet.image.load("hot_bar_selector.png")  
 
 
 class Hotbar:
-    def __init__(self, player_inventory, batch, group):
+    def __init__(self, player_inventory, group):
+        global batch
         self.slots = player_inventory[-10:]  # Each slot can hold an item or None
         self.selected = 0  # Index of currently selected slot
 
@@ -54,8 +55,8 @@ class Hotbar:
         #print(f"get_selected_item called, current selected={self.slots[self.selected]}")
         return self.slots[self.selected]
     
-    def draw_hotbar_items(self, batch, group):
-        
+    def draw_hotbar_items(self, group):
+        global batch
         for i, item in enumerate(self.slots):
             x = self.x + i * 56 + 10  # 48px slot + 8px spacing
             y = self.y + 5

@@ -23,6 +23,8 @@ class Animation:
     def __init__(self, text, spriteindex, animtype, animspeed, color, start_time, duration, startx, starty, endx, endy, rot, associated_object, technique, attacker, target, damage, item=None, strength_reduction=0, defense_reduction=0, drop_item=False):
         global grid_items
         global grid_font
+        global batch
+        global group_effects
         # 1. move player
         # 2. move enemy
         # 3. move item (aka throw)
@@ -83,8 +85,10 @@ class Animation:
             else:
                 self.sprite = image_handling.create_sprite(grid_items, spriteindex)
                 self.grid = grid_items
+            self.sprite.group = group_effects
+            self.sprite.batch = batch
 
-    def draw(self, batch, player, group, floor, adventure_log, bg_liqs_foreground):
+    def draw(self, player, group, floor, adventure_log, bg_liqs_foreground):
         global grid_liqtile
         self.current_time += 1
 
@@ -235,8 +239,6 @@ class Animation:
                 sprite.x = base_x
                 sprite.y = base_y
                 sprite.scale = self.scale
-                sprite.group = group
-                sprite.batch = batch
                 
             elif self.animtype == 6: #nonmoving graphical effect (e.g. smoke)
 
@@ -255,8 +257,10 @@ class Animation:
                 sprite.x = base_x
                 sprite.y = base_y
                 sprite.scale = self.scale
-                sprite.group = group
-                sprite.batch = batch
+            elif self.animtype == 8: #win condition
+                if frame > self.duration:
+                    self.should_be_deleted = True
+                    player.haswon = True
             elif self.animtype == 7: #liquids
 
                 self.color = (self.color[0], self.color[1], self.color[2], 255)          
@@ -284,8 +288,6 @@ class Animation:
                 sprite.x = base_x
                 sprite.y = base_y
                 sprite.scale = self.scale
-                sprite.group = group
-                sprite.batch = batch
             elif self.animtype == 3 or self.animtype == 4: #thrown item, casted projectile
 
 
@@ -380,8 +382,6 @@ class Animation:
                 sprite.x = base_x
                 sprite.y = base_y
                 sprite.scale = self.scale
-                sprite.group = group
-                sprite.batch = batch
 
 
             # if frame > self.duration: #if the animation has ended...

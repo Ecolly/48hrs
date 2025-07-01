@@ -17,7 +17,27 @@ def text_to_tiles(text, image_grid, letter_order):
         tile_list.append(tile)
     return tile_list
 
+def text_to_tiles_setsize(text, image_grid, letter_order, setsize, height):
+    # Create a mapping from character to its index in the tile grid
+    char_to_index = {char: i for i, char in enumerate(letter_order)}
+    tile_list = []
+    for char in text:
+        index = char_to_index.get(char, char_to_index.get(" ", 0))  # fallback to space
+        tile = image_grid[index]
+        tile_list.append(tile)
 
+    while len(tile_list) < setsize - 1:
+        tile_list.append(image_grid[char_to_index.get("╬", char_to_index.get(" ", 0))])
+    
+    i = 1
+    while i < height:
+        j = 0
+        while j < setsize - 1:
+            tile_list.append(image_grid[char_to_index.get("╬", char_to_index.get(" ", 0))])
+            j = j + 1
+        i = i + 1 
+
+    return tile_list
 
 def text_to_background(text, image_grid, letter_order, width, justify):
     output_txt = ""
@@ -41,6 +61,20 @@ def tesselate(character, image_grid, width, height):
         tile_list.append(image_grid[character])
         i = i + 1
     return tile_list
+
+
+def tesselate_inc(character, image_grid, width, height):
+    # output_txt = ""
+    # output_txt.zfill(width*height)
+    # return text_to_floor(output_txt, image_grid, ["0"], [character], width)
+    tile_list = []
+    i = 0
+    while i < width*height:
+        tile_list.append(image_grid[character+i])
+        i = i + 1
+    return tile_list
+
+
 
 
 
@@ -116,6 +150,9 @@ def text_to_tiles_wrapped(text, image_grid, letter_order, width, justify):
             index = char_to_index.get(char, char_to_index.get(" ", 0))
             tile_list.append(image_grid[index])
 
+    # while len(tile_list) < width*len(justified_lines):
+    #     tile_list.append(image_grid[char_to_index.get("╬", char_to_index.get(" ", 0))])
+
     return tile_list
 
 
@@ -141,6 +178,25 @@ def combine_tiles(tiles, tile_width, tile_height, total_width):
         combined.blit_into(tile, x, y, 0)
     return combined
 
+
+def combine_tiles_efficient(tiles, tile_width, tile_height, total_width, sprite):
+    if total_width < 1:
+        raise ValueError("total_width must be at least 1")
+    total_rows = (len(tiles) + total_width - 1) // total_width  # Ceiling division
+    
+    for i, tile in enumerate(tiles):
+        col = i % total_width
+        row = i // total_width
+        x = col * tile_width
+        y = (total_rows - 1 - row) * tile_height  # Pyglet's Y=0 is at bottom
+        if x < sprite.image.width and y < sprite.image.height:
+            sprite.image.blit_into(tile, x, y, 0)
+    return row
+
+
+
+
+
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
 
 def create_sprite_text_simple(image_grid, txt):
@@ -149,9 +205,7 @@ def create_sprite_text_simple(image_grid, txt):
     return pyglet.sprite.Sprite(tex, x=0, y=0)
 
 def create_sprite(image_grid, index):
-    tex = pyglet.image.Texture.create(16, 16)
-    tex.blit_into(image_grid[index], 0, 0, 0)
-    return pyglet.sprite.Sprite(tex, x=0, y=0)
+    return pyglet.sprite.Sprite(image_grid[index], x=0, y=0)
 
 
 

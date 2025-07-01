@@ -23,7 +23,7 @@ from game_classes.hotbar import Hotbar
 import turn_logic
 import delete_object
 #import xdot
-
+import time
 process = psutil.Process(os.getpid())
 mem_info = process.memory_info()
 
@@ -31,6 +31,25 @@ from config import WINDOW_HEIGHT, WINDOW_WIDTH, INVENTORY_SLOT_SIZE, INVENTORY_S
 
 pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
 pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
+
+
+
+
+
+
+def disable_errcheck():
+    for name in dir(pyglet.gl.lib):
+        func = getattr(pyglet.gl.lib, name)
+        if callable(func) and hasattr(func, 'errcheck'):
+            try:
+                func.errcheck = lambda result, func, args: result
+            except Exception:
+                pass
+
+disable_errcheck()
+
+
+
 
 #made by zero and eco :)
 
@@ -69,6 +88,7 @@ window = pyglet.window.Window(win_true_x, win_true_y, config=config)
 
 gamestate = 1
 
+#extinct_creatures = [] 
 
 
 animation_presets = [
@@ -132,7 +152,7 @@ mouse_y = 0
 
 keys = pyglet.window.key.KeyStateHandler()
 window.push_handlers(keys)
-hotbar = Hotbar(player.inventory, batch, group_hotbar)
+hotbar = Hotbar(player.inventory, group_hotbar)
 mouse_state = pyglet.window.mouse.MouseStateHandler()
 window.push_handlers(mouse_state)
 
@@ -293,12 +313,24 @@ def on_mouse_release(x, y, button, modifiers):
                         if ((button2.animframe - 0.0001)/speed % (button2.extra_2*2)) > button2.extra_2 and func != button2.extra_2:
                             func = -func + button2.extra_2
                         button2.animframe = -24
+
+                        if button2.extra_1 > max(round(func), 1) - 1:
+                            button2.colors = [[(button2.colors[0][0][0], button2.colors[0][0][1], button2.colors[0][0][2], 0)]]
+                        else:
+                            button2.colors = [[(button2.colors[0][0][0], button2.colors[0][0][1], button2.colors[0][0][2], 255)]]
+
                         #num of charges = func
-                player.techniquecharges = max(round(func), 1)
+                
+                print(func)
+                print(max(round(func), 1))
                 player.techniqueitem = item_selected
                 #print(button.extra_1)
                 if func > item_selected.charges: #if num of charges exceeds amount remaining, just choose a random amount
                     func = random.randint(1, item_selected.charges)
+                player.techniquecharges = max(round(func), 1)
+                print(func)
+                print(max(round(func), 1))
+
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
                 player.cast(mouse_x_tilemap, mouse_y_tilemap)
@@ -405,7 +437,7 @@ def on_key_press(symbol, modifiers):
 
 floor_level = 0
 
-bg = pyglet.sprite.Sprite(grid_bg[0])
+bg = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1))
 bg.scale = 3
 bg.group = group_bg
 bg.batch = batch
@@ -417,24 +449,77 @@ bg_liqs_foreground = []
 
 i = 0
 while i < 16:
-    bg_liqs.append(pyglet.sprite.Sprite(grid_bg[0]))
+    bg_liqs.append(pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_liq, 12, 12), 128, 128, 12)))
     bg_liqs[i].scale = 3
     bg_liqs[i].group = group_bg_pits
     bg_liqs[i].batch = batch
 
-    bg_liqs_foreground.append(pyglet.sprite.Sprite(grid_bg[0]))
+    bg_liqs_foreground.append(pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1)))
     bg_liqs_foreground[i].scale = 3
     bg_liqs_foreground[i].group = group_bg_liqs
     bg_liqs_foreground[i].batch = batch
     bg_liqs_foreground[i].color = color_templates[200]
     i = i + 1
 
-bg_deeper = pyglet.sprite.Sprite(grid_bg[0])
+bg_deeper = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_liq, 12, 12), 128, 128, 12))
 bg_deeper.scale = 3
 bg_deeper.group = group_deeper
 bg_deeper.batch = batch
 
 
+bg_desc = pyglet.sprite.Sprite(combine_tiles(tesselate(7*16, grid_tinyfont, 24, 12), 5, 8, 24))
+bg_desc_text = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_tinyfont, 24, 12), 5, 8, 24))
+
+#DUMB DUMB DUMB DUMB DUMB DUMB DUMB DUIEWIFEWNOIGFEWNGOERINGIUREFOIW2Q398U4OIEWJKDS
+def draw_description_but_in_main_because_main_is_cool(item, invslot, gamestate):
+    global batch
+    global bg_desc, bg_desc_text
+    spacing = 9
+    if gamestate == 3: #if in the inventory menu
+        #print(f"Drawing description: {self.description}")
+        # Draw the description text at the specified position
+        base_x = (invslot % 10)*(48+spacing) + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+        base_y = -(invslot // 10)*(48+spacing)+ spacing + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
+        
+        description = get_display_name_and_description(item)
+        #description = draw_tiny_texts(item.description, base_x, base_y, group)
+        if isinstance(item, Weapon):
+            additional_info = f"εDamage: {item.damage} Bonus: {item.bonus}"
+        elif isinstance(item, Shield):
+            additional_info = f"εDefense: {item.defense} Bonus: {item.bonus}"
+        elif isinstance(item, Consumable):
+            additional_info = f"εNutrition: {item.nutrition_value}"
+        elif isinstance(item, Staff):
+            additional_info = f"εCharges: {item.charges}/{item.maxcharges}"
+        elif isinstance(item, Flask) and item.name != "Empty Flask":
+            additional_info = f"εContents: {item.charges}/{item.maxcharges}"
+        else:
+            additional_info = "" #for tomes or Miscellanious?
+
+        
+        combine_tiles_efficient(tesselate(0, grid_tinyfont, 24, 12), 5, 8, 24, bg_desc_text)
+        row = combine_tiles_efficient(text_to_tiles_wrapped(description[0] + "ε" + description[1] + additional_info, grid_tinyfont, letter_order, 24, "left"), 5, 8, 24, bg_desc_text)
+        
+        combine_tiles_efficient(tesselate(0, grid_tinyfont, 24, 12), 5, 8, 24, bg_desc)
+        combine_tiles_efficient(tesselate(7*16, grid_tinyfont, 24, row+1), 5, 8, 24, bg_desc)
+
+        bg_desc.x = base_x + 16
+        bg_desc.y = base_y
+        bg_desc.batch = batch
+        bg_desc.scale = 3
+
+        bg_desc_text.x = base_x + 16
+        bg_desc_text.y = base_y
+        bg_desc_text.batch = batch 
+        bg_desc_text.scale = 3
+        
+        # if additional_info:
+        #     additional_info_drawn = draw_tiny_texts(additional_info, base_x, base_y - -20, group)
+        # else:
+        #     additional_info_drawn = ""
+
+        #return description, additional_info_drawn
+    return None
 
 
 
@@ -444,51 +529,67 @@ bg_deeper.batch = batch
         
 adventure_log = ["PANDORIUM - A game by zeroBound and Econic", "Good luck!"]
 
-def go_to_next_level():
+def go_to_next_level(amount):
     global floor, all_enemies, player, bg, bg_liqs, bg_deeper, bg_liqs_foreground, floor_level, adventure_log, grid_blank
 
+    # try:
+    #     floor
+    # except NameError:
+    #     pass
+    # else:
+    #     del floor
 
-    itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
-    itemlist_beginner2 = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Machete", "Sickle", "Stick", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
-    itemlist_equal = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
-    shop_list = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Apple", "Mushrooms", "Leaves", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Wood Shield", "Blue Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Staff of Mana", "Water Flask", "Tome of Injury", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
+    #itemlist_beginner2 = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Machete", "Sickle", "Stick", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    
+    itemlist_equal = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Dispersion", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
 
-    floor_level +=1
+    if random.uniform(0, 1) < 0.3:
+        shop_equal = ["Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+    elif random.uniform(0, 1) < 0.1:
+        shop_equal = ["Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff"]
+    elif random.uniform(0,1) < 0.1:
+        shop_equal = ["Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Dispersion", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Blank Tome", "Ruined Tome"]
+    else:
+        shop_equal = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Dispersion", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+
+    floor_level +=amount
 
     if floor_level < 1:
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Entrance to the Exclusion Zone", "Complex", (7,26,0,6,6,6,6,1), "Pits", ["GOOSE"], [1], itemlist_beginner
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Entrance to the Exclusion Zone", "Complex", (7,26,0,6,6,6,6,1), "Pits", ["FOX"], [1], itemlist_beginner
     elif floor_level < 3: #Abandoned Woods
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Abandoned Woods", "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #Silent Tributary
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silent Tributary", "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                      #river zone
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silent Tributary", "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_equal                    #river zone
     elif floor_level < 7: #Dense Woods
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Dense Woods", "Simple", (27, 27), "Solid", ["LEAFALOTTA", "FOX", "TURTLE"], [2, 2, 1], itemlist_equal                      #river zone                                        #seafoam grass (replace? too much grass?)
     elif floor_level < 9: #Reservoir
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Reservoir", "Complex", (4,25,3,3,3,6,6,1), "Water", ["CHLOROSPORE", "TURTLE", "FOX"], [2, 1, 2], itemlist_equal                                #lake zone
     elif floor_level < 11: #Topsoil Cavern
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Topsoil Cavern", "Complex", (19,31,1,1,10,1,1,1), "Solid", ["S'MORE", "SCORPION"], [2, 1], itemlist_equal                           #brown basalt
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Topsoil Cavern", "Complex", (19,31,1,1,10,1,1,1), "Solid", ["S'MORE", "SCORPION", "VITRIOLIVE"], [2, 1, 1], itemlist_equal                           #brown basalt
     elif floor_level < 13: #Coal Vein
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Coal Vein", "Complex", (17,31,1,1,0,0,6,9), "Solid", ["SCORPION", "CHROME DOME"], [2, 1], itemlist_equal                          #coal vein
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Coal Vein", "Complex", (17,31,1,1,0,0,6,9), "Solid", ["SCORPION", "JUJUBE", "VITRIOLIVE"], [2, 1, 1], itemlist_equal                          #coal vein
     elif floor_level < 15: #Petroleum Deposit
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Petroleum Deposit", "Complex", (8,29,1,1,0,0,6,9), "Petroleum", ["DRAGON", "CHROME DOME"], [1, 2], itemlist_equal                         #petroleum zone
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Petroleum Deposit", "Complex", (8,29,1,1,0,0,6,9), "Petroleum", ["DRAGON", "JUJUBE", "CULTIST"], [1, 2, 2], itemlist_equal                         #petroleum zone
     elif floor_level < 17: #Aquifer
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Aquifer", "Complex", (8,22,1,1,9,9,6,9), "Aquifer", ["CHLOROSPORE", "TURTLE", "SCORPION"], [3, 3, 2], itemlist_equal                        #aquifer
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Aquifer", "Complex", (8,22,1,1,9,9,6,9), "Aquifer", ["CHLOROSPORE", "LEAFALOTTA", "CULTIST"], [3, 3, 2], itemlist_equal                        #aquifer
     elif floor_level < 19: #Subterranean Mudflow
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Subterraean Mudflow", "Complex", (6,30,1,6,6,6,6,0), "Mud", ["CHLOROSPORE", "CHROME DOME"], [3, 2], itemlist_equal                            #mud zone
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Subterraean Mudflow", "Complex", (6,30,1,6,6,6,6,0), "Mud", ["CHLOROSPORE", "TURTLE", "CULTIST"], [3, 2, 2], itemlist_equal                            #mud zone
     elif floor_level < 21: #Silt Stratum
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silt Stratum", "Complex", (18,30,1,1,0,0,6,9), "Solid"                          #teal & gold
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silt Stratum", "Complex", (18,30,1,1,0,0,6,9), "Solid", ["DEMON CORE", "TETRAHEDRON", "S'MORE"], [1, 2, 3], itemlist_equal                          #teal & gold
     elif floor_level < 23: #Silt Stratum
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silt Stratum", "Complex", (20,30,2,9,10,11,0,3), "Solid"                         #purple & gold
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silt Stratum", "Complex", (20,30,2,9,10,11,0,3), "Solid", ["DEMON CORE", "VITRIOLIVE", "FOX"], [1, 2, 3], itemlist_equal                         #purple & gold
     elif floor_level < 25: #Ash Pits
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Pit"                             #grey pits
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Pit", ["DRAGON", "DEMON CORE", "JUJUBE"], [2, 2, 3], itemlist_equal                             #grey pits
     elif floor_level < 27: #Ash Pits
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Glowing"                             #grey pits
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Glowing", ["DRAGON", "TURTLE", "CHLOROSPORE"], [2, 4, 4], itemlist_equal                             #grey pits
     elif floor_level < 29: #Magma Chamber
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm Bottom", "Complex", (8,23,2,2,2,2,2,2), "Lava"                            #wavy lava
-    elif floor_level < 31: #Workshop Remnants
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Workshop Remnant", "Complex", (7, 22, 5,5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Pit"           #multicolored porcelain pits
-    else: #Infested Workshop 
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Infested Workshop", "Complex", (15, 22, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid"        #multicolored porcelain
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm Bottom", "Complex", (8,23,2,2,2,2,2,2), "Lava", ["DRAGON", "TETRAHEDRON", "CULTIST"], [3, 3, 3], itemlist_equal                            #wavy lava
+    else: #Workshop Remnants
+        if random.uniform(0, 1) < 0.5:
+            floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Workshop Remnant", "Complex", (7, 22, 5,5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Pit", ["SCORPION", "CHROME DOME", "DRAGON", "CULTIST"], [4, 3, 3, 3], itemlist_equal            #multicolored porcelain pits
+        else: #Infested Workshop 
+            floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Infested Workshop", "Complex", (15, 22, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid", ["SCORPION", "TETRAHEDRON", "DEMON CORE", "CHROME DOME"], [4, 4, 4, 4], itemlist_equal        #multicolored porcelain
     
     adventure_log.append("Progressed to floor " + str(floor_level) + " (" + str(floor_name) + ").")
 
@@ -505,8 +606,9 @@ def go_to_next_level():
         enemy_list.append("DEBT COLLECTOR")
         level_list.append(1)
 
+    
     #Triggered after Detects stairs
-    floor = make_floor(sc, item_list, enemy_list, level_list, shop_list)
+    floor = make_floor(sc, item_list, enemy_list, level_list, shop_equal, floor_level)
 
 
     floor.random_create_item(grid_items, item_list)
@@ -592,63 +694,64 @@ def go_to_next_level():
     
     i = 0
     while i < 16:
-        bg_liqs_foreground[i].image = combine_tiles(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1) #sprite_blank
+        combine_tiles_efficient(tesselate(0, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
+        combine_tiles_efficient(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1, bg_liqs_foreground[i]) #sprite_blank
         i = i + 1
         
     #print(fl_string)
-    bg.image = combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60) #pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
+    combine_tiles_efficient(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60, bg) #pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
     bg.scale = 3
     #bg_pits.image = grid_bg[0]
-    bg_deeper.image = grid_bg[0]
+    combine_tiles_efficient(tesselate(0, grid_liq, 12, 12), 128, 128, 12, bg_deeper)
 
     frameindexes = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]#[4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3]
 
         #bg_pits.image = combine_tiles(tesselate(4, grid_liq, 6, 6), 256, 256, 6)
-
+    
     if floor.wall_type == "Solid":
         if floor.map_type == "Complex":
-            bg_deeper.image = combine_tiles(tesselate(wall_texture_value*16+3, grid_bg, 90, 90), 16, 16, 90)
+            combine_tiles_efficient(tesselate(wall_texture_value*16+3, grid_bg, 90, 90), 16, 16, 90, bg_deeper)
         else:
-            bg_deeper.image = combine_tiles(tesselate(wall_texture_value*16+8, grid_bg, 90, 90), 16, 16, 90)
+            combine_tiles_efficient(tesselate(wall_texture_value*16+8, grid_bg, 90, 90), 16, 16, 90, bg_deeper)
     elif floor.wall_type == "Glowing":
-        bg_deeper.image = combine_tiles(tesselate(2, grid_deeper, 12, 12), 128, 128, 12)
+        combine_tiles_efficient(tesselate(2, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
     elif floor.wall_type == "Water":
         i = 0
         while i < 16:
-            bg_liqs[i].image = combine_tiles(tesselate(frameindexes[i] + 16*8, grid_liq, 12, 12), 128, 128, 12)
+            combine_tiles_efficient(tesselate(frameindexes[i] + 16*9, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
             bg_liqs[i].scale = 3
             i = i + 1
-        bg_deeper.image = combine_tiles(tesselate(1, grid_deeper, 12, 12), 128, 128, 12)
+        combine_tiles_efficient(tesselate(1, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
     elif floor.wall_type == "Aquifer":
         i = 0
         while i < 16:
-            bg_liqs[i].image = combine_tiles(tesselate(frameindexes[i] + 16*9, grid_liq, 12, 12), 128, 128, 12)
+            combine_tiles_efficient(tesselate(frameindexes[i] + 16*10, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
             bg_liqs[i].scale = 3
             i = i + 1
-        bg_deeper.image = combine_tiles(tesselate(3, grid_deeper, 12, 12), 128, 128, 12)
+        combine_tiles_efficient(tesselate(3, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
     elif floor.wall_type == "Lava":
         i = 0
         while i < 16:
-            bg_liqs[i].image = combine_tiles(tesselate(frameindexes[i] + 16*5, grid_liq, 12, 12), 128, 128, 12)
+            combine_tiles_efficient(tesselate(frameindexes[i] + 16*6, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
             bg_liqs[i].scale = 3
             i = i + 1
     elif floor.wall_type == "Flowing Water":
         i = 0
         while i < 16:
-            bg_liqs[i].image = combine_tiles(tesselate(frameindexes[i] + 16*6, grid_liq, 12, 12), 128, 128, 12)
+            combine_tiles_efficient(tesselate(frameindexes[i] + 16*7, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
             bg_liqs[i].scale = 3
             i = i + 1
-        bg_deeper.image = combine_tiles(tesselate(0, grid_deeper, 12, 12), 128, 128, 12)
+        combine_tiles_efficient(tesselate(0, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
     elif floor.wall_type == "Mud":
         i = 0
         while i < 16:
-            bg_liqs[i].image = combine_tiles(tesselate(frameindexes[i] + 16*4, grid_liq, 12, 12), 128, 128, 12)
+            combine_tiles_efficient(tesselate(frameindexes[i] + 16*5, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
             bg_liqs[i].scale = 3
             i = i + 1
     elif floor.wall_type == "Petroleum":
         i = 0
         while i < 16:
-            bg_liqs[i].image = combine_tiles(tesselate(frameindexes[i] + 16*2, grid_liq, 12, 12), 128, 128, 12)
+            combine_tiles_efficient(tesselate(frameindexes[i] + 16*3, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
             bg_liqs[i].scale = 3
             i = i + 1
     elif floor.wall_type == "Pit":
@@ -657,7 +760,7 @@ def go_to_next_level():
     
 
 
-go_to_next_level()
+go_to_next_level(1)
 
 
 
@@ -671,66 +774,13 @@ create_mouse_overlay(all_buttons)
 
 
 
-# player.add_to_inventory(floor.create_item("Tome of Recovery", grid_items))
-player.add_to_inventory(floor.create_item("Rapier", grid_items))
-player.add_to_inventory(floor.create_item("Sickle", grid_items))
-# player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
-# player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
-# player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
-# player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
-player.add_to_inventory(floor.create_item("Water Flask", grid_items))
-player.add_to_inventory(floor.create_item("Detergent Flask", grid_items))
-player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
-player.add_to_inventory(floor.create_item("Tome of Injury", grid_items))
-
-# player.add_to_inventory(floor.create_item("Staffboost Tome", grid_items))
-# player.add_to_inventory(floor.create_item("Blank Tome", grid_items))
 
 
-# player.add_to_inventory(floor.create_item("Coloring Tome", grid_items))
-# player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
-# #player.add_to_inventory(floor.create_item("Tome of Dispersion", grid_items))
-
-# player.add_to_inventory(floor.create_item("Summoning Tome", grid_items))
-# player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
-player.add_to_inventory(floor.create_item("Staff of Cloning", grid_items))
-player.add_to_inventory(floor.create_item("Staff of Metamorphosis", grid_items))
-player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items))
-player.add_to_inventory(floor.create_item("Tome of Pizzazz", grid_items))
-
-player.add_to_inventory(floor.create_item("Phobia Staff", grid_items))
-
-# player.add_to_inventory(floor.create_item("Piercing Staff", grid_items))
-
-# player.add_to_inventory(floor.create_item("Piercing Staff", grid_items))
-
-# player.add_to_inventory(floor.create_item("Staff of Paralysis", grid_items))
-player.add_to_inventory(floor.create_item("Sickle", grid_items))
-player.add_to_inventory(floor.create_item("Stick", grid_items))
-player.add_to_inventory(floor.create_item("Knife", grid_items))
-player.add_to_inventory(floor.create_item("Leaf Shield", grid_items))
-# # player.add_to_inventory(floor.create_item("Staff of Warping", grid_items))
-# player.add_to_inventory(floor.create_item("Armor Plate", grid_items))
-player.add_to_inventory(floor.create_item("Petroleum Flask", grid_items))
-player.add_to_inventory(floor.create_item("Syrup Flask", grid_items))
-player.add_to_inventory(floor.create_item("Ink Flask", grid_items))
-player.add_to_inventory(floor.create_item("Detergent Flask", grid_items))
-player.add_to_inventory(floor.create_item("Acid Flask", grid_items))
-player.add_to_inventory(floor.create_item("Cureall Flask", grid_items))
-player.add_to_inventory(floor.create_item("Mercury Flask", grid_items))
-player.add_to_inventory(floor.create_item("Empty Flask", grid_items))
-# player.add_to_inventory(floor.create_item("Machete", grid_items))
-# player.add_to_inventory(floor.create_item("Scimitar", grid_items))
-# player.add_to_inventory(floor.create_item("Sickle", grid_items))
-# player.add_to_inventory(floor.create_item("Rapier", grid_items))
-# player.add_to_inventory(floor.create_item("Fury Cutter", grid_items))
-player.add_to_inventory(floor.create_item("Windsword", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
 
 
 
 
-
-player.add_to_inventory(floor.create_item("Starfruit", grid_items))
 
 
 
@@ -769,9 +819,18 @@ keypress_chk = 0
 
 bg_animframe = 0
 
+fps_display = pyglet.window.FPSDisplay(window=window)
+#profiler = cProfile.Profile()
+fps_display.label.color = (0, 0, 0, 255)
+
 @window.event
 
 def on_draw():
+    global bg_animframe
+    # if bg_animframe == 10:
+    #     profiler.enable()
+    start = time.perf_counter()
+    global fps_display
     global color_templates
     global keypress_chk
     global gamestate
@@ -786,16 +845,19 @@ def on_draw():
     global grid_liq
     global grid_deeper
     global grid_liqtile
-    global bg_animframe
+    
     global item_selected
     global win_true_x, win_true_y, win_x, win_y
     global adventure_log
     global floor_level
+    global batch
+    global bg_desc, bg_desc_text
 
     # framebuffer.get_texture().bind()
     # glViewport(0, 0, win_x, win_y)
     # glClearColor(0, 0, 0, 1)
     # glClear(GL_COLOR_BUFFER_BIT)
+    
 
     window.clear()
 
@@ -860,9 +922,6 @@ def on_draw():
         if dirx == 0 and diry == 0 and keys[pyglet.window.key.E] == False and keys[pyglet.window.key.TAB] == False:
             keypress_chk = 0
 
-        if player.is_alive() == False:
-            gamestate = 0
-            create_win_lose_screen(all_buttons, "lose")
     else:
         if gamestate == 2 or keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D] or keys[pyglet.window.key.E] or keys[pyglet.window.key.TAB]:
             pass
@@ -888,9 +947,18 @@ def on_draw():
             for enemy in all_enemies:
                 refresh_all_visuals(enemy)
             if(player.x, player.y) == floor.stairs:
-                go_to_next_level()
+                go_to_next_level(1)
+            if(player.x, player.y) == floor.upstairs:
+                go_to_next_level(-1)
             #print("test")
-            if player.paralysis_turns > 0 or player.flee_ai_turns > 0 or player.rage_ai_turns > 0: #if the player's AI is no longer controlled by player, just do another turn
+
+            if player.is_alive() == False:
+                gamestate = 0
+                create_win_lose_screen(all_buttons, "lose")
+            elif player.haswon == True:
+                gamestate = 0
+                create_win_lose_screen(all_buttons, "win")
+            elif player.paralysis_turns > 0 or player.flee_ai_turns > 0 or player.rage_ai_turns > 0: #if the player's AI is no longer controlled by player, just do another turn
                 gamestate = 2
                 all_anims = turn_logic.do_turns(all_enemies, player, floor)
 
@@ -944,15 +1012,17 @@ def on_draw():
 
 
 
-    #sprite.image = texture
-    player.draw(batch, animation_presets, group_enemies, group_enemies_bg, group_enemies_fg, hotbar.get_selected_item())
+    player.draw(animation_presets, group_enemies, group_enemies_bg, group_enemies_fg, hotbar.get_selected_item())
 
     for enemy in all_enemies:
-        enemy.draw(batch, animation_presets, player, group_enemies, group_enemies_bg, group_enemies_fg)
-
+        enemy.draw(animation_presets, player, group_enemies, group_enemies_bg, group_enemies_fg)
 
     for item in floor.floor_items:
-        item.draw(batch, player, group_items)
+        item.draw(player, group_items)
+
+    bg_desc.color = (128, 128, 128,0)
+
+    bg_desc_text.color = (0, 0, 0, 0)
 
     slot = 0 #theres probably a more pythonic way to do this, sowwy
     for item in player.inventory:
@@ -961,29 +1031,44 @@ def on_draw():
             dragging_item.sprite.y = mouse_y - drag_offset[1]
         if item is not None:
             # i is the slot at that position
-            item.draw_inventory(batch, player, group_inv, slot, gamestate)
+            item.draw_inventory(player, group_inv, slot, gamestate)
 
             #if mouse is hovering over that item, draw description
             if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
-                test = item.draw_description(batch, group_inv_ext, slot, gamestate)
+                draw_description_but_in_main_because_main_is_cool(item, slot, gamestate)
+
+
+
+
+
+                bg_desc.color = (33, 33, 33, 190)
+                bg_desc.group = group_inv_ext
+
+                bg_desc_text.color = (255, 255, 255, 255)
+                bg_desc_text.group = group_inv_ext_2
+
+
+
+                #test = item.draw_description(bg_desc, bg_desc_text, group_inv_ext, group_inv_ext_2, slot, gamestate)
+
             #draw_tiny = draw_tiny_texts(item.description, 200, 400, batch, group_inv_ext)
             # if is_hovered and not dragging_item:
             #     
         slot = slot + 1
     
-    #Hot har stuff (updated after inventory)
+
     hotbar.update_hotbar(player.inventory)
-    hotbar.draw_hotbar_items(batch, group_hotbar)
-    #hotbar.get_selected_item()
+    hotbar.draw_hotbar_items(group_hotbar)
+
     
     if keys[pyglet.window.key.LSHIFT]:
         while len(all_anims) > 0:
             for anim in all_anims:
-                anim.draw(batch, player, group_effects, floor, adventure_log, bg_liqs_foreground)
+                anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground)
             delete_object.delobj(all_anims)
     else:
         for anim in all_anims:
-            anim.draw(batch, player, group_effects, floor, adventure_log, bg_liqs_foreground)
+            anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground)
         delete_object.delobj(all_anims)
 
     if gamestate != 2:
@@ -1022,33 +1107,18 @@ def on_draw():
     for button in all_buttons:
         button.hovered = button.is_mouse_over(mouse_x, mouse_y)
 
-        button.draw(batch, group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player, gamestate)
+        button.draw(group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player, gamestate)
 
         if button.type == "GUI_HP":
             button.sprites[1].y = button.sprites[0].y-48
-
             button.sprites[3].y = button.sprites[3].y-24
             button.sprites[4].y = button.sprites[4].y-48
-            #button.sprites[2].y = button.sprites[2].y-24
-
-            # button.sprites[0].group = group_hotbar_selection
-            # button.sprites[1].group = group_inv
-            # button.sprites[2].group = group_hotbar_selection
-            # button.sprites[3].group = group_hotbar
-            # button.sprites[4].group = group_overlay
-
-
             pass
             gui_string = get_gui_string(player, floor_level)
             if gui_string != button.extra_1:
                 sprite = button.sprites[1] 
-                #pyglet.gl.glDeleteTextures(1, pyglet.gl.GLuint(sprite.image.id))
-                sprite.image = combine_tiles(text_to_tiles_wrapped(gui_string, grid_tinyfont, letter_order, len(gui_string)+1, "left"), 5, 8, len(gui_string)+1)
+                combine_tiles_efficient(text_to_tiles_wrapped(gui_string, grid_tinyfont, letter_order, len(gui_string)+1, "left"), 5, 8, len(gui_string)+1, sprite)
                 button.extra_1 = gui_string
-            
-            
-
-            #if random.uniform(0, 100) < 1:
             if len(adventure_log)-1 != button.extra_2 // 8:
                 button.extra_2 += 1
                 
@@ -1056,21 +1126,8 @@ def on_draw():
                     button.extra_2 = int(button.extra_2)
                     advlog_string =  adventure_log[(button.extra_2 // 8)+1] +"ε"+ adventure_log[(button.extra_2 // 8)]+"ε"+adventure_log[(button.extra_2 // 8)-1]
                     sprite2 = button.sprites[2] 
-                    sprite2.image = combine_tiles(text_to_tiles_wrapped(advlog_string, grid_tinyfont, letter_order, len(advlog_string)+1, "left"), 5, 8, len(advlog_string)+1)
-                #button.sprites[2].y = button.sprites[2].y -24+ (button.extra_2 % 8)*6
-                    #button.extra_2 = advlog_string
-
-            button.sprites[2].y = button.sprites[2].y -24- ((button.extra_2 - 1) % 8 + 1)*3
-
-
-
-            # if has_won == 1:
-            #     player.health = 999
-            #     player.maxhealth = 999
-
-            # gui_string = get_gui_string(player)
-            # sprite = button.sprites[1]
-            # sprite.image = combine_tiles(text_to_tiles_wrapped(gui_string, grid_font, letter_order, len(gui_string)+1, "left"), 8, 8, len(gui_string)+1)
+                    combine_tiles_efficient(text_to_tiles_wrapped(advlog_string, grid_tinyfont, letter_order, len(advlog_string)+1, "left"), 5, 8, len(advlog_string)+1, sprite2)
+            button.sprites[2].y = button.sprites[2].y- 24-((button.extra_2 - 1) % 8 + 1)*3
         elif button.type == "overlay":
             if gamestate == 3:
                 button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
@@ -1094,36 +1151,44 @@ def on_draw():
     
 
 
-                
+                    
+
             
 
-    # render_texture.bind()
-    # pyglet.gl.glViewport(0, 0, win_x, win_y)
-    # pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT)
-
-    # batch.draw()  # All your normal drawing happens here
-
-    # # Step 2: Now draw the offscreen texture to the actual window
-    # pyglet.gl.glBindFramebuffer(pyglet.gl.GL_FRAMEBUFFER, 0)
-    # pyglet.gl.glViewport(0, 0, win_true_x, win_true_y)
-    # #window.clear()
-    # render_texture.blit(0, 0, width=win_true_x, height=win_true_y)
-    # 3. Blit offscreen buffer to window (upscaled)
-
+    s1 = time.perf_counter()
     batch.draw()
 
+    s2 = time.perf_counter()
+
+
+    end = time.perf_counter()
     if bg_animframe%60 == 0:
+        print(end-start, s2-s1)
+        print(sum(1 for obj in gc.get_objects() if isinstance(obj, pyglet.image.Texture)))
+
+    fps_display.draw()
+        # draw
+    # profiler.disable()
+    # profiler.dump_stats("on_draw.prof")
+
+    # if bg_animframe%60 == 0:
+    #     print(end-start, s2-s1)
+    #     print(sum(1 for obj in gc.get_objects() if isinstance(obj, pyglet.image.Texture)))
         #gc.collect(generation=2)
         #sys._clear_internal_caches()
-        pass
+        #pass
+
+        
+        
+        
         #print("allocated blocks: " + str(sys.getallocatedblocks()))
         #print(objgraph.count('Projectile'))
         #print(f"RSS (Resident Set Size): {mem_info.rss / (1024 * 1024):.2f} MB")
         #print(f"VMS (Virtual Memory Size): {mem_info.vms / (1024 * 1024):.2f} MB")
         #objgraph.show_growth()
 
-    
+
 pyglet.app.run()
 
-   
+
 
