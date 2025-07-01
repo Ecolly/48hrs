@@ -101,6 +101,7 @@ group_inv_ext_2 = Group(order=67)
 group_ui_bg = Group(order=70)
 group_ui = Group(order=80)
 group_ui_TEST = Group(order=100)
+group_ui_menu = Group(order=110)
 
 
 

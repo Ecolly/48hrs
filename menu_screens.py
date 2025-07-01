@@ -5,6 +5,9 @@
 
 import pyglet
 from enum import Enum
+from config import*
+
+menu_batch = pyglet.graphics.Batch()
 
 class MenuState(Enum):
     MAIN_MENU = 1
@@ -14,47 +17,92 @@ class MenuState(Enum):
     INGAME = 5
 
 
-# def create_win_lose_screen(all_buttons, winlose):
-#     global grid_font
-#     global letter_order
-#     color = (255, 255, 255)
-#     color2 = (33, 33, 33, 90)
-#     w = int((1152)/24)
-#     h = int((768)/24)
-#     txt = ""
-#     txt = txt.zfill(w*h)
+class MenuButton:
+    def __init__(self, x, y, width, height, text, batch, group, on_click):
+        self.rect = pyglet.shapes.Rectangle(x, y, width, height, color=(60, 60, 120), batch=batch, group=group)
+        self.label = pyglet.text.Label(
+            text,
+            font_name="Arial",
+            font_size=18,
+            x=x + width // 2,
+            y=y + height // 2,
+            anchor_x="center",
+            anchor_y="center",
+            color=(255, 255, 255, 255),
+            batch=batch,
+            group=group
+        )
+        self.x, self.y, self.width, self.height = x, y, width, height
+        self.on_click = on_click
 
-#     txt2 = ""
-#     if winlose == "win":
-#         txt2 = "You won!"
-#     else:
-#         txt2 = "You lost..."
+    def hit_test(self, mx, my):
+        return self.x <= mx <= self.x + self.width and self.y <= my <= self.y + self.height
 
-#     txt2 = txt2 + "εPANDORIUMεMade by zeroBound & EconicεMusic: Cyber Dream Loopεby Eric Matyasεwww.soundimage.orgεPress TAB to quit.εä εä εä εä εä εä εä εä εä εä"
-    
-#     spr1 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped(txt2, grid_font, letter_order, w, "center"), 8, 8, w))
-#     spr2 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_background(txt, grid_font, letter_order, w, "left"), 8, 8, w))
-#     obj = InteractiveObject(
-#         x=0, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
-#         y=48*6 - 32, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
-#         width=spr2.width,
-#         height=spr2.height,
-#         sprites=[spr2, spr1],
-#         colors=[[color2, color2, color2], [color, color, color]],
-#         animtype = [0, 0],
-#         animmod = [None, None],
-#         text = [None, None],
-#         alignment_x='left',
-#         alignment_y='top',
-#         depth=1,
-#         obj_type="menu stuff",
-#         draggable=False,
-#         supertype = "winlose",
-#         extra_1 = 0,
-#         extra_2 = 0
-#     )
-#     all_buttons.append(obj)
+# Example usage in your menu creation function:
+def create_main_menu_labels(batch, group, window_width, window_height, on_start, on_load):
+    background = pyglet.shapes.Rectangle(
+        0, 0, window_width, window_height,
+        color=(100, 100, 200),
+        batch=batch,
+        group=group
+    )
+    menu_label = pyglet.text.Label(
+        "PANDORIUM",
+        font_name="Arial",
+        font_size=48,
+        x=window_width // 2, y=window_height - 100,
+        anchor_x="center", anchor_y="center",
+        color=(255, 255, 255, 255),
+        batch=batch,
+        group=group
+    )
+    start_button = MenuButton(
+        x=window_width // 2 - 100, y=window_height // 2 + 20,
+        width=200, height=50,
+        text="Start Game",
+        batch=batch, group=group,
+        on_click=on_start
+    )
+    load_button = MenuButton(
+        x=window_width // 2 - 100, y=window_height // 2 - 50,
+        width=200, height=50,
+        text="Load Game",
+        batch=batch, group=group,
+        on_click=on_load
+    )
+    return [background, menu_label, start_button, load_button]
 
+
+
+
+def create_save_menu_labels(batch, group):
+    labels = []
+    # Title
+    title_label = pyglet.text.Label(
+        "SAVE GAME",
+        font_name="Arial",
+        font_size=36,
+        x=384 // 2, y=256 - 60,
+        anchor_x="center", anchor_y="center",
+        color=(255, 255, 255, 255),
+        batch=batch,
+        group=group
+    )
+    labels.append(title_label)
+    # Save slots
+    # Back button
+    back_label = pyglet.text.Label(
+        "Press ESC to go back",
+        font_name="Arial",
+        font_size=16,
+        x=384 // 2, y=40,
+        anchor_x="center", anchor_y="center",
+        color=(180, 180, 180, 255),
+        batch=batch,
+        group=group
+    )
+    labels.append(back_label)
+    return labels
 
     
 #Load menu (displayed when the load button is clicked)

@@ -22,6 +22,9 @@ from game_classes.hotbar import Hotbar
 #from memory_profiler import profile
 import turn_logic
 import delete_object
+import json
+from menu_screens import *
+
 #import xdot
 import time
 process = psutil.Process(os.getpid())
@@ -51,27 +54,15 @@ disable_errcheck()
 
 
 
-#made by zero and eco :)
-
-# sprite_tinyfont = pyglet.image.load('tinyfont.png')
-# columns_tinyfont = sprite_tinyfont.width // 5
-# rows_tinyfont = sprite_tinyfont.height // 8
-# grid_tinyfont = pyglet.image.ImageGrid(sprite_tinyfont, rows_tinyfont, columns_tinyfont)
-
-# letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "", "", "", "", "", "", "", "", "ä"]
-
-tracemalloc.start()
+##########################################################################################
 
 
-def load_game():
-    global player, all_enemies, floor, bg, bg_liqs, bg_deeper, floor_level, adventure_log
-    global gamestate, has_won, has_lost
+
+
 
 
 #from button_object import *
 #from shaders import *
-has_won = 0
-has_lost = 0
 config = pyglet.gl.Config(double_buffer=True, sample_buffers=0, samples=0)
 
 
@@ -87,7 +78,8 @@ window = pyglet.window.Window(win_true_x, win_true_y, config=config)
 #pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
 gamestate = 1
-
+has_won = 0
+has_lost = 0
 #extinct_creatures = [] 
 
 
@@ -103,18 +95,15 @@ dragging_from_slot = None
 drag_offset = (0, 0)
 right_click_menu_enabled = False
 
-
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
 
 all_buttons = []
 all_anims = []
 
 #floor_items = [item]
-inventory_items = []
-item_selected = None
+#inventory_items = []
 
-
-
+item_selected = None #Item selected in the hotbar
 color_templates = []
 i = 0
 while i < 256:
@@ -215,7 +204,6 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                             dragging_item.hotbar_sprite.visible = False
                             drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
                         
-
 @window.event
 def on_mouse_release(x, y, button, modifiers):
     global all_anims
@@ -356,7 +344,6 @@ def on_mouse_release(x, y, button, modifiers):
                     gamestate = 2
                     all_anims = turn_logic.do_turns(all_enemies, player, floor)
                     
-
 @window.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
     global gamestate
@@ -444,7 +431,7 @@ bg.batch = batch
 # bg_pits = pyglet.sprite.Sprite(grid_bg[0])
 # bg_pits.scale = 3
 
-bg_liqs = []
+bg_liqs = []    
 bg_liqs_foreground = []
 
 i = 0
@@ -819,6 +806,16 @@ keypress_chk = 0
 
 bg_animframe = 0
 
+#menu stuff
+menu_batch = pyglet.graphics.Batch()
+load_menu_batch = pyglet.graphics.Batch()
+save_menu_batch = pyglet.graphics.Batch()
+
+current_menu = MenuState.SAVE_MENU
+main_menu = create_main_menu_labels(batch=menu_batch, group=group_ui_menu)
+save_menu = create_save_menu_labels(batch=save_menu_batch, group=group_ui_menu)
+
+
 fps_display = pyglet.window.FPSDisplay(window=window)
 #profiler = cProfile.Profile()
 fps_display.label.color = (0, 0, 0, 255)
@@ -857,10 +854,19 @@ def on_draw():
     # glViewport(0, 0, win_x, win_y)
     # glClearColor(0, 0, 0, 1)
     # glClear(GL_COLOR_BUFFER_BIT)
+
     
 
     window.clear()
 
+    if current_menu == MenuState.MAIN_MENU:
+        menu_batch.draw()
+        return 
+    elif current_menu == MenuState.SAVE_MENU:
+        save_menu_batch.draw()
+        return
+    elif current_menu == MenuState.INGAME:
+        batch.draw()
     # render_texture.bind()
     # pyglet.gl.glViewport(0, 0, win_x, win_y)
     # pyglet.gl.glClearColor(0, 0, 0, 1)
