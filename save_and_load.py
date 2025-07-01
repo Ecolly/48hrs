@@ -4,6 +4,7 @@ def save_game(Player ):
 
 def player_to_dict(player):
     return {
+        'class': player.__class__.__name__,
         'name': player.name,
         'health': player.health,
         'level': player.level,
@@ -33,11 +34,20 @@ def player_to_dict(player):
         "paralysis_visual": player.paralysis_visual,
         "is_shopping": player.is_shopping,
         "current_holding": player.current_holding,
+
+
+        "default_speed": player.default_speed,
+        "speed": player.speed,
+        "turns_left_before_moving": player.turns_left_before_moving,
+        "speed_turns": player.speed_turns,
+        "speed_visual": player.speed_visual,
+        "paralysis_turns": player.paralysis_turns,
+        "paralysis_visual": player.paralysis_visual,
+        "flee_ai_turns": player.flee_ai_turns,
+        "rage_ai_turns": player.rage_ai_turns,
+        "is_shopping": player.is_shopping,
     }
         
-        
-
-
 
     #These needs to be set after the items are created
         # self.equipment_weapon = None
@@ -71,23 +81,18 @@ def player_to_dict(player):
         # self.sprite.batch = batch
         # self.sprite.group = group_enemies
 
-        # self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
-        # self.animframe = 0 #what frame of the animation it's on
-        # self.animmod = 1/16 #a preset animation modifier (e.g. vibration amplitude)
         # self.scale = 3
 
-        # self.default_speed = 2
-        # self.speed = 2
-        # self.turns_left_before_moving = 2
-        # self.speed_turns = 0
-        # self.speed_visual = 2
-        
-        # self.paralysis_turns = 0
-        # self.paralysis_visual = 0
-
-        # self.flee_ai_turns = 0
-        # self.rage_ai_turns = 0
-
-        # self.is_shopping = False
-
-
+def item_to_dict(item):
+    return {
+            "class": self.__class__.__name__,
+            "name": self.name,
+            "spriteindex": self.spriteindex,
+            "x": self.x,
+            "y": self.y,
+            "quantity": self.quantity,
+            "description": self.description,
+            "price": getattr(self, "price", 0),
+            # Add any other common attributes you want to save
+        }
+    

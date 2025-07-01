@@ -736,7 +736,7 @@ player.add_to_inventory(floor.create_item("Starfruit", grid_items))
 
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
-music = pyglet.media.load('Cyber-Dream-Loop.mp3')  # Replace with your actual file path
+music = pyglet.media.load('audio\Cyber-Dream-Loop.mp3')  # Replace with your actual file path
 
 # Create a player and queue the music
 mplayer = pyglet.media.Player()
@@ -749,8 +749,10 @@ mplayer.loop = True
 # Play the music
 mplayer.play()
 
-sound_hit = pyglet.media.load('hit.mp3', streaming=False)
-sound_magic = pyglet.media.load('magic.mp3', streaming=False)
+
+
+sound_hit = pyglet.media.load('audio\hit.mp3', streaming=False)
+sound_magic = pyglet.media.load('audio\magic.mp3', streaming=False)
 
 global keypress_chk
 keypress_chk = 0
