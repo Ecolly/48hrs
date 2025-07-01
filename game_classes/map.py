@@ -396,7 +396,6 @@ class Map:
 
                 self.valid_entity_tiles.remove(random_location)
                 
-
                 self.all_enemies.append(generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level), self))
 
 

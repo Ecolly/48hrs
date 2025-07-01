@@ -14,7 +14,7 @@ from game_classes.id_shuffling import *
 from font import *
 
 class Player:
-    def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, itemgrid, color, animtype, x, y):
+    def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, itemgrid, animtype, x, y):
         global batch 
         global group_enemies
         self.name = name
@@ -80,7 +80,6 @@ class Player:
         self.sprite.batch = batch
         self.sprite.group = group_enemies
 
-        self.color = color #4 entry tuple for the sprite to be colored as; white is default
         self.animtype = animtype #animation type. pulls from a set library of animation behaviors.
         self.animframe = 0 #what frame of the animation it's on
         self.animmod = 1/16 #a preset animation modifier (e.g. vibration amplitude)
@@ -524,8 +523,6 @@ class Player:
         sprite.x = base_x
         sprite.y = base_y
         sprite.scale = self.scale
-        sprite.color = self.color
-        #sprite.color = (int(20*self.animframe), int(20*self.animframe), int(20*self.animframe))
         sprite.z = 40
         sprite.batch = batch
 

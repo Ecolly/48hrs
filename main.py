@@ -20,7 +20,6 @@ import os
 import objgraph
 from game_classes.hotbar import Hotbar
 #from memory_profiler import profile
-from font import *
 import turn_logic
 import delete_object
 #import xdot
@@ -50,9 +49,6 @@ def load_game():
     global gamestate, has_won, has_lost
 
 
-
-
-
 #from button_object import *
 #from shaders import *
 has_won = 0
@@ -72,18 +68,6 @@ window = pyglet.window.Window(win_true_x, win_true_y, config=config)
 #pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
 gamestate = 1
-partition_entity = -2
-#current_entity_turn = -1
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -124,7 +108,6 @@ player = Player(
     spritegrid = grid_entities1,
     itemgrid = grid_items,
     spriteindex = 23*8*8,
-    color = (255, 255, 255, 255),
     animtype = 1,
 )
 
@@ -235,7 +218,6 @@ def on_mouse_release(x, y, button, modifiers):
                     player.techniqueitem = item_selected                        
                     gamestate = 2
                     all_anims = turn_logic.do_turns(all_enemies, player, floor)
-                    #partition_entity = construct_partitions()
                 elif isinstance(item_selected, Weapon):
                     player.equip_weapon(item_selected)
                     #attack with weapon
@@ -776,7 +758,6 @@ def on_draw():
     global color_templates
     global keypress_chk
     global gamestate
-    global partition_entity
     global all_buttons
     global has_won
     global all_anims
@@ -876,9 +857,6 @@ def on_draw():
             player.move(dirx, diry, floor)
             gamestate = 2
             all_anims = turn_logic.do_turns(all_enemies, player, floor)
-
-        #partition_entity = construct_partitions()
-        #current_entity_turn = -1
 
     if gamestate == 2:
         if len(all_anims) == 0 or all(anim.proceed for anim in all_anims):

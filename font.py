@@ -116,3 +116,19 @@ def draw_tiny_texts(text, x, y, batch, group):
         else:
             print(f"Character '{char}' not found in letter order.")
     return sprites
+
+
+def draw_texts(text, x, y, batch, group):
+    """
+    Draws text at the specified position using the regular font grid.
+    """
+    sprites = []
+    for i, char in enumerate(text):
+        if char in letter_order:
+            index = letter_order.index(char)
+            sprite = pyglet.sprite.Sprite(grid_font[index], x + i * 16, y, batch=batch, group=group)
+            sprites.append(sprite)
+            sprite.scale = 2
+        else:
+            print(f"Character '{char}' not found in letter order.")
+    return sprites
