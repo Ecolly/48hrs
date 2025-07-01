@@ -52,16 +52,29 @@ columns_liq = sprite_liq.width // 128
 rows_liq = sprite_liq.height // 128
 grid_liq = pyglet.image.ImageGrid(sprite_liq, rows_liq, columns_liq)
 
+sprite_liqtile = pyglet.image.load('tile_liquid_animations.png')
+columns_liqtile = sprite_liqtile.width // 16
+rows_liqtile = sprite_liqtile.height // 16
+grid_liqtile = pyglet.image.ImageGrid(sprite_liqtile, rows_liqtile, columns_liqtile)
+
 sprite_deeper = pyglet.image.load('deeper_bgs.png')
 columns_deeper = sprite_deeper.width // 128
 rows_deeper = sprite_deeper.height // 128
 grid_deeper = pyglet.image.ImageGrid(sprite_deeper, rows_deeper, columns_deeper)
+
+sprite_blank = pyglet.image.load('blank.png')
+columns_blank = sprite_blank.width // (16*60)
+rows_blank = sprite_blank.height // (16*60)
+grid_blank = pyglet.image.ImageGrid(sprite_blank, rows_blank, columns_blank)
+
 
 from pyglet.graphics import Group
 
 group_deeper = Group(order=4)
 group_bg_pits = Group(order=5)
 group_bg = Group(order=10)
+group_bg_liqs = Group(order=15)
+
 group_items = Group(order=20)
 group_enemies_bg = Group(order=39)
 group_enemies = Group(order=40)

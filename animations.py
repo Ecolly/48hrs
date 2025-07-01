@@ -8,21 +8,10 @@ from game_classes.techniques import *
 from enum import Enum, auto
 from game_classes.item import *
 from game_classes.enemy import *
+from font import *
 from game_classes.id_shuffling import *
 
-# def create_sprite_item(image_grid, index): #dumb. literally the same as the image handling function
-#     tex = pyglet.image.Texture.create(16, 16)
-#     tex.blit_into(image_grid[index], 0, 0, 0)
-#     return pyglet.sprite.Sprite(tex, x=0, y=0)
-sprite_items = pyglet.image.load('items_and_fx.png')
-columns_items = sprite_items.width // 16
-rows_items = sprite_items.height // 16
-grid_items = pyglet.image.ImageGrid(sprite_items, rows_items, columns_items)
 
-sprite_font = pyglet.image.load('font.png')
-columns_font = sprite_font.width // 8
-rows_font = sprite_font.height // 8
-grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
 def wipe_techniqueitem(entity):
     if isinstance(entity, Enemy) and entity.techniqueitem != None:
@@ -95,7 +84,8 @@ class Animation:
                 self.sprite = image_handling.create_sprite(grid_items, spriteindex)
                 self.grid = grid_items
 
-    def draw(self, batch, player, group, floor, adventure_log):
+    def draw(self, batch, player, group, floor, adventure_log, bg_liqs_foreground):
+        global grid_liqtile
         self.current_time += 1
 
         # if self.text != "":
@@ -258,6 +248,35 @@ class Animation:
 
 
                 tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 4)]
+                self.sprite.image.blit_into(tile, 0, 0, 0)
+
+                sprite = self.sprite
+                sprite.color = self.color
+                sprite.x = base_x
+                sprite.y = base_y
+                sprite.scale = self.scale
+                sprite.group = group
+                sprite.batch = batch
+            elif self.animtype == 7: #liquids
+
+                self.color = (self.color[0], self.color[1], self.color[2], 255)          
+                base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+                base_y =  768/2-24-(player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale #+768/2-24?
+
+                if frame == 5:
+                    liquid_char_to_index = ["E", "q", "q", "q", "q", "q", "q", "q", "M", "C", "A", "D", "I", "S", "P", "W"]
+                    i = 0
+                    while i < 16:
+                        bg_liqs_foreground[i].image.blit_into(grid_liqtile[i + liquid_char_to_index.index(self.rot)*16], self.x*16, self.y*16, 0)
+                        i = i + 1
+
+
+
+                if frame > self.duration:
+                    self.should_be_deleted = True
+
+
+                tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 2)]
                 self.sprite.image.blit_into(tile, 0, 0, 0)
 
                 sprite = self.sprite

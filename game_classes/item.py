@@ -265,6 +265,29 @@ class Tome(Item):
         self.reverse = reverse
         self.price = price
 
+class Flask(Item):
+    def __init__(self, name, grid_items, reverse, evaporation_rate, liquid, product, sprite_locs, x=0, y=0, quantity=1, damage=0, description="", price=0):
+        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
+        self.spriteindex = 29*6+sprite_locs
+        self.magic_color = sprite_locs
+        self.sprite = create_sprite_item(grid_items, self.spriteindex)
+        self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
+
+        self.evaporation_rate = evaporation_rate 
+        self.liquid = liquid 
+        self.product = product 
+        
+        self.charges = 15 #number of liquid tiles to make
+        self.maxcharges = 15 #um...
+
+        self.damage_type = "slashing"  #???
+        self.is_castable = False
+        self.is_castable_projectile = False
+        self.is_readable = True
+        self.to_be_converted = None
+        self.reverse = reverse
+        self.price = price
+
 class Consumable(Item):
     def __init__(self, name, grid_items, sprite_locs, nutrition_value, x=0, y=0, quantity=1, description="", price=0):
         super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
@@ -274,6 +297,8 @@ class Consumable(Item):
         self.nutrition_value = nutrition_value
         self.is_consumable = True
         self.price = price
+
+
 
 
 class Shield (Item):

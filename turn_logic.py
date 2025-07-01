@@ -122,7 +122,7 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
             damage = math.floor(damage / 8)
         if damage < 1:
             damage = 1
-    else: #smoke
+    elif damage_type == "magic" or damage_type == "execution": #smoke
         anim = animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 16), target.x, target.y, target.x, target.y, 0, None, None, None, None, None)
         list_of_animations.append(anim)
         pass
@@ -130,9 +130,14 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
     target.health = target.health - damage
     #target.paralysis_turns = 0 #paralysis turns should be set to 0 if taking damage?
 
-    #damage number
-    anim = animations.Animation(str(target.name) + " took " + str(damage) + " damage from " + str(attacker.name) + "." ,"-" + str(damage), 2, 0, (255, 0, 0, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction)
-    list_of_animations.append(anim)
+    if damage_type == "chemical":
+        #damage number
+        anim = animations.Animation(str(target.name) + " took " + str(damage) + " damage from " + str(attacker) + "." ,"-" + str(damage), 2, 0, (255, 0, 0, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction)
+        list_of_animations.append(anim)
+    else:
+        #damage number
+        anim = animations.Animation(str(target.name) + " took " + str(damage) + " damage from " + str(attacker.name) + "." ,"-" + str(damage), 2, 0, (255, 0, 0, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction)
+        list_of_animations.append(anim)
 
     if target != player and not target.is_alive():
         target.should_be_deleted = True
@@ -141,7 +146,7 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
            attacker.increase_experience(target.experience*exp_multiplier)
            if attacker.level != temp_level:
                list_of_animations.append(animations.Animation(str(attacker.name) + " grew to level " + str(attacker.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
-        else:
+        elif isinstance(attacker, Enemy):
            attacker.level_up()
            list_of_animations.append(animations.Animation(str(attacker.name) + " leveled up!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
 
@@ -171,6 +176,19 @@ def deduct_charges(entity, charges):
 
 
 def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, list_of_animations):
+    if "Flask" in spellname:
+        entity.techniqueitem.charges -= charges 
+        entity.techniqueitem.price -= charges
+        if entity.techniqueitem.charges < 1 and entity == player:
+            blank_id = player.inventory.index(entity.techniqueitem)
+            objlist = player.inventory
+            objlist[blank_id].sprite.delete() 
+            objlist[blank_id].hotbar_sprite.delete() 
+            objlist[blank_id] = floor.create_item("Empty Flask", objlist[blank_id].grid)
+
+
+        pass
+
     if spellname == "Staff of Cloning":
         if enemy_hit != None:
             spawn_enemies_within_turn_execution(1, enemy_hit.name, enemy_hit.level, enemy_hit, floor, player, chronology, list_of_animations)
@@ -314,6 +332,204 @@ def find_reflection_angle(x, y, dx, dy, floor, targx, targy):
         return "y"
     
     
+
+
+
+
+
+
+
+def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
+    liq = floor.liquid_grid[floor.height-1-entity.y][entity.x]
+    if liq == "#":
+        return False
+    elif liq == "W": #water
+        spr = 2*29 + 16
+        evap = 0.05
+        if entity.creaturetype == "Plant":
+            inflict_healing(random.randint(1, 3), entity, player, list_of_animations, chronology)
+    elif liq == "D": #detergent
+        spr = 2*29 + 12
+        evap = 0.1
+    elif liq == "A": #acid
+        spr = 2*29 + 0
+        evap = 0.1
+        if entity.name != "VITRIOLIVE":
+            inflict_damage("Acid", entity, player, chronology, list_of_animations, None, random.randint(2, 4), "chemical")
+    elif liq == "M": #mercury
+        spr = 2*29 + 24
+        evap = 0.05
+        if entity.creaturetype == "Robotic":
+            inflict_damage("Mercury", entity, player, chronology, list_of_animations, None, random.randint(25, 45), "chemical")
+    elif liq == "S": #syrup
+        spr = 2*29 + 4
+        evap = 0.05
+        if entity.creaturetype == "Food":
+            inflict_healing(random.randint(1, 3), entity, player, list_of_animations, chronology)
+    elif liq == "C": #cureall
+        spr = 2*29 + 8
+        evap = 0.2
+        inflict_healing(random.randint(5, 8), entity, player, list_of_animations, chronology)
+    elif liq == "P": #petroleum
+        spr = 2*29 + 20
+        evap = 0.05
+        if entity.creaturetype == "Robotic":
+            inflict_healing(random.randint(1, 3), entity, player, list_of_animations, chronology)
+    elif liq == "#": #ink
+        spr = 2*29 + 20
+        evap = 0.05
+        if entity.creaturetype == "Abstract":
+            inflict_healing(random.randint(1, 3), entity, player, list_of_animations, chronology)
+    else:
+        return False
+    
+    if random.uniform(0, 1) < evap:
+        x, y = entity.x, entity.y
+        if ((x > player.x + 13 or x < player.x - 13) or (y > player.y + 9 or y < player.y - 9)):
+            list_of_animations.append(animations.Animation("", spr, 7, 5, (255, 255, 255, 0), chronology, 1, x, y, x, y, "E", None, None, None, None, 0, None))
+        else:
+            list_of_animations.append(animations.Animation("", spr, 7, 5, (255, 255, 255, 0), chronology, 8, x, y, x, y, "E", None, None, None, None, 0, None))
+        floor.liquid_grid[floor.height-1-y][x] = "#"
+    return True
+
+
+
+def pick_up_liquid(x, y, item, floor, chronology, list_of_animations, chron_i, player):
+    liq = floor.liquid_grid[floor.height-1-y][x]
+    if liq == "W":
+        spr = 2*29 + 16
+        liqname = "Water Flask"
+    elif liq == "D":
+        spr = 2*29 + 12
+        liqname = "Detergent Flask"
+    elif liq == "A":
+        spr = 2*29 + 0
+        liqname = "Acid Flask"
+    elif liq == "M":
+        spr = 2*29 + 24
+        liqname = "Mercury Flask"
+    elif liq == "S":
+        spr = 2*29 + 4
+        liqname = "Syrup Flask"
+    elif liq == "C":
+        spr = 2*29 + 8
+        liqname = "Cureall Flask"
+    elif liq == "P":
+        spr = 2*29 + 20
+        liqname = "Petroleum Flask"
+    else:
+        spr = 2*29 + 20
+        liqname = "Ink Flask"
+
+    if liq == item.name[0] and item.charges < item.maxcharges:
+        item.charges += 1
+        item.price += 1
+
+        if ((x > player.x + 13 or x < player.x - 13) or (y > player.y + 9 or y < player.y - 9)):
+            list_of_animations.append(animations.Animation("", spr, 7, 5, (255, 255, 255, 0), chronology+chron_i, 1, x, y, x, y, "E", None, None, None, None, 0, None))
+        else:
+            list_of_animations.append(animations.Animation("", spr, 7, 5, (255, 255, 255, 0), chronology+chron_i, 8, x, y, x, y, "E", None, None, None, None, 0, None))
+        floor.liquid_grid[floor.height-1-y][x] = "#"
+        return True 
+    elif liq != "#" and item.name == "Empty Flask":
+
+            
+        blank_id = player.inventory.index(item)
+        objlist = player.inventory
+        objlist[blank_id].sprite.delete() 
+        objlist[blank_id].hotbar_sprite.delete() 
+        objlist[blank_id] = floor.create_item(liqname, objlist[blank_id].grid)
+        objlist[blank_id].price = objlist[blank_id].price - objlist[blank_id].charges + 1
+        objlist[blank_id].charges = 1
+        if ((x > player.x + 13 or x < player.x - 13) or (y > player.y + 9 or y < player.y - 9)):
+            list_of_animations.append(animations.Animation("", spr, 7, 5, (255, 255, 255, 0), chronology+chron_i, 1, x, y, x, y, "E", None, None, None, None, 0, None))
+        else:
+            list_of_animations.append(animations.Animation("", spr, 7, 5, (255, 255, 255, 0), chronology+chron_i, 8, x, y, x, y, "E", None, None, None, None, 0, None))
+        floor.liquid_grid[floor.height-1-y][x] = "#"
+        return True 
+    
+    return False
+
+
+
+def deposit_liquid(x, y, item, floor, chronology, list_of_animations, chron_i, player):
+
+    if ((y, x) in floor.valid_tiles) and floor.check_liquid_at_tile(x, y) != item:
+        floor.liquid_grid[floor.height-1-y][x] = item
+        #if splashing a flask...
+        if item == "W":
+            spr = 2*29 + 16
+        elif item == "D":
+            spr = 2*29 + 12
+        elif item == "A":
+            spr = 2*29 
+        elif item == "M":
+            spr = 2*29 + 24
+        elif item == "S":
+            spr = 2*29 + 4
+        elif item == "C":
+            spr = 2*29 + 8
+        else:
+            spr = 2*29 + 20
+        
+        if ((x > player.x + 13 or x < player.x - 13) or (y > player.y + 9 or y < player.y - 9)):
+            list_of_animations.append(animations.Animation("", spr, 7, 5, (255, 255, 255, 0), chronology+chron_i, 1, x, y, x, y, item, None, None, None, None, 0, None))
+        else:
+            list_of_animations.append(animations.Animation("", spr, 7, 5, (255, 255, 255, 0), chronology+chron_i, 8, x, y, x, y, item, None, None, None, None, 0, None))
+        return True 
+    
+    return False
+
+
+
+        # entity.techniqueitem.price -= charges
+        # if entity.techniqueitem.charges < 1 and entity == player:
+        #     blank_id = player.inventory.index(entity.techniqueitem)
+        #     objlist = player.inventory
+        #     objlist[blank_id].sprite.delete() 
+        #     objlist[blank_id].hotbar_sprite.delete() 
+        #     objlist[blank_id] = floor.create_item("Empty Flask", objlist[blank_id].grid)
+
+def shatter_flask(x, y, item, floor, chronology, list_of_animations, chron_i, player):
+
+
+
+    coordanites_0 = [(0, 0)]
+    coordanites_1 = [(0, 1), (1, 0), (0, -1), (-1, 0), (-1, -1), (1, 1), (-1, 1), (1, -1)]
+    coordanites_2 = [(2, 0), (0, 2), (-2, 0), (0, -2), (2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2), (2, 2), (2, -2), (-2, 2), (-2, -2)]
+
+    random.shuffle(coordanites_1) 
+    random.shuffle(coordanites_2)
+    coordanites = [coordanites_0, coordanites_1, coordanites_2]
+
+    num_of_liq_to_deposit = item.charges
+    coordlist = 0
+    coordentry = 0
+    while num_of_liq_to_deposit > 0 and coordlist < 3:
+        xtochk = x + coordanites[coordlist][coordentry][0]
+        ytochk = y + coordanites[coordlist][coordentry][1]
+        coordentry += 1
+        if coordentry >= len(coordanites[coordlist]):
+            coordlist += 1
+
+        if deposit_liquid(xtochk, ytochk, item.liquid[0], floor, chronology, list_of_animations, chron_i, player) == True:
+            num_of_liq_to_deposit += -1
+
+
+
+    #1. find tiles around the target to deposit liquid
+    #2. deposit liquid
+    pass
+
+
+
+
+
+
+
+
+
+
 def do_reflection(entity, item, enemy_hit, distance_x_normalized, distance_y_normalized, floor, chron_i, projectiles_remaining):
     if enemy_hit != None:
         tilex = math.floor(item.x)
@@ -380,10 +596,14 @@ def do_radioactivity(entity, player, chronology, list_of_animations, floor):
                     inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic")
     
 
+
+
+
 def do_individual_turn(entity, floor, player, list_of_animations, chronology, prevtechnique):
     global fakenames_staffs_key, fakenames_tomes_key, fakenames_staffs_realnames, fakenames_tomes_realnames, grid_items
     do_radioactivity(entity, player, chronology, list_of_animations, floor)
     if entity.technique == Technique.STILL:
+        do_liquid_effect(entity, player, chronology, list_of_animations, floor)
         return Technique.STILL, chronology
     elif entity.technique == Technique.MOVE:
         if can_move_to(entity.techniquex, entity.techniquey, floor, player):
@@ -393,13 +613,28 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         elif can_move_to(entity.x, entity.techniquey, floor, player):
             entity.techniquex = entity.x
         else:
-            entity.techniquex = entity.x 
-            entity.techniquey = entity.y
+            # if isinstance(entity, Enemy):
+            #     # dist = math.sqrt((entity.x-player.x)**2 + (entity.y-player.y)**2)
+            #     # dist2 = math.sqrt((entity.x-player.x)**2 + ((entity.y + entity.y-entity.techniquey))-player.y)**2)
+            #     # dist3 = math.sqrt(((entity.x + entity.x - entity.techniquex))-player.x)**2 + (entity.y-player.y)**2)
+            #     if can_move_to(entity.x, entity.y + entity.y-entity.techniquey, floor, player):
+            #         entity.techniquey = entity.y + entity.y-entity.techniquey
+            #     elif can_move_to(entity.x + entity.x - entity.techniquex, entity.y, floor, player):
+            #         entity.techniquex = entity.x + entity.x - entity.techniquex
+            #     else:
+            #         entity.techniquex = entity.x 
+            #         entity.techniquey = entity.y 
+            # else:
+                entity.techniquex = entity.x 
+                entity.techniquey = entity.y
 
         rot = adjust_rotation(entity, entity.techniquex-entity.x, entity.techniquey-entity.y)
         list_of_animations.append(animations.Animation("", None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 8), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.MOVE, None, None, None))
 
-
+        if isinstance(entity.techniqueitem, Flask):
+            pick_up_liquid(entity.techniquex, entity.techniquey, entity.techniqueitem, floor, chronology, list_of_animations, 0, player)
+        elif entity.name == "VITRIOLIVE":
+            deposit_liquid(entity.techniquex, entity.techniquey, "A", floor, chronology, list_of_animations, 0, player)
 
         #if previous technique was not 'move' or 'still', chronology must be incremented by 8
         if prevtechnique != Technique.MOVE and prevtechnique != Technique.STILL:
@@ -407,12 +642,15 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
         entity.x = entity.techniquex
         entity.y = entity.techniquey
+        do_liquid_effect(entity, player, chronology, list_of_animations, floor)
         return Technique.MOVE, chronology
     elif entity.technique == Technique.CONSUME:
         if prevtechnique == Technique.MOVE or prevtechnique == Technique.STILL:
             chronology += check_if_entity_is_on_screen(entity, player, 1, 8)
         entity.consume_item(entity.techniqueitem, list_of_animations)
-        return Technique.CONSUME, chronology+10
+        chronology += 10
+        do_liquid_effect(entity, player, chronology, list_of_animations, floor)
+        return Technique.CONSUME, chronology
     elif entity.technique == Technique.HIT:
         if prevtechnique == Technique.MOVE or prevtechnique == Technique.STILL:
             chronology += check_if_entity_is_on_screen(entity, player, 1, 8)
@@ -460,6 +698,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
         list_of_animations.append(animations.Animation("", None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None))
         chronology += check_if_entity_is_on_screen(entity, player, 1, 16)
+        do_liquid_effect(entity, player, chronology, list_of_animations, floor)
         return Technique.HIT, chronology
     elif entity.technique == Technique.THROW: #works for throwing items, casting projectile spells, and other projectiles
         #print(entity.x, entity.y, entity.techniquex, entity.techniquey)
@@ -468,11 +707,10 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         rot = adjust_rotation(entity, clamp(-entity.x+entity.techniquex, -1, 1), clamp(-entity.y+entity.techniquey, -1, 1))
 
         if entity.techniqueitem != None and isinstance(entity.techniqueitem, Staff) == True:
-            #
-           
             anim2 = animations.Animation("", None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None, item=entity.techniqueitem.spriteindex)
         else:
             anim2 = animations.Animation("", None, 1, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.HIT, None, None, None)
+        
         list_of_animations.append(anim2)
         #chronology += 16
 
@@ -507,7 +745,32 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
                     if item.name == "Dragon Fire" and (tilex != math.floor(item.x - distance_x_normalized) or tiley != math.floor(item.y - distance_y_normalized)):
                         #if applicable, add a new animation at every single tile along the projectile's path
-                        list_of_animations.append(animations.Animation("", 29*2, 1, 5, (255, 255, 255, 0), chronology+chron_i, 5, tilex, tiley, tilex, tiley, rot, None, None, None, None, 0, None))
+                        list_of_animations.append(animations.Animation("", 29*2, 6, 5, (255, 255, 255, 0), chronology+chron_i, 5, tilex, tiley, tilex, tiley, rot, None, None, None, None, 0, None))
+
+
+
+
+                    used_up_flag = False
+
+                    if "Flask" in item.name and isinstance(item, Projectile) and (tilex != math.floor(item.x - distance_x_normalized) or tiley != math.floor(item.y - distance_y_normalized)):
+
+
+                        if deposit_liquid(tilex, tiley, item.name[0], floor, chronology, list_of_animations, chron_i, player) == True:
+                            item.damage += -1
+                            entity.techniquecharges += 1
+                        if item.damage == 0:
+                            used_up_flag = True
+
+                        #list_of_animations.append(animations.Animation("", spr, 6, 5, (255, 255, 255, 0), chronology+chron_i, 5, tilex, tiley, tilex, tiley, rot, None, None, None, None, 0, None))
+                        
+                        #place a liquid tile here
+                        #subtract 1 from remaining charges
+                        #if 0, terminate projectile
+
+
+
+
+
 
                     enemy_hit = None
                     if (player != item.entity or item.friendly_fire == True) and tilex == player.x and tiley == player.y: #if hit the player and player isnt the source entity
@@ -517,9 +780,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                             if (enemy != item.entity or item.friendly_fire == True) and enemy.x == math.floor(item.x) and enemy.y == math.floor(item.y) and entity.should_be_deleted == False: #if hit an enemy and enemy isnt the source entity
                                 enemy_hit = enemy
                     
-                    if enemy_hit == None: #if no creature was hit
+                    if enemy_hit == None or used_up_flag == True: #if no creature was hit
                         
-                        if floor.wall_type == "Solid" and ((tiley,tilex) not in floor.valid_tiles): #if a wall is hit...
+                        if used_up_flag == False and (floor.wall_type == "Solid" and ((tiley,tilex) not in floor.valid_tiles)): #if a wall is hit...
                             i = 0
                             while (tiley,tilex) not in floor.valid_tiles: #go backwards until finding a free space
                                 item.x = item.x - distance_x_normalized 
@@ -542,11 +805,15 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                             entity.active_projectiles[itemi] = -1
                             projectiles_remaining += -1
                         else:
-                            #if nothing was hit
+                            #if nothing was hit OR used_up_flag == true
                             distance_travelled = math.sqrt(abs(tilex - entity.x)**2 + abs(tiley - entity.y)**2)
-                            if distance_travelled > distance_total:
-                                anim3 = animations.Animation("", item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item, drop_item=True)
-                                list_of_animations.append(anim3)
+                            if distance_travelled > distance_total or used_up_flag == True:
+                                if isinstance(item, Flask) == True:
+                                    shatter_flask(tilex, tiley, item, floor, chronology, list_of_animations, chron_i, player)
+                                    list_of_animations.append(animations.Animation("", item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item, drop_item=False))
+                                else:
+                                    list_of_animations.append(animations.Animation("", item.spriteindex, animtype, 5, (255, 255, 255, 0), chronology+item.chron_offset, chron_i-item.chron_offset, item.xinit, item.yinit, tilex, tiley, rot, entity, Technique.THROW, entity, None, 0, item, drop_item=True))
+
                                 entity.active_projectiles[itemi] = -1
                                 projectiles_remaining += -1 
                                 if isinstance(item, Projectile) == True:
@@ -590,6 +857,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         entity.active_projectiles = []
 
         chronology = chronology + max(chron_i, check_if_entity_is_on_screen(entity, player, 1, 16))
+        do_liquid_effect(entity, player, chronology, list_of_animations, floor)
         return Technique.THROW, chronology
     elif entity.technique == Technique.CAST: #this is for static castings (not projectiles)
         if prevtechnique == Technique.MOVE or prevtechnique == Technique.STILL:
@@ -788,9 +1056,10 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                 i = i - 1
             deduct_charges(entity, 1)
 
-
+        do_liquid_effect(entity, player, chronology, list_of_animations, floor)
         return Technique.CAST, chronology
     else:
+        do_liquid_effect(entity, player, chronology, list_of_animations, floor)
         return Technique.STILL, chronology
 
     

@@ -6,7 +6,7 @@ import math
 class Projectile:
     def __init__(self, name, damage, x, y, xend, yend, entity, text, chron=0):
         self.name = name
-        self.damage = damage
+        self.damage = damage #this is often # of charges used
         self.x = math.floor(x)
         self.y = math.floor(y)
         self.xend = xend + 0.5
@@ -25,6 +25,21 @@ class Projectile:
         elif name == "Dragon Fire":
             self.spriteindex = 2*29
             self.num_of_pierces = 4
+        elif "Flask" in name:
+            if "Water" in name:
+                self.spriteindex = 2*29 + 16
+            elif "Detergent" in name:
+                self.spriteindex = 2*29 + 12
+            elif "Acid" in name:
+                self.spriteindex = 2*29
+            elif "Mercury" in name:
+                self.spriteindex = 2*29 + 24
+            elif "Syrup" in name:
+                self.spriteindex = 2*29 + 4
+            elif "Cureall" in name:
+                self.spriteindex = 2*29 + 8
+            else:
+                self.spriteindex = 2*29 + 20
         else:
             self.spriteindex = 4*29
 

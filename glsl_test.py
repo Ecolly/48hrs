@@ -5,13 +5,13 @@ import os
 import random
 
 # --- CONFIGURATION ---
-input_path = "newliqdsall.png"  # Replace with your actual file path
+input_path = "liqsall.png"  # Replace with your actual file path
 tile_size = 16
-tiled_size = 128
-frames_per_texture = 32
+tiled_size = 16
+frames_per_texture = 16
 textures_count = 16  # Expecting a strip of 16 tiles
 
-output_image_path = "all_liquid_animations.png"
+output_image_path = "tile_liquid_animations.png"
 
 # --- CHECK FILE ---
 if not os.path.exists(input_path):
@@ -21,7 +21,7 @@ if not os.path.exists(input_path):
 source_image = Image.open(input_path).convert("RGBA")
 
 # --- DISTORTION FUNCTION ---
-def distort_image_angled(image, time, angle_deg=45, amplitude=2.5, frequency=2.0):
+def distort_image_angled(image, time, angle_deg=45, amplitude=0.5, frequency=2.0):
     arr = np.array(image)
     h, w = arr.shape[:2]
     distorted = np.zeros_like(arr)

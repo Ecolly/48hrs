@@ -95,7 +95,16 @@ item_selected = None
 
 
 
+color_templates = []
+i = 0
+while i < 256:
+    color_templates.append((255, 255, 255, i))
+    i = i + 1
 
+
+color_templates.append((255, 0, 0, 255))
+color_templates.append((189, 66, 0, 255))
+color_templates.append((33, 33, 33, 90))
 
 player = Player(
     name = "DAMIEN",
@@ -232,23 +241,23 @@ def on_mouse_release(x, y, button, modifiers):
                         player.equip_shield(item_selected)
                     else:
                         player.unequip_shield()
-                        
                 elif isinstance(item_selected, Tome):
                     player.techniqueitem = item_selected 
                     gamestate = 2
                     player.cast_static()
-                    #mark the tome as discovered
-
-                    
-                    #has_won = player.spellcasting(button.extra_1, all_enemies, all_buttons, has_won, floor, sound_magic, gamestate)
                     all_anims = turn_logic.do_turns(all_enemies, player, floor)
                     if has_won == 0:
-                        #partition_entity = construct_partitions()
                         pass
                     else:
                         gamestate = 0
                         create_win_lose_screen(all_buttons, "win")
-     
+                elif isinstance(item_selected, Flask) and item_selected.name != "Empty Flask":
+                    mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+                    mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+                    player.techniqueitem = item_selected
+                    player.splash(mouse_x_tilemap, mouse_y_tilemap)
+                    gamestate = 2
+                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
                 # elif isinstance(item_selected, Staff): #this never happens because pressing lclick with staff brings gamestate to 6
                 #     print("casting staff")
                 #     player.techniqueitem = item_selected
@@ -404,6 +413,7 @@ bg.batch = batch
 # bg_pits.scale = 3
 
 bg_liqs = []
+bg_liqs_foreground = []
 
 i = 0
 while i < 16:
@@ -412,12 +422,18 @@ while i < 16:
     bg_liqs[i].group = group_bg_pits
     bg_liqs[i].batch = batch
 
+    bg_liqs_foreground.append(pyglet.sprite.Sprite(grid_bg[0]))
+    bg_liqs_foreground[i].scale = 3
+    bg_liqs_foreground[i].group = group_bg_liqs
+    bg_liqs_foreground[i].batch = batch
+    bg_liqs_foreground[i].color = color_templates[200]
     i = i + 1
 
 bg_deeper = pyglet.sprite.Sprite(grid_bg[0])
 bg_deeper.scale = 3
 bg_deeper.group = group_deeper
 bg_deeper.batch = batch
+
 
 
 
@@ -429,7 +445,7 @@ bg_deeper.batch = batch
 adventure_log = ["PANDORIUM - A game by zeroBound and Econic", "Good luck!"]
 
 def go_to_next_level():
-    global floor, all_enemies, player, bg, bg_liqs, bg_deeper, floor_level, adventure_log
+    global floor, all_enemies, player, bg, bg_liqs, bg_deeper, bg_liqs_foreground, floor_level, adventure_log, grid_blank
 
 
     itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
@@ -574,8 +590,11 @@ def go_to_next_level():
                 fl_string += s2
     #bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
     
-    
-    
+    i = 0
+    while i < 16:
+        bg_liqs_foreground[i].image = combine_tiles(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1) #sprite_blank
+        i = i + 1
+        
     #print(fl_string)
     bg.image = combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60) #pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
     bg.scale = 3
@@ -641,16 +660,7 @@ def go_to_next_level():
 go_to_next_level()
 
 
-color_templates = []
-i = 0
-while i < 256:
-    color_templates.append((255, 255, 255, i))
-    i = i + 1
 
-
-color_templates.append((255, 0, 0, 255))
-color_templates.append((189, 66, 0, 255))
-color_templates.append((33, 33, 33, 90))
 
 
 
@@ -668,9 +678,10 @@ player.add_to_inventory(floor.create_item("Sickle", grid_items))
 # player.add_to_inventory(floor.create_item("Banishing Tome", grid_items))
 # player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
 # player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
+player.add_to_inventory(floor.create_item("Water Flask", grid_items))
+player.add_to_inventory(floor.create_item("Detergent Flask", grid_items))
 player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
-player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
-player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Injury", grid_items))
 
 # player.add_to_inventory(floor.create_item("Staffboost Tome", grid_items))
 # player.add_to_inventory(floor.create_item("Blank Tome", grid_items))
@@ -700,18 +711,22 @@ player.add_to_inventory(floor.create_item("Knife", grid_items))
 player.add_to_inventory(floor.create_item("Leaf Shield", grid_items))
 # # player.add_to_inventory(floor.create_item("Staff of Warping", grid_items))
 # player.add_to_inventory(floor.create_item("Armor Plate", grid_items))
-player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
-player.add_to_inventory(floor.create_item("Wood Shield", grid_items))
-player.add_to_inventory(floor.create_item("Spiked Shield", grid_items))
-# player.add_to_inventory(floor.create_item("Sun Shield", grid_items))
-# player.add_to_inventory(floor.create_item("Balance Shield", grid_items))
-# player.add_to_inventory(floor.create_item("Knife", grid_items))
-# # player.add_to_inventory(floor.create_item("Machete", grid_items))
-# # player.add_to_inventory(floor.create_item("Scimitar", grid_items))
-# # player.add_to_inventory(floor.create_item("Sickle", grid_items))
-# # player.add_to_inventory(floor.create_item("Rapier", grid_items))
-# # player.add_to_inventory(floor.create_item("Fury Cutter", grid_items))
-# player.add_to_inventory(floor.create_item("Windsword", grid_items))
+player.add_to_inventory(floor.create_item("Petroleum Flask", grid_items))
+player.add_to_inventory(floor.create_item("Syrup Flask", grid_items))
+player.add_to_inventory(floor.create_item("Ink Flask", grid_items))
+player.add_to_inventory(floor.create_item("Detergent Flask", grid_items))
+player.add_to_inventory(floor.create_item("Acid Flask", grid_items))
+player.add_to_inventory(floor.create_item("Cureall Flask", grid_items))
+player.add_to_inventory(floor.create_item("Mercury Flask", grid_items))
+player.add_to_inventory(floor.create_item("Empty Flask", grid_items))
+# player.add_to_inventory(floor.create_item("Machete", grid_items))
+# player.add_to_inventory(floor.create_item("Scimitar", grid_items))
+# player.add_to_inventory(floor.create_item("Sickle", grid_items))
+# player.add_to_inventory(floor.create_item("Rapier", grid_items))
+# player.add_to_inventory(floor.create_item("Fury Cutter", grid_items))
+player.add_to_inventory(floor.create_item("Windsword", grid_items))
+
+
 
 
 
@@ -763,9 +778,12 @@ def on_draw():
     global all_anims
     global bg
     global bg_pits
+    global bg_liqs
     global bg_deeper
+    global bg_liqs_foreground
     global grid_liq
     global grid_deeper
+    global grid_liqtile
     global bg_animframe
     global item_selected
     global win_true_x, win_true_y, win_x, win_y
@@ -854,6 +872,7 @@ def on_draw():
             #if holding ctrl, pass if the direction isnt diagonal
             pass
         else:
+            player.techniqueitem = hotbar.get_selected_item()
             player.move(dirx, diry, floor)
             gamestate = 2
             all_anims = turn_logic.do_turns(all_enemies, player, floor)
@@ -898,13 +917,23 @@ def on_draw():
 
     i = 0
     while i < 16:
-        if int(bg_animframe/2) % 16 == i:
-            bg_liqs[i].color = color_templates[liqcolor]
-        else:
-            bg_liqs[i].color = color_templates[0]
+        #print(bg_liqs_foreground[i].color)
 
-        bg_liqs[i].x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale
+        # if int(bg_animframe/2) % 16 == i:
+        #     bg_liqs[i].color = color_templates[liqcolor]
+        #     
+
+        # else:
+        #     bg_liqs[i].color = color_templates[0]
+        #     bg_liqs_foreground[i].color = color_templates[0]
+
+        #bg_liqs_foreground[i].image.blit_into(grid_liqtile[i + 15*16], self.x*16, self.y*16, 0)
+        bg_liqs_foreground[i].x = 1152/2 - (player.prevx*16 + 8)*player.scale + (int(bg_animframe/2) % 16 - i)*10000
+        bg_liqs_foreground[i].y = 768/2 - (player.prevy*16 + 8)*player.scale
+
+        bg_liqs[i].x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale + (int(bg_animframe/2) % 16 - i)*10000
         bg_liqs[i].y = 768/2 - (player.prevy*16 + 8)*player.scale - 16*15*player.scale
+
         i = i + 1
 
     bg_deeper.x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale
@@ -948,11 +977,11 @@ def on_draw():
     if keys[pyglet.window.key.LSHIFT]:
         while len(all_anims) > 0:
             for anim in all_anims:
-                anim.draw(batch, player, group_effects, floor, adventure_log)
+                anim.draw(batch, player, group_effects, floor, adventure_log, bg_liqs_foreground)
             delete_object.delobj(all_anims)
     else:
         for anim in all_anims:
-            anim.draw(batch, player, group_effects, floor, adventure_log)
+            anim.draw(batch, player, group_effects, floor, adventure_log, bg_liqs_foreground)
         delete_object.delobj(all_anims)
 
     if gamestate != 2:

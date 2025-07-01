@@ -31,6 +31,7 @@ class Player:
         self.experience_visual = experience
         self.level_visual = level
 
+        self.creaturetype = None
         self.x = x # x coords are in 
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
@@ -237,7 +238,13 @@ class Player:
         self.technique = Technique.CAST
         
 
-
+    def splash(self, x, y):
+        item = self.techniqueitem
+        name_desc = get_display_name(item)
+        self.active_projectiles.append(turn_logic.Projectile(item.name, item.charges, self.x + 0.5, self.y + 0.5, x, y, self, str(self.name)+" emptied the " + name_desc + "!"))
+        self.technique = Technique.THROW
+        self.techniquex = x 
+        self.techniquey = y
 
     def del_item_from_inventory(self, item):
         for i in range(len(self.inventory)):
@@ -295,7 +302,7 @@ class Player:
         self.del_item_from_inventory(item)
         health_to_restore = item.nutrition_value
 
-        print(health_to_restore, self.maxhealth, self.health, self.maxhealth_visual, self.health_visual)
+        #print(health_to_restore, self.maxhealth, self.health, self.maxhealth_visual, self.health_visual)
         if item.name == "Mushrooms":
             self.maxhealth += health_to_restore
             self.maxhealth_visual += health_to_restore
@@ -303,7 +310,7 @@ class Player:
         if (self.health + health_to_restore > self.maxhealth) and item.name != "Durian":
             health_to_restore = self.maxhealth - self.health
         self.health += health_to_restore
-        anim = animations.Animation("+" + str(health_to_restore), 2, 0, (0, 189, 66, 0), 0, 50, self.x, self.y+0.5, self.x, self.y, 0, None, None, self, self, -health_to_restore)
+        anim = animations.Animation("", "+" + str(health_to_restore), 2, 0, (0, 189, 66, 0), 0, 50, self.x, self.y+0.5, self.x, self.y, 0, None, None, self, self, -health_to_restore)
         list_of_animations.append(anim)
 
         if item.name == "Starfruit":

@@ -49,7 +49,10 @@ class Map:
         self.height = height
         self.number_of_rooms = number_of_rooms
         self.rooms = []  # List to store the rooms
+
         self.map_grid = [['#' for _ in range(width)] for _ in range(height)]
+        self.liquid_grid = [['#' for _ in range(width)] for _ in range(height)]
+
         self.valid_tiles = []
         self.textured_map = [[]]
         self.valid_entity_tiles = []
@@ -310,7 +313,32 @@ class Map:
             return Tome(name, grid_items, reverse="Tome of Reversal", sprite_locs = 28, damage=10, projectile=False, description="Finds the last tome in your inventory and turns into a copy.",price=30)
         
         
+        elif name == "Ruined Tome":
+            return Tome(name, grid_items, reverse="Blank Tome", sprite_locs = 24, damage=10, projectile=False, description="This tome is drenched in ink. It's completely unreadable.",price=10)
         
+        elif name == "Water Flask":
+            return Flask(name, grid_items, reverse="Petroleum", evaporation_rate=0.05, product="Air", liquid="Water", sprite_locs = 17, description="A flask of water. Heals plant-type creatues.", price=10)
+        elif name == "Petroleum Flask":
+            return Flask(name, grid_items, reverse="Water", evaporation_rate=0.05, product="Air", liquid="Petroleum", sprite_locs = 25, description="A flask of thick petroleum that slows down anything inside. Heals robot-type creatures.", price=10)
+        elif name == "Syrup Flask":
+            return Flask(name, grid_items, reverse="Water", evaporation_rate=0.05, product="Air", liquid="Syrup", sprite_locs = 6, description="Sickeningly sweet syrup that slows creatures in it. Heals food-type creatures and boosts the healing effects of food eaten.", price=10)
+        elif name == "Ink Flask":
+            return Flask(name, grid_items, reverse="Detergent", evaporation_rate=0.5, product="Air", liquid="Ink", sprite_locs = 24, description="This dark black liquid renders tomes unusable. Heals abstract-type creatures.", price=10)
+        elif name == "Detergent Flask":
+            return Flask(name, grid_items, reverse="Ink", evaporation_rate=0.4, product="Water", liquid="Detergent", sprite_locs = 13, description="Floral-scented and foamy, this liquid can be used to cleanse tomes. Lethal to abstract-type creatures.", price=30)
+        elif name == "Acid Flask":
+            return Flask(name, grid_items, reverse="Cureall Flask", evaporation_rate=0.4, product="Water", liquid="Acid", sprite_locs = 1, description="Bubbling acid, this liquid will reduce the bonus on equipment and deal damage to any who step in it.", price=15)
+        elif name == "Cureall Flask":
+            return Flask(name, grid_items, reverse="Acid", evaporation_rate=0.4, product="Water", liquid="Cureall", sprite_locs = 10, description="This liquid heals anything that steps in it.", price=50)
+        elif name == "Mercury Flask":
+            return Flask(name, grid_items, reverse="Petroleum", evaporation_rate=0.05, product="Air", liquid="Mercury", sprite_locs = 27, description="Destroys all metal equipment. Lethal to robot-type creatures.", price=30)
+        elif name == "Empty Flask":
+            return Flask(name, grid_items, reverse="None", evaporation_rate=0.05, product="Air", liquid="Air", sprite_locs = 28, description="An empty flask. Walk over liquids while holding it to pick them up.",price=5)
+
+
+
+
+
 
 
         elif name == "Blue Shield":
@@ -419,6 +447,11 @@ class Map:
             if self.map_grid[self.height-1-y][x] in ['.', '*', '~', '%', '<', '>']
         ]
     
+    def check_liquid_at_tile(self, x, y):
+        return self.liquid_grid[self.height-1-y][x]
+
+
+
 
 
     # Connect rooms with corridors

@@ -51,18 +51,18 @@ def create_sprite_enemy(image_grid, index):
 
 def generate_enemy(name, level, x, y, grid, floor):
     global grid_items
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR"]
-    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 13, 6, 20, 24, 18, 100]
-    enemy_strength = [0, 7, 5, 9, 9, 14, 9, 15, 15, 18, 12, 1, 1, 1, 1, 70]
-    enemy_defense = [0, 2, 2, 1, 3, 1, 1, 5, 15, 3, 6, 30, 2, 1, 3, 70]
-    enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64, 1*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1]
-    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16, 1/16]
-    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40, 1]
-    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1, 4] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
-    enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold"]
-    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 1, 1, 0, 0, 0, 1, 0, 0, 1]
-
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR", "VITRIOLIVE"]
+    enemy_hps = [20, 9, 12, 8, 10, 12, 20, 30, 20, 10, 13, 6, 20, 24, 18, 100, 20]
+    enemy_strength = [0, 7, 5, 9, 9, 14, 9, 15, 15, 18, 12, 1, 1, 1, 1, 70, 10]
+    enemy_defense = [0, 2, 2, 1, 3, 1, 1, 5, 15, 3, 6, 30, 2, 1, 3, 70, 2]
+    enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64, 1*64, 14*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1]
+    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16]
+    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40, 1, 45]
+    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1, 4, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
+    enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold", "Leaves"]
+    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0.1]
+    enemy_type = [None, "Plant", "Plant", None, None, "Food", None, None, "Robotic", "Abstract", None, None, "Abstract", "Food", "Robotic", None, "Food"]
     id = enemy_names.index(name)
     enemy = Enemy(
         name = name,
@@ -81,6 +81,7 @@ def generate_enemy(name, level, x, y, grid, floor):
         y = y,
         experience = enemy_exp[id]*(level)*(level),
         speed = enemy_speeds[id],
+        type = enemy_type[id]
     ) 
 
     if random.uniform(0, 1) < enemy_drop_odds[id]:
@@ -97,7 +98,7 @@ def generate_enemy(name, level, x, y, grid, floor):
 
 
 class Enemy:
-    def __init__(self, name, health, strength, defense, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y, experience, speed):
+    def __init__(self, name, health, strength, defense, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y, experience, speed, type):
         global batch
         global group_enemies
         global grid_items
@@ -130,7 +131,7 @@ class Enemy:
 
 
 
-
+        self.creaturetype = type
         self.x = x # x coords are in 
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating
@@ -272,7 +273,7 @@ class Enemy:
                 new_y = self.y + dy
                 if self.can_move_to(new_x, new_y, game_map):
                     return Technique.MOVE, new_x, new_y
-        elif self.name == "DEMON CORE":
+        elif self.name == "DEMON CORE" or self.name == "VITRIOLIVE":
             #distance to approximate:
             dist_target = 3
             current_dist = math.floor(math.sqrt((self.x - player.x)**2 + (self.y - player.y)**2))
@@ -284,9 +285,11 @@ class Enemy:
                 new_x = self.x + self.sign(player.x - self.x)
                 new_y = self.y + self.sign(player.y - self.y)
             else:
-                return Technique.STILL, self.x, self.y
+                dx, dy = random.choice([(1,0), (-1,0), (0,1), (0,-1)])
+                new_x = self.x + dx
+                new_y = self.y + dy
             return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)    
-            
+        
 
         elif self.name == "CHLOROSPORE":
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
