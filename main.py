@@ -45,30 +45,9 @@ pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
 tracemalloc.start()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def load_game():
+    global player, all_enemies, floor, bg, bg_liqs, bg_deeper, floor_level, adventure_log
+    global gamestate, has_won, has_lost
 
 
 
@@ -251,13 +230,6 @@ def on_mouse_release(x, y, button, modifiers):
             if gamestate == 1: #if the button is hovered, and the gamestate is 1, then it was clicked
                 if not isinstance(item_selected, Weapon):
                     player.unequip_weapon()
-                # if button.type == "MOVE HERE":
-                #     dirx = button.extra_1
-                #     diry = button.extra_2
-                #     player.move(dirx, diry, floor)
-                #     gamestate = 2
-                #     #partition_entity = construct_partitions()
-
                 if isinstance(item_selected, Consumable):
                     player.technique = Technique.CONSUME 
                     player.techniqueitem = item_selected                        
@@ -350,35 +322,7 @@ def on_mouse_release(x, y, button, modifiers):
             delete_buttons_supertype(all_buttons, 'rclick')
             #get rclick options
             item_selected = hotbar.get_selected_item()
-            # rclick_options = []
-            # rclick_extra_1 = []
-            # rclick_extra_2 = []
-            #check what's here, such as...
-            # 
-            #   a button (e.g. in the case of a menu)
-            #   a blank space near the player 
-            #   an item
-            #   an enemy
-            #   an exit
-            #   you
-            # 
-            #  
-            # for item in floor_items:
-            #     if item.is_mouse_over(mouse_x, mouse_y):
-            #         rclick_options.append("EXAMINE")
-            #         if item.inventory_slot != -1:
-            #             rclick_options.append("USE")
-            #             rclick_options.append("THROW")
             if gamestate == 1:
-                # mouse_x_tilemap = mouse_x/48 - (1152/2)/48 + (player.x + 0.5)
-                # mouse_y_tilemap = mouse_y/48 - (768/2)/48 + (player.y + 0.5)
-                # if player.prevx - 1 < mouse_x_tilemap < player.prevx + 2 and player.prevy - 1 < mouse_y_tilemap < player.prevy + 2:
-                #     rclick_options.append("MOVE HERE")
-                #     rclick_extra_1.append(math.floor(mouse_x_tilemap - player.x))
-                #     rclick_extra_2.append(math.floor(mouse_y_tilemap - player.y))
-                #     print(math.floor(mouse_x_tilemap - player.x))
-                #     print(math.floor(mouse_y_tilemap - player.y))
-
                 #THROWING VIA RIGHT CLICK
                 if item_selected:
 
@@ -389,35 +333,6 @@ def on_mouse_release(x, y, button, modifiers):
                     gamestate = 2
                     all_anims = turn_logic.do_turns(all_enemies, player, floor)
                     
-
-                    
-                    #delete_buttons_supertype(all_buttons, 'inventory')
-                    #pass
-            # i = 0
-            # for option in rclick_options:
-            #     spr1 = pyglet.sprite.Sprite(combine_tiles(text_to_tiles_wrapped(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
-            #     spr2 = pyglet.sprite.Sprite(combine_tiles(text_to_background(option, grid_font, letter_order, 10, "left"), 8, 8, 10))
-            #     option_obj = InteractiveObject(
-            #         x=mouse_x,
-            #         y=mouse_y - i*8*3-16,
-            #         width=spr2.width,
-            #         height=spr2.height,
-            #         sprites=[spr2, spr1],
-            #         colors=[[(168, 168, 168, 255), (98, 98, 98, 255), (54, 54, 54, 255)], [(98, 98, 98, 255), (54, 54, 54, 255), (33, 33, 33, 255)]],
-            #         animtype = [0, 0],
-            #         animmod = [None, None],
-            #         text = [None, None],
-            #         alignment_x='left',
-            #         alignment_y='top',
-            #         depth=1,
-            #         obj_type=option,
-            #         draggable=False,
-            #         supertype = 'rclick',
-            #         extra_1 = rclick_extra_1[i],
-            #         extra_2 = rclick_extra_2[i]
-            #     )
-            #     all_buttons.append(option_obj)
-            #     i = i + 1
 
 @window.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
@@ -843,43 +758,12 @@ sound_magic = pyglet.media.load('magic.mp3', streaming=False)
 global keypress_chk
 keypress_chk = 0
 
-    
-
-
-    
-    # while next_entity_turn < len(all_enemies):
-    #     if all_enemies[next_entity_turn].name == "GOOSE":
-            
-
-    #     elif all_enemies[next_entity_turn].name == "FOX":
-
-        
-
-    #     next_entity_turn += 1
 # def print_top_memory(dt):
 #     snapshot = tracemalloc.take_snapshot()
 #     top_stats = snapshot.statistics('lineno')
 #     print("[Top 10 memory-consuming lines]")
 #     for stat in top_stats[:10]:
 #         print(stat)
-# def draw_tiny_texts(text, x, y, batch, group):
-#     """
-#     Draws text at the specified position using the provided font grid.
-#     """
-#     sprites = []
-#     for i, char in enumerate(text):
-#         if char in letter_order:
-#             index = letter_order.index(char)
-#             print(f"Drawing character '{char}' at index {index}.")
-#             sprite = pyglet.sprite.Sprite(grid_tinyfont[index], x + i * 10, y, batch=batch, group=group)
-#             sprites.append(sprite)
-#             sprite.scale = 2
-#         else:
-#             print(f"Character '{char}' not found in letter order.")
-#     return sprites
-
-
-#tiny_text_sprites = draw_tiny_texts("text", 200, 400, batch, group_inv_ext)
 
 
 #render_texture = pyglet.image.Texture.create(win_x, win_y)
