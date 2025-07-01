@@ -811,10 +811,9 @@ menu_batch = pyglet.graphics.Batch()
 load_menu_batch = pyglet.graphics.Batch()
 save_menu_batch = pyglet.graphics.Batch()
 
-current_menu = MenuState.SAVE_MENU
-main_menu = create_main_menu_labels(batch=menu_batch, group=group_ui_menu)
-save_menu = create_save_menu_labels(batch=save_menu_batch, group=group_ui_menu)
-
+current_menu = MenuState.INGAME
+# main_menu = create_main_menu_labels(batch=menu_batch, group=group_ui_menu)
+# save_menu = create_save_menu_labels(batch=save_menu_batch, group=group_ui_menu)
 
 fps_display = pyglet.window.FPSDisplay(window=window)
 #profiler = cProfile.Profile()
