@@ -215,7 +215,7 @@ class Animation:
                                     self.attacker.health_visual += 4
                                     self.attacker.strength_visual += 1
                                     self.attacker.maxstrength_visual += 1
-                        else:
+                        elif isinstance(self.attacker, Enemy):
                             if is_dead == 1:
                                 self.attacker.level_visual += 1
                                 #pass
