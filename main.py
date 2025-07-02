@@ -442,6 +442,11 @@ def on_key_press(symbol, modifiers):
 
     if symbol == pyglet.window.key.BACKSPACE:
         typed_text = typed_text[:-1]
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
 
 
     global typed_text
@@ -924,7 +929,10 @@ def on_draw():
     global grid_deeper
     global grid_liqtile
     global typed_text
+<<<<<<< Updated upstream
     global typed_text
+=======
+>>>>>>> Stashed changes
     global item_selected
     global win_true_x, win_true_y, win_x, win_y
     global adventure_log
@@ -932,7 +940,10 @@ def on_draw():
     global batch
     global bg_desc, bg_desc_text
     global invhover
+<<<<<<< Updated upstream
     global invhover
+=======
+>>>>>>> Stashed changes
 
     # framebuffer.get_texture().bind()
     # glViewport(0, 0, win_x, win_y)
@@ -949,6 +960,7 @@ def on_draw():
     while lag_shortcut < lag_shortcut_target:
         if lag_shortcut == lag_shortcut_target-1:
             window.clear()
+<<<<<<< Updated upstream
     # if random.uniform(0, 1) < 0.1:
     #     print(fps)
     if fps < 75: #for some reason the fps values are x2 what they should be
@@ -980,6 +992,9 @@ def on_draw():
     # pyglet.gl.glViewport(0, 0, win_x, win_y)
     # pyglet.gl.glClearColor(0, 0, 0, 1)
     # pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT)
+=======
+
+>>>>>>> Stashed changes
         # render_texture.bind()
         # pyglet.gl.glViewport(0, 0, win_x, win_y)
         # pyglet.gl.glClearColor(0, 0, 0, 1)
@@ -989,6 +1004,7 @@ def on_draw():
         dirx = 0
         bg_animframe += 1
 
+<<<<<<< Updated upstream
 
         # mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
         # mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
@@ -1084,9 +1100,80 @@ def on_draw():
                 pass
             else:
                 keypress_chk = 0
+=======
+        # mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+        # mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
+>>>>>>> Stashed changes
         
+        # print (mouse_x_tilemap, mouse_y_tilemap)
+
+<<<<<<< Updated upstream
+
+=======
+        # pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MIN_FILTER, pyglet.gl.GL_NEAREST)
+        # pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MAG_FILTER, pyglet.gl.GL_NEAREST)
+        if keys[pyglet.window.key.TAB] and keypress_chk == 0:
+            #enter main menu
+            # if gamestate == 1:
+            #     keypress_chk = 1
+            #     create_main_menu(all_buttons)
+            #     gamestate = 0
+            if gamestate == 0:
+                exit()
+                keypress_chk = 1
+                gamestate = 1
+                delete_buttons_supertype(all_buttons, 'winlose')
+        if keys[pyglet.window.key.E] and keypress_chk == 0 and invhover == False:
+            #enter inventory
+            if gamestate == 1:
+                keypress_chk = 1
+                print("Entering inventory")
+                create_inventory_menu(all_buttons)
+                gamestate = 3
+
+                #enter inventory
+            elif gamestate == 3:
+                keypress_chk = 1
+                gamestate = 1
+                delete_buttons_supertype(all_buttons, 'inventory')
 
 
+
+
+        
+        elif gamestate == 1:
+
+            if keys[pyglet.window.key.W]:
+                diry = 1
+            elif keys[pyglet.window.key.S]:
+                diry = -1
+
+            if keys[pyglet.window.key.D]:
+                dirx = 1
+            elif keys[pyglet.window.key.A]:
+                dirx = -1
+            
+
+            if dirx == 0 and diry == 0 and keys[pyglet.window.key.E] == False and keys[pyglet.window.key.TAB] == False:
+                keypress_chk = 0
+
+        else:
+            if gamestate == 2 or keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D] or keys[pyglet.window.key.E] or keys[pyglet.window.key.TAB]:
+                pass
+            else:
+                keypress_chk = 0
+        
+        if diry != 0 or dirx != 0:
+            if keys[pyglet.window.key.LCTRL] and (diry == 0 or dirx == 0):
+                #if holding ctrl, pass if the direction isnt diagonal
+                pass
+            else:
+                player.techniqueitem = hotbar.get_selected_item()
+                player.move(dirx, diry, floor)
+                gamestate = 2
+                all_anims = turn_logic.do_turns(all_enemies, player, floor)
+
+>>>>>>> Stashed changes
         if gamestate == 2:
             if len(all_anims) == 0 or all(anim.proceed for anim in all_anims):
                 gamestate = 1
@@ -1132,6 +1219,7 @@ def on_draw():
 
 
 
+<<<<<<< Updated upstream
         
         bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
         bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
@@ -1142,6 +1230,15 @@ def on_draw():
         
 
         
+=======
+
+        
+        bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
+        bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
+
+        bgdp_col = color_templates[255]
+        
+>>>>>>> Stashed changes
         liqcolor = 0
         if floor.wall_type == "Water" or floor.wall_type == "Flowing Water" or floor.wall_type == "Aquifer":
             bgdp_col = color_templates[200]
@@ -1156,14 +1253,20 @@ def on_draw():
         if bg_deeper.color != bgdp_col:
             bg_deeper.color = bgdp_col
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
         i = 0
         while i < 16:
             if bg_liqs[i].color != color_templates[liqcolor]:
                 
                 bg_liqs[i].color = color_templates[liqcolor]
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
             bg_liqs_foreground[i].x = 1152/2 - (player.prevx*16 + 8)*player.scale + (int(bg_animframe/2) % 16 - i)*10000
             bg_liqs_foreground[i].y = 768/2 - (player.prevy*16 + 8)*player.scale
 
@@ -1177,6 +1280,10 @@ def on_draw():
 
 
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
         player.draw(animation_presets, group_enemies, group_enemies_bg, group_enemies_fg, hotbar.get_selected_item())
 
         for enemy in all_enemies:
@@ -1189,7 +1296,10 @@ def on_draw():
 
         bg_desc_text.color = (0, 0, 0, 0)
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
         flag = 0
         slot = 0 #theres probably a more pythonic way to do this, sowwy
         for item in player.inventory:
@@ -1199,6 +1309,10 @@ def on_draw():
             if item is not None:
                 # i is the slot at that position
                 item.draw_inventory(player, group_inv, slot, gamestate)
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
                 #if mouse is hovering over that item, draw description
                 if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
 
@@ -1215,19 +1329,41 @@ def on_draw():
                             # fakenames_staffs_colornames = ["Mahogany Staff", "Red Staff", "Orange Staff", "Umber Staff", "Brown Staff", "Hazel Staff", "Dijon Staff", "Gold Staff", "Yellow Staff", "Broccoli Staff", "Green Staff", "Spring Staff", "Peacock Staff", "Cyan Staff", "Seafoam Staff", "Navy Staff", "Blue Staff", "Sky Blue Staff", "Blackberry Staff", "Violet Staff", "Lavender Staff", "Burgundy Staff", "Magenta Staff", "Pink Staff", "Black Staff", "Graphite Staff", "Grey Staff", "Ashen Staff", "White Staff"]
                             # fakenames_tomes_colornames = ["Mahogany Tome", "Red Tome", "Orange Tome", "Umber Tome", "Brown Tome", "Hazel Tome", "Dijon Tome", "Gold Tome", "Yellow Tome", "Broccoli Tome", "Green Tome", "Spring Tome", "Peacock Tome", "Cyan Tome", "Seafoam Tome", "Navy Tome", "Blue Tome", "Sky Blue Tome", "Blackberry Tome", "Violet Tome", "Lavender Tome", "Burgundy Tome", "Magenta Tome", "Pink Tome", "Black Tome", "Graphite Tome", "Grey Tome", "Ashen Tome", "Blank Tome"]
 
+<<<<<<< Updated upstream
+=======
+
+
+
+>>>>>>> Stashed changes
                     draw_description_but_in_main_because_main_is_cool(item, slot, gamestate)
                     flag = 1
 
 
+<<<<<<< Updated upstream
                     bg_desc.color = (33, 33, 33, 190)
                     bg_desc.group = group_inv_ext
+=======
+
+
+>>>>>>> Stashed changes
                     bg_desc.color = (33, 33, 33, 190)
                     bg_desc.group = group_inv_ext
 
                     bg_desc_text.color = (255, 255, 255, 255)
                     bg_desc_text.group = group_inv_ext_2
+<<<<<<< Updated upstream
                     bg_desc_text.color = (255, 255, 255, 255)
                     bg_desc_text.group = group_inv_ext_2
+=======
+
+
+
+                    #test = item.draw_description(bg_desc, bg_desc_text, group_inv_ext, group_inv_ext_2, slot, gamestate)
+
+                #draw_tiny = draw_tiny_texts(item.description, 200, 400, batch, group_inv_ext)
+                # if is_hovered and not dragging_item:
+                #     
+>>>>>>> Stashed changes
             slot = slot + 1
 
         if flag == 0:
@@ -1235,12 +1371,15 @@ def on_draw():
         
         hotbar.update_hotbar(player.inventory)
         hotbar.draw_hotbar_items(group_hotbar)
+<<<<<<< Updated upstream
                 #draw_tiny = draw_tiny_texts(item.description, 200, 400, batch, group_inv_ext)
                 # if is_hovered and not dragging_item:
                 #     
             #slot = slot + 1
 
 
+=======
+>>>>>>> Stashed changes
 
         
         if keys[pyglet.window.key.LSHIFT]:
@@ -1252,7 +1391,10 @@ def on_draw():
             for anim in all_anims:
                 anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.RCTRL])
             delete_object.delobj(all_anims)
+<<<<<<< Updated upstream
         
+=======
+>>>>>>> Stashed changes
 
         if gamestate != 2:
             delete_object.delobj(all_enemies)
@@ -1262,9 +1404,12 @@ def on_draw():
         delete_object.delobj(all_anims)
         #delete_object.delobj(player.inventory)
         delete_object.delobj(all_buttons)
+<<<<<<< Updated upstream
         if gamestate != 2:
             delete_object.delobj(all_enemies)
         
+=======
+>>>>>>> Stashed changes
 
         #unique inventory deletion script
         objlist = player.inventory
@@ -1335,7 +1480,10 @@ def on_draw():
                     all_anims = turn_logic.do_turns(all_enemies, player, floor)
                     gamestate = 2
         lag_shortcut += 1
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
 
                     
@@ -1343,6 +1491,7 @@ def on_draw():
             
 
     #s1 = time.perf_counter()
+<<<<<<< Updated upstream
                     
 
             
@@ -1352,6 +1501,11 @@ def on_draw():
 
     # s2 = time.perf_counter()
     # s2 = time.perf_counter()
+=======
+    batch.draw()
+
+    # s2 = time.perf_counter()
+>>>>>>> Stashed changes
 
 
     end = time.perf_counter()
@@ -1360,11 +1514,14 @@ def on_draw():
     # if bg_animframe%60 == 0:
     #     print(end-start, s2-s1)
     #     print(sum(1 for obj in gc.get_objects() if isinstance(obj, pyglet.image.Texture)))
+<<<<<<< Updated upstream
     fps = 1/(end-start)
     #print(fps)
     # if bg_animframe%60 == 0:
     #     print(end-start, s2-s1)
     #     print(sum(1 for obj in gc.get_objects() if isinstance(obj, pyglet.image.Texture)))
+=======
+>>>>>>> Stashed changes
 
     #fps_display.draw()
         # draw
