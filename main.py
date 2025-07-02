@@ -143,7 +143,7 @@ load_game_buttons = create_load_game_buttons(batch=load_menu_batch, group=group_
 
 player = Player(
     name = "DAMIEN",
-    health = 200000,
+    health = 20,
     level = 1,
     experience = 0,
     x = 30,
@@ -202,16 +202,16 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
             if save_button.hit_test(mouse_x, mouse_y):
                 game_data = {
                     "player": player_to_dict(player),
-                    "map": map_to_dict(floor)
+                    #"map": map_to_dict(floor)
                 }
-                save_game_data(game_data)
+                #save_game_data(game_data)
                 print("Save button clicked")
                 return
         elif current_menu == MenuState.LOAD_MENU:
             for btn in load_game_buttons:
                 if btn.hit_test(mouse_x, mouse_y):
                     print(f"Load button clicked for {btn.label.text}")
-                    load_game(btn.label.text)
+                    #load_game(btn.label.text)
                     pass
 
         item_selected = hotbar.get_selected_item()
@@ -419,12 +419,31 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
     else:
         player.unequip_weapon()
 
+
+
+
+
+
+typed_text = ""
+
+@window.event
+def on_text(text):
+    global typed_text
+    typed_text += text
+
+
 @window.event
 def on_key_press(symbol, modifiers):   
     global gamestate
     global all_anims
     global floor 
     global adventure_log
+    global typed_text
+
+    if symbol == pyglet.window.key.BACKSPACE:
+        typed_text = typed_text[:-1]
+
+
     global current_menu
 
     if symbol == pyglet.window.key.M:
@@ -535,7 +554,7 @@ def draw_description_but_in_main_because_main_is_cool(item, invslot, gamestate):
         elif isinstance(item, Consumable):
             additional_info = f"εNutrition: {item.nutrition_value}"
         elif isinstance(item, Staff):
-            additional_info = f"εCharges: {item.charges}/{item.maxcharges}"
+            additional_info = f"εMana: {item.charges}/{item.maxcharges}"
         elif isinstance(item, Flask) and item.name != "Empty Flask":
             additional_info = f"εContents: {item.charges}/{item.maxcharges}"
         else:
@@ -571,43 +590,42 @@ adventure_log = ["PANDORIUM - A game by zeroBound and Econic", "Good luck!"]
 def go_to_next_level(amount):
     global floor, all_enemies, player, bg, bg_liqs, bg_deeper, bg_liqs_foreground, floor_level, adventure_log, grid_blank
 
-    # try:
-    #     floor
-    # except NameError:
-    #     pass
-    # else:
-    #     del floor
-
-    itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Rock", "Rock", "Wood Shield", "Staff of Mana", "Water Flask", "Tome of Injury", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
-    #itemlist_beginner2 = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Machete", "Sickle", "Stick", "Stick", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Cherry", "Cherry", "Durian", "Starfruit", "Dragonfruit", "Rock", "Rock", "Wood Shield", "Wood Shield", "Blue Shield", "Blue Shield", "Steel Shield", "Steel Shield", "Mirror Shield", "Armor Plate"]
+    itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Lettuce", "Cherry", "Rock", "Rock", "Rock", "Rock", "Rock", "Rock", "Staff of Mana", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
     
-    itemlist_equal = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Dispersion", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+    
+    itemlist_beginner2 = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","Knife", "Knife", "Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Machete", "Sickle", "Stick", "Stick", "Water Flask", "Water Flask", "Petroleum Flask", "Empty Flask", "Empty Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Rock", "Wood Shield", "Wood Shield", "Leaf Shield", "Blue Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Primes", "Fibonnaci Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Lettuce", "Kale"]
 
-    if random.uniform(0, 1) < 0.3:
-        shop_equal = ["Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+    itemlist_equal = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale"]
+
+    if random.uniform(0, 1) < 0.2:
+        shop_equal = ["Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale"]
     elif random.uniform(0, 1) < 0.1:
         shop_equal = ["Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff"]
-    elif random.uniform(0,1) < 0.1:
+    elif random.uniform(0, 1) < 0.02:
+        shop_equal = ["Water Flask", "Empty Flask", "Detergent Flask", "Ink Flask", "Acid Flask", "Petroleum Flask", "Syrup Flask", "Mercury Flask", "Cureall Flask"]
+    elif random.uniform(0,1) < 0.02:
         shop_equal = ["Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Dispersion", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Blank Tome", "Ruined Tome"]
     else:
-        shop_equal = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Dispersion", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+        shop_equal = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale"]
+
+
 
     floor_level +=amount
 
     if floor_level < 1:
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Entrance to the Exclusion Zone", "Complex", (7,26,0,6,6,6,6,1), "Pits", ["FOX"], [1], itemlist_beginner
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Entrance to the Exclusion Zone", "Complex", (7,26,0,6,6,6,6,1), "Pits", ["HAMSTER"], [1], itemlist_beginner
     elif floor_level < 3: #Abandoned Woods
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Abandoned Woods", "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #Silent Tributary
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silent Tributary", "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_equal                    #river zone
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silent Tributary", "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                    #river zone
     elif floor_level < 7: #Dense Woods
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Dense Woods", "Simple", (27, 27), "Solid", ["LEAFALOTTA", "FOX", "TURTLE"], [2, 2, 1], itemlist_equal                      #river zone                                        #seafoam grass (replace? too much grass?)
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Dense Woods", "Simple", (27, 27), "Solid", ["LEAFALOTTA", "FOX", "TURTLE"], [2, 2, 1], itemlist_beginner2                      #river zone                                        #seafoam grass (replace? too much grass?)
     elif floor_level < 9: #Reservoir
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Reservoir", "Complex", (4,25,3,3,3,6,6,1), "Water", ["CHLOROSPORE", "TURTLE", "FOX"], [2, 1, 2], itemlist_equal                                #lake zone
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Reservoir", "Complex", (4,25,3,3,3,6,6,1), "Water", ["CHLOROSPORE", "TURTLE", "FOX"], [2, 1, 2], itemlist_beginner2                                #lake zone
     elif floor_level < 11: #Topsoil Cavern
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Topsoil Cavern", "Complex", (19,31,1,1,10,1,1,1), "Solid", ["S'MORE", "SCORPION", "VITRIOLIVE"], [2, 1, 1], itemlist_equal                           #brown basalt
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Topsoil Cavern", "Complex", (19,31,1,1,10,1,1,1), "Solid", ["S'MORE", "SCORPION", "VITRIOLIVE"], [2, 1, 1], itemlist_beginner2                           #brown basalt
     elif floor_level < 13: #Coal Vein
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Coal Vein", "Complex", (17,31,1,1,0,0,6,9), "Solid", ["SCORPION", "JUJUBE", "VITRIOLIVE"], [2, 1, 1], itemlist_equal                          #coal vein
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Coal Vein", "Complex", (17,31,1,1,0,0,6,9), "Solid", ["SCORPION", "JUJUBE", "VITRIOLIVE"], [2, 1, 1], itemlist_beginner2                          #coal vein
     elif floor_level < 15: #Petroleum Deposit
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Petroleum Deposit", "Complex", (8,29,1,1,0,0,6,9), "Petroleum", ["DRAGON", "JUJUBE", "CULTIST"], [1, 2, 2], itemlist_equal                         #petroleum zone
     elif floor_level < 17: #Aquifer
@@ -645,7 +663,11 @@ def go_to_next_level(amount):
         enemy_list.append("DEBT COLLECTOR")
         level_list.append(1)
 
-    
+    for item in player.inventory: #recharge all staffs
+        if isinstance(item, Staff):
+            item.charges = min(math.floor(item.charges + item.maxcharges*random.uniform(0.21, 0.6)), item.maxcharges)
+
+
     #Triggered after Detects stairs
     floor = make_floor(sc, item_list, enemy_list, level_list, shop_equal, floor_level)
 
@@ -740,6 +762,7 @@ def go_to_next_level(amount):
     #print(fl_string)
     combine_tiles_efficient(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60, bg) #pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
     bg.scale = 3
+    bg.color = (255, 255, 255, 255)
     #bg_pits.image = grid_bg[0]
     combine_tiles_efficient(tesselate(0, grid_liq, 12, 12), 128, 128, 12, bg_deeper)
 
@@ -815,8 +838,11 @@ create_mouse_overlay(all_buttons)
 
 
 
-player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
-
+#player.add_to_inventory(floor.create_item("Tome of Resurrection", grid_items))
+# player.add_to_inventory(floor.create_item("Lemon", grid_items))
+# player.add_to_inventory(floor.create_item("Lettuce", grid_items))
+# player.add_to_inventory(floor.create_item("Kale", grid_items))
+#player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
 
 
 
@@ -866,10 +892,13 @@ fps_display = pyglet.window.FPSDisplay(window=window)
 #profiler = cProfile.Profile()
 fps_display.label.color = (0, 0, 0, 255)
 
-@window.event
+invhover = False
+fps = 60
 
+@window.event
 def on_draw():
     global bg_animframe
+    global fps
     # if bg_animframe == 10:
     #     profiler.enable()
     start = time.perf_counter()
@@ -888,22 +917,30 @@ def on_draw():
     global grid_liq
     global grid_deeper
     global grid_liqtile
-    
+    global typed_text
     global item_selected
     global win_true_x, win_true_y, win_x, win_y
     global adventure_log
     global floor_level
     global batch
     global bg_desc, bg_desc_text
+    global invhover
 
     # framebuffer.get_texture().bind()
     # glViewport(0, 0, win_x, win_y)
     # glClearColor(0, 0, 0, 1)
     # glClear(GL_COLOR_BUFFER_BIT)
+    # if random.uniform(0, 1) < 0.1:
+    #     print(fps)
+    if fps < 75: #for some reason the fps values are x2 what they should be
+        lag_shortcut_target = 2
+    else:
+        lag_shortcut_target = 1
 
-    
-
-    window.clear()
+    lag_shortcut = 0
+    while lag_shortcut < lag_shortcut_target:
+        if lag_shortcut == lag_shortcut_target-1:
+            window.clear()
 
     if current_menu == MenuState.MAIN_MENU:
         menu_batch.draw()
@@ -924,308 +961,346 @@ def on_draw():
     # pyglet.gl.glViewport(0, 0, win_x, win_y)
     # pyglet.gl.glClearColor(0, 0, 0, 1)
     # pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT)
+        # render_texture.bind()
+        # pyglet.gl.glViewport(0, 0, win_x, win_y)
+        # pyglet.gl.glClearColor(0, 0, 0, 1)
+        # pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT)
 
-    diry = 0
-    dirx = 0
-    bg_animframe += 1
+        diry = 0
+        dirx = 0
+        bg_animframe += 1
 
-    # mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
-    # mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
-    
-    # print (mouse_x_tilemap, mouse_y_tilemap)
-
-    # pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MIN_FILTER, pyglet.gl.GL_NEAREST)
-    # pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MAG_FILTER, pyglet.gl.GL_NEAREST)
-    if keys[pyglet.window.key.TAB] and keypress_chk == 0:
-        #enter main menu
-        # if gamestate == 1:
-        #     keypress_chk = 1
-        #     create_main_menu(all_buttons)
-        #     gamestate = 0
-        if gamestate == 0:
-            #exit()
-            keypress_chk = 1
-            gamestate = 1
-            delete_buttons_supertype(all_buttons, 'winlose')
-    if keys[pyglet.window.key.E] and keypress_chk == 0:
-        #enter inventory
-        if gamestate == 1:
-            keypress_chk = 1
-            print("Entering inventory")
-            create_inventory_menu(all_buttons)
-            gamestate = 3
-
-            #enter inventory
-        elif gamestate == 3:
-            keypress_chk = 1
-            gamestate = 1
-            delete_buttons_supertype(all_buttons, 'inventory')
-
-
-
-
-    
-    elif gamestate == 1:
-
-        if keys[pyglet.window.key.W]:
-            diry = 1
-        elif keys[pyglet.window.key.S]:
-            diry = -1
-
-        if keys[pyglet.window.key.D]:
-            dirx = 1
-        elif keys[pyglet.window.key.A]:
-            dirx = -1
+        # mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
+        # mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
         
+        # print (mouse_x_tilemap, mouse_y_tilemap)
 
-        if dirx == 0 and diry == 0 and keys[pyglet.window.key.E] == False and keys[pyglet.window.key.TAB] == False:
-            keypress_chk = 0
+        # pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MIN_FILTER, pyglet.gl.GL_NEAREST)
+        # pyglet.gl.glTexParameteri(pyglet.gl.GL_TEXTURE_2D, pyglet.gl.GL_TEXTURE_MAG_FILTER, pyglet.gl.GL_NEAREST)
+        if keys[pyglet.window.key.TAB] and keypress_chk == 0:
+            #enter main menu
+            # if gamestate == 1:
+            #     keypress_chk = 1
+            #     create_main_menu(all_buttons)
+            #     gamestate = 0
+            if gamestate == 0:
+                exit()
+                keypress_chk = 1
+                gamestate = 1
+                delete_buttons_supertype(all_buttons, 'winlose')
+        if keys[pyglet.window.key.E] and keypress_chk == 0 and invhover == False:
+            #enter inventory
+            if gamestate == 1:
+                keypress_chk = 1
+                print("Entering inventory")
+                create_inventory_menu(all_buttons)
+                gamestate = 3
 
-    else:
-        if gamestate == 2 or keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D] or keys[pyglet.window.key.E] or keys[pyglet.window.key.TAB]:
-            pass
-        else:
-            keypress_chk = 0
-    
-    if diry != 0 or dirx != 0:
-        if keys[pyglet.window.key.LCTRL] and (diry == 0 or dirx == 0):
-            #if holding ctrl, pass if the direction isnt diagonal
-            pass
-        else:
-            player.techniqueitem = hotbar.get_selected_item()
-            player.move(dirx, diry, floor)
-            gamestate = 2
-            all_anims = turn_logic.do_turns(all_enemies, player, floor)
-
-    if gamestate == 2:
-        if len(all_anims) == 0 or all(anim.proceed for anim in all_anims):
-            gamestate = 1
-            #print(adventure_log)
-            #we should refresh all visuals to match their actual counterparts here just for safety
-            refresh_all_visuals(player)
-            for enemy in all_enemies:
-                refresh_all_visuals(enemy)
-            if(player.x, player.y) == floor.stairs:
-                go_to_next_level(1)
-            if(player.x, player.y) == floor.upstairs:
-                go_to_next_level(-1)
-            #print("test")
-
-            if player.is_alive() == False:
-                gamestate = 0
-                create_win_lose_screen(all_buttons, "lose")
-            elif player.haswon == True:
-                gamestate = 0
-                create_win_lose_screen(all_buttons, "win")
-            elif player.paralysis_turns > 0 or player.flee_ai_turns > 0 or player.rage_ai_turns > 0: #if the player's AI is no longer controlled by player, just do another turn
-                gamestate = 2
-                all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                #enter inventory
+            elif gamestate == 3:
+                keypress_chk = 1
+                gamestate = 1
+                delete_buttons_supertype(all_buttons, 'inventory')
 
 
 
 
+        
+        elif gamestate == 1:
 
+            if keys[pyglet.window.key.W]:
+                diry = 1
+            elif keys[pyglet.window.key.S]:
+                diry = -1
 
-    bg.color = color_templates[255]
-    bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
-    bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
-
-    #bg_pits.color = color_templates[255]
-    bg_deeper.color = color_templates[255]
-    liqcolor = 0
-    if floor.wall_type == "Water" or floor.wall_type == "Flowing Water" or floor.wall_type == "Aquifer":
-        bg_deeper.color = color_templates[200]
-        liqcolor = 200
-    elif floor.wall_type == "Lava":
-        liqcolor = 255 - int(30*(math.sin(bg_animframe/15)+1))#(255, 255, 255, 255 - int(30*(math.sin(bg_animframe/15)+1)))
-    elif floor.wall_type == "Glowing":
-        bg_deeper.color = color_templates[255 - int(30*(math.sin(bg_animframe/15)+1))]#(255, 128, 0, 0 + int(30*(math.sin(bg_animframe/15)+1)))
-    elif floor.wall_type == "Pits":
-        bg_deeper.color = color_templates[0]
-
-
-    i = 0
-    while i < 16:
-        #print(bg_liqs_foreground[i].color)
-
-        # if int(bg_animframe/2) % 16 == i:
-        #     bg_liqs[i].color = color_templates[liqcolor]
-        #     
-
-        # else:
-        #     bg_liqs[i].color = color_templates[0]
-        #     bg_liqs_foreground[i].color = color_templates[0]
-
-        #bg_liqs_foreground[i].image.blit_into(grid_liqtile[i + 15*16], self.x*16, self.y*16, 0)
-        bg_liqs_foreground[i].x = 1152/2 - (player.prevx*16 + 8)*player.scale + (int(bg_animframe/2) % 16 - i)*10000
-        bg_liqs_foreground[i].y = 768/2 - (player.prevy*16 + 8)*player.scale
-
-        bg_liqs[i].x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale + (int(bg_animframe/2) % 16 - i)*10000
-        bg_liqs[i].y = 768/2 - (player.prevy*16 + 8)*player.scale - 16*15*player.scale
-
-        i = i + 1
-
-    bg_deeper.x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale
-    bg_deeper.y = 768/2 - (player.prevy*16 + 8)*player.scale - 16*15*player.scale
-
-
-
-
-    player.draw(animation_presets, group_enemies, group_enemies_bg, group_enemies_fg, hotbar.get_selected_item())
-
-    for enemy in all_enemies:
-        enemy.draw(animation_presets, player, group_enemies, group_enemies_bg, group_enemies_fg)
-
-    for item in floor.floor_items:
-        item.draw(player, group_items)
-
-    bg_desc.color = (128, 128, 128,0)
-
-    bg_desc_text.color = (0, 0, 0, 0)
-
-    slot = 0 #theres probably a more pythonic way to do this, sowwy
-    for item in player.inventory:
-        if dragging_item:
-            dragging_item.sprite.x = mouse_x - drag_offset[0]
-            dragging_item.sprite.y = mouse_y - drag_offset[1]
-        if item is not None:
-            # i is the slot at that position
-            item.draw_inventory(player, group_inv, slot, gamestate)
-
-            #if mouse is hovering over that item, draw description
-            if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
-                draw_description_but_in_main_because_main_is_cool(item, slot, gamestate)
-
-
-
-
-
-                bg_desc.color = (33, 33, 33, 190)
-                bg_desc.group = group_inv_ext
-
-                bg_desc_text.color = (255, 255, 255, 255)
-                bg_desc_text.group = group_inv_ext_2
-
-
-
-                #test = item.draw_description(bg_desc, bg_desc_text, group_inv_ext, group_inv_ext_2, slot, gamestate)
-
-            #draw_tiny = draw_tiny_texts(item.description, 200, 400, batch, group_inv_ext)
-            # if is_hovered and not dragging_item:
-            #     
-        slot = slot + 1
-    
-
-    hotbar.update_hotbar(player.inventory)
-    hotbar.draw_hotbar_items(group_hotbar)
-
-    
-    if keys[pyglet.window.key.LSHIFT]:
-        while len(all_anims) > 0:
-            for anim in all_anims:
-                anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground)
-            delete_object.delobj(all_anims)
-    else:
-        for anim in all_anims:
-            anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground)
-        delete_object.delobj(all_anims)
-
-    if gamestate != 2:
-        delete_object.delobj(all_enemies)
-    
-    delete_object.delobj(floor.floor_items)
-    # delete_object.delobj(player.active_projectiles) projectiles get deleted somehow even without this. so. whatev.
-    delete_object.delobj(all_anims)
-    #delete_object.delobj(player.inventory)
-    delete_object.delobj(all_buttons)
-
-    #unique inventory deletion script
-    objlist = player.inventory
-    i = 0
-    while i < len(objlist):
-        if objlist[i] is not None:
-            if objlist[i].should_be_deleted == True: #this attribute exists in all classes; set to True to delete an object.
-                if hasattr(objlist[i], 'sprite') == True and objlist[i].sprite != None:
-                    objlist[i].sprite.delete()  
-                    del objlist[i].sprite
-                    del objlist[i].hotbar_sprite       
-                if hasattr(objlist[i], 'sprites') == True:
-                    for sprite in objlist[i].sprites:
-                        sprite.delete()  
-                        del sprite       
-                objlist[i] = None
-            else:
-                i += 1
-        else:
-                i += 1
-
-
-
-
-
-    for button in all_buttons:
-        button.hovered = button.is_mouse_over(mouse_x, mouse_y)
-
-        button.draw(group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player, gamestate)
-
-        if button.type == "GUI_HP":
-            button.sprites[1].y = button.sprites[0].y-48
-            button.sprites[3].y = button.sprites[3].y-24
-            button.sprites[4].y = button.sprites[4].y-48
-            pass
-            gui_string = get_gui_string(player, floor_level)
-            if gui_string != button.extra_1:
-                sprite = button.sprites[1] 
-                combine_tiles_efficient(text_to_tiles_wrapped(gui_string, grid_tinyfont, letter_order, len(gui_string)+1, "left"), 5, 8, len(gui_string)+1, sprite)
-                button.extra_1 = gui_string
-            if len(adventure_log)-1 != button.extra_2 // 8:
-                button.extra_2 += 1
-                
-                if button.extra_2 % 8 == 1:
-                    button.extra_2 = int(button.extra_2)
-                    advlog_string =  adventure_log[(button.extra_2 // 8)+1] +"ε"+ adventure_log[(button.extra_2 // 8)]+"ε"+adventure_log[(button.extra_2 // 8)-1]
-                    sprite2 = button.sprites[2] 
-                    combine_tiles_efficient(text_to_tiles_wrapped(advlog_string, grid_tinyfont, letter_order, len(advlog_string)+1, "left"), 5, 8, len(advlog_string)+1, sprite2)
-            button.sprites[2].y = button.sprites[2].y- 24-((button.extra_2 - 1) % 8 + 1)*3
-        elif button.type == "overlay":
-            if gamestate == 3:
-                button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
-            else:
-                button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
-        elif button.type == "mouse_overlay":
-            if gamestate == 1 or gamestate == 2 or gamestate == 4 or gamestate == 5: 
-                button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
-                button.x = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))*16*3 + 1152/2 - (player.prevx*16 + 8)*player.scale
-                button.y = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))*16*3 + 768/2 - (player.prevy*16+8)*player.scale + 16
-            else:
-                button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
-        elif button.supertype == "power bar":
+            if keys[pyglet.window.key.D]:
+                dirx = 1
+            elif keys[pyglet.window.key.A]:
+                dirx = -1
             
-            if gamestate != 6 and gamestate != 7:
-                button.should_be_deleted = True
-            if gamestate == 7 and button.animframe == 1:
-                
-                all_anims = turn_logic.do_turns(all_enemies, player, floor)
+
+            if dirx == 0 and diry == 0 and keys[pyglet.window.key.E] == False and keys[pyglet.window.key.TAB] == False:
+                keypress_chk = 0
+
+        else:
+            if gamestate == 2 or keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D] or keys[pyglet.window.key.E] or keys[pyglet.window.key.TAB]:
+                pass
+            else:
+                keypress_chk = 0
+        
+        if diry != 0 or dirx != 0:
+            if keys[pyglet.window.key.LCTRL] and (diry == 0 or dirx == 0):
+                #if holding ctrl, pass if the direction isnt diagonal
+                pass
+            else:
+                player.techniqueitem = hotbar.get_selected_item()
+                player.move(dirx, diry, floor)
                 gamestate = 2
-    
+                all_anims = turn_logic.do_turns(all_enemies, player, floor)
+
+        if gamestate == 2:
+            if len(all_anims) == 0 or all(anim.proceed for anim in all_anims):
+                gamestate = 1
+                #print(adventure_log)
+                #we should refresh all visuals to match their actual counterparts here just for safety
+                refresh_all_visuals(player)
+                for enemy in all_enemies:
+                    refresh_all_visuals(enemy)
+                if keys[pyglet.window.key.RCTRL] == False:
+                    if(player.x, player.y) == floor.stairs:
+                        go_to_next_level(1)
+                    if(player.x, player.y) == floor.upstairs:
+                        go_to_next_level(-1)
+                    #print("test")
+
+                if player.is_alive() == False:
+                    gamestate = 0
+                    i = 0
+                    while i < len(player.inventory):
+                        item = player.inventory[i]
+                        if item != None and item.name == "Tome of Resurrection":
+                            item.should_be_deleted = True
+                            player.health = player.maxhealth 
+                            player.health_visual = player.health
+                            player.speed = 2 
+                            player.speed_visual = 2
+                            player.paralysis_turns = 0
+                            player.paralysis_visual = 0
+                            all_anims.append(animations.Animation(str(player.name) + " was resurrected by " + str(item.name) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), 0, 50, 0, 0, 0, 0, 0, None, None, None, None, None))
+                            gamestate = 1
+                            break
+                        i = i + 1
+                    if gamestate == 0:
+                        create_win_lose_screen(all_buttons, "lose")
+                elif player.haswon == True:
+                    gamestate = 0
+                    create_win_lose_screen(all_buttons, "win")
+                elif player.paralysis_turns > 0 or player.flee_ai_turns > 0 or player.rage_ai_turns > 0: #if the player's AI is no longer controlled by player, just do another turn
+                    gamestate = 2
+                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+
+
+
+
+
+
+        
+        bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
+        bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
+
+        bgdp_col = color_templates[255]
+        
+        liqcolor = 0
+        if floor.wall_type == "Water" or floor.wall_type == "Flowing Water" or floor.wall_type == "Aquifer":
+            bgdp_col = color_templates[200]
+            liqcolor = 200
+        elif floor.wall_type == "Lava":
+            liqcolor = 255 - int(30*(math.sin(bg_animframe/15)+1))#(255, 255, 255, 255 - int(30*(math.sin(bg_animframe/15)+1)))
+        elif floor.wall_type == "Glowing":
+            bgdp_col = color_templates[255 - int(30*(math.sin(bg_animframe/15)+1))]#(255, 128, 0, 0 + int(30*(math.sin(bg_animframe/15)+1)))
+        elif floor.wall_type == "Pits":
+            bgdp_col = color_templates[0]
+
+        if bg_deeper.color != bgdp_col:
+            bg_deeper.color = bgdp_col
+
+        i = 0
+        while i < 16:
+            if bg_liqs[i].color != color_templates[liqcolor]:
+                
+                bg_liqs[i].color = color_templates[liqcolor]
+
+            bg_liqs_foreground[i].x = 1152/2 - (player.prevx*16 + 8)*player.scale + (int(bg_animframe/2) % 16 - i)*10000
+            bg_liqs_foreground[i].y = 768/2 - (player.prevy*16 + 8)*player.scale
+
+            bg_liqs[i].x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale + (int(bg_animframe/2) % 16 - i)*10000
+            bg_liqs[i].y = 768/2 - (player.prevy*16 + 8)*player.scale - 16*15*player.scale
+
+            i = i + 1
+
+        bg_deeper.x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale
+        bg_deeper.y = 768/2 - (player.prevy*16 + 8)*player.scale - 16*15*player.scale
+
+
+
+
+        player.draw(animation_presets, group_enemies, group_enemies_bg, group_enemies_fg, hotbar.get_selected_item())
+
+        for enemy in all_enemies:
+            enemy.draw(animation_presets, player, group_enemies, group_enemies_bg, group_enemies_fg)
+
+        for item in floor.floor_items:
+            item.draw(player, group_items)
+
+        bg_desc.color = (128, 128, 128,0)
+
+        bg_desc_text.color = (0, 0, 0, 0)
+
+        flag = 0
+        slot = 0 #theres probably a more pythonic way to do this, sowwy
+        for item in player.inventory:
+            if dragging_item:
+                dragging_item.sprite.x = mouse_x - drag_offset[0]
+                dragging_item.sprite.y = mouse_y - drag_offset[1]
+            if item is not None:
+                # i is the slot at that position
+                item.draw_inventory(player, group_inv, slot, gamestate)
+
+                #if mouse is hovering over that item, draw description
+                if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
+
+                    #check keyboard 
+                    if isinstance(item, Tome) or isinstance(item, Staff):
+                        if invhover != item:
+
+                            typed_text = get_display_name(item)
+                            invhover = item
+                        if isinstance(item, Staff):
+                            fakenames_staffs_colornames[item.magic_color] = typed_text[:20]
+                        else:
+                            fakenames_tomes_colornames[item.magic_color] = typed_text[:20]
+                            # fakenames_staffs_colornames = ["Mahogany Staff", "Red Staff", "Orange Staff", "Umber Staff", "Brown Staff", "Hazel Staff", "Dijon Staff", "Gold Staff", "Yellow Staff", "Broccoli Staff", "Green Staff", "Spring Staff", "Peacock Staff", "Cyan Staff", "Seafoam Staff", "Navy Staff", "Blue Staff", "Sky Blue Staff", "Blackberry Staff", "Violet Staff", "Lavender Staff", "Burgundy Staff", "Magenta Staff", "Pink Staff", "Black Staff", "Graphite Staff", "Grey Staff", "Ashen Staff", "White Staff"]
+                            # fakenames_tomes_colornames = ["Mahogany Tome", "Red Tome", "Orange Tome", "Umber Tome", "Brown Tome", "Hazel Tome", "Dijon Tome", "Gold Tome", "Yellow Tome", "Broccoli Tome", "Green Tome", "Spring Tome", "Peacock Tome", "Cyan Tome", "Seafoam Tome", "Navy Tome", "Blue Tome", "Sky Blue Tome", "Blackberry Tome", "Violet Tome", "Lavender Tome", "Burgundy Tome", "Magenta Tome", "Pink Tome", "Black Tome", "Graphite Tome", "Grey Tome", "Ashen Tome", "Blank Tome"]
+
+
+
+
+                    draw_description_but_in_main_because_main_is_cool(item, slot, gamestate)
+                    flag = 1
+
+
+
+
+                    bg_desc.color = (33, 33, 33, 190)
+                    bg_desc.group = group_inv_ext
+
+                    bg_desc_text.color = (255, 255, 255, 255)
+                    bg_desc_text.group = group_inv_ext_2
+
+
+
+                    #test = item.draw_description(bg_desc, bg_desc_text, group_inv_ext, group_inv_ext_2, slot, gamestate)
+
+                #draw_tiny = draw_tiny_texts(item.description, 200, 400, batch, group_inv_ext)
+                # if is_hovered and not dragging_item:
+                #     
+            slot = slot + 1
+
+        if flag == 0:
+            invhover = False
+        
+        hotbar.update_hotbar(player.inventory)
+        hotbar.draw_hotbar_items(group_hotbar)
+
+        
+        if keys[pyglet.window.key.LSHIFT]:
+            while len(all_anims) > 0:
+                for anim in all_anims:
+                    anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.RCTRL])
+                delete_object.delobj(all_anims)
+        else:
+            for anim in all_anims:
+                anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.RCTRL])
+            delete_object.delobj(all_anims)
+
+        if gamestate != 2:
+            delete_object.delobj(all_enemies)
+        
+        delete_object.delobj(floor.floor_items)
+        # delete_object.delobj(player.active_projectiles) projectiles get deleted somehow even without this. so. whatev.
+        delete_object.delobj(all_anims)
+        #delete_object.delobj(player.inventory)
+        delete_object.delobj(all_buttons)
+
+        #unique inventory deletion script
+        objlist = player.inventory
+        i = 0
+        while i < len(objlist):
+            if objlist[i] is not None:
+                if objlist[i].should_be_deleted == True: #this attribute exists in all classes; set to True to delete an object.
+                    if hasattr(objlist[i], 'sprite') == True and objlist[i].sprite != None:
+                        objlist[i].sprite.delete()  
+                        del objlist[i].sprite
+                        del objlist[i].hotbar_sprite       
+                    if hasattr(objlist[i], 'sprites') == True:
+                        for sprite in objlist[i].sprites:
+                            sprite.delete()  
+                            del sprite       
+                    objlist[i] = None
+                else:
+                    i += 1
+            else:
+                    i += 1
+
+
+
+
+
+        for button in all_buttons:
+            button.hovered = button.is_mouse_over(mouse_x, mouse_y)
+
+            button.draw(group_ui_bg, group_ui, group_inv_bg, group_inv, group_overlay, group_inv_ext, player, gamestate)
+
+            if button.type == "GUI_HP":
+                button.sprites[1].y = button.sprites[0].y-48
+                button.sprites[3].y = button.sprites[3].y-24
+                button.sprites[4].y = button.sprites[4].y-48
+                pass
+                gui_string = get_gui_string(player, floor_level)
+                if gui_string != button.extra_1:
+                    sprite = button.sprites[1] 
+                    combine_tiles_efficient(text_to_tiles_wrapped(gui_string, grid_tinyfont, letter_order, len(gui_string)+1, "left"), 5, 8, len(gui_string)+1, sprite)
+                    button.extra_1 = gui_string
+                if len(adventure_log)-1 != button.extra_2 // 8:
+                    button.extra_2 += 1
+                    
+                    if button.extra_2 % 8 == 1:
+                        button.extra_2 = int(button.extra_2)
+                        advlog_string =  adventure_log[(button.extra_2 // 8)+1] +"ε"+ adventure_log[(button.extra_2 // 8)]+"ε"+adventure_log[(button.extra_2 // 8)-1]
+                        sprite2 = button.sprites[2] 
+                        combine_tiles_efficient(text_to_tiles_wrapped(advlog_string, grid_tinyfont, letter_order, len(advlog_string)+1, "left"), 5, 8, len(advlog_string)+1, sprite2)
+                button.sprites[2].y = button.sprites[2].y- 24-((button.extra_2 - 1) % 8 + 1)*3
+            elif button.type == "overlay":
+                if gamestate == 3:
+                    button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
+                else:
+                    button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
+            elif button.type == "mouse_overlay":
+                if gamestate == 1 or gamestate == 2 or gamestate == 4 or gamestate == 5: 
+                    button.colors = [[(33, 33, 33, 90), (33, 33, 33, 90), (33, 33, 33, 90)]]
+                    button.x = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))*16*3 + 1152/2 - (player.prevx*16 + 8)*player.scale
+                    button.y = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))*16*3 + 768/2 - (player.prevy*16+8)*player.scale + 16
+                else:
+                    button.colors = [[(33, 33, 33, 0), (33, 33, 33, 0), (33, 33, 33, 0)]]
+            elif button.supertype == "power bar":
+                
+                if gamestate != 6 and gamestate != 7:
+                    button.should_be_deleted = True
+                if gamestate == 7 and button.animframe == 1:
+                    
+                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                    gamestate = 2
+        lag_shortcut += 1
 
 
                     
 
             
 
-    s1 = time.perf_counter()
+    #s1 = time.perf_counter()
     batch.draw()
 
-    s2 = time.perf_counter()
+    # s2 = time.perf_counter()
 
 
     end = time.perf_counter()
-    if bg_animframe%60 == 0:
-        print(end-start, s2-s1)
-        print(sum(1 for obj in gc.get_objects() if isinstance(obj, pyglet.image.Texture)))
+    fps = 1/(end-start)
+    #print(fps)
+    # if bg_animframe%60 == 0:
+    #     print(end-start, s2-s1)
+    #     print(sum(1 for obj in gc.get_objects() if isinstance(obj, pyglet.image.Texture)))
 
-    fps_display.draw()
+    #fps_display.draw()
         # draw
     # profiler.disable()
     # profiler.dump_stats("on_draw.prof")

@@ -304,14 +304,23 @@ class Player:
         health_to_restore = item.nutrition_value
 
         #print(health_to_restore, self.maxhealth, self.health, self.maxhealth_visual, self.health_visual)
-        if item.name == "Mushrooms":
+        if item.name == "Mushrooms" or item.name == "Beet":
             self.maxhealth += health_to_restore
             self.maxhealth_visual += health_to_restore
 
+        if item.name == "Leaves":
+            health_to_restore = math.ceil(self.maxhealth*0.05)
+        elif item.name == "Kale":
+            health_to_restore = math.ceil(self.maxhealth*0.30)
+        elif item.name == "Lettuce":
+            health_to_restore = math.ceil(self.maxhealth*0.15)
+        
+            
         if (self.health + health_to_restore > self.maxhealth) and item.name != "Durian":
             health_to_restore = self.maxhealth - self.health
         self.health += health_to_restore
-        anim = animations.Animation("", "+" + str(health_to_restore), 2, 0, (0, 189, 66, 0), 0, 50, self.x, self.y+0.5, self.x, self.y, 0, None, None, self, self, -health_to_restore)
+
+        anim = animations.Animation(str(self.name) + " ate the " + str(item.name) + ".", "+" + str(health_to_restore), 2, 0, (0, 189, 66, 0), 0, 50, self.x, self.y+0.5, self.x, self.y, 0, None, None, self, self, -health_to_restore)
         list_of_animations.append(anim)
 
         if item.name == "Starfruit":
@@ -320,7 +329,14 @@ class Player:
             self.technique = Technique.STILL 
         elif item.name == "Dragonfruit":
             self.increase_experience(((self.level + 1)**3) - self.experience) 
-            list_of_animations.append(animations.Animation(str(self.name) + " grew to level " + str(self.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), 0, 50, self.x, self.y, self.x, self.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(self.name) + " grew to level " + str(self.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), 1, 50, self.x, self.y, self.x, self.y, 0, None, None, None, None, None))
+            self.technique = Technique.STILL
+        elif item.name == "Lemon":
+            self.maxhealth = self.health
+            self.paralysis_turns = 3
+            self.paralysis_visual = 3
+            list_of_animations.append(animations.Animation(str(self.name) + "'s max HP was changed to match HP.", 0*29 + 24, 6, 4, (255, 255, 255, 0), 1, 50, self.x, self.y, self.x, self.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(self.name) + "was paralyzed by the sourness of the Lemon.", 0*29 + 24, 6, 4, (255, 255, 255, 0), 2, 50, self.x, self.y, self.x, self.y, 0, None, None, None, None, None))
             self.technique = Technique.STILL
         else:
             self.technique = Technique.STILL 
@@ -347,8 +363,10 @@ class Player:
         """Pick up an item and add it to the player's inventory."""
         for item in floor_item_list:
             if item.x == self.x and item.y == self.y and item is not None:
+                name_desc = get_display_name(item)
+                
                 if self.add_to_inventory(item) == True:
-                    name_desc = get_display_name(item)
+                    
                     floor_item_list.remove(item)  # Remove item from the map 
 
                     if floor.map_grid[floor.height-1-self.y][self.x] == "S":

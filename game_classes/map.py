@@ -116,14 +116,10 @@ class Map:
 
                             item_name = random.choice(item_list)
                             item = self.create_item(item_name, grid_items)
+                            print(item_name)
                             item.x = j
                             item.y = -i + self.height - 1
                             self.floor_items.append(item)
-
-
-
-
-
 
 
 
@@ -171,7 +167,7 @@ class Map:
             if not failed:
                 #print(f"Room {rooms_created} generated at ({x}, {y}) with size ({width}, {height})")
                 # If no overlap, generate the room
-                if has_shop == False and random.uniform(0, 1) < 0.1:
+                if has_shop == False and random.uniform(0, 1) < 0.04:
                     self.generate_room(x, y, width, height, True, item_list)
                     has_shop = True
 
@@ -245,25 +241,25 @@ class Map:
         elif name == "Lesser Healing Staff":
             return Staff(name, grid_items, reverse="Staff of Mana",sprite_locs = fakenames_staffs_key[3], damage=10, projectile=True, description="Healing depends on mana used.", charges=12, rarity=1) #deals set healing according to mana used
         elif name == "Energizing Staff":
-            return Staff(name, grid_items, reverse="Staff of Lethargy",sprite_locs = fakenames_staffs_key[4], damage=10, projectile=True, description="Target's speed is doubled. Duration depends on mana used.", charges=30, rarity=1) #deals set healing according to mana used
+            return Staff(name, grid_items, reverse="Staff of Lethargy",sprite_locs = fakenames_staffs_key[4], damage=10, projectile=True, description="Target's speed is doubled. Duration depends on mana used.", charges=8, rarity=1) #deals set healing according to mana used
         elif name == "Staff of Mana":
             return Staff(name, grid_items, reverse="Lesser Healing Staff", sprite_locs = fakenames_staffs_key[5], damage=10, projectile=True, description="Damage depends on mana used.", charges=12, rarity=1) #deals set damage according to # of charges used
         elif name == "Staff of Ricochet":
-            return Staff(name, grid_items, reverse="Piercing Staff", sprite_locs = fakenames_staffs_key[6], damage=10, projectile=True, description="Projectile bounces off walls.", charges=5, rarity=1) #bounces
+            return Staff(name, grid_items, reverse="Piercing Staff", sprite_locs = fakenames_staffs_key[6], damage=10, projectile=True, description="Projectile bounces off walls.", charges=8, rarity=1) #bounces
         elif name == "Staff of Lethargy":
-            return Staff(name, grid_items, reverse="Energizing Staff",sprite_locs = fakenames_staffs_key[7], damage=10, projectile=True, description="Target's speed is reduced to 1/2. Duration depends on mana used.", charges=5, rarity=2) #slows down enemy
+            return Staff(name, grid_items, reverse="Energizing Staff",sprite_locs = fakenames_staffs_key[7], damage=10, projectile=True, description="Target's speed is reduced to 1/2. Duration depends on mana used.", charges=8, rarity=2) #slows down enemy
         elif name == "Staff of Paralysis":
-            return Staff(name, grid_items, reverse="Energizing Staff" ,sprite_locs = fakenames_staffs_key[8], damage=10, projectile=True, description="Paralyzes target. Duration depends on mana used.", charges=5, rarity=2) #paralyzes enemy
+            return Staff(name, grid_items, reverse="Energizing Staff" ,sprite_locs = fakenames_staffs_key[8], damage=10, projectile=True, description="Paralyzes target. Duration depends on mana used.", charges=8, rarity=2) #paralyzes enemy
         elif name == "Staff of Warping":
             return Staff(name, grid_items, reverse="Staff of Swapping",sprite_locs = fakenames_staffs_key[9], damage=10, projectile=True, description="Warps target to a random location on the floor.", charges=5, rarity=2) #levels up all enemies on a floor, including you
         elif name == "Piercing Staff":
-            return Staff(name, grid_items, reverse="Staff of Ricochet",sprite_locs = fakenames_staffs_key[10], damage=10, projectile=True, description="Target pierces a number of enemies equal to mana used.", charges=5, rarity=2) #pierces enemies
+            return Staff(name, grid_items, reverse="Staff of Ricochet",sprite_locs = fakenames_staffs_key[10], damage=10, projectile=True, description="Target pierces a number of enemies equal to mana used.", charges=8, rarity=2) #pierces enemies
         elif name == "Execution Staff":
-            return Staff(name, grid_items, reverse="Staff of Division", sprite_locs = fakenames_staffs_key[11], damage=10, projectile=True, description="Deals 3 damage. Enemies killed by the staff have experience yields multiplied by mana used.", charges=5, rarity=1) 
+            return Staff(name, grid_items, reverse="Staff of Division", sprite_locs = fakenames_staffs_key[11], damage=10, projectile=True, description="Deals 3 damage. Enemies killed by the staff have experience yields multiplied by mana used.", charges=8, rarity=1) 
         elif name == "Phobia Staff":
-            return Staff(name, grid_items, reverse="Staff of Violence",sprite_locs = fakenames_staffs_key[12], damage=10, projectile=True, description="Target flees from you. Duration depends on mana used.", charges=5, rarity=1) 
+            return Staff(name, grid_items, reverse="Staff of Violence",sprite_locs = fakenames_staffs_key[12], damage=10, projectile=True, description="Target flees from you. Duration depends on mana used.", charges=8, rarity=1) 
         elif name == "Staff of Violence":
-            return Staff(name, grid_items, reverse="Phobia Staff", sprite_locs = fakenames_staffs_key[13], damage=10, projectile=True, description="Target attempts to fight you using physical attacks only. Duration depends on mana used.", charges=5, rarity=1) 
+            return Staff(name, grid_items, reverse="Phobia Staff", sprite_locs = fakenames_staffs_key[13], damage=10, projectile=True, description="Target attempts to fight you using physical attacks only. Duration depends on mana used.", charges=8, rarity=1) 
         elif name == "Staff of Cloning":
             return Staff(name, grid_items, reverse="Staff of Cloning",sprite_locs = fakenames_staffs_key[14], damage=10, projectile=True, description="A duplicate of the target is created.", charges=5, rarity=2)
         elif name == "Staff of Metamorphosis":
@@ -271,7 +267,7 @@ class Map:
         elif name == "Staff of Primes":
             return Staff(name, grid_items, reverse="Staff of Primes",sprite_locs = fakenames_staffs_key[16], damage=10, projectile=True, description="Damage depends on mana used. Will be a prime number.", charges=12, rarity=1)
         elif name == "Fibonnaci Staff":
-            return Staff(name, grid_items, reverse="Fibonnaci Staff", sprite_locs = fakenames_staffs_key[17], damage=10, projectile=True, description="Damage depends on mana used; follows the fibonnaci sequence.", charges=5, rarity=2) 
+            return Staff(name, grid_items, reverse="Fibonnaci Staff", sprite_locs = fakenames_staffs_key[17], damage=10, projectile=True, description="Damage depends on mana used; follows the fibonnaci sequence.", charges=8, rarity=2) 
         elif name == "Staff of Alchemy":
             return Staff(name, grid_items, reverse="Gardening Staff",sprite_locs = fakenames_staffs_key[18], damage=10, projectile=True, description="The projectile transmutes liquids it travels over randomly.", charges=5, rarity=3)
         elif name == "Gardening Staff":
@@ -304,31 +300,31 @@ class Map:
         #elif name == "Staffboost Tome":
         #    return Tome(name, grid_items, reverse="Sharpening Tome", sprite_locs = fakenames_tomes_key[8], damage=10, projectile=False, description="Finds the last staff in your inventory and boosts max mana by 1.", price=30)
         elif name == "Tome of Consolidation":
-            return Tome(name, grid_items, reverse="Coloring Tome", sprite_locs = fakenames_tomes_key[9], damage=10, projectile=False, description="Finds the last two staffs, shields, or weapons in your inventory. Last item gains the bonus of the first item, or +1 to max mana in the case of a staff. First item is destroyed.", price=40)
+            return Tome(name, grid_items, reverse="Coloring Tome", sprite_locs = fakenames_tomes_key[8], damage=10, projectile=False, description="Finds the last two staffs, shields, or weapons in your inventory. For shields and weapons, last item gains the bonus of the first item. For staffs, combine mana if staffs are the same kind. First item is destroyed.", price=40)
         elif name == "Tome of Reversal":
-            return Tome(name, grid_items, reverse="Blank Tome", sprite_locs = fakenames_tomes_key[10], damage=10, projectile=False, description="Finds the last staff or tome in your inventory. Item effect is reversed or altered.", price=40)
+            return Tome(name, grid_items, reverse="Blank Tome", sprite_locs = fakenames_tomes_key[9], damage=10, projectile=False, description="Finds the last staff or tome in your inventory. Item effect is reversed or altered.", price=40)
         elif name == "Coloring Tome":
-            return Tome(name, grid_items, reverse="Tome of Consolidation",sprite_locs = fakenames_tomes_key[11], damage=10, projectile=False, description="Finds the last two staffs or tomes in your inventory. Last item gains the color of the first item.", price=30)
+            return Tome(name, grid_items, reverse="Tome of Consolidation",sprite_locs = fakenames_tomes_key[10], damage=10, projectile=False, description="Finds the last two staffs or tomes in your inventory. Last item gains the color of the first item.", price=30)
         elif name == "Summoning Tome":
-            return Tome(name, grid_items, reverse="Banishing Tome", sprite_locs = fakenames_tomes_key[12], damage=10, projectile=False, description="Summons enemies around your position.",price=20)
+            return Tome(name, grid_items, reverse="Banishing Tome", sprite_locs = fakenames_tomes_key[11], damage=10, projectile=False, description="Summons enemies around your position.",price=20)
         elif name == "Banishing Tome":
-            return Tome(name, grid_items, reverse="Summoning Tome",sprite_locs = fakenames_tomes_key[13], damage=10, projectile=False, description="All enemies directly adjacent to you are teleported to a random location on the floor.",price=30)
+            return Tome(name, grid_items, reverse="Summoning Tome",sprite_locs = fakenames_tomes_key[12], damage=10, projectile=False, description="All enemies directly adjacent to you are teleported to a random location on the floor.",price=30)
         elif name == "Tome of Pizzazz":
-            return Tome(name, grid_items, reverse="Bankruptcy Tome", sprite_locs = fakenames_tomes_key[14], damage=10, projectile=False, description="Find the last item in your inventory. Sell price is boosted by 50%.",price=40)
+            return Tome(name, grid_items, reverse="Bankruptcy Tome", sprite_locs = fakenames_tomes_key[13], damage=10, projectile=False, description="Find the last item in your inventory. Sell price is boosted by 50%.",price=40)
         elif name == "Bankruptcy Tome":
-            return Tome(name, grid_items, reverse="Tome of Pizzazz",sprite_locs = fakenames_tomes_key[15], damage=10, projectile=False, description="Gold is set to 0.",price=20)
+            return Tome(name, grid_items, reverse="Tome of Pizzazz",sprite_locs = fakenames_tomes_key[14], damage=10, projectile=False, description="Gold is set to 0.",price=20)
         elif name == "Tome of Identification":
-            return Tome(name, grid_items, reverse="Ruined Tome", sprite_locs = fakenames_tomes_key[16], damage=10, projectile=False, description="Find the last item in your inventory. Identify the item if not already identified.",price=30)
+            return Tome(name, grid_items, reverse="Ruined Tome", sprite_locs = fakenames_tomes_key[15], damage=10, projectile=False, description="Find the last item in your inventory. Identify the item if not already identified.",price=30)
         #elif name == "Tome of Obscuration":
         #    return Tome(name, grid_items, reverse="Tome of Identification",sprite_locs = fakenames_tomes_key[17], damage=10, projectile=False, description="Removes all identifications.",price=30)
         elif name == "Tome of Ascendance":
-            return Tome(name, grid_items, reverse="Tome of Descendance", sprite_locs = fakenames_tomes_key[18], damage=10, projectile=False, description="Instantly go up one floor.",price=30)
+            return Tome(name, grid_items, reverse="Tome of Descendance", sprite_locs = fakenames_tomes_key[16], damage=10, projectile=False, description="Instantly go up one floor.",price=30)
         elif name == "Tome of Descendance":
-            return Tome(name, grid_items, reverse="Tome of Ascendance",sprite_locs = fakenames_tomes_key[19], damage=10, projectile=False, description="Instantly go down one floor.",price=30)
+            return Tome(name, grid_items, reverse="Tome of Ascendance",sprite_locs = fakenames_tomes_key[17], damage=10, projectile=False, description="Instantly go down one floor.",price=30)
         elif name == "Tome of Extinction":
-            return Tome(name, grid_items, reverse="Tome of Resurrection", sprite_locs = fakenames_tomes_key[20], damage=10, projectile=False, description="Causes all monsters to go extinct.",price=50)
+            return Tome(name, grid_items, reverse="Tome of Resurrection", sprite_locs = fakenames_tomes_key[18], damage=10, projectile=False, description="Causes all monsters to go extinct.",price=50)
         elif name == "Tome of Resurrection":
-            return Tome(name, grid_items, reverse="Tome of Extinction",sprite_locs = fakenames_tomes_key[21], damage=10, projectile=False, description= "Brings a species back from the dead.",price=50)
+            return Tome(name, grid_items, reverse="Tome of Extinction",sprite_locs = fakenames_tomes_key[19], damage=10, projectile=False, description= "Brings a species back from the dead.",price=50)
         
         
         
@@ -400,21 +396,29 @@ class Map:
             return Miscellanious(name, grid_items, sprite_locs = 6, description = "A dragon's hoard of coins.", price=60)
         
         elif name == "Poultry":
-            return Consumable(name, grid_items, sprite_locs = 0, nutrition_value=100, description="Irregularly charred bird meat. Heals 100 HP.", price=20)
+            return Consumable(name, grid_items, sprite_locs = 0, nutrition_value=50, description="Irregularly charred bird meat. Heals 50 HP.", price=20)
         elif name == "Mushrooms":
             return Consumable(name, grid_items, sprite_locs = 1, nutrition_value=1, description="Nutritious brown mushrooms. Heals 1 HP and increases maximum HP.", price=8) #increases maximum hp
         elif name == "Leaves":
-            return Consumable(name, grid_items, sprite_locs = 3, nutrition_value=1, description="These probably won't do much if eaten.", price=2)
+            return Consumable(name, grid_items, sprite_locs = 3, nutrition_value=0, description="Heals 5% of your maximum HP.", price=2)
+        elif name == "Lettuce":
+            return Consumable(name, grid_items, sprite_locs = 2, nutrition_value=0, description="Heals 15% of your maximum HP.", price=5)
+        elif name == "Kale":
+            return Consumable(name, grid_items, sprite_locs = 9, nutrition_value=0, description="Heals 30% of your maximum HP.", price=13)
         elif name == "Apple":
-            return Consumable(name, grid_items, sprite_locs = 4, nutrition_value=30, description="Crisp and crunchy. Heals 30 HP.", price=5)
+            return Consumable(name, grid_items, sprite_locs = 4, nutrition_value=15, description="Crisp and crunchy. Heals 15 HP.", price=5)
         elif name == "Cherry":
-            return Consumable(name, grid_items, sprite_locs = 5, nutrition_value=20, description="These would be more useful in a pie or pastry. Heals 20 HP.", price=4)
+            return Consumable(name, grid_items, sprite_locs = 5, nutrition_value=10, description="These would be more useful in a pie or pastry. Heals 10 HP.", price=4)
         elif name == "Starfruit":
             return Consumable(name, grid_items, sprite_locs = 6, nutrition_value=1000, description="Only grown under perfect conditions in a rare, faraway valley. Restores HP to full and increases speed to 2x.", price=40) #gain xp to get to next level
         elif name == "Durian":
             return Consumable(name, grid_items, sprite_locs = 7, nutrition_value=50, description="Mercurial, spiky, and divisive, this fruit can restore your HP above its normal amount.", price=40) #gives temporary hp beyond max
         elif name == "Dragonfruit":
             return Consumable(name, grid_items, sprite_locs = 8, nutrition_value=12, description="Immediately increases your level by 1.", price=30) #increase a random stat by 1
+        elif name == "Beet":
+            return Consumable(name, grid_items, sprite_locs = 10, nutrition_value=5, description="Unappetizing but nutritious. Heals 5 HP and increases maximum HP.", price=30) #increase a random stat by 1
+        elif name == "Lemon":
+            return Consumable(name, grid_items, sprite_locs = 11, nutrition_value=1, description="...You want me to eat this raw...?", price=2) #increase a random stat by 1
 
     #self, name, grid_items, x, y, quantity
     def random_create_item(self, grid_items, item_list):

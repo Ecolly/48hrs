@@ -86,18 +86,17 @@ class InteractiveObject:
             sprite.y = base_y
             sprite.scale = self.scale
 
-            
-
-
-            
             if self.type != "power bar":
                 if self.hovered == True:
                     if self.clicked == True:
-                        sprite.color = self.colors[i][2]
+                        if sprite.color != self.colors[i][2]:
+                            sprite.color = self.colors[i][2]
                     else:
-                        sprite.color = self.colors[i][1]
+                        if sprite.color != self.colors[i][1]:
+                            sprite.color = self.colors[i][1]
                 else:
-                    sprite.color = self.colors[i][0]
+                    if sprite.color != self.colors[i][0]:
+                        sprite.color = self.colors[i][0]
             else:
                 if gamestate == 6:
                     speed = 6
@@ -109,38 +108,49 @@ class InteractiveObject:
                     
                     if self.extra_1 > max(round(func), 1)-1:
                         self.colors = [[(self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 0)]]
-                        sprite.color = self.colors[0][0]
+                        if sprite.color != self.colors[0][0]:
+                            sprite.color = self.colors[0][0]
                     else:
                         self.colors = [[(self.colors[i][0][0], self.colors[i][0][1], self.colors[i][0][2], 255)]]
-                        sprite.color = self.colors[0][0]
+                        if sprite.color != self.colors[0][0]:
+                            sprite.color = self.colors[0][0]
                 else:
                     if round(abs(self.animframe) % 2) < 1:
-                        sprite.color = (255, 255, 255, self.colors[0][0][3])
+                        if sprite.color != (255, 255, 255, self.colors[0][0][3]):
+                            sprite.color = (255, 255, 255, self.colors[0][0][3])
                     else:
-                        sprite.color = (255, 255, 255, 0)
+                        if sprite.color != (255, 255, 255, 0):
+                            sprite.color = (255, 255, 255, 0)
 
             if self.animframe == 1:
                 if self.supertype == 'rclick': #draw rclick buttons on top of other menus
                     if i == 0:
-                        sprite.group = group1
+                        if sprite.group != group1:
+                            sprite.group = group1
                     else:
-                        sprite.group = group2
+                        if sprite.group != group2:
+                            sprite.group = group2
                 elif self.supertype == "overlay" or self.type == "power bar 2":
-                    sprite.group = group5
+                    if sprite.group != group5:
+                        sprite.group = group5
                 elif self.type == "GUI_HP":
                     pass
                 else:
                     if self.type == 'equip sword':
-                        sprite.group = group6
+                        if sprite.group != group6:
+                            sprite.group = group6
                         if player.equipment_weapon == None:
                             pass
                     elif self.type == 'equip shield':
                         pass
                     elif i == 0:# or i == 3 or i == 4:
-                        sprite.group = group3
+                        if sprite.group != group3:
+                            sprite.group = group3
                     else:
-                        sprite.group = group4
-                sprite.batch = batch
+                        if sprite.group != group4:
+                            sprite.group = group4
+                if sprite.batch != batch:
+                    sprite.batch = batch
 
 
             #sprite.draw()
@@ -501,7 +511,7 @@ def get_gui_string(player, floor_level):
             strength = strength + "+" + str(player.equipment_weapon.damage + + player.equipment_weapon.bonus)
 
     #stats gui
-    gui_string = str(player.health_visual) + "/" + str(player.maxhealth_visual) + " HP, " + str(strength) + "/" + str(player.maxstrength) + " STR, " + str(defense) + "/" + str(player.maxdefense) + " DEF, LV " + str(player.level_visual) + ", " + str(player.experience_visual) + " EXP, " + str(player.gold) + " GOLD, " + str(floor_level) + "F"
+    gui_string = str(player.health_visual) + "/" + str(player.maxhealth_visual) + " HP, " + str(strength) + "/" + str(player.maxstrength) + " STR, " + str(defense) + "/" + str(player.maxdefense) + " DEF, LV " + str(player.level_visual) + ", " + str(player.experience_visual) + " EXP, " + str(player.gold) + " GOLD, " + str(floor_level) + "F" + "                               "
     return gui_string
 
 

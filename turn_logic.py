@@ -115,6 +115,9 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
                 damage += item.damage + item.bonus
                 if item.name == "Fury Cutter":
                     attacker.health = attacker.health - math.floor(damage/4)
+        elif isinstance(item, Miscellanious) == True and item.name == "Rock":
+            damage += 10
+
         if target.equipment_shield != None:
             damage -= target.equipment_shield.defense
         damage -= target.defense
@@ -374,9 +377,9 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
             inflict_damage("Detergent", entity, player, chronology, list_of_animations, None, random.randint(25, 45), "chemical")
     elif liq == "A": #acid
         spr = 2*29 + 0
-        evap = 0.1
+        evap = 0.33
         if entity.name != "VITRIOLIVE":
-            inflict_damage("Acid", entity, player, chronology, list_of_animations, None, random.randint(2, 4), "chemical")
+            inflict_damage("Acid", entity, player, chronology, list_of_animations, None, 1, "chemical")
     elif liq == "M": #mercury (should slow creatures down)
         spr = 2*29 + 24
         evap = 0.05
@@ -592,11 +595,11 @@ def do_reflection(entity, item, enemy_hit, distance_x_normalized, distance_y_nor
     item.num_of_bounces += -1
     reflection_result = find_reflection_angle(item.x, item.y, distance_x_normalized, distance_y_normalized, floor, enem_x, enem_y)
     if reflection_result == "x": #if the tile hit was a vertical wall...
-        item.xend = math.floor(tilex + (abs(tilex - item.xend) + 100*abs(distance_x_normalized))*math.copysign(1, item.xinit - item.xend))
-        item.yend = math.floor(tiley + (abs(item.yend - tiley) + 100*abs(distance_y_normalized))*math.copysign(1, item.yend - item.yinit))
+        item.xend = math.floor(tilex + (abs(tilex - item.xend) + 30*abs(distance_x_normalized))*math.copysign(1, item.xinit - item.xend))
+        item.yend = math.floor(tiley + (abs(item.yend - tiley) + 30*abs(distance_y_normalized))*math.copysign(1, item.yend - item.yinit))
     elif reflection_result == "y":
-        item.yend = math.floor(tiley + (abs(tiley - item.yend) + 100*abs(distance_y_normalized))*math.copysign(1, item.yinit - item.yend))
-        item.xend = math.floor(tilex + (abs(item.xend - tilex) + 100*abs(distance_x_normalized))*math.copysign(1, item.xend - item.xinit))
+        item.yend = math.floor(tiley + (abs(tiley - item.yend) + 30*abs(distance_y_normalized))*math.copysign(1, item.yinit - item.yend))
+        item.xend = math.floor(tilex + (abs(item.xend - tilex) + 30*abs(distance_x_normalized))*math.copysign(1, item.xend - item.xinit))
     projectiles_remaining += 1
 
     if isinstance(item, Projectile) == True:
@@ -628,15 +631,16 @@ def do_radioactivity(entity, player, chronology, list_of_animations, floor):
     if entity.name == "DEMON CORE":
         enemy = player
         dist = math.sqrt((enemy.x - entity.x)**2 + (enemy.y - entity.y)**2)
-        damage = math.floor(((entity.level + 3)**2)/(dist*dist))
-        if damage > 0:
-            inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic")
-        for enemy in floor.all_enemies:
-            if enemy.name != "DEMON CORE":
-                dist = math.sqrt((enemy.x - entity.x)**2 + (enemy.y - entity.y)**2)
-                damage = math.floor(((entity.level + 3)**2)/(dist*dist))
-                if damage > 0:
-                    inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic")
+        if dist != 0:
+            damage = math.floor(((entity.level + 3)**2)/(dist*dist))
+            if damage > 0:
+                inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic")
+            for enemy in floor.all_enemies:
+                if enemy.name != "DEMON CORE":
+                    dist = math.sqrt((enemy.x - entity.x)**2 + (enemy.y - entity.y)**2)
+                    damage = math.floor(((entity.level + 3)**2)/(dist*dist))
+                    if damage > 0:
+                        inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic")
     
 
 
@@ -983,14 +987,14 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             deduct_charges(entity, 1)
         elif item.name == "Tome of Promotion":
             player.increase_experience(((player.level + 1)**3) - player.experience) 
-            list_of_animations.append(animations.Animation(str(player.name) + " grew to level " + str(player.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(player.name) + " grew to level " + str(player.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(player, player, 1, 16), player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             for enemy in floor.all_enemies:
                 enemy.level_up()
                 list_of_animations.append(animations.Animation(str(enemy.name) + " leveled up!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
             deduct_charges(entity, 1)
         elif item.name == "Tome of Demotion":
             player.increase_experience(((player.level - 1)**3) - player.experience) 
-            list_of_animations.append(animations.Animation(str(player.name) + "'s level was reduced to " + str(player.level) + "...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(player.name) + "'s level was reduced to " + str(player.level) + "...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(player, player, 1, 16), player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             for enemy in floor.all_enemies:
                 enemy.level_down()
                 list_of_animations.append(animations.Animation(str(enemy.name) + " lost a level!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
@@ -1117,9 +1121,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             while i > -1:
                 if isinstance(player.inventory[i], Staff) == True:
                     staffs_1_2.append(i)
-                    if len(staffs_1_2) == 2:
-                        player.inventory[staffs_1_2[0]].charges += 1
-                        player.inventory[staffs_1_2[0]].maxcharges += 1
+                    if len(staffs_1_2) == 2 and player.inventory[staffs_1_2[0]].name == player.inventory[staffs_1_2[1]].name:
+                        player.inventory[staffs_1_2[0]].charges += player.inventory[staffs_1_2[1]].charges
+                        player.inventory[staffs_1_2[0]].maxcharges += player.inventory[staffs_1_2[1]].charges
                         player.inventory[staffs_1_2[1]].should_be_deleted = True
                         break
                 if isinstance(player.inventory[i], Shield) == True:

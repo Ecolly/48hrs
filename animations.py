@@ -88,7 +88,7 @@ class Animation:
             self.sprite.group = group_effects
             self.sprite.batch = batch
 
-    def draw(self, player, group, floor, adventure_log, bg_liqs_foreground):
+    def draw(self, player, group, floor, adventure_log, bg_liqs_foreground, rctrl):
         global grid_liqtile
         self.current_time += 1
 
@@ -124,7 +124,8 @@ class Animation:
                             if floor.map_grid[floor.height-1-player.y][player.x] != "S":
                                 adventure_log.append(str(player.name) + " left the shop.")
                                 player.is_shopping = False
-                        player.pick_up_item(floor.floor_items, adventure_log, floor)
+                        if rctrl == False:
+                            player.pick_up_item(floor.floor_items, adventure_log, floor)
 
 
                     wipe_techniqueitem(obj)
@@ -267,7 +268,7 @@ class Animation:
                 base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
                 base_y =  768/2-24-(player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale #+768/2-24?
 
-                if frame == 5:
+                if frame == 5 or (frame > self.duration and self.duration <= 5):
                     liquid_char_to_index = ["E", "q", "q", "q", "q", "q", "q", "q", "M", "C", "A", "D", "I", "S", "P", "W"]
                     i = 0
                     while i < 16:
