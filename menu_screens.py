@@ -90,14 +90,16 @@ def create_ingame_menu_labels(batch, group):
         batch=batch,
         group=group
     )
+    return background
 
 def create_load_menu(batch, group):
     background = pyglet.shapes.Rectangle(
-        0, 0, WINDOW_WIDTH/2, WINDOW_HEIGHT,
+        0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
         color=(100, 100, 200),
         batch=batch,
         group=group
     )
+    return background
 
 def create_load_game_buttons(batch, group, directory="game_saves"):
     buttons = []

@@ -82,4 +82,4 @@ for texture_index in range(textures_count):
 
 # --- SAVE ---
 final_image.save(output_image_path)
-print(f"Saved animation sheet to: {output_image_path}")
+#print(f"Saved animation sheet to: {output_image_path}")

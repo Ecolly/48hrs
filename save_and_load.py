@@ -43,8 +43,14 @@ def player_to_dict(player):
         # 'itemgrid': player.itemgrid, #needs to be implemented
         'animtype': player.animtype,
 
+        'health_visual':player.health_visual,
+        'health_visual': player.health_visual,
+        'maxhealth_visual': player.maxhealth_visual,
+        'experience_visual': player.experience_visual,
+        'level_visual': player.level_visual,
 
         #separate attributes that needs to be added after the player is created
+        "maxhealth": player.maxhealth,
         "strength": player.strength,
         "maxstrength": player.maxstrength,
         "strength_visual": player.strength_visual,
@@ -259,6 +265,12 @@ def player_from_dict(data):
     )
 
     # Set additional attributes
+    player.maxhealth = data.get("maxhealth", 100)  # Default to 100 if not provided
+    player.health_visual = data.get("health_visual", 0)
+    player.maxhealth_visual = data.get("maxhealth_visual", 0)
+    player.experience_visual = data.get("experience_visual", 0)
+    player.level_visual = data.get("level_visual", 0)
+
     player.strength = data.get("strength", 0)
     player.maxstrength = data.get("maxstrength", 0)
     player.strength_visual = data.get("strength_visual", 0)

@@ -199,7 +199,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                     "player": player_to_dict(player),
                     #"map": map_to_dict(floor)
                 }
-                #save_game_data(game_data)
+                save_game_data(game_data)
                 print("Save button clicked")
                 return
         elif current_menu == MenuState.LOAD_MENU:
