@@ -31,7 +31,7 @@ spr4 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_
 
 class Item:
     #very basics item class cause we dono what items there are
-    def __init__(self, name, grid_items, sprite_locs, x, y, quantity, description=""):
+    def __init__(self, name, sprite_locs, x, y, quantity, description=""):
         #global group_items
         # item_names = ["Kitchen Knife", "Machete", "Scimitar", "Screwdriver", "Sickle"]
         # item_fakenames = ["Kitchen Knife", "Machete", "Scimitar", "Screwdriver", "Sickle"]
@@ -41,12 +41,14 @@ class Item:
         #self.name_visual = self.name
         # self.index = item_names.index(name)
         # self.fakename = item_fakenames[self.index]
-        self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
+        self.sprite_locs = sprite_locs #for tome and spell color mechanics
+        self.spriteindex = 29*10+sprite_locs
+        self.sprite = create_sprite_item(grid_items, self.spriteindex)
         #self.sprite.group = group_items
-        self.hotbar_sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
+        self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
         self.grid = grid_items
         #self.equppedsprite
-        self.spriteindex = 29*10+sprite_locs
+        
         self.color = (255, 255, 255, 255)
         self.magic_color = sprite_locs #for tome and spell color mechanics
         self.x = x
@@ -211,8 +213,8 @@ class Item:
     #                     self.y = -inventory_y*48 + int(768/48)*32 - 1   
 
 class Weapon(Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True, description="", price=0):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
+    def __init__(self, name, sprite_locs, x=0, y=0, quantity=1, damage=0, durability=0, is_equipable = True, description="", price=0):
+        super().__init__(name, sprite_locs, x, y, quantity, description)
 
         self.spriteindex = 29*11+sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
@@ -226,8 +228,8 @@ class Weapon(Item):
         self.price = price
         
 class Staff(Item):
-    def __init__(self, name, grid_items, reverse, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=7, description="", rarity=0):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
+    def __init__(self, name, reverse, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=7, description="", rarity=0):
+        super().__init__(name, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*10+sprite_locs
         self.magic_color = sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
@@ -244,8 +246,8 @@ class Staff(Item):
         #self.is_equipable = is_equipable
 
 class Tome(Item):
-    def __init__(self, name, grid_items, reverse, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30, description="", price=0):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
+    def __init__(self, name, reverse, sprite_locs, projectile, x=0, y=0, quantity=1, damage=0, charges=30, description="", price=0):
+        super().__init__(name, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*5+sprite_locs
         self.magic_color = sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
@@ -262,8 +264,8 @@ class Tome(Item):
         self.price = price
 
 class Flask(Item):
-    def __init__(self, name, grid_items, reverse, evaporation_rate, liquid, product, sprite_locs, x=0, y=0, quantity=1, damage=0, description="", price=0):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
+    def __init__(self, name, reverse, evaporation_rate, liquid, product, sprite_locs, x=0, y=0, quantity=1, damage=0, description="", price=0):
+        super().__init__(name, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*6+sprite_locs
         self.magic_color = sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
@@ -285,8 +287,8 @@ class Flask(Item):
         self.price = price
 
 class Consumable(Item):
-    def __init__(self, name, grid_items, sprite_locs, nutrition_value, x=0, y=0, quantity=1, description="", price=0):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
+    def __init__(self, name, sprite_locs, nutrition_value, x=0, y=0, quantity=1, description="", price=0):
+        super().__init__(name, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*7+sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
         self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
@@ -298,8 +300,8 @@ class Consumable(Item):
 
 
 class Shield (Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, defense=0, is_equipable = True, description="", price=0):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity, description)
+    def __init__(self, name, sprite_locs, x=0, y=0, quantity=1, defense=0, is_equipable = True, description="", price=0):
+        super().__init__(name, sprite_locs, x, y, quantity, description)
         self.spriteindex = 29*9+sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
         self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
@@ -309,8 +311,8 @@ class Shield (Item):
         self.price = price
 
 class Miscellanious(Item):
-    def __init__(self, name, grid_items, sprite_locs, x=0, y=0, quantity=1, description="", price=0):
-        super().__init__(name, grid_items, sprite_locs, x, y, quantity)
+    def __init__(self, name, sprite_locs, x=0, y=0, quantity=1, description="", price=0):
+        super().__init__(name, sprite_locs, x, y, quantity)
         self.spriteindex = 29*8+sprite_locs
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
         self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)

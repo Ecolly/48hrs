@@ -3,6 +3,8 @@ import json
 import time
 
 from game_classes import player as player_module
+from game_classes.map import Map
+from game_classes.item import Item, Weapon, Staff, Tome, Flask, Consumable, Shield, Miscellanious
 from font import*
 
 def save_game_data(game_data):
@@ -22,8 +24,9 @@ def load_game(filename):
     player_data = game_data["player"]
     if player_data:
         player = player_from_dict(player_data)
+        map = map_from_dict(game_data["map"])
     
-    return player
+    return player, map
 
     
 
@@ -34,7 +37,7 @@ def player_to_dict(player):
         'health': player.health,
         'level': player.level,
         'experience': player.experience,
-        #"inventory": [item_to_dict(item) if item else None for item in player.inventory],
+        "inventory": [item_to_dict(item) if item else None for item in player.inventory],
 
         'x': player.x,
         'y': player.y,
@@ -221,6 +224,7 @@ def game_to_dict(game):
     pass
 def map_to_dict(map_obj):
     return {
+        "class": map_obj.__class__.__name__,
         "map_type": map_obj.map_type,
         "wall_type": map_obj.wall_type,
         "width": map_obj.width,
@@ -229,11 +233,10 @@ def map_to_dict(map_obj):
         "rooms": map_obj.rooms,  # Make sure each room is serializable!
         
         
-        #sus ones that is not easily serializable
         "map_grid": map_obj.map_grid,
         "liquid_grid": map_obj.liquid_grid,
-        "item_list": map_obj.item_list,      # If these are lists of strings/ints, it's fine
-        "enemy_list": map_obj.enemy_list,
+        # "item_list": map_obj.item_list,      # If these are lists of strings/ints, it's fine
+        # "enemy_list": map_obj.enemy_list,
 
         "valid_tiles": map_obj.valid_tiles,
         "textured_map": map_obj.textured_map,
@@ -264,8 +267,10 @@ def player_from_dict(data):
         # Add any other required constructor args here
     )
 
+    player.inventory = [item_from_dict(item_dict) if item_dict else None for item_dict in data["inventory"]]
+
     # Set additional attributes
-    player.maxhealth = data.get("maxhealth", 100)  # Default to 100 if not provided
+    player.maxhealth = data.get("maxhealth", 20)  # Default to 20 if not provided
     player.health_visual = data.get("health_visual", 0)
     player.maxhealth_visual = data.get("maxhealth_visual", 0)
     player.experience_visual = data.get("experience_visual", 0)
@@ -294,3 +299,220 @@ def player_from_dict(data):
     # Add any other attributes as needed
 
     return player
+
+
+def map_from_dict(data):
+    #__init__(self, width, height, number_of_rooms, default_tile='#'):
+    map_obj = Map(
+        width=data['width'],
+        height=data['height'],
+        number_of_rooms=data['number_of_rooms'],
+        
+    )
+
+    map_obj.map_type = data.get('map_type', 'default')
+    map_obj.wall_type = data.get('wall_type', 'default')
+    map_obj.name = data.get('name', 'Unnamed Map')
+    # Set additional attributes that may not be in the constructor
+    map_obj.rooms = data.get('rooms', [])
+    map_obj.map_grid = data.get('map_grid', [])
+    map_obj.liquid_grid = data.get('liquid_grid', [])
+    map_obj.valid_tiles = data.get('valid_tiles', [])
+    map_obj.textured_map = data.get('textured_map', [])
+    map_obj.valid_entity_tiles = data.get('valid_entity_tiles', [])
+    map_obj.valid_tiles_noshop = data.get('valid_tiles_noshop', [])
+    map_obj.level_list = data.get('level_list', [])
+    map_obj.spawnpoint = tuple(data.get('spawnpoint', (0, 0)))
+    map_obj.stairs = tuple(data.get('stairs', (0, 0)))
+    # If you want to restore floor_items or all_enemies, do it here
+
+    return map_obj
+
+
+def item_to_dict(item):
+    return {
+        "class": item.__class__.__name__,
+        "name": item.name,
+        "sprite_locs": item.sprite_locs,  # Assuming sprite_locs is an index or identifier
+        "spriteindex": item.spriteindex,
+        "magic_color": item.magic_color,
+        "x": item.x,
+        "y": item.y,
+        "prevx": item.prevx,
+        "prevy": item.prevy,
+        "xinit": item.xinit,
+        "yinit": item.yinit,
+        "distance_to_travel": item.distance_to_travel,
+        "xend": item.xend,
+        "yend": item.yend,
+        "entity": None,  # Not serializable, skip or handle specially if needed
+        "chron_offset": item.chron_offset,
+        "friendly_fire": item.friendly_fire,
+        "quantity": item.quantity,
+        "scale": item.scale,
+        "is_usable": item.is_usable,
+        "is_equipable": item.is_equipable,
+        "is_consumable": item.is_consumable,
+        "is_castable": item.is_castable,
+        "is_piercing": item.is_piercing,
+        "is_readable": item.is_readable,
+        "should_be_deleted": item.should_be_deleted,
+        "num_of_bounces": item.num_of_bounces,
+        "num_of_pierces": item.num_of_pierces,
+        "description": item.description,
+        "is_hovered": item.is_hovered,
+        "reverse": item.reverse,
+        "price": item.price,
+        "rarity": item.rarity,
+        "color": list(item.color) if item.color else None,
+        # "grid": ... # Only if you have a serializable version
+    }
+
+
+def item_from_dict(data):
+    cls = data.get("class", "Item")
+    # Default arguments for all items
+    name = data["name"]
+    sprite_locs = data.get("sprite_locs", 0)
+    x = data.get("x", 0)
+    y = data.get("y", 0)
+    quantity = data.get("quantity", 1)
+    description = data.get("description", "")
+
+    if cls == "Weapon":
+        item = Weapon(
+            name=name,
+            sprite_locs=sprite_locs,
+            x=x,
+            y=y,
+            quantity=quantity,
+            damage=data.get("damage", 0),
+            durability=data.get("durability", 0),
+            is_equipable=data.get("is_equipable", True),
+            description=description,
+            price=data.get("price", 0)
+        )
+        item.damage_type = data.get("damage_type", "slashing")
+        item.bonus = data.get("bonus", 0)
+    elif cls == "Staff":
+        item = Staff(
+            name=name,
+            reverse=data.get("reverse", ""),
+            sprite_locs=sprite_locs,
+            projectile=data.get("is_castable_projectile", False),
+            x=x,
+            y=y,
+            quantity=quantity,
+            damage=data.get("damage", 0),
+            charges=data.get("charges", 7),
+            description=description,
+            rarity=data.get("rarity", 0)
+        )
+        item.maxcharges = data.get("maxcharges", item.charges)
+        item.damage_type = data.get("damage_type", "slashing")
+    elif cls == "Tome":
+        item = Tome(
+            name=name,
+            reverse=data.get("reverse", ""),
+            sprite_locs=sprite_locs,
+            projectile=data.get("is_castable_projectile", False),
+            x=x,
+            y=y,
+            quantity=quantity,
+            damage=data.get("damage", 0),
+            charges=data.get("charges", 1),
+            description=description,
+            price=data.get("price", 0)
+        )
+        item.maxcharges = data.get("maxcharges", item.charges)
+        item.damage_type = data.get("damage_type", "slashing")
+        item.to_be_converted = data.get("to_be_converted", None)
+    elif cls == "Flask":
+        item = Flask(
+            name=name,
+            reverse=data.get("reverse", ""),
+            evaporation_rate=data.get("evaporation_rate", 0),
+            liquid=data.get("liquid", ""),
+            product=data.get("product", ""),
+            sprite_locs=sprite_locs,
+            x=x,
+            y=y,
+            quantity=quantity,
+            damage=data.get("damage", 0),
+            description=description,
+            price=data.get("price", 0)
+        )
+        item.charges = data.get("charges", 15)
+        item.maxcharges = data.get("maxcharges", 15)
+    elif cls == "Consumable":
+        item = Consumable(
+            name=name,
+            sprite_locs=sprite_locs,
+            nutrition_value=data.get("nutrition_value", 0),
+            x=x,
+            y=y,
+            quantity=quantity,
+            description=description,
+            price=data.get("price", 0)
+        )
+    elif cls == "Shield":
+        item = Shield(
+            name=name,
+            sprite_locs=sprite_locs,
+            x=x,
+            y=y,
+            quantity=quantity,
+            defense=data.get("defense", 0),
+            is_equipable=data.get("is_equipable", True),
+            description=description,
+            price=data.get("price", 0)
+        )
+        item.bonus = data.get("bonus", 0)
+    elif cls == "Miscellanious":
+        item = Miscellanious(
+            name=name,
+            sprite_locs=sprite_locs,
+            x=x,
+            y=y,
+            quantity=quantity,
+            description=description,
+            price=data.get("price", 0)
+        )
+    else:
+        item = Item(
+            name=name,
+            sprite_locs=sprite_locs,
+            x=x,
+            y=y,
+            quantity=quantity,
+            description=description
+        )
+
+    # Set common fields
+    item.spriteindex = data.get("spriteindex", item.spriteindex)
+    item.magic_color = data.get("magic_color", item.magic_color)
+    item.prevx = data.get("prevx", item.x)
+    item.prevy = data.get("prevy", item.y)
+    item.xinit = data.get("xinit", item.x)
+    item.yinit = data.get("yinit", item.y)
+    item.distance_to_travel = data.get("distance_to_travel", 0)
+    item.xend = data.get("xend", item.x)
+    item.yend = data.get("yend", item.y)
+    item.chron_offset = data.get("chron_offset", 0)
+    item.friendly_fire = data.get("friendly_fire", False)
+    item.scale = data.get("scale", 3)
+    item.is_usable = data.get("is_usable", False)
+    item.is_equipable = data.get("is_equipable", False)
+    item.is_consumable = data.get("is_consumable", False)
+    item.is_castable = data.get("is_castable", False)
+    item.is_piercing = data.get("is_piercing", False)
+    item.is_readable = data.get("is_readable", False)
+    item.should_be_deleted = data.get("should_be_deleted", False)
+    item.num_of_bounces = data.get("num_of_bounces", 0)
+    item.num_of_pierces = data.get("num_of_pierces", 0)
+    item.is_hovered = data.get("is_hovered", False)
+    item.rarity = data.get("rarity", 0)
+    if "color" in data and data["color"] is not None:
+        item.color = tuple(data["color"])
+    # entity and grid are not restored here (not serializable)
+    return item

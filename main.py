@@ -181,9 +181,10 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global item_selected
     global discovered_staffs, discovered_tomes
     global current_menu
-    global player #oh hell no this is bad
+    global player, floor #oh hell no this is bad
      
     if button == pyglet.window.mouse.LEFT:
+        #Main menu
         if current_menu == MenuState.MAIN_MENU:
             if start_button.hit_test(mouse_x, mouse_y):
                 print("Start button clicked")
@@ -193,11 +194,12 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 print("Load button clicked")
                 current_menu = MenuState.LOAD_MENU
                 return
+        #Side menu of the game
         elif current_menu == MenuState.SIDE_MENU:
             if save_button.hit_test(mouse_x, mouse_y):
                 game_data = {
                     "player": player_to_dict(player),
-                    #"map": map_to_dict(floor)
+                    "map": map_to_dict(floor)
                 }
                 save_game_data(game_data)
                 print("Save button clicked")
@@ -206,7 +208,8 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
             for btn in load_game_buttons:
                 if btn.hit_test(mouse_x, mouse_y):
                     print(f"Load button clicked for {btn.label.text}")
-                    player = load_game(btn.label.text)
+                    player, floor = load_game(btn.label.text)
+
                     current_menu = MenuState.INGAME
                     pass
 
@@ -672,7 +675,7 @@ def go_to_next_level(amount):
     floor = make_floor(sc, item_list, enemy_list, level_list, shop_equal, floor_level)
 
 
-    floor.random_create_item(grid_items, item_list)
+    floor.random_create_item(item_list)
     floor.generate_enemies(floor_level, enemy_list, level_list)
 
     floor.name = floor_name
@@ -927,6 +930,8 @@ def on_draw():
     global batch
     global bg_desc, bg_desc_text
     global invhover
+
+    #print("inventoryairs", player.inventory)
 
     # framebuffer.get_texture().bind()
     # glViewport(0, 0, win_x, win_y)
