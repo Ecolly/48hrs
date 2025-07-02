@@ -165,7 +165,7 @@ class Map:
                     failed = True
                     break
             if not failed:
-                #print(f"Room {rooms_created} generated at ({x}, {y}) with size ({width}, {height})")
+                print(f"Room {rooms_created} generated at ({x}, {y}) with size ({width}, {height})")
                 # If no overlap, generate the room
                 if has_shop == False and random.uniform(0, 1) < 0.04:
                     self.generate_room(x, y, width, height, True, item_list)
@@ -301,27 +301,38 @@ class Map:
         #    return Tome(name, grid_items, reverse="Sharpening Tome", sprite_locs = fakenames_tomes_key[8], damage=10, projectile=False, description="Finds the last staff in your inventory and boosts max mana by 1.", price=30)
         elif name == "Tome of Consolidation":
             return Tome(name, grid_items, reverse="Coloring Tome", sprite_locs = fakenames_tomes_key[8], damage=10, projectile=False, description="Finds the last two staffs, shields, or weapons in your inventory. For shields and weapons, last item gains the bonus of the first item. For staffs, combine mana if staffs are the same kind. First item is destroyed.", price=40)
+            return Tome(name, grid_items, reverse="Coloring Tome", sprite_locs = fakenames_tomes_key[8], damage=10, projectile=False, description="Finds the last two staffs, shields, or weapons in your inventory. For shields and weapons, last item gains the bonus of the first item. For staffs, combine mana if staffs are the same kind. First item is destroyed.", price=40)
         elif name == "Tome of Reversal":
+            return Tome(name, grid_items, reverse="Blank Tome", sprite_locs = fakenames_tomes_key[9], damage=10, projectile=False, description="Finds the last staff or tome in your inventory. Item effect is reversed or altered.", price=40)
             return Tome(name, grid_items, reverse="Blank Tome", sprite_locs = fakenames_tomes_key[9], damage=10, projectile=False, description="Finds the last staff or tome in your inventory. Item effect is reversed or altered.", price=40)
         elif name == "Coloring Tome":
             return Tome(name, grid_items, reverse="Tome of Consolidation",sprite_locs = fakenames_tomes_key[10], damage=10, projectile=False, description="Finds the last two staffs or tomes in your inventory. Last item gains the color of the first item.", price=30)
+            return Tome(name, grid_items, reverse="Tome of Consolidation",sprite_locs = fakenames_tomes_key[10], damage=10, projectile=False, description="Finds the last two staffs or tomes in your inventory. Last item gains the color of the first item.", price=30)
         elif name == "Summoning Tome":
+            return Tome(name, grid_items, reverse="Banishing Tome", sprite_locs = fakenames_tomes_key[11], damage=10, projectile=False, description="Summons enemies around your position.",price=20)
             return Tome(name, grid_items, reverse="Banishing Tome", sprite_locs = fakenames_tomes_key[11], damage=10, projectile=False, description="Summons enemies around your position.",price=20)
         elif name == "Banishing Tome":
             return Tome(name, grid_items, reverse="Summoning Tome",sprite_locs = fakenames_tomes_key[12], damage=10, projectile=False, description="All enemies directly adjacent to you are teleported to a random location on the floor.",price=30)
+            return Tome(name, grid_items, reverse="Summoning Tome",sprite_locs = fakenames_tomes_key[12], damage=10, projectile=False, description="All enemies directly adjacent to you are teleported to a random location on the floor.",price=30)
         elif name == "Tome of Pizzazz":
+            return Tome(name, grid_items, reverse="Bankruptcy Tome", sprite_locs = fakenames_tomes_key[13], damage=10, projectile=False, description="Find the last item in your inventory. Sell price is boosted by 50%.",price=40)
             return Tome(name, grid_items, reverse="Bankruptcy Tome", sprite_locs = fakenames_tomes_key[13], damage=10, projectile=False, description="Find the last item in your inventory. Sell price is boosted by 50%.",price=40)
         elif name == "Bankruptcy Tome":
             return Tome(name, grid_items, reverse="Tome of Pizzazz",sprite_locs = fakenames_tomes_key[14], damage=10, projectile=False, description="Gold is set to 0.",price=20)
+            return Tome(name, grid_items, reverse="Tome of Pizzazz",sprite_locs = fakenames_tomes_key[14], damage=10, projectile=False, description="Gold is set to 0.",price=20)
         elif name == "Tome of Identification":
+            return Tome(name, grid_items, reverse="Ruined Tome", sprite_locs = fakenames_tomes_key[15], damage=10, projectile=False, description="Find the last item in your inventory. Identify the item if not already identified.",price=30)
             return Tome(name, grid_items, reverse="Ruined Tome", sprite_locs = fakenames_tomes_key[15], damage=10, projectile=False, description="Find the last item in your inventory. Identify the item if not already identified.",price=30)
         #elif name == "Tome of Obscuration":
         #    return Tome(name, grid_items, reverse="Tome of Identification",sprite_locs = fakenames_tomes_key[17], damage=10, projectile=False, description="Removes all identifications.",price=30)
         elif name == "Tome of Ascendance":
             return Tome(name, grid_items, reverse="Tome of Descendance", sprite_locs = fakenames_tomes_key[16], damage=10, projectile=False, description="Instantly go up one floor.",price=30)
+            return Tome(name, grid_items, reverse="Tome of Descendance", sprite_locs = fakenames_tomes_key[16], damage=10, projectile=False, description="Instantly go up one floor.",price=30)
         elif name == "Tome of Descendance":
             return Tome(name, grid_items, reverse="Tome of Ascendance",sprite_locs = fakenames_tomes_key[17], damage=10, projectile=False, description="Instantly go down one floor.",price=30)
+            return Tome(name, grid_items, reverse="Tome of Ascendance",sprite_locs = fakenames_tomes_key[17], damage=10, projectile=False, description="Instantly go down one floor.",price=30)
         elif name == "Tome of Extinction":
+            return Tome(name, grid_items, reverse="Tome of Resurrection", sprite_locs = fakenames_tomes_key[18], damage=10, projectile=False, description="Causes all monsters to go extinct.",price=50)
             return Tome(name, grid_items, reverse="Tome of Resurrection", sprite_locs = fakenames_tomes_key[18], damage=10, projectile=False, description="Causes all monsters to go extinct.",price=50)
         elif name == "Tome of Resurrection":
             return Tome(name, grid_items, reverse="Tome of Extinction",sprite_locs = fakenames_tomes_key[19], damage=10, projectile=False, description= "Brings a species back from the dead.",price=50)
@@ -330,7 +341,7 @@ class Map:
         
         
         
-        
+
         
         elif name == "Blank Tome":
             return Tome(name, grid_items, reverse="Tome of Reversal", sprite_locs = 28, damage=10, projectile=False, description="Finds the last tome in your inventory and turns into a copy.",price=30)
@@ -338,6 +349,7 @@ class Map:
         
         elif name == "Ruined Tome":
             return Tome(name, grid_items, reverse="Blank Tome", sprite_locs = 24, damage=10, projectile=False, description="This tome is drenched in ink. It's completely unreadable.",price=10)
+        
         
         elif name == "Water Flask":
             return Flask(name, grid_items, reverse="Petroleum", evaporation_rate=0.05, product="Air", liquid="Water", sprite_locs = 17, description="A flask of water. Heals plant-type creatues.", price=10)
@@ -432,7 +444,7 @@ class Map:
                     break 
             if is_item_here_flag == False:
                 item_name = random.choice(item_list)
-                #print(item_name)
+                print(item_name)
                 item = self.create_item(item_name, grid_items)
                 item.x = x
                 item.y = y
@@ -549,7 +561,3 @@ class Map:
                     new_grid[y][x] = bitmask_to_ascii.get(bitmask, target_char)
 
         self.textured_map = new_grid
-    
-                
-
-

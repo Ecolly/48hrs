@@ -26,6 +26,7 @@ import delete_object
 import json
 from menu_screens import *
 from save_and_load import *
+from font import *
 
 #import xdot
 import time
@@ -148,17 +149,9 @@ player = Player(
     experience = 0,
     x = 30,
     y = 30,
-    sprite = create_sprite(grid_entities1, 23*8*8),
-    spritegrid = grid_entities1,
-    itemgrid = grid_items,
     spriteindex = 23*8*8,
     animtype = 1,
 )
-
-
-
-
-
 
 
 
@@ -188,11 +181,13 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global item_selected
     global discovered_staffs, discovered_tomes
     global current_menu
+    global player #oh hell no this is bad
      
     if button == pyglet.window.mouse.LEFT:
         if current_menu == MenuState.MAIN_MENU:
             if start_button.hit_test(mouse_x, mouse_y):
                 print("Start button clicked")
+                current_menu = MenuState.INGAME
                 return
             if load_button.hit_test(mouse_x, mouse_y):
                 print("Load button clicked")
@@ -211,7 +206,8 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
             for btn in load_game_buttons:
                 if btn.hit_test(mouse_x, mouse_y):
                     print(f"Load button clicked for {btn.label.text}")
-                    #load_game(btn.label.text)
+                    player = load_game(btn.label.text)
+                    current_menu = MenuState.INGAME
                     pass
 
         item_selected = hotbar.get_selected_item()
@@ -260,6 +256,7 @@ def on_mouse_release(x, y, button, modifiers):
     global all_anims
     global all_enemies
     global all_buttons
+    
     global gamestate
     global current_entity_turn
     global floor
@@ -268,6 +265,7 @@ def on_mouse_release(x, y, button, modifiers):
     global right_click_menu_enabled
     global item_selected
     global adventure_log
+    
     if current_menu == MenuState.INGAME or gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6: #this stuff can only happen between turns or in inventory
         ###################### LEFT CLICK ##############################
         if button == pyglet.window.mouse.LEFT:
@@ -912,6 +910,7 @@ def on_draw():
     global all_buttons
     global has_won
     global all_anims
+    global player
     global bg
     global bg_pits
     global bg_liqs

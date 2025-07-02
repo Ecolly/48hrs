@@ -3,6 +3,7 @@ import json
 import time
 
 from game_classes import player as player_module
+from font import*
 
 def save_game_data(game_data):
     directory = "game_saves/"
@@ -243,8 +244,6 @@ def map_to_dict(map_obj):
 
 
 
-
-
 def player_from_dict(data):
 
     player = player_module.Player(
@@ -258,6 +257,7 @@ def player_from_dict(data):
     animtype=data['animtype'],
         # Add any other required constructor args here
     )
+
     # Set additional attributes
     player.strength = data.get("strength", 0)
     player.maxstrength = data.get("maxstrength", 0)

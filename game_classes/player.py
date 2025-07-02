@@ -14,7 +14,7 @@ from game_classes.id_shuffling import *
 from font import *
 
 class Player:
-    def __init__(self, name, health, level, experience, sprite, spriteindex, spritegrid, itemgrid, animtype, x, y):
+    def __init__(self, name, health, level, experience, spriteindex, animtype, x, y):
         global batch, batch
         global group_enemies
         self.name = name
@@ -22,6 +22,7 @@ class Player:
         self.maxhealth = health
         self.level = level
         self.experience = experience
+
         self.equipment_weapon = None
         self.equipment_shield = None
 
@@ -30,6 +31,7 @@ class Player:
         self.maxhealth_visual = health
         self.experience_visual = experience
         self.level_visual = level
+        self.grid = grid_entities1
 
         self.creaturetype = None
         self.x = x # x coords are in 
@@ -64,17 +66,18 @@ class Player:
         self.maxdefense_visual = 5
         
         self.gold = 0
-
-        self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
         self.spriteindex_prev = -1
-        self.grid = spritegrid
+        self.grid = grid_entities1
+        
 
-        self.sprite_weapon = image_handling.create_sprite(itemgrid, 0)
-        self.sprite_shield = image_handling.create_sprite(itemgrid, 0)
+        
+        self.sprite = create_sprite(grid_entities1, spriteindex)
+        self.sprite_weapon = image_handling.create_sprite(grid_items, 0)
+        self.sprite_shield = image_handling.create_sprite(grid_items, 0)
+
         self.sprite_weapon.color = (0, 0, 0, 0)
         self.sprite_shield.color = (0, 0, 0, 0)
-        self.itemgrid = itemgrid
 
         self.sprite_weapon.batch = batch
         self.sprite_shield.batch = batch
@@ -514,8 +517,8 @@ class Player:
 
 
         if held_item != None and held_item != self.equipment_shield:
-            if self.sprite_weapon.image != self.itemgrid[held_item.spriteindex]:
-                self.sprite_weapon.image = self.itemgrid[held_item.spriteindex]#.blit_into(self.itemgrid[held_item.spriteindex], 0, 0, 0)
+            if self.sprite_weapon.image != grid_items[held_item.spriteindex]:
+                self.sprite_weapon.image = grid_items[held_item.spriteindex]#.blit_into(self.itemgrid[held_item.spriteindex], 0, 0, 0)
                 self.sprite_weapon.color = (255, 255, 255, 255)
                 self.sprite_weapon.batch = batch
 
@@ -531,8 +534,8 @@ class Player:
                 self.sprite_weapon.batch = None
 
         if self.equipment_shield != None:
-            if self.sprite_shield.image != self.itemgrid[self.equipment_shield.spriteindex]:
-                self.sprite_shield.image = self.itemgrid[self.equipment_shield.spriteindex]#.blit_into(tile3, 0, 0, 0)
+            if self.sprite_shield.image != grid_items[self.equipment_shield.spriteindex]:
+                self.sprite_shield.image = grid_items[self.equipment_shield.spriteindex]#.blit_into(tile3, 0, 0, 0)
                 self.sprite_shield.color = (255, 255, 255, 255)
                 self.sprite_shield.batch = batch
             self.sprite_shield.x, self.sprite_shield.y, self.sprite_shield.scale_x, self.sprite_shield.group = self.get_helditem_coordanites(base_x, base_y, frame_index, group_bg, group_fg, "shield", "left")
