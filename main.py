@@ -821,6 +821,7 @@ def go_to_next_level(amount):
     elif floor.wall_type == "Pit":
         pass
 
+
     
 
 
@@ -934,15 +935,8 @@ def on_draw():
     # glClear(GL_COLOR_BUFFER_BIT)
     # if random.uniform(0, 1) < 0.1:
     #     print(fps)
-    if fps < 75: #for some reason the fps values are x2 what they should be
-        lag_shortcut_target = 2
-    else:
-        lag_shortcut_target = 1
 
-    lag_shortcut = 0
-    while lag_shortcut < lag_shortcut_target:
-        if lag_shortcut == lag_shortcut_target-1:
-            window.clear()
+
     # if random.uniform(0, 1) < 0.1:
     #     print(fps)
     if fps < 75: #for some reason the fps values are x2 what they should be
