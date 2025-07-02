@@ -1,5 +1,5 @@
 import pyglet
-
+from image_handling import*
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "", "", "", "", "", "", "", "", "ä"]
 
@@ -107,20 +107,6 @@ group_ui_menu = Group(order=110)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def draw_tiny_texts(text, x, y, group):
     """
     Draws text at the specified position using the provided font grid.
@@ -136,22 +122,37 @@ def draw_tiny_texts(text, x, y, group):
             sprite.scale = 3
             sprite.color = (0, 0, 0, 255)
         else:
-            print(f"Character '{char}' not found in letter order.")
+            pass
+            #print(f"Character '{char}' not found in letter order.")
     return sprites
 
 
-def draw_texts(text, x, y, group):
+
+def draw_tile_text(text, x, y, grid_tinyfont, letter_order, width=24, batch=None, group=None, scale=3):
     """
-    Draws text at the specified position using the regular font grid.
+    Draws the given text at (x, y) using the grid_tinyfont tile system.
+    - text: The string to draw.
+    - x, y: Position on the screen.
+    - grid_tinyfont: The font tile grid.
+    - letter_order: The character order for the font.
+    - width: How many characters per line.
+    - batch, group: Optional pyglet batch/group for drawing.
+    - scale: Sprite scale.
     """
-    global batch
-    sprites = []
-    for i, char in enumerate(text):
-        if char in letter_order:
-            index = letter_order.index(char)
-            sprite = pyglet.sprite.Sprite(grid_font[index], x + i * 16, y, batch=batch, group=group)
-            sprites.append(sprite)
-            sprite.scale = 2
-        else:
-            print(f"Character '{char}' not found in letter order.")
-    return sprites
+    # Create a blank background for the text area
+    bg_sprite = pyglet.sprite.Sprite(
+        combine_tiles(tesselate(0, grid_tinyfont, width, 12), 5, 8, width),
+        x=x, y=y, batch=batch, group=group
+    )
+    bg_sprite.scale = scale
+
+    # Convert text to tiles and combine into an image
+    tiles = text_to_tiles_wrapped(text, grid_tinyfont, letter_order, width, "left")
+    text_img = combine_tiles(tiles, 5, 8, width)
+    text_sprite = pyglet.sprite.Sprite(text_img, x=x, y=y, batch=batch, group=group)
+    text_sprite.scale = scale
+
+    return bg_sprite, text_sprite
+
+
+

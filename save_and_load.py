@@ -1,8 +1,12 @@
 
 import json
+import time
 
-def save_game_data(filename, game_data):
-    with open(filename, 'w') as f:
+def save_game_data(game_data):
+    directory = "game_saves/"
+    filename = time.strftime("save_%Y%m%d_%H%M%S.json")
+    print(f"Saving game data to {directory + filename}")
+    with open(directory + filename, 'w') as f:
         json.dump(game_data, f, indent=4)
     
         
@@ -15,13 +19,13 @@ def player_to_dict(player):
         'health': player.health,
         'level': player.level,
         'experience': player.experience,
-        "inventory": [item_to_dict(item) if item else None for item in player.inventory],
+        #"inventory": [item_to_dict(item) if item else None for item in player.inventory],
 
         'x': player.x,
         'y': player.y,
         'spriteindex': player.spriteindex, #needs to be implemented, get the index of the sprite
-        'spritegrid': player.spritegrid, #needs to be implemented
-        'itemgrid': player.itemgrid, #needs to be implemented
+        # 'spritegrid': player.spritegrid, #needs to be implemented
+        # 'itemgrid': player.itemgrid, #needs to be implemented
         'animtype': player.animtype,
 
 
@@ -42,7 +46,6 @@ def player_to_dict(player):
         "is_shopping": player.is_shopping,
         "current_holding": player.current_holding,
 
-
         "default_speed": player.default_speed,
         "speed": player.speed,
         "turns_left_before_moving": player.turns_left_before_moving,
@@ -56,11 +59,7 @@ def player_to_dict(player):
     }
 
 
-game_data = {
-    "player": player_to_dict(player),
-    "map": map_to_dict(game_map),
-    # ...other game state...
-}
+
         
 
     #These needs to be set after the items are created
@@ -223,8 +222,8 @@ def map_to_dict(map_obj):
         "name": map_obj.name,
         
         "level_list": map_obj.level_list,
-        "floor_items": [item_to_dict(item) for item in map_obj.floor_items],  # Save items on the floor
-        "all_enemies": [enemy_to_dict(enemy) for enemy in map_obj.all_enemies],  # Save enemies
+        # "floor_items": [item_to_dict(item) for item in map_obj.floor_items],  # Save items on the floor
+        # "all_enemies": [enemy_to_dict(enemy) for enemy in map_obj.all_enemies],  # Save enemies
         "spawnpoint": list(map_obj.spawnpoint),  # Convert set to list for JSON
         "stairs": list(map_obj.stairs),    
     }

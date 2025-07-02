@@ -169,7 +169,7 @@ class Map:
                     failed = True
                     break
             if not failed:
-                print(f"Room {rooms_created} generated at ({x}, {y}) with size ({width}, {height})")
+                #print(f"Room {rooms_created} generated at ({x}, {y}) with size ({width}, {height})")
                 # If no overlap, generate the room
                 if has_shop == False and random.uniform(0, 1) < 0.1:
                     self.generate_room(x, y, width, height, True, item_list)
@@ -428,7 +428,7 @@ class Map:
                     break 
             if is_item_here_flag == False:
                 item_name = random.choice(item_list)
-                print(item_name)
+                #print(item_name)
                 item = self.create_item(item_name, grid_items)
                 item.x = x
                 item.y = y

@@ -10,6 +10,7 @@ from game_classes.enemy import *
 from game_classes.map import *
 from game_classes.item import Weapon, Consumable
 from game_classes.item import Item
+from actual_actual_button import Button
 from font import *
 import cProfile
 import tracemalloc
@@ -24,6 +25,7 @@ import turn_logic
 import delete_object
 import json
 from menu_screens import *
+from save_and_load import *
 
 #import xdot
 import time
@@ -115,6 +117,26 @@ color_templates.append((255, 0, 0, 255))
 color_templates.append((189, 66, 0, 255))
 color_templates.append((33, 33, 33, 90))
 
+
+
+
+##################### MENU STUF     ##########################
+
+
+#menu stuff
+menu_batch = pyglet.graphics.Batch()
+side_bar_batch = pyglet.graphics.Batch()
+load_menu_batch = pyglet.graphics.Batch()
+save_menu_batch = pyglet.graphics.Batch()
+
+current_menu = MenuState.INGAME
+main_menu = create_main_menu_labels(batch=menu_batch, group=group_ui_menu)
+start_button = Button(300, 350, 200, 60, "Start Game", menu_batch)
+exit_button = Button(300, 250, 200, 60, "Exit", menu_batch)
+
+game_side_menu = create_ingame_menu_labels(batch=side_bar_batch, group=group_ui_menu)
+save_button = Button(300, 350, 200, 60, "Save Game", side_bar_batch)
+
 player = Player(
     name = "DAMIEN",
     health = 200000,
@@ -161,8 +183,21 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global right_click_menu_enabled
     global item_selected
     global discovered_staffs, discovered_tomes
-    
+     
     if button == pyglet.window.mouse.LEFT:
+        if current_menu == MenuState.MAIN_MENU:
+            if start_button.hit_test(mouse_x, mouse_y):
+                print("Start button clicked")
+                return
+        elif current_menu == MenuState.SIDE_MENU:
+            if save_button.hit_test(mouse_x, mouse_y):
+                game_data = {
+                    "player": player_to_dict(player),
+                    "map": map_to_dict(floor)
+                }
+                save_game_data(game_data)
+                print("Save button clicked")
+                return
         item_selected = hotbar.get_selected_item()
         if gamestate == 1 and isinstance(item_selected, Staff):
             gamestate = 6 #6 means power bar mode
@@ -190,7 +225,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                             drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
                             #remove the item from the inventory slot
                             player.inventory[inventory_slot] = None
-                            print("Dragging item:", dragging_item.name)
+                            #print("Dragging item:", dragging_item.name)
                     else: 
                         #if there is an item being dragged
                         #place it in the moused over inventory slot if there are no items in that slot
@@ -217,14 +252,12 @@ def on_mouse_release(x, y, button, modifiers):
     global right_click_menu_enabled
     global item_selected
     global adventure_log
-    if gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6: #this stuff can only happen between turns or in inventory
-
+    if current_menu == MenuState.INGAME or gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6: #this stuff can only happen between turns or in inventory
         ###################### LEFT CLICK ##############################
         if button == pyglet.window.mouse.LEFT:
-            print("length of inventory")
-            print(len(player.inventory))
+            # print("length of inventory")
+            # print(len(player.inventory))
             item_selected = hotbar.get_selected_item()
-            
             right_click_menu_enabled = False
             was_button_clicked = 0
             if gamestate == 1: #if the button is hovered, and the gamestate is 1, then it was clicked
@@ -309,7 +342,7 @@ def on_mouse_release(x, y, button, modifiers):
 
                         #num of charges = func
                 
-                print(func)
+                #print(func)
                 print(max(round(func), 1))
                 player.techniqueitem = item_selected
                 #print(button.extra_1)
@@ -376,13 +409,21 @@ def on_key_press(symbol, modifiers):
     global all_anims
     global floor 
     global adventure_log
+    global current_menu
 
-
+    if symbol == pyglet.window.key.M:
+        if current_menu == MenuState.INGAME:
+            current_menu = MenuState.SIDE_MENU
+            print("Opening in-game menu")
+            return
+        elif current_menu == MenuState.SIDE_MENU:
+            current_menu = MenuState.INGAME
+            print("Closing in-game menu")
+            return
     item_selected = hotbar.get_selected_item() 
     if symbol == pyglet.window.key.Q:
         #Throw items
         if gamestate == 1:
-
             #throw the item in the hotbar
             if item_selected is not None:
                 player.drop_item(item_selected, floor, adventure_log)
@@ -457,7 +498,7 @@ bg_deeper.batch = batch
 bg_desc = pyglet.sprite.Sprite(combine_tiles(tesselate(7*16, grid_tinyfont, 24, 12), 5, 8, 24))
 bg_desc_text = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_tinyfont, 24, 12), 5, 8, 24))
 
-#DUMB DUMB DUMB DUMB DUMB DUMB DUMB DUIEWIFEWNOIGFEWNGOERINGIUREFOIW2Q398U4OIEWJKDS
+#DUMB DUMB DUMB DUMB DUMB DUMB DUMB DUIEWIFEWNOIGFEWNGOERINGIUREFOIW2Q398U4OIEWJKDS - THIS IS ACTUAL CANCER WHY IS IT IN MAIN yOU FUCK 
 def draw_description_but_in_main_because_main_is_cool(item, invslot, gamestate):
     global batch
     global bg_desc, bg_desc_text
@@ -500,12 +541,6 @@ def draw_description_but_in_main_because_main_is_cool(item, invslot, gamestate):
         bg_desc_text.batch = batch 
         bg_desc_text.scale = 3
         
-        # if additional_info:
-        #     additional_info_drawn = draw_tiny_texts(additional_info, base_x, base_y - -20, group)
-        # else:
-        #     additional_info_drawn = ""
-
-        #return description, additional_info_drawn
     return None
 
 
@@ -773,7 +808,7 @@ player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
 
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
-music = pyglet.media.load('audio\Cyber-Dream-Loop.mp3')  # Replace with your actual file path
+music = pyglet.media.load(r'audio\Cyber-Dream-Loop.mp3')  # Replace with your actual file path
 
 # Create a player and queue the music
 mplayer = pyglet.media.Player()
@@ -788,8 +823,8 @@ mplayer.play()
 
 
 
-sound_hit = pyglet.media.load('audio\hit.mp3', streaming=False)
-sound_magic = pyglet.media.load('audio\magic.mp3', streaming=False)
+sound_hit = pyglet.media.load(r'audio\hit.mp3', streaming=False)
+sound_magic = pyglet.media.load(r'audio\magic.mp3', streaming=False)
 
 global keypress_chk
 keypress_chk = 0
@@ -806,13 +841,8 @@ keypress_chk = 0
 
 bg_animframe = 0
 
-#menu stuff
-menu_batch = pyglet.graphics.Batch()
-load_menu_batch = pyglet.graphics.Batch()
-save_menu_batch = pyglet.graphics.Batch()
 
-current_menu = MenuState.INGAME
-# main_menu = create_main_menu_labels(batch=menu_batch, group=group_ui_menu)
+
 # save_menu = create_save_menu_labels(batch=save_menu_batch, group=group_ui_menu)
 
 fps_display = pyglet.window.FPSDisplay(window=window)
@@ -866,6 +896,10 @@ def on_draw():
         return
     elif current_menu == MenuState.INGAME:
         batch.draw()
+
+    elif current_menu == MenuState.SIDE_MENU:
+        side_bar_batch.draw()
+        return
     # render_texture.bind()
     # pyglet.gl.glViewport(0, 0, win_x, win_y)
     # pyglet.gl.glClearColor(0, 0, 0, 1)
@@ -889,7 +923,7 @@ def on_draw():
         #     create_main_menu(all_buttons)
         #     gamestate = 0
         if gamestate == 0:
-            exit()
+            #exit()
             keypress_chk = 1
             gamestate = 1
             delete_buttons_supertype(all_buttons, 'winlose')

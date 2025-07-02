@@ -2,7 +2,7 @@ import pyglet
 from font import*
 
 class Button:
-    def __init__(self, x, y, width, height, text):
+    def __init__(self, x, y, width, height, text, batches):
         self.rect = pyglet.shapes.Rectangle(x, y, width, height, color=(50, 150, 255))
         self.label = pyglet.text.Label(
             text,
@@ -11,7 +11,9 @@ class Button:
             y=y + height // 2,
             anchor_x='center',
             anchor_y='center',
-            color=(255, 255, 255, 255)
+            color=(255, 255, 255, 255),
+            batch=batches,
+            group=group_ui_menu  # Assuming you want to use the same group as the menu
         )
         self.x = x
         self.y = y
@@ -23,4 +25,5 @@ class Button:
         self.label.draw()
 
     def hit_test(self, x, y):
+        print(f"Hit test at ({x}, {y}) against button at ({self.x}, {self.y}) with size ({self.width}, {self.height})")
         return self.x <= x <= self.x + self.width and self.y <= y <= self.y + self.height

@@ -15,63 +15,38 @@ class MenuState(Enum):
     SAVE_MENU = 3
     WINLOSE_SCREEN = 4
     INGAME = 5
+    SIDE_MENU = 6
 
 
-class MenuButton:
-    def __init__(self, x, y, width, height, text, batch, group, on_click):
-        self.rect = pyglet.shapes.Rectangle(x, y, width, height, color=(60, 60, 120), batch=batch, group=group)
-        self.label = pyglet.text.Label(
-            text,
-            font_name="Arial",
-            font_size=18,
-            x=x + width // 2,
-            y=y + height // 2,
-            anchor_x="center",
-            anchor_y="center",
-            color=(255, 255, 255, 255),
-            batch=batch,
-            group=group
-        )
-        self.x, self.y, self.width, self.height = x, y, width, height
-        self.on_click = on_click
-
-    def hit_test(self, mx, my):
-        return self.x <= mx <= self.x + self.width and self.y <= my <= self.y + self.height
-
-# Example usage in your menu creation function:
-def create_main_menu_labels(batch, group, window_width, window_height, on_start, on_load):
+def create_main_menu_labels(batch, group):
     background = pyglet.shapes.Rectangle(
-        0, 0, window_width, window_height,
+        0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
         color=(100, 100, 200),
         batch=batch,
         group=group
     )
+
     menu_label = pyglet.text.Label(
         "PANDORIUM",
         font_name="Arial",
         font_size=48,
-        x=window_width // 2, y=window_height - 100,
+        x=WINDOW_WIDTH // 2, y=WINDOW_HEIGHT - 100,
         anchor_x="center", anchor_y="center",
         color=(255, 255, 255, 255),
         batch=batch,
         group=group
     )
-    start_button = MenuButton(
-        x=window_width // 2 - 100, y=window_height // 2 + 20,
-        width=200, height=50,
-        text="Start Game",
-        batch=batch, group=group,
-        on_click=on_start
+    menu_stats = pyglet.text.Label(
+        "Press ENTER to Start\nPress L to Load",
+        font_name="Arial",
+        font_size=18,
+        x=WINDOW_WIDTH // 2, y=WINDOW_HEIGHT // 2,
+        anchor_x="center", anchor_y="center",
+        color=(200, 200, 200, 255),
+        batch=batch,
+        group=group
     )
-    load_button = MenuButton(
-        x=window_width // 2 - 100, y=window_height // 2 - 50,
-        width=200, height=50,
-        text="Load Game",
-        batch=batch, group=group,
-        on_click=on_load
-    )
-    return [background, menu_label, start_button, load_button]
-
+    return background, menu_label, menu_stats
 
 
 
@@ -105,6 +80,14 @@ def create_save_menu_labels(batch, group):
     return labels
 
     
+
+def create_ingame_menu_labels(batch, group):
+    background = pyglet.shapes.Rectangle(
+        0, 0, WINDOW_WIDTH/2, WINDOW_HEIGHT,
+        color=(100, 100, 200),
+        batch=batch,
+        group=group
+    )
 #Load menu (displayed when the load button is clicked)
     #List of saved games, each with a load button
     #Back button, returns to main menu
