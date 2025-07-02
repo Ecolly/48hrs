@@ -129,13 +129,17 @@ side_bar_batch = pyglet.graphics.Batch()
 load_menu_batch = pyglet.graphics.Batch()
 save_menu_batch = pyglet.graphics.Batch()
 
-current_menu = MenuState.INGAME
+current_menu = MenuState.MAIN_MENU
 main_menu = create_main_menu_labels(batch=menu_batch, group=group_ui_menu)
-start_button = Button(300, 350, 200, 60, "Start Game", menu_batch)
-exit_button = Button(300, 250, 200, 60, "Exit", menu_batch)
+start_button = Button(300, 350, 200, 60, "Start Game", menu_batch, group_ui_menu)
+exit_button = Button(300, 250, 200, 60, "Exit", menu_batch, group_ui_menu)
+load_button = Button(300, 450, 200, 60, "Load Game", menu_batch, group_ui_menu)
 
 game_side_menu = create_ingame_menu_labels(batch=side_bar_batch, group=group_ui_menu)
-save_button = Button(300, 350, 200, 60, "Save Game", side_bar_batch)
+save_button = Button(300, 350, 200, 60, "Save Game", side_bar_batch, group_ui_menu)
+
+load_menu = create_load_menu(batch=load_menu_batch, group=group_ui_menu)
+load_game_buttons = create_load_game_buttons(batch=load_menu_batch, group=group_ui_menu)
 
 player = Player(
     name = "DAMIEN",
@@ -183,11 +187,16 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global right_click_menu_enabled
     global item_selected
     global discovered_staffs, discovered_tomes
+    global current_menu
      
     if button == pyglet.window.mouse.LEFT:
         if current_menu == MenuState.MAIN_MENU:
             if start_button.hit_test(mouse_x, mouse_y):
                 print("Start button clicked")
+                return
+            if load_button.hit_test(mouse_x, mouse_y):
+                print("Load button clicked")
+                current_menu = MenuState.LOAD_MENU
                 return
         elif current_menu == MenuState.SIDE_MENU:
             if save_button.hit_test(mouse_x, mouse_y):
@@ -198,6 +207,13 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 save_game_data(game_data)
                 print("Save button clicked")
                 return
+        elif current_menu == MenuState.LOAD_MENU:
+            for btn in load_game_buttons:
+                if btn.hit_test(mouse_x, mouse_y):
+                    print(f"Load button clicked for {btn.label.text}")
+                    load_game(btn.label.text)
+                    pass
+
         item_selected = hotbar.get_selected_item()
         if gamestate == 1 and isinstance(item_selected, Staff):
             gamestate = 6 #6 means power bar mode
@@ -420,6 +436,7 @@ def on_key_press(symbol, modifiers):
             current_menu = MenuState.INGAME
             print("Closing in-game menu")
             return
+        
     item_selected = hotbar.get_selected_item() 
     if symbol == pyglet.window.key.Q:
         #Throw items
@@ -897,6 +914,9 @@ def on_draw():
     elif current_menu == MenuState.INGAME:
         batch.draw()
 
+    elif current_menu == MenuState.LOAD_MENU:
+        load_menu_batch.draw()
+        return
     elif current_menu == MenuState.SIDE_MENU:
         side_bar_batch.draw()
         return

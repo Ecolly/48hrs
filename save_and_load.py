@@ -2,15 +2,29 @@
 import json
 import time
 
+from game_classes import player as player_module
+
 def save_game_data(game_data):
     directory = "game_saves/"
     filename = time.strftime("save_%Y%m%d_%H%M%S.json")
     print(f"Saving game data to {directory + filename}")
     with open(directory + filename, 'w') as f:
         json.dump(game_data, f, indent=4)
-    
-        
 
+def load_game(filename):
+    directory = "game_saves"
+    filename = f"{directory}/{filename}"
+    print(f"Loading game data from {filename}")
+    with open(filename, 'r') as f:
+        game_data = json.load(f)
+    print(game_data["player"])
+    player_data = game_data["player"]
+    if player_data:
+        player = player_from_dict(player_data)
+    
+    return player
+
+    
 
 def player_to_dict(player):
     return {
@@ -134,7 +148,6 @@ def item_to_dict(item):
             "reverse": getattr(item, "reverse", ""),
         }
 
-
 def enemy_to_dict(enemy):
     return{
 
@@ -227,3 +240,45 @@ def map_to_dict(map_obj):
         "spawnpoint": list(map_obj.spawnpoint),  # Convert set to list for JSON
         "stairs": list(map_obj.stairs),    
     }
+
+
+
+
+
+def player_from_dict(data):
+
+    player = player_module.Player(
+    name=data['name'],
+    health=data['health'],
+    level=data['level'],
+    experience=data['experience'],
+    x=data['x'],
+    y=data['y'],
+    spriteindex=data['spriteindex'],
+    animtype=data['animtype'],
+        # Add any other required constructor args here
+    )
+    # Set additional attributes
+    player.strength = data.get("strength", 0)
+    player.maxstrength = data.get("maxstrength", 0)
+    player.strength_visual = data.get("strength_visual", 0)
+    player.maxstrength_visual = data.get("maxstrength_visual", 0)
+    player.defense = data.get("defense", 0)
+    player.maxdefense = data.get("maxdefense", 0)
+    player.defense_visual = data.get("defense_visual", 0)
+    player.maxdefense_visual = data.get("maxdefense_visual", 0)
+    player.gold = data.get("gold", 0)
+    player.speed_turns = data.get("speed_turns", 0)
+    player.speed_visual = data.get("speed_visual", 0)
+    player.paralysis_turns = data.get("paralysis_turns", 0)
+    player.paralysis_visual = data.get("paralysis_visual", 0)
+    player.is_shopping = data.get("is_shopping", False)
+    player.current_holding = data.get("current_holding", None)
+    player.default_speed = data.get("default_speed", 0)
+    player.speed = data.get("speed", 0)
+    player.turns_left_before_moving = data.get("turns_left_before_moving", 0)
+    player.flee_ai_turns = data.get("flee_ai_turns", 0)
+    player.rage_ai_turns = data.get("rage_ai_turns", 0)
+    # Add any other attributes as needed
+
+    return player

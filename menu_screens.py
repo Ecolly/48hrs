@@ -5,7 +5,9 @@
 
 import pyglet
 from enum import Enum
+import os
 from config import*
+from actual_actual_button import Button
 
 menu_batch = pyglet.graphics.Batch()
 
@@ -88,6 +90,40 @@ def create_ingame_menu_labels(batch, group):
         batch=batch,
         group=group
     )
+
+def create_load_menu(batch, group):
+    background = pyglet.shapes.Rectangle(
+        0, 0, WINDOW_WIDTH/2, WINDOW_HEIGHT,
+        color=(100, 100, 200),
+        batch=batch,
+        group=group
+    )
+
+def create_load_game_buttons(batch, group, directory="game_saves"):
+    buttons = []
+    # Create buttons for each saved game
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    files = [f for f in os.listdir(directory) if f.endswith(".json")]
+    files.sort(reverse=True)  # newest first, optional
+
+    start_y = 400
+    for i, filename in enumerate(files):
+        btn = Button(
+            x=300,
+            y=start_y - i*70,
+            width=400,
+            height=60,
+            text=filename,
+            batch=batch,
+            group=group
+        )
+        btn.filename = os.path.join(directory, filename)  # Store full path for loading
+        buttons.append(btn)
+    return buttons
+
+
+
 #Load menu (displayed when the load button is clicked)
     #List of saved games, each with a load button
     #Back button, returns to main menu

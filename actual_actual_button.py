@@ -2,7 +2,7 @@ import pyglet
 from font import*
 
 class Button:
-    def __init__(self, x, y, width, height, text, batches):
+    def __init__(self, x, y, width, height, text, batch, group):
         self.rect = pyglet.shapes.Rectangle(x, y, width, height, color=(50, 150, 255))
         self.label = pyglet.text.Label(
             text,
@@ -12,13 +12,15 @@ class Button:
             anchor_x='center',
             anchor_y='center',
             color=(255, 255, 255, 255),
-            batch=batches,
-            group=group_ui_menu  # Assuming you want to use the same group as the menu
+            batch=batch,
+            group=group  # Use the provided group for the button
+             # Assuming you want to use the same group as the menu
         )
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+
 
     def draw(self):
         self.rect.draw()
