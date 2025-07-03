@@ -293,8 +293,8 @@ def go_to_next_level(amount):
 
     floor.random_create_item(item_list)
     floor.generate_enemies(floor_level, enemy_list, level_list)
-
     floor.name = floor_name
+    
     
 
     player.x, player.y = floor.spawnpoint
@@ -304,6 +304,7 @@ def go_to_next_level(amount):
     #floor_level +=1
     floor.map_type = sc
     floor.wall_type = walltype
+    floor.tileset = tileset
 
     
     # print(floor)
@@ -439,7 +440,7 @@ def go_to_next_level(amount):
         pass
 
 
-    
+
 
 player = Player(
     name = "DAMIEN",
@@ -463,10 +464,7 @@ def draw_map():
 
     player.prevx, player.prevy = floor.spawnpoint
     player.initx, player.inity = floor.spawnpoint
-    all_enemies = floor.all_enemies
     #floor_level +=1
-    floor.map_type = sc
-    floor.wall_type = walltype
 
     
     # print(floor)
@@ -477,7 +475,7 @@ def draw_map():
     if floor.map_type == "Simple":
         #Simple Map Initiation
         #simple_color_sets = [(26,26), (29,29), (27,27)]
-        wall_texture_value, floor_texture_base_value = tileset#random.choice(simple_color_sets)
+        wall_texture_value, floor_texture_base_value = floor.tileset#random.choice(simple_color_sets)
         bg_order = ["#", ".", "*", "~", '%', '<', '>', "@", "S"] #Filler, #Walls, #Space, @Stairs
         bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13, floor_texture_base_value*16+5]
        
@@ -521,7 +519,7 @@ def draw_map():
             "@"    # stairs
         ]
 
-        wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = tileset
+        wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = floor.tileset
         bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,floor_texture_base_value*16+floor_texture_code3, floor_texture_base_value*16+floor_texture_code4, floor_texture_base_value*16+floor_texture_code5, floor_texture_base_value*16+5,
                     
                     wall_texture_value*16, wall_texture_value*16+15, wall_texture_value*16+13, wall_texture_value*16+9,
@@ -647,6 +645,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 if btn.hit_test(mouse_x, mouse_y):
                     print(f"Load button clicked for {btn.label.text}")
                     player, floor, all_enemies = load_game(btn.label.text)
+                    draw_map()
                     print("Class:", type(player).__name__)
                     for key, value in vars(player).items():
                         print(f"{key}: {value}")
@@ -1098,9 +1097,9 @@ def on_draw():
             side_bar_batch.draw()
             return
         elif current_menu == MenuState.INGAME:
-            print("player position", player.x, player.y)
-            print("player prev position", player.prevx, player.prevy)
-            print("map stairs", floor.stairs)
+            # print("player position", player.x, player.y)
+            # print("player prev position", player.prevx, player.prevy)
+            # print("map stairs", floor.stairs)
                 
         # render_texture.bind()
         # pyglet.gl.glViewport(0, 0, win_x, win_y)

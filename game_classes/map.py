@@ -52,6 +52,7 @@ class Map:
         self.level = 1
         self.map_grid = [['#' for _ in range(width)] for _ in range(height)]
         self.liquid_grid = [['#' for _ in range(width)] for _ in range(height)]
+        self.tileset = (26, 0, 0, 1, 2, 3, 4, 5) #default tileset
 
         self.valid_tiles = []
         self.textured_map = [[]]

@@ -319,6 +319,7 @@ def map_to_dict(map_obj):
         
         "map_grid": map_obj.map_grid,
         "liquid_grid": map_obj.liquid_grid,
+        "tileset": list(map_obj.tileset),
         # "item_list": map_obj.item_list,      # If these are lists of strings/ints, it's fine
         # "enemy_list": map_obj.enemy_list,
 
@@ -346,6 +347,7 @@ def map_from_dict(data):
     map_obj.map_type = data.get('map_type', 'default')
     map_obj.wall_type = data.get('wall_type', 'default')
     map_obj.name = data.get('name', 'Unnamed Map')
+    map_obj.tileset = tuple(data.get("tileset", (26, 0, 0, 1, 2, 3, 4, 5)))
     # Set additional attributes that may not be in the constructor
     map_obj.rooms = data.get('rooms', [])
     map_obj.map_grid = data.get('map_grid', [])
