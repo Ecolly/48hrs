@@ -27,5 +27,5 @@ class Button:
         self.label.draw()
 
     def hit_test(self, x, y):
-        print(f"Hit test at ({x}, {y}) against button at ({self.x}, {self.y}) with size ({self.width}, {self.height})")
+        print(f"Hit test at ({x}, {y}) against {self.label.text} button at ({self.x}, {self.y}) with size ({self.width}, {self.height})")
         return self.x <= x <= self.x + self.width and self.y <= y <= self.y + self.height

@@ -77,15 +77,16 @@ def generate_enemy(name, level, x, y, grid, floor, player):
     enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0.1, 0]
     enemy_type = ["Human", "Plant", "Plant", None, None, "Food", None, None, "Robotic", "Abstract", None, None, "Abstract", "Food", "Robotic", "Human", "Food", "Human"]
     id = enemy_names.index(name)
+
+
     enemy = Enemy(
         name = name,
         health = enemy_hps[id],
         strength = enemy_strength[id],
         defense = enemy_defense[id],
         level = level,
-        sprite = create_sprite_enemy(grid, enemy_sprites[id]), #this SUCKS
+        #sprite = create_sprite_enemy(grid, enemy_sprites[id]), #this SUCKS
         spriteindex = enemy_sprites[id],
-        spritegrid = grid,
         color = (255, 255, 255, 255),
         animtype = enemy_animtypes[id],
         animmod = enemy_animmods[id],
@@ -111,11 +112,20 @@ def generate_enemy(name, level, x, y, grid, floor, player):
 
 
 class Enemy:
-    def __init__(self, name, health, strength, defense, level, sprite, spriteindex, spritegrid, color, animtype, animframe, animmod, x, y, experience, speed, type):
+    def __init__(self, name, health, strength, defense, level, spriteindex, color, animtype, animframe, animmod, x, y, experience, speed, type):
         global batch#, batch, batch, batch, batch
-
         global group_enemies
         global grid_items
+
+        if level < 2:
+            self.grid =  grid_entities1
+        elif level == 2:
+            self.grid =  grid_entities2
+        elif level == 3:
+            self.grid =  grid_entities3
+        else:
+            self.grid =  grid_entities4
+        
         self.name = name
         self.health = health*level
         self.maxhealth = health*level
@@ -170,10 +180,9 @@ class Enemy:
         
         self.current_holding = None
         self.has_been_hit = False #for enemies that only hit if you retaliate
-
+        
 
         self.sprite_weapon = image_handling.create_sprite(grid_items, 0)
-
 
 
         #self.sprite_shield = image_handling.create_sprite(itemgrid, 0)
@@ -184,14 +193,10 @@ class Enemy:
 
 
 
-
-
-
-
-        self.sprite = sprite  # pyglet.sprite.Sprite
         self.spriteindex_prev = -1
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
-        self.grid = spritegrid
+
+        self.sprite = create_sprite_enemy(self.grid, self.spriteindex)  # Create the sprite from the grid
 
         # self.spriteset = []
 

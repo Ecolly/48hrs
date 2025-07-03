@@ -5,7 +5,9 @@ import time
 from game_classes import player as player_module
 from game_classes.map import Map
 from game_classes.item import Item, Weapon, Staff, Tome, Flask, Consumable, Shield, Miscellanious
+from game_classes.enemy import Enemy
 from font import*
+from game_classes.face_direction import FaceDirection
 
 def save_game_data(game_data):
     directory = "game_saves/"
@@ -21,12 +23,15 @@ def load_game(filename):
     with open(filename, 'r') as f:
         game_data = json.load(f)
     print(game_data["player"])
+    
     player_data = game_data["player"]
     if player_data:
         player = player_from_dict(player_data)
         map = map_from_dict(game_data["map"])
+        floor_enemies = [enemy_from_dict(e) for e in game_data["floor_enemies"]]
     
-    return player, map
+    
+    return player, map, floor_enemies
 
     
 
@@ -41,9 +46,12 @@ def player_to_dict(player):
 
         'x': player.x,
         'y': player.y,
+        'initx' : player.initx,
+        'inity': player.inity,
+        'prevx': player.prevx,
+        'prevy': player.prevy,
         'spriteindex': player.spriteindex, #needs to be implemented, get the index of the sprite
-        # 'spritegrid': player.spritegrid, #needs to be implemented
-        # 'itemgrid': player.itemgrid, #needs to be implemented
+        
         'animtype': player.animtype,
 
         'health_visual':player.health_visual,
@@ -84,18 +92,6 @@ def player_to_dict(player):
 
 
 
-        
-
-    #These needs to be set after the items are created
-        # self.equipment_weapon = None
-        # self.equipment_shield = None
-
-        #these are for displaying the stats during combat (THIS MAKES ME WANT TO CRY)
-        # self.health_visual = health
-        # self.maxhealth_visual = health
-        # self.experience_visual = experience
-        # self.level_visual = level
-        
 
         #self.active_spells = []
         # self.technique = Technique.NA
@@ -118,141 +114,6 @@ def player_to_dict(player):
         # self.sprite.group = group_enemies
 
         # self.scale = 3
-
-def item_to_dict(item):
-    return {
-            "class": item.__class__.__name__,
-            "name": item.name,
-            "spriteindex": item.spriteindex,
-            "x": item.x,
-            "y": item.y,
-            "quantity": item.quantity,
-            "description": item.description,
-            "price": getattr(item, "price", 0),
-            
-            # Add any other common attributes you want to save
-            
-            # self.sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
-            # self.hotbar_sprite = create_sprite_item(grid_items, 29*10+ sprite_locs)
-            # self.grid = grid_items
-            # self.spriteindex = 29*10+sprite_locs
-            # self.color = (255, 255, 255, 255)
-            # self.magic_color = sprite_locs
-
-            #Projectiles
-            # self.entity = None
-            # self.chron_offset = 0
-            
-            "price": getattr(item, "price", 0),
-            "friendly_fire": getattr(item, "friendly_fire", False),
-            "scale": getattr(item, "scale", 3),
-            "is_usable": getattr(item, "is_usable", False),
-            "is_equipable": getattr(item, "is_equipable", False),
-            "is_consumable": getattr(item, "is_consumable", False),
-            "is_castable": getattr(item, "is_castable", False),
-            "is_piercing": getattr(item, "is_piercing", False),
-            "is_readable": getattr(item, "is_readable", False),
-            "should_be_deleted": getattr(item, "should_be_deleted", False),
-            "num_of_bounces": getattr(item, "num_of_bounces", 0),
-            "num_of_pierces": getattr(item, "num_of_pierces", 0),
-            "reverse": getattr(item, "reverse", ""),
-        }
-
-def enemy_to_dict(enemy):
-    return{
-
-        "name": enemy.name,
-        "health": enemy.health,
-        "maxhealth": enemy.maxhealth,
-        "level": enemy.level,
-
-        "strength": enemy.strength,
-        "maxstrength": enemy.maxstrength,
-        "strength_visual": enemy.strength_visual,
-        "maxstrength_visual": enemy.maxstrength_visual,
-        "defense": enemy.defense,
-        "maxdefense": enemy.maxdefense,
-        "defense_visual": enemy.defense_visual,
-        "maxdefense_visual": enemy.maxdefense_visual,
-        "basehealth": enemy.basehealth,
-        "basestrength": enemy.basestrength,
-        "basedefense": enemy.basedefense,
-        "creaturetype": enemy.creaturetype,
-        "x": enemy.x,
-        "y": enemy.y,
-
-
-    
-        "inventory": [item_to_dict(item) for item in enemy.inventory],
-        "active_projectiles": [],  # You can expand this if you want to save projectiles
-        "direction": enemy.direction.name if hasattr(enemy.direction, "name") else enemy.direction,
-        "technique": enemy.technique.name if hasattr(enemy.technique, "name") else enemy.technique,
-        "techniquex": enemy.techniquex,
-        "techniquey": enemy.techniquey,
-        "techniqueframe": enemy.techniqueframe,
-        "techniquefinished": enemy.techniquefinished,
-        "techniquecharges": enemy.techniquecharges,
-        "techniqueitem": item_to_dict(enemy.techniqueitem) if enemy.techniqueitem else None,
-        "equipment_weapon": item_to_dict(enemy.equipment_weapon) if enemy.equipment_weapon else None,
-        "equipment_shield": item_to_dict(enemy.equipment_shield) if enemy.equipment_shield else None,
-        "should_be_deleted": enemy.should_be_deleted,
-        "current_holding": item_to_dict(enemy.current_holding) if enemy.current_holding else None,
-        
-    
-        "has_been_hit": enemy.has_been_hit,
-        "spriteindex": enemy.spriteindex,
-        "color": enemy.color,
-        "animtype": enemy.animtype,
-        "animframe": enemy.animframe,
-        "animmod": enemy.animmod,
-        "scale": enemy.scale,
-        "loot": item_to_dict(enemy.loot) if enemy.loot else None,
-        "experience": enemy.experience,
-        "speed": enemy.speed,
-        "default_speed": enemy.default_speed,
-        "turns_left_before_moving": enemy.turns_left_before_moving,
-        "speed_turns": enemy.speed_turns,
-        "speed_visual": enemy.speed_visual,
-        "paralysis_turns": enemy.paralysis_turns,
-        "paralysis_visual": enemy.paralysis_visual,
-        "flee_ai_turns": enemy.flee_ai_turns,
-        "rage_ai_turns": enemy.rage_ai_turns,
-        "invisible_frames": enemy.invisible_frames,
-    }
-    
-def game_to_dict(game):
-    pass
-def map_to_dict(map_obj):
-    return {
-        "class": map_obj.__class__.__name__,
-        "map_type": map_obj.map_type,
-        "wall_type": map_obj.wall_type,
-        "width": map_obj.width,
-        "height": map_obj.height,
-        "number_of_rooms": map_obj.number_of_rooms,
-        "rooms": map_obj.rooms,  # Make sure each room is serializable!
-        
-        
-        "map_grid": map_obj.map_grid,
-        "liquid_grid": map_obj.liquid_grid,
-        # "item_list": map_obj.item_list,      # If these are lists of strings/ints, it's fine
-        # "enemy_list": map_obj.enemy_list,
-
-        "valid_tiles": map_obj.valid_tiles,
-        "textured_map": map_obj.textured_map,
-        "valid_entity_tiles": map_obj.valid_entity_tiles,
-        "valid_tiles_noshop": map_obj.valid_tiles_noshop,
-        "name": map_obj.name,
-        
-        "level_list": map_obj.level_list,
-        # "floor_items": [item_to_dict(item) for item in map_obj.floor_items],  # Save items on the floor
-        # "all_enemies": [enemy_to_dict(enemy) for enemy in map_obj.all_enemies],  # Save enemies
-        "spawnpoint": list(map_obj.spawnpoint),  # Convert set to list for JSON
-        "stairs": list(map_obj.stairs),    
-    }
-
-
-
 def player_from_dict(data):
 
     player = player_module.Player(
@@ -268,6 +129,10 @@ def player_from_dict(data):
     )
 
     player.inventory = [item_from_dict(item_dict) if item_dict else None for item_dict in data["inventory"]]
+    player.initx = data.get("initx", 0)
+    player.inity = data.get("inity", 0)
+    player.prevx = data.get("prevx", 0)
+    player.prevy = data.get("prevy", 0)
 
     # Set additional attributes
     player.maxhealth = data.get("maxhealth", 20)  # Default to 20 if not provided
@@ -301,6 +166,175 @@ def player_from_dict(data):
     return player
 
 
+def enemy_to_dict(enemy):
+    return{
+        "class": enemy.__class__.__name__,
+        "name": enemy.name,
+        "health": enemy.health,
+        "maxhealth": enemy.maxhealth,
+        "level": enemy.level,
+
+        "strength": enemy.strength,
+        "maxstrength": enemy.maxstrength,
+        "strength_visual": enemy.strength_visual,
+        "maxstrength_visual": enemy.maxstrength_visual,
+        "defense": enemy.defense,
+        "maxdefense": enemy.maxdefense,
+        "defense_visual": enemy.defense_visual,
+        "maxdefense_visual": enemy.maxdefense_visual,
+        "basehealth": enemy.basehealth,
+        "basestrength": enemy.basestrength,
+        "basedefense": enemy.basedefense,
+        "creaturetype": enemy.creaturetype,
+        "x": enemy.x,
+        "y": enemy.y,
+
+
+    
+        "inventory": [item_to_dict(item) for item in enemy.inventory],
+        "active_projectiles": [],  # You can expand this if you want to save projectiles
+        "technique": enemy.technique.name if hasattr(enemy.technique, "name") else enemy.technique,
+        "techniquex": enemy.techniquex,
+        "techniquey": enemy.techniquey,
+        "techniqueframe": enemy.techniqueframe,
+        "techniquefinished": enemy.techniquefinished,
+        "techniquecharges": enemy.techniquecharges,
+        "techniqueitem": item_to_dict(enemy.techniqueitem) if enemy.techniqueitem else None,
+        "equipment_weapon": item_to_dict(enemy.equipment_weapon) if enemy.equipment_weapon else None,
+        "equipment_shield": item_to_dict(enemy.equipment_shield) if enemy.equipment_shield else None,
+        "should_be_deleted": enemy.should_be_deleted,
+        "current_holding": item_to_dict(enemy.current_holding) if enemy.current_holding else None,
+        
+    
+        "has_been_hit": enemy.has_been_hit,
+        "spriteindex": enemy.spriteindex,
+        "color": enemy.color,
+        "animtype": enemy.animtype,
+        "animframe": enemy.animframe,
+        "animmod": enemy.animmod,
+        "scale": enemy.scale,
+        "loot": item_to_dict(enemy.loot) if enemy.loot else None,
+        "experience": enemy.experience,
+        "speed": enemy.speed,
+        "default_speed": enemy.default_speed,
+        "turns_left_before_moving": enemy.turns_left_before_moving,
+        "speed_turns": enemy.speed_turns,
+        "speed_visual": enemy.speed_visual,
+        "paralysis_turns": enemy.paralysis_turns,
+        "paralysis_visual": enemy.paralysis_visual,
+        "flee_ai_turns": enemy.flee_ai_turns,
+        "rage_ai_turns": enemy.rage_ai_turns,
+        "invisible_frames": enemy.invisible_frames,
+    }
+def enemy_from_dict(data):
+
+    # self, name, health, strength, defense, level, spriteindex, color, animtype, animframe, animmod, x, y, experience, speed, type
+    enemy = Enemy(
+        name=data["name"],
+        health=data["health"],
+        strength = data.get("strength", 0),
+        defense = data.get("defense", 0),
+        level=data.get("level", 1),
+        
+        spriteindex=data.get("spriteindex", 0),
+        color = tuple(data.get("color", (255, 255, 255, 255))),
+        animtype=data.get("animtype", 0),
+        animframe= data.get("animframe", 0),
+        animmod=data.get("animmod", 0),
+
+        x=data.get("x", 0),
+        y=data.get("y", 0),
+        experience=data.get("experience", 0),
+        speed=data.get("speed", 0),
+        type = data.get("type", "default"),
+        
+    )
+
+
+
+    # Inventory
+    enemy.inventory = [
+        item_from_dict(item_dict, grid_items) if item_dict else None
+        for item_dict in data.get("inventory", [])
+    ]
+
+    # Equipment and items
+    enemy.techniqueitem = item_from_dict(data["techniqueitem"]) if data.get("techniqueitem") else None
+    enemy.equipment_weapon = item_from_dict(data["equipment_weapon"]) if data.get("equipment_weapon") else None
+    enemy.equipment_shield = item_from_dict(data["equipment_shield"]) if data.get("equipment_shield") else None
+    enemy.current_holding = item_from_dict(data["current_holding"]) if data.get("current_holding") else None
+    enemy.loot = item_from_dict(data["loot"]) if data.get("loot") else None
+
+    # Set other attributes
+    enemy.maxhealth=data.get("maxhealth", data["health"]),
+    enemy.maxhealth_visual = data.get("maxhealth_visual", 0)
+    
+    enemy.maxstrength = data.get("maxstrength", 0)
+    enemy.strength_visual = data.get("strength_visual", 0)
+    enemy.maxstrength_visual = data.get("maxstrength_visual", 0)
+    enemy.maxdefense = data.get("maxdefense", 0)
+    enemy.defense_visual = data.get("defense_visual", 0)
+    enemy.maxdefense_visual = data.get("maxdefense_visual", 0)
+    enemy.basehealth = data.get("basehealth", 0)
+    enemy.basestrength = data.get("basestrength", 0)
+    enemy.basedefense = data.get("basedefense", 0)
+    enemy.creaturetype = data.get("creaturetype", "")
+    enemy.technique = data.get("technique", 0)
+    enemy.techniquex = data.get("techniquex", 0)
+    enemy.techniquey = data.get("techniquey", 0)
+    enemy.techniqueframe = data.get("techniqueframe", 0)
+    enemy.techniquefinished = data.get("techniquefinished", 0)
+    enemy.techniquecharges = data.get("techniquecharges", 0)
+    enemy.should_be_deleted = data.get("should_be_deleted", False)
+    enemy.has_been_hit = data.get("has_been_hit", False)
+    enemy.spriteindex = data.get("spriteindex", 0)
+   
+    enemy.scale = data.get("scale", 1)
+    enemy.default_speed = data.get("default_speed", 0)
+    enemy.turns_left_before_moving = data.get("turns_left_before_moving", 0)
+    enemy.speed_turns = data.get("speed_turns", 0)
+    enemy.speed_visual = data.get("speed_visual", 0)
+    enemy.paralysis_turns = data.get("paralysis_turns", 0)
+    enemy.paralysis_visual = data.get("paralysis_visual", 0)
+    enemy.flee_ai_turns = data.get("flee_ai_turns", 0)
+    enemy.rage_ai_turns = data.get("rage_ai_turns", 0)
+    enemy.invisible_frames = data.get("invisible_frames", 0)
+
+    return enemy
+
+
+
+def game_to_dict(game):
+    pass
+def map_to_dict(map_obj):
+    return {
+        "class": map_obj.__class__.__name__,
+        "map_type": map_obj.map_type,
+        "wall_type": map_obj.wall_type,
+        "width": map_obj.width,
+        "height": map_obj.height,
+        "number_of_rooms": map_obj.number_of_rooms,
+        "rooms": map_obj.rooms,  # Make sure each room is serializable!
+        
+        
+        "map_grid": map_obj.map_grid,
+        "liquid_grid": map_obj.liquid_grid,
+        "tileset": list(map_obj.tileset),
+        # "item_list": map_obj.item_list,      # If these are lists of strings/ints, it's fine
+        # "enemy_list": map_obj.enemy_list,
+
+        "valid_tiles": map_obj.valid_tiles,
+        "textured_map": map_obj.textured_map,
+        "valid_entity_tiles": map_obj.valid_entity_tiles,
+        "valid_tiles_noshop": map_obj.valid_tiles_noshop,
+        "name": map_obj.name,
+        
+        "level_list": map_obj.level_list,
+        "floor_items": [item_to_dict(item) for item in map_obj.floor_items],  # Save items on the floor
+        "all_enemies": [enemy_to_dict(enemy) for enemy in map_obj.all_enemies],  # Save enemies
+        "spawnpoint": list(map_obj.spawnpoint),  # Convert set to list for JSON
+        "stairs": list(map_obj.stairs),    
+    }
 def map_from_dict(data):
     #__init__(self, width, height, number_of_rooms, default_tile='#'):
     map_obj = Map(
@@ -313,6 +347,7 @@ def map_from_dict(data):
     map_obj.map_type = data.get('map_type', 'default')
     map_obj.wall_type = data.get('wall_type', 'default')
     map_obj.name = data.get('name', 'Unnamed Map')
+    map_obj.tileset = tuple(data.get("tileset", (26, 0, 0, 1, 2, 3, 4, 5)))
     # Set additional attributes that may not be in the constructor
     map_obj.rooms = data.get('rooms', [])
     map_obj.map_grid = data.get('map_grid', [])
@@ -326,7 +361,11 @@ def map_from_dict(data):
     map_obj.stairs = tuple(data.get('stairs', (0, 0)))
     # If you want to restore floor_items or all_enemies, do it here
 
+    map_obj.floor_items = [item_from_dict(item_dict) if item_dict else None for item_dict in data["floor_items"]]
+    map_obj.all_enemies = [enemy_from_dict(enemy_dict) for enemy_dict in data["all_enemies"]]
+
     return map_obj
+
 
 
 def item_to_dict(item):
@@ -367,8 +406,6 @@ def item_to_dict(item):
         "color": list(item.color) if item.color else None,
         # "grid": ... # Only if you have a serializable version
     }
-
-
 def item_from_dict(data):
     cls = data.get("class", "Item")
     # Default arguments for all items
