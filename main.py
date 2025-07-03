@@ -442,28 +442,15 @@ def go_to_next_level(amount):
 
 
 
-player = Player(
-    name = "DAMIEN",
-    health = 20,
-    level = 1,
-    experience = 0,
-    x = 30,
-    y = 30,
-    spriteindex = 23*8*8,
-    animtype = 1,
-)
 
-mouse_x = 0
-mouse_y = 0
-hotbar = Hotbar(player.inventory, group_hotbar)
 
 
 def draw_map():
     global bg, bg_deeper, bg_liqs, bg_liqs_foreground, floor, grid_blank
 
 
-    player.prevx, player.prevy = floor.spawnpoint
-    player.initx, player.inity = floor.spawnpoint
+    # player.prevx, player.prevy = player.spawnpoint
+    # player.initx, player.inity = floor.spawnpoint
     #floor_level +=1
 
     
@@ -614,14 +601,27 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global item_selected
     global discovered_staffs, discovered_tomes
     global current_menu
-    global player, floor, all_enemies #oh hell no this is bad
+    global player, floor, all_enemies, hotbar #oh hell no this is bad
      
     if button == pyglet.window.mouse.LEFT:
         #Main menu
         if current_menu == MenuState.MAIN_MENU:
             if start_button.hit_test(mouse_x, mouse_y):
                 print("Start button clicked")
+                player = Player(
+                    name = "DAMIEN",
+                    health = 20,
+                    level = 1,
+                    experience = 0,
+                    x = 30,
+                    y = 30,
+                    spriteindex = 23*8*8,
+                    animtype = 1,)
+                hotbar = Hotbar(player.inventory, group_hotbar)
                 go_to_next_level(1)
+                create_gui(all_buttons, player, "Good luck!", floor_level)
+                create_overlay(all_buttons)
+                create_mouse_overlay(all_buttons)
                 current_menu = MenuState.INGAME
                 return
             if load_button.hit_test(mouse_x, mouse_y):
@@ -645,6 +645,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 if btn.hit_test(mouse_x, mouse_y):
                     print(f"Load button clicked for {btn.label.text}")
                     player, floor, all_enemies = load_game(btn.label.text)
+                    hotbar = Hotbar(player.inventory, group_hotbar)
                     draw_map()
                     print("Class:", type(player).__name__)
                     for key, value in vars(player).items():
@@ -930,6 +931,10 @@ def on_key_press(symbol, modifiers):
         item_selected = hotbar.get_selected_item()
 
 
+
+mouse_x = 0
+mouse_y = 0
+
 #FLOOR STUFF 
 floor_level = 0
 bg = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1))
@@ -970,9 +975,9 @@ bg_desc_text = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_tinyfont, 24
 
 
 # go_to_next_level(1)
-create_gui(all_buttons, player, "Good luck!", floor_level)
-create_overlay(all_buttons)
-create_mouse_overlay(all_buttons)
+# create_gui(all_buttons, player, "Good luck!", floor_level)
+# create_overlay(all_buttons)
+# create_mouse_overlay(all_buttons)
 
 
 
@@ -1019,7 +1024,6 @@ keypress_chk = 0
 #     for stat in top_stats[:10]:
 #         print(stat)
 
-
 #render_texture = pyglet.image.Texture.create(win_x, win_y)
 
 bg_animframe = 0
@@ -1030,10 +1034,13 @@ fps_display.label.color = (0, 0, 0, 255)
 invhover = False
 fps = 60
 
+
+
 @window.event
 def on_draw():
     global bg_animframe
     global fps
+    
     # if bg_animframe == 10:
     #     profiler.enable()
     start = time.perf_counter()
