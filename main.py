@@ -340,6 +340,7 @@ def go_to_next_level(amount):
     #floor_level +=1
     floor.map_type = sc
     floor.wall_type = walltype
+    floor.tileset = tileset
 
 
     # print(floor)
@@ -350,7 +351,7 @@ def go_to_next_level(amount):
     if floor.map_type == "Simple" or floor.map_type == "Simple 2":
         #Simple Map Initiation
         #simple_color_sets = [(26,26), (29,29), (27,27)]
-        wall_texture_value, floor_texture_base_value = tileset#random.choice(simple_color_sets)
+        wall_texture_value, floor_texture_base_value = floor.tileset#random.choice(simple_color_sets)
         bg_order = ["#", ".", "*", "~", '%', '<', '>', "@", "S", "U"] #Filler, #Walls, #Space, @Stairs
         if floor.map_type == "Simple 2":
             bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 5, floor_texture_base_value*16+5+32, floor_texture_base_value*16+5+16, floor_texture_base_value*16+5+48, floor_texture_base_value*16+5+64, floor_texture_base_value*16+5+80, floor_texture_base_value*16+13, floor_texture_base_value*16+5-16, floor_texture_base_value*16+12]
@@ -399,7 +400,7 @@ def go_to_next_level(amount):
             'U'    # stairs
         ]
 
-        wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = tileset
+        wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = floor.tileset
         bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,floor_texture_base_value*16+floor_texture_code3, floor_texture_base_value*16+floor_texture_code4, floor_texture_base_value*16+floor_texture_code5, floor_texture_base_value*16+5,
                     
                     wall_texture_value*16, wall_texture_value*16+15, wall_texture_value*16+13, wall_texture_value*16+9,
@@ -486,10 +487,6 @@ def go_to_next_level(amount):
 
 
 
-
-
-
-
 def draw_map():
     global bg, bg_deeper, bg_liqs, bg_liqs_foreground, floor, grid_blank
 
@@ -504,12 +501,16 @@ def draw_map():
     # print(1/0)
 
     fl_string = ""
-    if floor.map_type == "Simple":
+    if floor.map_type == "Simple" or floor.map_type == "Simple 2":
         #Simple Map Initiation
         #simple_color_sets = [(26,26), (29,29), (27,27)]
         wall_texture_value, floor_texture_base_value = floor.tileset#random.choice(simple_color_sets)
-        bg_order = ["#", ".", "*", "~", '%', '<', '>', "@", "S"] #Filler, #Walls, #Space, @Stairs
-        bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13, floor_texture_base_value*16+5]
+        bg_order = ["#", ".", "*", "~", '%', '<', '>', "@", "S", "U"] #Filler, #Walls, #Space, @Stairs
+        if floor.map_type == "Simple 2":
+            bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 5, floor_texture_base_value*16+5+32, floor_texture_base_value*16+5+16, floor_texture_base_value*16+5+48, floor_texture_base_value*16+5+64, floor_texture_base_value*16+5+80, floor_texture_base_value*16+13, floor_texture_base_value*16+5-16, floor_texture_base_value*16+12]
+            floor.map_type == "Simple"
+        else:
+            bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13, floor_texture_base_value*16+5, floor_texture_base_value*16+12]
        
         for s in floor.map_grid:
             for s2 in s:
@@ -548,7 +549,8 @@ def draw_map():
         'o',   # 14: right + down + left
         'p',   # 15: all sides
 
-            "@"    # stairs
+            "@", 
+            'U'    # stairs
         ]
 
         wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = floor.tileset
@@ -558,11 +560,12 @@ def draw_map():
                     wall_texture_value*16+12, wall_texture_value*16+8, wall_texture_value*16+6, wall_texture_value*16+2,
                     wall_texture_value*16+14, wall_texture_value*16+11, wall_texture_value*16+10, wall_texture_value*16+5,
                     wall_texture_value*16+7, wall_texture_value*16+4, wall_texture_value*16+1,wall_texture_value*16+3,
-                    floor_texture_base_value*16+13]
+                    floor_texture_base_value*16+13, floor_texture_base_value*16+12]
         
         for s in floor.textured_map:
             for s2 in s:
                 fl_string += s2
+
     #bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
     
     i = 0
@@ -628,7 +631,11 @@ def draw_map():
             combine_tiles_efficient(tesselate(frameindexes[i] + 16*3, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
             bg_liqs[i].scale = 3
             i = i + 1
-    elif floor.wall_type == "Pit":
+    elif floor.wall_type == "Pits":
+        combine_tiles_efficient(tesselate(3, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
+        pass
+    elif floor.wall_type == "Pits 2":
+        combine_tiles_efficient(tesselate(0, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
         pass
 
 
@@ -695,6 +702,9 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                     print("Class:", type(player).__name__)
                     for key, value in vars(player).items():
                         print(f"{key}: {value}")
+                    create_gui(all_buttons, player, "Good luck!", floor_level)
+                    create_overlay(all_buttons)
+                    create_mouse_overlay(all_buttons)
                     current_menu = MenuState.INGAME
                     pass
 
@@ -1332,7 +1342,9 @@ def on_draw():
                     pass
                 else:
                     player.techniqueitem = hotbar.get_selected_item()
+                    print("Moving player in direction", dirx, diry)
                     player.move(dirx, diry, floor)
+                    print("Player position:", player.x, player.y)
                     gamestate = 2
                     all_anims = turn_logic.do_turns(all_enemies, player, floor)
             else:
@@ -1385,10 +1397,6 @@ def on_draw():
                         all_anims = turn_logic.do_turns(all_enemies, player, floor)
 
 
-
-
-
-            
             bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
             bg.y = 768/2 - (player.prevy*16 + 8)*player.scale
             
