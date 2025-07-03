@@ -17,6 +17,9 @@ fakenames_tomes_realnames = ("Tome of Recovery", "Tome of Injury", "Tome of Prom
 random.shuffle(fakenames_staffs_key)
 random.shuffle(fakenames_tomes_key)
 
+
+
+
 discovered_staffs = []
 discovered_tomes = [24, 28] #reveal Ruined, Blank, (and Reversal? , fakenames_tomes_key[9])
 
@@ -29,12 +32,12 @@ def get_display_name_and_description(item):
         if (item.magic_color in discovered_tomes) == True:
             return item.name, item.description
         else:
-            return fakenames_tomes_colornames[item.magic_color], "This item hasn't been identified. You don't know what it does."
+            return fakenames_tomes_colornames[item.magic_color], "This item hasn't been identified. (Type to give it a label)."
     elif isinstance(item, Staff):
         if (item.magic_color in discovered_staffs) == True:
             return item.name, item.description
         else:
-            return fakenames_staffs_colornames[item.magic_color], "This item hasn't been identified. You don't know what it does."
+            return fakenames_staffs_colornames[item.magic_color], "This item hasn't been identified. (Type to give it a label)."
     else:
         return item.name, item.description
 

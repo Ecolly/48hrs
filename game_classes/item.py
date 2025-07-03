@@ -317,6 +317,8 @@ class Miscellanious(Item):
         self.sprite = create_sprite_item(grid_items, self.spriteindex)
         self.hotbar_sprite = create_sprite_item(grid_items, self.spriteindex)
         self.price = price
+        self.description = description
+        #self.description = "wqde"
         #self.defense = defense  # Default defense value
         #self.is_equipable = is_equipable
 

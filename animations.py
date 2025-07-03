@@ -249,7 +249,7 @@ class Animation:
                 if frame > self.duration:
                     self.should_be_deleted = True
 
-
+                #print(self.spriteindex)
                 tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 4)]
                 self.sprite.image.blit_into(tile, 0, 0, 0)
 

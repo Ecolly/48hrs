@@ -596,9 +596,29 @@ def go_to_next_level(amount):
     itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Lettuce", "Cherry", "Rock", "Rock", "Rock", "Rock", "Rock", "Rock", "Staff of Mana", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
     
     
-    itemlist_beginner2 = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","Knife", "Knife", "Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Machete", "Sickle", "Stick", "Stick", "Water Flask", "Water Flask", "Petroleum Flask", "Empty Flask", "Empty Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Rock", "Wood Shield", "Wood Shield", "Leaf Shield", "Blue Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Primes", "Fibonnaci Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Lettuce", "Kale"]
 
-    itemlist_equal = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale"]
+
+
+
+
+
+
+
+
+#"Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Predecessor's Scrawling", "Peer's Notes", "Coworker's Thoughts", "Coworker's Thoughts 2", "Coworker's Thoughts 3", "Compatriot's Ideas", "Scientist's Log 1", "Scientist's Log 2", "Scientist's Log 3", "Scientist's Log 4", "Scientist's Log 5", "Scientist's Log 6"
+
+
+    itemlist_outside = ["3 Gold", "Mushrooms", "Leaves", "Apple", "Mushrooms", "Leaves", "Apple", "Stick", "Rock", "Stick", "Rock", "Leaf Shield", "Shopping List 4"]
+
+    itemlist_sarcophagus = ["15 Gold", "60 Gold", "60 Gold", "60 Gold", "60 Gold", "Scientist's Log 1", "Scientist's Log 2", "Scientist's Log 3", "Scientist's Log 4", "Scientist's Log 5", "Scientist's Log 6"]
+
+    itemlist_beginner2 = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","Knife", "Knife", "Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Machete", "Sickle", "Stick", "Stick", "Water Flask", "Water Flask", "Petroleum Flask", "Empty Flask", "Empty Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Rock", "Wood Shield", "Wood Shield", "Leaf Shield", "Blue Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Primes", "Fibonnaci Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Lettuce", "Kale", "Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Peer's Notes", "Predecessor's Scrawling", "Coworker's Thoughts"]
+
+    itemlist_equal = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale", "Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Coworker's Thoughts 2", "Peer's Notes", "Compatriot's Ideas", "Scientist's Log 1", "Scientist's Log 2", "Scientist's Log 3"]
+
+    itemlist_end = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale", "Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Coworker's Thoughts 3", "Compatriot's Ideas", "Scientist's Log 4", "Scientist's Log 5", "Scientist's Log 6"]
+
+    itemlist_boss = ["Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Blank Tome", "Ruined Tome"]
 
     if random.uniform(0, 1) < 0.2:
         shop_equal = ["Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale"]
@@ -607,7 +627,7 @@ def go_to_next_level(amount):
     elif random.uniform(0, 1) < 0.02:
         shop_equal = ["Water Flask", "Empty Flask", "Detergent Flask", "Ink Flask", "Acid Flask", "Petroleum Flask", "Syrup Flask", "Mercury Flask", "Cureall Flask"]
     elif random.uniform(0,1) < 0.02:
-        shop_equal = ["Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Dispersion", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Blank Tome", "Ruined Tome"]
+        shop_equal = ["Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Blank Tome", "Ruined Tome"]
     else:
         shop_equal = ["Knife", "Scimitar", "Rapier", "Fury Cutter", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale"]
 
@@ -615,8 +635,16 @@ def go_to_next_level(amount):
 
     floor_level +=amount
 
-    if floor_level < 1:
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Entrance to the Exclusion Zone", "Complex", (7,26,0,6,6,6,6,1), "Pits", ["HAMSTER"], [1], itemlist_beginner
+    if floor_level < -5:
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Open Wilderness", "Simple", (26, 26), "Solid", ["HAMSTER", "HAMSTER", "HAMSTER"], [1, 2, 3, 4], itemlist_outside
+    elif floor_level < -4:
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Sarcophagus Exterior", "Simple 2", (26, 26), "Solid", ["DEBT COLLECTOR", "EXECUTIVE", "HAMSTER"], [4, 4, 4], itemlist_outside
+    elif floor_level < -3:
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Sarcophagus Lobby", "Complex", (10,31,4,4,4,4,4,4), "Solid", ["DEBT COLLECTOR", "EXECUTIVE", "EXECUTIVE"], [4, 4, 4], itemlist_sarcophagus
+    elif floor_level < -1:
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Sarcophagus Security Zone", "Complex", (9,23,4,4,4,4,4,4), "Solid", ["DEBT COLLECTOR", "DEBT COLLECTOR", "EXECUTIVE"], [4, 4, 4], itemlist_sarcophagus
+    elif floor_level < 1:
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Exclusion Zone Outskirts", "Complex", (7,26,0,6,6,6,6,1), "Pits", ["HAMSTER", "DEBT COLLECTOR", "DEBT COLLECTOR"], [1, 1, 1], itemlist_beginner
     elif floor_level < 3: #Abandoned Woods
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Abandoned Woods", "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #Silent Tributary
@@ -640,16 +668,16 @@ def go_to_next_level(amount):
     elif floor_level < 23: #Silt Stratum
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silt Stratum", "Complex", (20,30,2,9,10,11,0,3), "Solid", ["DEMON CORE", "VITRIOLIVE", "FOX"], [1, 2, 3], itemlist_equal                         #purple & gold
     elif floor_level < 25: #Ash Pits
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Pit", ["DRAGON", "DEMON CORE", "JUJUBE"], [2, 2, 3], itemlist_equal                             #grey pits
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Pits", ["DRAGON", "DEMON CORE", "JUJUBE"], [2, 2, 3], itemlist_equal                             #grey pits
     elif floor_level < 27: #Ash Pits
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Glowing", ["DRAGON", "TURTLE", "CHLOROSPORE"], [2, 4, 4], itemlist_equal                             #grey pits
     elif floor_level < 29: #Magma Chamber
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm Bottom", "Complex", (8,23,2,2,2,2,2,2), "Lava", ["DRAGON", "TETRAHEDRON", "CULTIST"], [3, 3, 3], itemlist_equal                            #wavy lava
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm Bottom", "Complex", (8,23,2,2,2,2,2,2), "Lava", ["DRAGON", "TETRAHEDRON", "CULTIST"], [3, 3, 3], itemlist_end                             #wavy lava
     else: #Workshop Remnants
         if random.uniform(0, 1) < 0.5:
-            floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Workshop Remnant", "Complex", (7, 22, 5,5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Pit", ["SCORPION", "CHROME DOME", "DRAGON", "CULTIST"], [4, 3, 3, 3], itemlist_equal            #multicolored porcelain pits
+            floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Workshop Remnant", "Complex", (7, 22, 5,5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Pit", ["SCORPION", "CHROME DOME", "DRAGON", "CULTIST"], [4, 3, 3, 3], itemlist_end             #multicolored porcelain pits
         else: #Infested Workshop 
-            floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Infested Workshop", "Complex", (15, 22, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid", ["SCORPION", "TETRAHEDRON", "DEMON CORE", "CHROME DOME"], [4, 4, 4, 4], itemlist_equal        #multicolored porcelain
+            floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Infested Workshop", "Complex", (15, 22, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid", ["SCORPION", "TETRAHEDRON", "DEMON CORE", "CHROME DOME"], [4, 4, 4, 4], itemlist_end         #multicolored porcelain
     
     adventure_log.append("Progressed to floor " + str(floor_level) + " (" + str(floor_name) + ").")
 
@@ -674,9 +702,18 @@ def go_to_next_level(amount):
     #Triggered after Detects stairs
     floor = make_floor(sc, item_list, enemy_list, level_list, shop_equal, floor_level)
 
+    enemy_amount = random.randint(5, 8)
+    if player.extinction_state == 0.5:
+        player.extinction_state = 1
 
+    if player.extinction_state == 1:
+        item_list = itemlist_boss
+        enemy_list = player.enemies_remaining*3
+        level_list = [3, 3, 4]*len(player.enemies_remaining)
+        enemy_amount = 30
+        
     floor.random_create_item(item_list)
-    floor.generate_enemies(floor_level, enemy_list, level_list)
+    floor.generate_enemies(floor_level, enemy_list, level_list, enemy_amount, player)
 
     floor.name = floor_name
     
@@ -689,18 +726,22 @@ def go_to_next_level(amount):
     floor.map_type = sc
     floor.wall_type = walltype
 
-    
+
     # print(floor)
     # print(floor.textured_map)
     # print(1/0)
 
     fl_string = ""
-    if floor.map_type == "Simple":
+    if floor.map_type == "Simple" or floor.map_type == "Simple 2":
         #Simple Map Initiation
         #simple_color_sets = [(26,26), (29,29), (27,27)]
         wall_texture_value, floor_texture_base_value = tileset#random.choice(simple_color_sets)
-        bg_order = ["#", ".", "*", "~", '%', '<', '>', "@", "S"] #Filler, #Walls, #Space, @Stairs
-        bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13, floor_texture_base_value*16+5]
+        bg_order = ["#", ".", "*", "~", '%', '<', '>', "@", "S", "U"] #Filler, #Walls, #Space, @Stairs
+        if floor.map_type == "Simple 2":
+            bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 5, floor_texture_base_value*16+5+32, floor_texture_base_value*16+5+16, floor_texture_base_value*16+5+48, floor_texture_base_value*16+5+64, floor_texture_base_value*16+5+80, floor_texture_base_value*16+13, floor_texture_base_value*16+5-16, floor_texture_base_value*16+12]
+            floor.map_type == "Simple"
+        else:
+            bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13, floor_texture_base_value*16+5, floor_texture_base_value*16+12]
        
         for s in floor.map_grid:
             for s2 in s:
@@ -739,7 +780,8 @@ def go_to_next_level(amount):
         'o',   # 14: right + down + left
         'p',   # 15: all sides
 
-            "@"    # stairs
+            "@", 
+            'U'    # stairs
         ]
 
         wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = tileset
@@ -749,11 +791,12 @@ def go_to_next_level(amount):
                     wall_texture_value*16+12, wall_texture_value*16+8, wall_texture_value*16+6, wall_texture_value*16+2,
                     wall_texture_value*16+14, wall_texture_value*16+11, wall_texture_value*16+10, wall_texture_value*16+5,
                     wall_texture_value*16+7, wall_texture_value*16+4, wall_texture_value*16+1,wall_texture_value*16+3,
-                    floor_texture_base_value*16+13]
+                    floor_texture_base_value*16+13, floor_texture_base_value*16+12]
         
         for s in floor.textured_map:
             for s2 in s:
                 fl_string += s2
+
     #bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
     
     i = 0
@@ -819,7 +862,11 @@ def go_to_next_level(amount):
             combine_tiles_efficient(tesselate(frameindexes[i] + 16*3, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
             bg_liqs[i].scale = 3
             i = i + 1
-    elif floor.wall_type == "Pit":
+    elif floor.wall_type == "Pits":
+        combine_tiles_efficient(tesselate(3, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
+        pass
+    elif floor.wall_type == "Pits 2":
+        combine_tiles_efficient(tesselate(0, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
         pass
 
 
@@ -840,18 +887,51 @@ create_mouse_overlay(all_buttons)
 
 
 
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+player.add_to_inventory(floor.create_item("Rock", grid_items))
+
+player.add_to_inventory(floor.create_item("Tome of Extinction", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Extinction", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Extinction", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Extinction", grid_items))
+
+player.add_to_inventory(floor.create_item("Tome of Resurrection", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Resurrection", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Resurrection", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Resurrection", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Resurrection", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Resurrection", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Resurrection", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Resurrection", grid_items))
 
 
-#player.add_to_inventory(floor.create_item("Tome of Resurrection", grid_items))
-# player.add_to_inventory(floor.create_item("Lemon", grid_items))
-# player.add_to_inventory(floor.create_item("Lettuce", grid_items))
-# player.add_to_inventory(floor.create_item("Kale", grid_items))
-#player.add_to_inventory(floor.create_item("Tome of Reversal", grid_items))
+player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+
+player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Descendance", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Descendance", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Descendance", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Descendance", grid_items))
+player.add_to_inventory(floor.create_item("Tome of Descendance", grid_items))
 
 
 
-
-
+player.health = 200000
 
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
@@ -1142,6 +1222,8 @@ def on_draw():
             liqcolor = 255 - int(30*(math.sin(bg_animframe/15)+1))#(255, 255, 255, 255 - int(30*(math.sin(bg_animframe/15)+1)))
         elif floor.wall_type == "Glowing":
             bgdp_col = color_templates[255 - int(30*(math.sin(bg_animframe/15)+1))]#(255, 128, 0, 0 + int(30*(math.sin(bg_animframe/15)+1)))
+        elif floor.wall_type == "Pits 2":
+            bgdp_col = color_templates[255]
         elif floor.wall_type == "Pits":
             bgdp_col = color_templates[0]
 

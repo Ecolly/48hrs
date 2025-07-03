@@ -81,7 +81,7 @@ def can_move_to(x, y, game_map, player):
 
 
 
-def inflict_damage(attacker, target, player, chronology, list_of_animations, item, damage, damage_type):
+def inflict_damage(attacker, target, player, chronology, list_of_animations, item, damage, damage_type, floor):
     exp_multiplier = 1
     if damage_type == "execution":
         exp_multiplier = damage
@@ -143,15 +143,38 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
         list_of_animations.append(anim)
 
     if target != player and not target.is_alive():
-        target.should_be_deleted = True
-        if attacker == player:
-           temp_level = attacker.level
-           attacker.increase_experience(target.experience*exp_multiplier)
-           if attacker.level != temp_level:
-               list_of_animations.append(animations.Animation(str(attacker.name) + " grew to level " + str(attacker.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
-        elif isinstance(attacker, Enemy):
-           attacker.level_up()
-           list_of_animations.append(animations.Animation(str(attacker.name) + " leveled up!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
+        if target.name == "CULTIST" and target.level > 2 and target.has_been_resurrected == 0 and random.uniform(0, 1) < 0.5:
+            list_of_animations.append(animations.Animation(str(target.name) + " was resurrected by Tome of Resurrection!" ,23, 6, 1, (255, 0, 0, 0), chronology+2, check_if_entity_is_on_screen(target, player, 2, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, None, None, None))
+            target.health = target.maxhealth 
+            target.speed = 2 
+            target.paralysis_turns = 0
+            target.has_been_resurrected = 1
+        else:
+            target.should_be_deleted = True
+            if player.extinction_state == 1 and (target.name in player.enemies_remaining): #if enemies previously went extinct, then the only remaining enemies should be enemies on this floor. if none remain, make them extinct again.
+                allenemiesdeadflag = True 
+
+                for enemy in floor.all_enemies:
+                    if enemy.name == target.name and enemy.health > 0:
+                        allenemiesdeadflag = False 
+
+                if allenemiesdeadflag == True and target.name != "HAMSTER" and target.creaturetype != "Human": #if that was the last kind of this enemy on the floor, remove from the list
+                    print(player.enemies_remaining)
+                    print(target.name)
+                    player.enemies_remaining.remove(target.name)
+                    list_of_animations.append(animations.Animation(str(target.name) + " went extinct!" ,23, 6, 1, (255, 0, 0, 0), chronology+2, check_if_entity_is_on_screen(target, player, 2, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, None, None, None))
+
+                if len(player.enemies_remaining) == 0:
+                    list_of_animations.append(animations.Animation("All enemies cleared! Victory!", 0*29 + 24, 8, 4, (255, 255, 255, 0), chronology+3, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
+            
+            if attacker == player:
+                temp_level = attacker.level
+                attacker.increase_experience(target.experience*exp_multiplier)
+                if attacker.level != temp_level:
+                    list_of_animations.append(animations.Animation(str(attacker.name) + " grew to level " + str(attacker.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
+                elif isinstance(attacker, Enemy):
+                    attacker.level_up()
+                    list_of_animations.append(animations.Animation(str(attacker.name) + " leveled up!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
 
 
 
@@ -199,7 +222,7 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
     if spellname == "Staff of Metamorphosis":
         if enemy_hit != None:
             enemy_hit.should_be_deleted = True 
-            name_to_spawn = random.choice(["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR"])
+            name_to_spawn = random.choice(["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "VITRIOLIVE"])
             level_to_spawn = random.randint(1, 4)
             spawn_enemies_within_turn_execution(1, name_to_spawn, level_to_spawn, enemy_hit, floor, player, chronology, list_of_animations)
             
@@ -217,7 +240,7 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
         deduct_charges(entity, charges)
     if spellname == "Staff of Division":
         if enemy_hit != None:
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, math.floor(enemy_hit.health/2), "magic")
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, math.floor(enemy_hit.health/2), "magic", floor)
         deduct_charges(entity, charges)
     if spellname == "Staff of Swapping":
         if enemy_hit != None:
@@ -241,25 +264,25 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
         deduct_charges(entity, charges)
     elif spellname == "Staff of Mana":
         if enemy_hit != None:
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges*2, "magic") #random.randint(charges, charges*3)
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges*2, "magic", floor) #random.randint(charges, charges*3)
         deduct_charges(entity, charges)
     elif spellname == "Staff of Primes":
         if enemy_hit != None:
             primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271]
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, primes[charges-1], "magic") #random.randint(charges, charges*3)
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, primes[charges-1], "magic", floor) #random.randint(charges, charges*3)
         deduct_charges(entity, charges)
     elif spellname == "Fibonnaci Staff":
         if enemy_hit != None:
             primes = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309, 3524578, 5702887, 9227465, 14930352, 24157817, 39088169, 63245986, 102334155]
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, primes[charges-1], "magic") #random.randint(charges, charges*3)
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, primes[charges-1], "magic", floor) #random.randint(charges, charges*3)
         deduct_charges(entity, charges)
     elif spellname == "Staff of Ricochet" or spellname == "Piercing Staff" or spellname == "Staff of Alchemy" or spellname == "Gardening Staff":
         if enemy_hit != None:
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 3, "magic")
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 3, "magic", floor)
         deduct_charges(entity, charges)
     elif spellname == "Execution Staff":
         if enemy_hit != None:
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges, "execution")
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges, "execution", floor)
         deduct_charges(entity, charges)
     elif spellname == "Staff of Lethargy":
         if enemy_hit != None:
@@ -290,7 +313,7 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
         deduct_charges(entity, charges)
     elif spellname == "Spores": #damage
         if enemy_hit != None:
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic")
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic", floor)
             list_of_animations.append(animations.Animation("", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
     elif spellname == "Spores 2": #decrease attack
         if enemy_hit != None:
@@ -309,16 +332,16 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
             list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was paralyzed.", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
     elif spellname == "Dragon Fire":
         if enemy_hit != None:
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 10, "magic")
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 10, "magic", floor)
     elif spellname == "Dragon Fire 2":
         if enemy_hit != None:
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 20, "magic")
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 20, "magic", floor)
     elif spellname == "Dragon Fire 3":
         if enemy_hit != None:
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 30, "magic")
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 30, "magic", floor)
     elif spellname == "Dragon Fire 4":
         if enemy_hit != None:
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 40, "magic")
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 40, "magic", floor)
 
 def find_reflection_angle(x, y, dx, dy, floor, targx, targy):
     #targx, targy are for when a projectile is reflecting off of an entity
@@ -374,17 +397,17 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
                     objlist[i] = floor.create_item("Blank Tome", objlist[i].grid)
                 i = i + 1
         if entity.creaturetype == "Abstract":
-            inflict_damage("Detergent", entity, player, chronology, list_of_animations, None, random.randint(25, 45), "chemical")
+            inflict_damage("Detergent", entity, player, chronology, list_of_animations, None, random.randint(25, 45), "chemical", floor)
     elif liq == "A": #acid
         spr = 2*29 + 0
         evap = 0.33
         if entity.name != "VITRIOLIVE":
-            inflict_damage("Acid", entity, player, chronology, list_of_animations, None, 1, "chemical")
+            inflict_damage("Acid", entity, player, chronology, list_of_animations, None, 1, "chemical", floor)
     elif liq == "M": #mercury (should slow creatures down)
         spr = 2*29 + 24
         evap = 0.05
         if entity.creaturetype == "Robotic":
-            inflict_damage("Mercury", entity, player, chronology, list_of_animations, None, random.randint(25, 45), "chemical")
+            inflict_damage("Mercury", entity, player, chronology, list_of_animations, None, random.randint(25, 45), "chemical", floor)
     elif liq == "S": #syrup (should slow creatures down)
         spr = 2*29 + 4
         evap = 0.05
@@ -634,13 +657,13 @@ def do_radioactivity(entity, player, chronology, list_of_animations, floor):
         if dist != 0:
             damage = math.floor(((entity.level + 3)**2)/(dist*dist))
             if damage > 0:
-                inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic")
+                inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic", floor)
             for enemy in floor.all_enemies:
                 if enemy.name != "DEMON CORE":
                     dist = math.sqrt((enemy.x - entity.x)**2 + (enemy.y - entity.y)**2)
                     damage = math.floor(((entity.level + 3)**2)/(dist*dist))
                     if damage > 0:
-                        inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic")
+                        inflict_damage(entity, enemy, player, chronology, list_of_animations, None, damage, "magic", floor)
     
 
 
@@ -729,9 +752,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         target = enemy
 
             if target != None:
-                inflict_damage(entity, target, player, chronology+check_if_entity_is_on_screen(entity, player, 1, 16), list_of_animations, entity.equipment_weapon, 0, "physical")
+                inflict_damage(entity, target, player, chronology+check_if_entity_is_on_screen(entity, player, 1, 16), list_of_animations, entity.equipment_weapon, 0, "physical", floor)
                 if target.equipment_shield != None and target.equipment_shield.name == "Spiked Shield":
-                    inflict_damage(entity, entity, player, chronology+check_if_entity_is_on_screen(entity, player, 1, 16), list_of_animations, entity.equipment_weapon, 0, "recoil")
+                    inflict_damage(entity, entity, player, chronology+check_if_entity_is_on_screen(entity, player, 1, 16), list_of_animations, entity.equipment_weapon, 0, "recoil", floor)
                 if target.name == "JUJUBE" and random.uniform(0, 1) < 0.3:
                     spawn_enemies_within_turn_execution(1, "JUJUBE", target.level, target, floor, player, chronology + check_if_entity_is_on_screen(entity, player, 1, 16), list_of_animations)
 
@@ -897,7 +920,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                             if isinstance(item, Projectile) == True:
                                 do_spell(floor, entity, enemy_hit, player, item.name, entity.techniquecharges, chronology+chron_i, list_of_animations)
                             else:
-                                inflict_damage(entity, enemy_hit, player, chronology+chron_i, list_of_animations, item, 0, "physical")
+                                inflict_damage(entity, enemy_hit, player, chronology+chron_i, list_of_animations, item, 0, "physical", floor)
                             #if the projectile is piercing and didn't bounce, don't delete it and instead just set its entity of origin as the entity it just hit
                             #should this be changed to pierce enemies so long as the projectile killed the enemy it's trying to pierce?
                             if item.num_of_pierces > 0:
@@ -948,6 +971,8 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         #             break
         #         i = i - 1
         if item.name == "Bankruptcy Tome":
+            if player.gold < 0:
+                player.credit_score = 0
             player.gold = 0 
             deduct_charges(entity, 1)
         elif item.name == "Tome of Pizzazz":
@@ -964,26 +989,65 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                 inflict_healing(15, enemy, player, list_of_animations, chronology)
             deduct_charges(entity, 1)
         elif item.name == "Tome of Injury":
-            inflict_damage(entity, player, player, chronology, list_of_animations, item, 15, "magic")
+            inflict_damage(entity, player, player, chronology, list_of_animations, item, 15, "magic", floor)
             for enemy in floor.all_enemies:
-                inflict_damage(entity, enemy, player, chronology, list_of_animations, item, 15, "magic")
+                inflict_damage(entity, enemy, player, chronology, list_of_animations, item, 15, "magic", floor)
             deduct_charges(entity, 1)
         elif item.name == "Tome of Extinction":
+
+            #kill all nonhamsters
             for enemy in floor.all_enemies:
-                inflict_damage(entity, enemy, player, chronology, list_of_animations, item, 999999, "magic")
-                list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
+                if enemy.name != "HAMSTER" and enemy.creaturetype != "Human":
+                    inflict_damage(entity, enemy, player, chronology, list_of_animations, item, 999999, "magic", floor)
+                    list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
             
-            list_of_enemies = ["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR", "VITRIOLIVE"]
-            
+            #get 'remaining list' which starts with list of all non-hamster creatures 
+            list_of_enemies = player.enemies_remaining
+
+            #extinct them all
             for enemy in list_of_enemies:
-                list_of_animations.append(animations.Animation(enemy + " went extinct!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
+                if enemy != "CULTIST" or player.extinction_state == 1:
+                    list_of_animations.append(animations.Animation(enemy + " went extinct!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             
-            list_of_animations.append(animations.Animation("All enemies cleared! Victory!", 0*29 + 24, 8, 4, (255, 255, 255, 0), chronology+3, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
+            
+            if player.extinction_state != 1:
+                list_of_animations.append(animations.Animation("The Tome of Extinction was unable to eradicate all CULTISTs...?", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
+            
+                player.extinction_state = 0.5
+                player.enemies_remaining = ["CULTIST"]
+            #else:
+                # player.enemies_remaining = [] (this is handled by inflict_damage now)
+                # #check if all enemies are dead; if they are, win
+                # allenemiesdeadflag = True 
+                # for enemy in floor.all_enemies:
+                #     if enemy.name != "HAMSTER" and enemy.creaturetype != "Human" and enemy.health > 0:
+                #         allenemiesdeadflag = False 
+                #         if (enemy.name in player.enemies_remaining) == False:
+                #             player.enemies_remaining.append(enemy.name)
+
+                
+                # if allenemiesdeadflag == True:
+                #     list_of_animations.append(animations.Animation("All enemies cleared! Victory!", 0*29 + 24, 8, 4, (255, 255, 255, 0), chronology+3, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             
             deduct_charges(entity, 1)
         elif item.name == "Tome of Resurrection":
             
-            #does nothing; all monsters were already resurrected
+            entity.has_been_resurrected = 1
+
+            chklist = ["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "VITRIOLIVE"]
+            random.shuffle(chklist)
+            did_resurrection = 0
+            for enemy in chklist:
+                if (enemy in player.enemies_remaining) == False:
+                    player.enemies_remaining.append(enemy)
+                    did_resurrection = 1
+                    list_of_animations.append(animations.Animation(str(enemy) + "'s species was resurrected!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
+                    break
+
+            if did_resurrection == 0:
+                list_of_animations.append(animations.Animation("No effect- no species are currently extinct.", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
+
+
             deduct_charges(entity, 1)
         elif item.name == "Tome of Promotion":
             player.increase_experience(((player.level + 1)**3) - player.experience) 
@@ -1034,7 +1098,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             
             floor.upstairs = (player.x,player.y)
 
-            if floor.level == 0:
+            if floor.level == -6:
                 list_of_animations.append(animations.Animation("Escaped Pandorium! Victory!", 0*29 + 24, 8, 4, (255, 255, 255, 0), chronology+3, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             
             deduct_charges(entity, 1)
@@ -1144,11 +1208,12 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             items_1_2 = []
             i = 39
             while i > -1:
-                if isinstance(player.inventory[i], Staff) == True or isinstance(player.inventory[i], Tome) == True:
+                if isinstance(player.inventory[i], Staff) == True or (isinstance(player.inventory[i], Tome) == True and (len(items_1_2) != 1 or (player.inventory[i].name != "Blank Tome" and player.inventory[i].name != "Ruined Tome"))):
                     items_1_2.append(i)
                     if len(items_1_2) == 2:
                         color = player.inventory[items_1_2[1]].magic_color
                         if isinstance(player.inventory[items_1_2[0]], Staff):
+                            
                             index = fakenames_staffs_key.index(color)
                             name = fakenames_staffs_realnames[index]
                         else:
@@ -1255,6 +1320,13 @@ def do_turns(all_enemies, player, floor):
 
 
 def spawn_enemies_within_turn_execution(enemies_to_summon, enemy_name, enemy_level, entity, floor, player, chronology, list_of_animations):
+    if enemy_name == "DAMIEN" or enemy_name == "DEBT COLLECTOR" or enemy_name == "EXECUTIVE":
+        list_of_animations.append(animations.Animation(enemy_name + " is immune to cloning.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, 1, 0, 0, 0, 0, 0, None, None, None, None, None))
+        return
+
+    if len(player.enemies_remaining) == 0:
+        return
+    
     locs = [(1, 0), (1, 1), (0, 1), (1, -1), (-1, 1), (-1, -1), (-1, 0), (0, -1)]
     random.shuffle(locs)
     locs.insert(0, (0, 0))
@@ -1263,8 +1335,8 @@ def spawn_enemies_within_turn_execution(enemies_to_summon, enemy_name, enemy_lev
             x, y = loc[0] + entity.x, loc[1] + entity.y
             #choose a random enemy out of the enemy name & level options for this floor
             if enemy_name == None:
-                rng_enemy = random.randint(0, len(floor.enemy_list)-1)
-                enemy_name = floor.enemy_list[rng_enemy]
+                rng_enemy = random.randint(0, len(player.enemies_remaining)-1)
+                enemy_name = player.enemies_remaining[rng_enemy]
             
             if enemy_level == None:
                 if isinstance(entity, Enemy) == False:
@@ -1273,7 +1345,7 @@ def spawn_enemies_within_turn_execution(enemies_to_summon, enemy_name, enemy_lev
                     enemy_level = min(entity.level + round(random.uniform(0, 0.7)), 4)
             #floor.valid_entity_tiles.remove((y, x)) this is suspect. maybe we shouldnt be using this at all
             
-            test_enemy = generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level), floor)
+            test_enemy = generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level), floor, player)
             test_enemy.paralysis_turns = 1
             test_enemy.invisible_frames = chronology
 
@@ -1283,7 +1355,10 @@ def spawn_enemies_within_turn_execution(enemies_to_summon, enemy_name, enemy_lev
 
             enemies_to_summon += -1
             if enemies_to_summon == 0:
-                break
+                return 
+    
+    list_of_animations.append(animations.Animation("No enemies could be summoned.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, 1, 0, 0, 0, 0, 0, None, None, None, None, None))
+
 
             
 

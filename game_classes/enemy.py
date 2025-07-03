@@ -58,20 +58,24 @@ def create_sprite_enemy(image_grid, index):
     return pyglet.sprite.Sprite(image_grid[index], x=0, y=0)
 
 
-def generate_enemy(name, level, x, y, grid, floor):
+def generate_enemy(name, level, x, y, grid, floor, player):
+
+    if (name in player.enemies_remaining) == False and name != "HAMSTER" and name != "DEBT COLLECTOR" and name != "EXECUTIVE":
+        return False
+
     global grid_items
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR", "VITRIOLIVE"]
-    enemy_hps = [20, 9, 5, 8, 9, 12, 20, 30, 20, 10, 13, 6, 20, 24, 18, 100, 20]
-    enemy_strength = [0, 8, 5, 9, 8, 12, 9, 15, 15, 18, 12, 1, 1, 1, 1, 70, 10]
-    enemy_defense = [0, 2, 2, 1, 2, 1, 1, 5, 15, 3, 6, 30, 2, 1, 3, 70, 2]
-    enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64, 1*64, 14*64]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1]
-    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16]
-    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40, 1, 45]
-    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1, 4, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR", "VITRIOLIVE", "EXECUTIVE"]
+    enemy_hps = [20, 9, 5, 8, 9, 12, 20, 30, 20, 10, 13, 6, 8, 24, 18, 100, 20, 20]
+    enemy_strength = [0, 8, 5, 9, 8, 12, 9, 15, 15, 18, 12, 1, 1, 1, 1, 70, 10, 5]
+    enemy_defense = [0, 2, 2, 1, 2, 1, 1, 5, 15, 3, 6, 30, 1, 1, 3, 70, 2, 5]
+    enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64, 1*64, 14*64, 0]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1]
+    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16]
+    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40, 1, 45, 1]
+    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1, 4, 2, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
     enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold", "Leaves"]
-    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0.1]
-    enemy_type = [None, "Plant", "Plant", None, None, "Food", None, None, "Robotic", "Abstract", None, None, "Abstract", "Food", "Robotic", None, "Food"]
+    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0.1, 0]
+    enemy_type = ["Human", "Plant", "Plant", None, None, "Food", None, None, "Robotic", "Abstract", None, None, "Abstract", "Food", "Robotic", "Human", "Food", "Human"]
     id = enemy_names.index(name)
     enemy = Enemy(
         name = name,
@@ -136,7 +140,7 @@ class Enemy:
         self.basehealth = health
         self.basestrength = strength
         self.basedefense = defense
-
+        self.has_been_resurrected = 0
 
 
 
@@ -248,7 +252,7 @@ class Enemy:
         xtochk = player.x
         ytochk = player.y
 
-        if self.name == "HAMSTER" or self.name == "TURTLE" or self.flee_ai_turns > 0:
+        if self.name == "HAMSTER" or self.name == "TURTLE" or self.name == "EXECUTIVE" or self.flee_ai_turns > 0:
 
             #always run away when sees the player, in sscared mode 
             if self.can_see_player(player=player, vision_range=5):
@@ -281,7 +285,7 @@ class Enemy:
 
 
         elif self.name == "DEBT COLLECTOR":
-            if player.gold < 0:
+            if player.gold < 0 or game_map.level < 1:
                 if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                     
                     return Technique.HIT, xtochk, ytochk
@@ -366,7 +370,9 @@ class Enemy:
                     if self.level == 1:
                         self.techniqueitem = game_map.create_item("Summoning Tome", grid_items)
                     else:
-                        if self.health > self.maxhealth/2 or random.randint(0, 2) == 1 or self.defense < 0:
+                        if player.extinction_state == 1 and self.level > 2 and random.randint(0, 2) == 1:
+                            self.techniqueitem = game_map.create_item("Tome of Resurrection", grid_items)
+                        elif self.health > self.maxhealth/2 or random.randint(0, 2) == 1 or self.defense < 0:
                             self.techniqueitem = game_map.create_item("Summoning Tome", grid_items)
                         elif self.level == 2 or self.level == 3:
                             self.techniqueitem = game_map.create_item("Tome of Promotion", grid_items)
@@ -377,9 +383,9 @@ class Enemy:
                     self.techniqueitem = game_map.create_item("Staff of Mana", grid_items) #suboptimal, this item is only being generated so the enemy looks like its holding something
                     name_desc = get_display_name(self.techniqueitem)
                     self.active_projectiles.append(Projectile("Staff of Mana", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
-                    self.techniquecharges = 2
+                    self.techniquecharges = 2*self.level
                     return Technique.THROW, player.x, player.y
-            elif abs(player.x-self.x) < 4 and abs(player.y-self.y) < 4 and random.randint(0, 4) == 1:
+            elif abs(player.x-self.x) < 4 and abs(player.y-self.y) < 4 and random.randint(0, 3) == 1:
                 if self.level == 1 or self.level == 2:
                     self.techniqueitem = game_map.create_item("Staff of Swapping", grid_items)
                     name_desc = get_display_name(self.techniqueitem)

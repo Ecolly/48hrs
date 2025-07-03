@@ -70,8 +70,11 @@ class Player:
         self.spriteindex_prev = -1
         self.grid = grid_entities1
         
+        self.credit_score = 1 #if 1, you can pick up items from shop and get negative gold. if 0, you can no longer do this
+        self.extinction_state = 0 #0 - all enemies remain, 1 - boss mode
+        self.enemies_remaining = ["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "VITRIOLIVE"]
+        self.has_been_resurrected = 0
 
-        
         self.sprite = create_sprite(grid_entities1, spriteindex)
         self.sprite_weapon = image_handling.create_sprite(grid_items, 0)
         self.sprite_shield = image_handling.create_sprite(grid_items, 0)
@@ -103,6 +106,7 @@ class Player:
 
         self.is_shopping = False
         self.haswon = False
+        
     
     def add_to_inventory(self, item):
         if item.name == "3 Gold":
@@ -368,23 +372,26 @@ class Player:
             if item.x == self.x and item.y == self.y and item is not None:
                 name_desc = get_display_name(item)
                 
-                if self.add_to_inventory(item) == True:
-                    
-                    floor_item_list.remove(item)  # Remove item from the map 
+                if floor.map_grid[floor.height-1-self.y][self.x] == "S" and self.gold-item.price < 0 and self.credit_score == 0:
+                    adventure_log.append(str(self.name) + " can't afford the item.")
+                else: 
+                    if self.add_to_inventory(item) == True:
+                        
+                        floor_item_list.remove(item)  # Remove item from the map 
 
-                    if floor.map_grid[floor.height-1-self.y][self.x] == "S":
-                        self.gold += -item.price
-                        adventure_log.append(str(self.name) + " purchased " + name_desc + " for " + str(item.price) + " gold.")
-                        if self.gold < 0:
-                            adventure_log.append(str(self.name) + " is now in debt.")
-                        item.price = max(item.price-1, 1) #after buying an item, reduce its price by 1.
+                        if floor.map_grid[floor.height-1-self.y][self.x] == "S":
+                            self.gold += -item.price
+                            adventure_log.append(str(self.name) + " purchased " + name_desc + " for " + str(item.price) + " gold.")
+                            if self.gold < 0 and self.gold + item.price > -1:
+                                adventure_log.append(str(self.name) + " is now in debt.")
+                            item.price = max(item.price-1, 1) #after buying an item, reduce its price by 1.
+                        else:
+
+
+                            adventure_log.append(str(self.name) + " picked up " + name_desc + ".")
                     else:
-
-
-                        adventure_log.append(str(self.name) + " picked up " + name_desc + ".")
-                else:
-                    adventure_log.append(str(self.name) + "'s inventory was too full to pick up " + name_desc + ".")
-                    #inventory was full
+                        adventure_log.append(str(self.name) + "'s inventory was too full to pick up " + name_desc + ".")
+                        #inventory was full
                 
             else:
                 pass  # Item not at player's position, do nothing
