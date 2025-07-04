@@ -90,6 +90,9 @@ discovered_staffs, discovered_tomes
 player, floor = None, None
 all_enemies = None
 floor_level = 0
+all_buttons = []
+all_anims = []
+floor_level = 0
 
         
 
@@ -107,8 +110,7 @@ right_click_menu_enabled = False
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
 
-all_buttons = []
-all_anims = []
+
 
 #floor_items = [item]
 #inventory_items = []
@@ -485,8 +487,6 @@ def go_to_next_level(amount):
         combine_tiles_efficient(tesselate(0, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
         pass
 
-
-
 def draw_map():
     global bg, bg_deeper, bg_liqs, bg_liqs_foreground, floor, grid_blank
 
@@ -754,9 +754,9 @@ def on_mouse_release(x, y, button, modifiers):
     global all_anims
     global all_enemies
     global all_buttons
+    global player, hotbar, floor
     
     global gamestate
-    global current_entity_turn
     global floor
     global has_won
     global sound_magic
@@ -893,12 +893,12 @@ def on_mouse_release(x, y, button, modifiers):
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
     global gamestate
     global item_selected
+    global player, hotbar, all_buttons
     hotbar.change_selection(scroll_y)
     print("Mouse scrolled", hotbar.selected)
     hotbar.draw_selected_slot()
     item_selected = hotbar.get_selected_item()
 
-    global all_buttons
     if item_selected is not None:
         inventory_slot = hotbar.translate_to_inventory()
         print(f"Inventory slot:", {inventory_slot})
@@ -991,7 +991,7 @@ mouse_x = 0
 mouse_y = 0
 
 #FLOOR STUFF 
-floor_level = 0
+
 bg = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1))
 bg.scale = 3
 bg.group = group_bg
