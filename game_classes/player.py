@@ -145,8 +145,8 @@ class Player:
         self.maxhealth += 4
         self.health += 4
 
-        self.strength += 1
-        self.maxstrength += 1
+        self.strength  = 4 + math.floor((7*self.level)**(1/3))
+        self.maxstrength = 4 + math.floor((7*self.level)**(1/3))
         
     def level_down(self):
         self.level-=1
@@ -358,7 +358,7 @@ class Player:
             self.paralysis_turns = 3
             self.paralysis_visual = 3
             list_of_animations.append(animations.Animation(str(self.name) + "'s max HP was changed to match HP.", 0*29 + 24, 6, 4, (255, 255, 255, 0), 1, 50, self.x, self.y, self.x, self.y, 0, None, None, None, None, None))
-            list_of_animations.append(animations.Animation(str(self.name) + "was paralyzed by the sourness of the Lemon.", 0*29 + 24, 6, 4, (255, 255, 255, 0), 2, 50, self.x, self.y, self.x, self.y, 0, None, None, None, None, None))
+            list_of_animations.append(animations.Animation(str(self.name) + " was paralyzed by the sourness of the Lemon.", 0*29 + 24, 6, 4, (255, 255, 255, 0), 2, 50, self.x, self.y, self.x, self.y, 0, None, None, None, None, None))
             self.technique = Technique.STILL
         else:
             self.technique = Technique.STILL 

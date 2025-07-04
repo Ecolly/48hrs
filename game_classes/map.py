@@ -282,7 +282,7 @@ class Map:
         elif name == "Staff of Primes":
             return Staff(name,  reverse="Staff of Primes",sprite_locs = fakenames_staffs_key[16], damage=10, projectile=True, description="Damage depends on mana used. Will be a prime number.", charges=12, rarity=1)
         elif name == "Fibonnaci Staff":
-            return Staff(name,  reverse="Fibonnaci Staff", sprite_locs = fakenames_staffs_key[17], damage=10, projectile=True, description="Damage depends on mana used; follows the fibonnaci sequence.", charges=28, rarity=2) 
+            return Staff(name,  reverse="Fibonnaci Staff", sprite_locs = fakenames_staffs_key[17], damage=10, projectile=True, description="Damage depends on mana used; follows the fibonnaci sequence.", charges=8, rarity=2) 
         elif name == "Staff of Alchemy":
             return Staff(name,  reverse="Gardening Staff",sprite_locs = fakenames_staffs_key[18], damage=10, projectile=True, description="The projectile transmutes liquids it travels over randomly.", charges=5, rarity=3)
         elif name == "Gardening Staff":
@@ -293,6 +293,10 @@ class Map:
         elif name == "Volatile Staff":
             return Staff(name,  reverse="Mirror Staff", sprite_locs = fakenames_staffs_key[21], damage=10, projectile=True, description="The projectile uses the effect of a random staff when cast.", charges=12, rarity=2) 
         
+        elif name == "Staff of Osteoporosis":
+            return Staff(name,  reverse="Staff of Fatigue",sprite_locs = fakenames_staffs_key[22], damage=10, projectile=True, description="Reduces target's defense to 0.", charges=5, rarity=2)
+        elif name == "Staff of Fatigue":
+            return Staff(name,  reverse="Staff of Osteoporosis", sprite_locs = fakenames_staffs_key[23], damage=10, projectile=True, description="Reduces target's strength to 0.", charges=5, rarity=2) 
         
         # elif name == "Blasting Staff":
         #     return Staff(name,  reverse="Staff of Suffocation",sprite_locs = fakenames_staffs_key[20], damage=10, projectile=True, description="The projectile can be used to make tunnels.", charges=5, rarity=3)
@@ -359,9 +363,14 @@ class Map:
             return Tome(name,  reverse="Tome of Extinction",sprite_locs = fakenames_tomes_key[19], damage=10, projectile=False, description= "Brings a species back from the dead. Prevents death if in your inventory.",price=50)
         
         elif name == "Duplication Tome":
-            return Tome(name,  reverse="Tome of Consolidation", sprite_locs = fakenames_tomes_key[20], damage=10, projectile=False, description="Find the last item in your inventory. Duplicate the item.",price=30)
+            return Tome(name,  reverse="Tome of Consolidation", sprite_locs = fakenames_tomes_key[20], damage=10, projectile=False, description="Find the last item in your inventory. Duplicate the item.",price=50)
         elif name == "Tome of Exchange":
             return Tome(name,  reverse="Coloring Tome",sprite_locs = fakenames_tomes_key[21], damage=10, projectile=False, description="Finds the last two weapons, shields, or staffs in your inventory. For weapons or shields, swap their bonus. For staffs, swap their charges and max charges.",price=30)
+
+        elif name == "Weaponsmithing Tome":
+            return Tome(name,  reverse="Shieldsmithing Tome", sprite_locs = fakenames_tomes_key[22], damage=10, projectile=False, description="Finds the last two weapons in your inventory. Last item gains the bonus of the first item. First item is destroyed.",price=30)
+        elif name == "Shieldsmithing Tome":
+            return Tome(name,  reverse="Weaponsmithing Tome",sprite_locs = fakenames_tomes_key[23], damage=10, projectile=False, description="Finds the last two shields in your inventory. Last item gains the bonus of the first item. First item is destroyed.",price=30)
 
         
         
@@ -518,7 +527,7 @@ class Map:
         elif name == "Starfruit":
             return Consumable(name,  sprite_locs = 6, nutrition_value=1000, description="Only grown under perfect conditions in a rare, faraway valley. Restores HP to full and increases speed to 2x.", price=50) #gain xp to get to next level
         elif name == "Durian":
-            return Consumable(name,  sprite_locs = 7, nutrition_value=50, description="Mercurial, spiky, and divisive, this fruit can restore your HP above its normal amount.", price=40) #gives temporary hp beyond max
+            return Consumable(name,  sprite_locs = 7, nutrition_value=27, description="Repulsive, but this fruit can restore your HP above its normal amount.", price=40) #gives temporary hp beyond max
         elif name == "Dragonfruit":
             return Consumable(name,  sprite_locs = 8, nutrition_value=12, description="Immediately increases your level by 1.", price=30) #increase a random stat by 1
         elif name == "Beet":

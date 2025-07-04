@@ -224,8 +224,8 @@ class Animation:
                                     self.attacker.level_visual+= 1
                                     self.attacker.maxhealth_visual += 4
                                     self.attacker.health_visual += 4
-                                    self.attacker.strength_visual += 1
-                                    self.attacker.maxstrength_visual += 1
+                                    self.attacker.strength_visual = 4 + math.floor((7*self.attacker.level)**(1/3))
+                                    self.attacker.maxstrength_visual = 4 + math.floor((7*self.attacker.level)**(1/3))
                         elif isinstance(self.attacker, Enemy):
                             if is_dead == 1:
                                 self.attacker.level_visual += 1
