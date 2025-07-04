@@ -235,7 +235,19 @@ class Player:
     def cast(self, x, y):
         item = self.techniqueitem
         name_desc = get_display_name(item)
-        self.active_projectiles.append(turn_logic.Projectile(item.name, self.techniquecharges, self.x + 0.5, self.y + 0.5, x, y, self, str(self.name)+" swung the " + name_desc + "!"))
+        if item.name == "Mirror Staff":
+            i = 39 
+            while i > -1:
+                if isinstance(self.inventory[i], Staff) == True:
+                    name_to_label = self.inventory[i].name
+                    break
+                i = i - 1
+        elif item.name == "Volatile Staff":
+            name_to_label = random.choice(["Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff"])
+        else:
+            name_to_label = item.name 
+
+        self.active_projectiles.append(turn_logic.Projectile(name_to_label, self.techniquecharges, self.x + 0.5, self.y + 0.5, x, y, self, str(self.name)+" swung the " + name_desc + "!"))
         self.technique = Technique.THROW
         self.techniquex = x 
         self.techniquey = y

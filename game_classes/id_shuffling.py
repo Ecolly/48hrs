@@ -4,14 +4,14 @@ from game_classes.item import *
 #initialize fakename to realname list for staffs and tomes
 #the 'key' number represents local sprite index (aka the color)
 #any items wit a definite sprite & name are excluded (e.g. #28 (white) & #24 (black) for tomes)
-fakenames_staffs_key = [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 22, 23, 26]
-fakenames_tomes_key = [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 22, 23, 26]
+fakenames_staffs_key = [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 22, 23, 26]
+fakenames_tomes_key = [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 22, 23, 26]
 
 fakenames_staffs_colornames = ["Mahogany Staff", "Red Staff", "Orange Staff", "Umber Staff", "Brown Staff", "Hazel Staff", "Dijon Staff", "Gold Staff", "Yellow Staff", "Broccoli Staff", "Green Staff", "Spring Staff", "Peacock Staff", "Cyan Staff", "Seafoam Staff", "Navy Staff", "Blue Staff", "Sky Blue Staff", "Blackberry Staff", "Violet Staff", "Lavender Staff", "Burgundy Staff", "Magenta Staff", "Pink Staff", "Black Staff", "Graphite Staff", "Grey Staff", "Ashen Staff", "White Staff"]
 fakenames_tomes_colornames = ["Mahogany Tome", "Red Tome", "Orange Tome", "Umber Tome", "Brown Tome", "Hazel Tome", "Dijon Tome", "Gold Tome", "Yellow Tome", "Broccoli Tome", "Green Tome", "Spring Tome", "Peacock Tome", "Cyan Tome", "Seafoam Tome", "Navy Tome", "Blue Tome", "Sky Blue Tome", "Blackberry Tome", "Violet Tome", "Lavender Tome", "Burgundy Tome", "Magenta Tome", "Pink Tome", "Black Tome", "Graphite Tome", "Grey Tome", "Ashen Tome", "Blank Tome"]
 
-fakenames_staffs_realnames = ("Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff")
-fakenames_tomes_realnames = ("Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection")
+fakenames_staffs_realnames = ("Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Mirror Staff", "Volatile Staff")
+fakenames_tomes_realnames = ("Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Duplication Tome", "Tome of Exchange")
 
 
 random.shuffle(fakenames_staffs_key)
