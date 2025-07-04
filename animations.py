@@ -108,6 +108,7 @@ class Animation:
                 
                 # if obj.speed == 4:
                 #     print("move", self.current_time, self.start_time, self.duration)
+                obj.direction = self.rot
                 
                 obj.prevx = obj.prevx + round((abs(self.endx- obj.prevx)/(self.endx - obj.prevx+0.01)))/8
                 obj.prevy = obj.prevy + round((abs(self.endy - obj.prevy)/(self.endy - obj.prevy+0.01)))/8
