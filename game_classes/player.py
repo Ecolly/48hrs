@@ -69,10 +69,9 @@ class Player:
         self.spriteindex = spriteindex #actual index of sprite on tilegrid
         self.spriteindex_prev = -1
         self.grid = grid_entities1
-        
         self.credit_score = 1 #if 1, you can pick up items from shop and get negative gold. if 0, you can no longer do this
         self.extinction_state = 0 #0 - all enemies remain, 1 - boss mode
-        self.enemies_remaining = ["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "VITRIOLIVE"]
+        self.enemies_remaining = ["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "VITRIOLIVE", "DODECAHEDRON", "MONITAUR"]
         self.has_been_resurrected = 0
 
         self.sprite = create_sprite(grid_entities1, spriteindex)
@@ -308,6 +307,8 @@ class Player:
 
     def consume_item(self, item, list_of_animations):
         self.del_item_from_inventory(item)
+
+            
         health_to_restore = item.nutrition_value
 
         #print(health_to_restore, self.maxhealth, self.health, self.maxhealth_visual, self.health_visual)
@@ -323,7 +324,9 @@ class Player:
             health_to_restore = math.ceil(self.maxhealth*0.15)
         
             
-        if (self.health + health_to_restore > self.maxhealth) and item.name != "Durian":
+        if self.health > self.maxhealth and item.name != "Durian": 
+            health_to_restore = 0
+        elif (self.health + health_to_restore > self.maxhealth) and item.name != "Durian":
             health_to_restore = self.maxhealth - self.health
         self.health += health_to_restore
 

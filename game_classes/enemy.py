@@ -64,18 +64,18 @@ def generate_enemy(name, level, x, y, grid, floor, player):
         return False
 
     global grid_items
-    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR", "VITRIOLIVE", "EXECUTIVE"]
-    enemy_hps = [20, 9, 5, 8, 9, 12, 20, 30, 20, 10, 13, 6, 8, 24, 18, 100, 20, 20]
-    enemy_strength = [0, 8, 5, 9, 8, 12, 9, 15, 15, 18, 12, 1, 1, 1, 1, 70, 10, 5]
-    enemy_defense = [0, 2, 2, 1, 2, 1, 1, 5, 15, 3, 6, 30, 1, 1, 3, 70, 2, 5]
-    enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64, 1*64, 14*64, 0]
-    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1]
-    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16]
-    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40, 1, 45, 1]
-    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1, 4, 2, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
-    enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold", "Leaves"]
-    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0.1, 0]
-    enemy_type = ["Human", "Plant", "Plant", None, None, "Food", None, None, "Robotic", "Abstract", None, None, "Abstract", "Food", "Robotic", "Human", "Food", "Human"]
+    enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR", "VITRIOLIVE", "EXECUTIVE", "DODECAHEDRON", "MONITAUR"]
+    enemy_hps = [20, 9, 5, 8, 9, 12, 20, 30, 20, 10, 13, 6, 8, 24, 18, 100, 20, 20, 50, 30]
+    enemy_strength = [0, 8, 5, 9, 8, 12, 9, 15, 15, 18, 12, 1, 1, 1, 1, 70, 10, 5, 8, 5]
+    enemy_defense = [0, 2, 2, 1, 2, 1, 1, 5, 15, 3, 6, 30, 1, 1, 3, 70, 2, 5, 10, 2]
+    enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64, 1*64, 14*64, 0, 13*64, 16*64]
+    enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1]
+    enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/16]
+    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40, 1, 45, 1, 90, 45]
+    enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1, 4, 2, 2, 2, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
+    enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold", "Leaves", None, None]
+    enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 0.2, 1, 0, 0, 0, 0.2, 0, 0, 1, 0.1, 0, 0, 0]
+    enemy_type = ["Human", "Plant", "Plant", None, None, "Food", None, None, "Robotic", "Abstract", None, None, "Abstract", "Food", "Robotic", "Human", "Food", "Human", "Abstract", "Robotic"]
     id = enemy_names.index(name)
 
 
@@ -151,7 +151,7 @@ class Enemy:
         self.basestrength = strength
         self.basedefense = defense
         self.has_been_resurrected = 0
-
+        self.is_inked = False
 
 
 
@@ -183,7 +183,6 @@ class Enemy:
         
 
         self.sprite_weapon = image_handling.create_sprite(grid_items, 0)
-
 
         #self.sprite_shield = image_handling.create_sprite(itemgrid, 0)
         self.sprite_weapon.color = (0, 0, 0, 0)
@@ -256,18 +255,14 @@ class Enemy:
             return Technique.STILL, self.x, self.y
         xtochk = player.x
         ytochk = player.y
-
         if self.name == "HAMSTER" or self.name == "TURTLE" or self.name == "EXECUTIVE" or self.flee_ai_turns > 0:
-
             #always run away when sees the player, in sscared mode 
             if self.can_see_player(player=player, vision_range=5):
                 dx = self.sign(self.x - xtochk)
                 dy = self.sign(self.y - ytochk)
                 new_x = self.x + dx
                 new_y = self.y + dy
-                
                 return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)    
-
             else:
                 idle_action = random.choice([Technique.MOVE, Technique.STILL])
                 if idle_action == Technique.MOVE:
@@ -279,7 +274,7 @@ class Enemy:
                 # If not moving or can't move, stay still
                 return Technique.STILL, self.x, self.y
                     
-        elif self.rage_ai_turns > 0 or self.name == "JUJUBE" or self.name == "LEAFALOTTA" or self.name == "FOX" or self.name == "GOOSE" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
+        elif self.rage_ai_turns > 0 or self.name == "JUJUBE" or self.name == "DODECAHEDRON" or self.name == "MONITAUR" or self.name == "LEAFALOTTA" or self.name == "FOX" or self.name == "GOOSE" or self.name == "TETRAHEDRON" or self.name == "SCORPION":
             if abs(xtochk-self.x) < 2 and abs(ytochk-self.y) < 2:
                 return self.technique_filter_for_sanctuaries(Technique.HIT, xtochk, ytochk, game_map)    
             else:
@@ -370,20 +365,30 @@ class Enemy:
                 new_y = self.y + self.sign(ytochk - self.y)
                 return self.technique_filter_for_sanctuaries(Technique.MOVE, new_x, new_y, game_map)    
         elif self.name == "CULTIST":
+
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
                 if random.randint(0, 2) == 1 or self.defense < 0:
-                    if self.level == 1:
-                        self.techniqueitem = game_map.create_item("Summoning Tome", grid_items)
+                    if self.is_inked == True:
+                        self.techniqueitem = game_map.create_item("Staff of Mana", grid_items) #suboptimal, this item is only being generated so the enemy looks like its holding something
+                        name_desc = get_display_name(self.techniqueitem)
+                        self.active_projectiles.append(Projectile("Staff of Mana", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
+                        self.techniquecharges = 2*self.level
+                        print("inkprevent")
+                        return Technique.THROW, player.x, player.y
+                    
                     else:
-                        if player.extinction_state == 1 and self.level > 2 and random.randint(0, 2) == 1:
-                            self.techniqueitem = game_map.create_item("Tome of Resurrection", grid_items)
-                        elif self.health > self.maxhealth/2 or random.randint(0, 2) == 1 or self.defense < 0:
+                        if self.level == 1:
                             self.techniqueitem = game_map.create_item("Summoning Tome", grid_items)
-                        elif self.level == 2 or self.level == 3:
-                            self.techniqueitem = game_map.create_item("Tome of Promotion", grid_items)
                         else:
-                            self.techniqueitem = game_map.create_item("Paperskin Tome", grid_items)
-                    return Technique.CAST, 0, 0
+                            if player.extinction_state == 1 and self.level > 2 and random.randint(0, 2) == 1:
+                                self.techniqueitem = game_map.create_item("Tome of Resurrection", grid_items)
+                            elif self.health > self.maxhealth/2 or random.randint(0, 2) == 1 or self.defense < 0:
+                                self.techniqueitem = game_map.create_item("Summoning Tome", grid_items)
+                            elif self.level == 2 or self.level == 3:
+                                self.techniqueitem = game_map.create_item("Tome of Promotion", grid_items)
+                            else:
+                                self.techniqueitem = game_map.create_item("Paperskin Tome", grid_items)
+                        return Technique.CAST, 0, 0
                 else:
                     self.techniqueitem = game_map.create_item("Staff of Mana", grid_items) #suboptimal, this item is only being generated so the enemy looks like its holding something
                     name_desc = get_display_name(self.techniqueitem)

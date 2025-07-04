@@ -126,6 +126,8 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
         if damage < 1:
             damage = 1
     elif damage_type == "magic" or damage_type == "execution": #smoke
+        if target.equipment_shield != None and target.equipment_shield.name == "Sun Shield":
+            damage = math.ceil(damage/2)
         anim = animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(target, player, 1, 16), target.x, target.y, target.x, target.y, 0, None, None, None, None, None)
         list_of_animations.append(anim)
         pass
@@ -203,6 +205,7 @@ def deduct_charges(entity, charges):
 
 def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, list_of_animations):
     if "Flask" in spellname:
+        #print(entity.techniquecharges)
         entity.techniqueitem.charges -= charges 
         entity.techniqueitem.price -= charges
         if entity.techniqueitem.charges < 1 and entity == player:
@@ -222,7 +225,7 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
     if spellname == "Staff of Metamorphosis":
         if enemy_hit != None:
             enemy_hit.should_be_deleted = True 
-            name_to_spawn = random.choice(["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "VITRIOLIVE"])
+            name_to_spawn = random.choice(["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "VITRIOLIVE", "MONITAUR", "DODECAHEDRON"])
             level_to_spawn = random.randint(1, 4)
             spawn_enemies_within_turn_execution(1, name_to_spawn, level_to_spawn, enemy_hit, floor, player, chronology, list_of_animations)
             
@@ -382,8 +385,17 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
     elif liq == "W": #water
         spr = 2*29 + 16
         evap = 0.05
+        
         if entity.creaturetype == "Plant":
             inflict_healing(random.randint(1, 3), entity, player, list_of_animations, chronology)
+        
+        if entity.strength != entity.maxstrength:
+            entity.strength = entity.maxstrength
+            list_of_animations.append(animations.Animation(str(entity.name) + "'s strength was restored!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))  
+        if entity.defense != entity.maxdefense:
+            list_of_animations.append(animations.Animation(str(entity.name) + "'s defense was restored!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))  
+            entity.defense = entity.maxdefense
+
     elif liq == "D": #detergent
         spr = 2*29 + 12
         evap = 0.4
@@ -421,7 +433,7 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
     elif liq == "C": #cureall (paralyzes)
         spr = 2*29 + 8
         evap = 0.2
-        inflict_healing(random.randint(5, 8), entity, player, list_of_animations, chronology)
+        inflict_healing(random.randint(2, 4), entity, player, list_of_animations, chronology)
         entity.paralysis_turns = 3
         list_of_animations.append(animations.Animation(str(entity.name) + " was paralyzed.", 1*29 + 8, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
     elif liq == "P": #petroleum (should slow creatures down)
@@ -436,6 +448,10 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
     elif liq == "I": #ink
         spr = 2*29 + 20
         evap = 0.05
+
+        if isinstance(entity, Enemy) == True:
+            self.is_inked = True
+            list_of_animations.append(animations.Animation(str(entity.name) + "stepped in Ink! Their tomes are now unreadable.", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))  
 
         if isinstance(entity.techniqueitem, Tome) == True:
             objlist = player.inventory
@@ -452,7 +468,7 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
     else:
         return False
     
-    if random.uniform(0, 1) < evap:
+    if random.uniform(0, 1) < evap and entity.name != "VITRIOLIVE":
         x, y = entity.x, entity.y
         if ((x > player.x + 13 or x < player.x - 13) or (y > player.y + 9 or y < player.y - 9)):
             list_of_animations.append(animations.Animation("", spr, 7, 5, (255, 255, 255, 0), chronology, 1, x, y, x, y, "E", None, None, None, None, 0, None))
@@ -531,14 +547,19 @@ def deposit_liquid(x, y, item, floor, chronology, list_of_animations, chron_i, p
         elif item == "D":
             spr = 2*29 + 12
         elif item == "A":
+            #reduce shield and weapon str by 1
             spr = 2*29 
         elif item == "M":
+            #destroy metal equipment?
             spr = 2*29 + 24
         elif item == "S":
             spr = 2*29 + 4
         elif item == "C":
             spr = 2*29 + 8
-        else:
+        elif item == "P":
+            spr = 2*29 + 20
+        elif item == "I":
+            #ruin tomes
             spr = 2*29 + 20
         
         if ((x > player.x + 13 or x < player.x - 13) or (y > player.y + 9 or y < player.y - 9)):
@@ -837,6 +858,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                             liq = item.name[0]
 
                         if liq != "E" and deposit_liquid(tilex, tiley, liq, floor, chronology, list_of_animations, chron_i, player) == True and "Flask" in item.name:
+                            #print("frfr", entity.techniquecharges)
                             item.damage += -1
                             entity.techniquecharges += 1
                         if item.damage == 0:
@@ -1038,7 +1060,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             
             entity.has_been_resurrected = 1
 
-            chklist = ["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "VITRIOLIVE"]
+            chklist = ["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "VITRIOLIVE", "DODECAHEDRON", "MONITAUR"]
             random.shuffle(chklist)
             did_resurrection = 0
             for enemy in chklist:
@@ -1346,9 +1368,9 @@ def spawn_enemies_within_turn_execution(enemies_to_summon, enemy_name, enemy_lev
             
             if enemy_level == None:
                 if isinstance(entity, Enemy) == False:
-                    enemy_level = min(floor.level_list[rng_enemy] + round(random.uniform(0, 0.7)), 4)
+                    enemy_level = random.choice(floor.level_list)#min(floor.level_list[rng_enemy] + round(random.uniform(0, 0.7)), 4)
                 else:
-                    enemy_level = min(entity.level + round(random.uniform(0, 0.7)), 4)
+                    enemy_level = min(entity.level + round(random.randint(0, 1)), 4)
             #floor.valid_entity_tiles.remove((y, x)) this is suspect. maybe we shouldnt be using this at all
             
             test_enemy = generate_enemy(enemy_name, enemy_level, x, y, enemy_grid_to_use(enemy_level), floor, player)
