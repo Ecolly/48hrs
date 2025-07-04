@@ -105,17 +105,22 @@ class Animation:
 
             if self.animtype == 0: #movement
                 obj = self.associated_object
+                
                 # if obj.speed == 4:
                 #     print("move", self.current_time, self.start_time, self.duration)
-                obj.direction = self.rot
+                
                 obj.prevx = obj.prevx + round((abs(self.endx- obj.prevx)/(self.endx - obj.prevx+0.01)))/8
                 obj.prevy = obj.prevy + round((abs(self.endy - obj.prevy)/(self.endy - obj.prevy+0.01)))/8
-
+                if self.associated_object == player:
+                    print(obj.x, obj.y, self.startx, self.starty, self.endx, self.endy)
+                
                 if frame > self.duration:
                     #print(self.endx, self.endy, obj.x, obj.y, obj.techniquex, obj.techniquey)
+
                     obj.prevx, obj.prevy, obj.offsetx, obj.offsety = self.endx, self.endy, 0, 0
                     self.should_be_deleted = True
                     if self.associated_object == player:
+                        
                         if player.is_shopping == False:
                             if floor.map_grid[floor.height-1-player.y][player.x] == "S":
                                 adventure_log.append("Welcome to the shop! Pick up or drop items to buy and sell.")

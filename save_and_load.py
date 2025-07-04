@@ -323,10 +323,10 @@ def map_to_dict(map_obj):
         # "item_list": map_obj.item_list,      # If these are lists of strings/ints, it's fine
         # "enemy_list": map_obj.enemy_list,
 
-        "valid_tiles": map_obj.valid_tiles,
+        "valid_tiles": [list(t) for t in map_obj.valid_tiles],
         "textured_map": map_obj.textured_map,
-        "valid_entity_tiles": map_obj.valid_entity_tiles,
-        "valid_tiles_noshop": map_obj.valid_tiles_noshop,
+        "valid_entity_tiles": [list(t) for t in map_obj.valid_entity_tiles],
+        "valid_tiles_noshop": [list(t) for t in map_obj.valid_tiles_noshop],
         "name": map_obj.name,
         
         "level_list": map_obj.level_list,
@@ -352,10 +352,12 @@ def map_from_dict(data):
     map_obj.rooms = data.get('rooms', [])
     map_obj.map_grid = data.get('map_grid', [])
     map_obj.liquid_grid = data.get('liquid_grid', [])
-    map_obj.valid_tiles = data.get('valid_tiles', [])
+    
+    # map_obj.valid_tiles = data.get('valid_tiles', [])
+    map_obj.valid_tiles = set(tuple(pair) for pair in data.get('valid_tiles', []))
     map_obj.textured_map = data.get('textured_map', [])
-    map_obj.valid_entity_tiles = data.get('valid_entity_tiles', [])
-    map_obj.valid_tiles_noshop = data.get('valid_tiles_noshop', [])
+    map_obj.valid_entity_tiles = set(tuple(pair) for pair in data.get('valid_entity_tiles', []))
+    map_obj.valid_tiles_noshop = set(tuple(pair) for pair in data.get('valid_tiles_noshop', []))
     map_obj.level_list = data.get('level_list', [])
     map_obj.spawnpoint = tuple(data.get('spawnpoint', (0, 0)))
     map_obj.stairs = tuple(data.get('stairs', (0, 0)))

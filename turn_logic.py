@@ -69,7 +69,7 @@ def adjust_rotation(entity, dx, dy):
 def can_move_to(x, y, game_map, player):
     #Detect walls
     if (y,x) not in game_map.valid_tiles:
-        #print(f"Invalid tile cannot move{x, y}")
+        # print(f"Invalid tile cannot move{x, y}")
         return False
     else:
         for enemy in game_map.all_enemies:
@@ -676,8 +676,11 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         do_liquid_effect(entity, player, chronology, list_of_animations, floor)
         return Technique.STILL, chronology
     elif entity.technique == Technique.MOVE:
+        print("Moving to AFTER MOVE", entity.techniquex, entity.techniquey, "from", entity.x, entity.y)
         if can_move_to(entity.techniquex, entity.techniquey, floor, player):
+            print("Moving to", entity.techniquex, entity.techniquey, "from", entity.x, entity.y)
             pass
+
         elif can_move_to(entity.techniquex, entity.y, floor, player):
             entity.techniquey = entity.y 
         elif can_move_to(entity.x, entity.techniquey, floor, player):
@@ -700,6 +703,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
         rot = adjust_rotation(entity, entity.techniquex-entity.x, entity.techniquey-entity.y)
         list_of_animations.append(animations.Animation("", None, 0, 0, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 8), entity.x, entity.y, entity.techniquex, entity.techniquey, rot, entity, Technique.MOVE, None, None, None))
+        print("Moving to but in individual turn just kill me already", entity.techniquex, entity.techniquey, "from", entity.prevx, entity.prevy)
 
         if isinstance(entity.techniqueitem, Flask):
             pick_up_liquid(entity.techniquex, entity.techniquey, entity.techniqueitem, floor, chronology, list_of_animations, 0, player)
@@ -1260,6 +1264,7 @@ def refresh_entity_states(entity):
 def do_turns(all_enemies, player, floor):
     list_of_animations = []
     chronology = 0
+    
     prevtechnique = Technique.STILL
 
     if player.paralysis_turns > 0: #overwrite the player's technique if needed
@@ -1268,7 +1273,8 @@ def do_turns(all_enemies, player, floor):
         player.technique = Technique.STILL
     elif player.rage_ai_turns > 0: 
         player.technique = Technique.STILL
-
+    
+    print("do turn", player.techniquex, player.techniquey, player.technique)
     prevtechnique, chronology = do_individual_turn(player, floor, player, list_of_animations, chronology, prevtechnique)
     player.turns_left_before_moving += -1
 

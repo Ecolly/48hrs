@@ -80,13 +80,14 @@ window = pyglet.window.Window(win_true_x, win_true_y, config=config)
 #pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
 #pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
+
 #Game variables
 gamestate = 1
 has_won = 0
 has_lost = 0
 item_selected = None
 #extinct_creatures = [] 
-discovered_staffs, discovered_tomes
+discovered_staffs, discovered_tomes = [], []
 player, floor = None, None
 all_enemies = None
 floor_level = 0
@@ -318,6 +319,7 @@ def go_to_next_level(amount):
 
     #Triggered after Detects stairs
     floor = make_floor(sc, item_list, enemy_list, level_list, shop_equal, floor_level)
+    print(floor.valid_tiles)
 
     enemy_amount = random.randint(5, 8)
     if player.extinction_state == 0.5:
@@ -696,7 +698,12 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
             for btn in load_game_buttons:
                 if btn.hit_test(mouse_x, mouse_y):
                     print(f"Load button clicked for {btn.label.text}")
-                    player, floor, all_enemies = load_game(btn.label.text)
+                    loaded_player, loaded_floor, loaded_all_enemies = load_game(btn.label.text)
+                    player = loaded_player
+                    floor= loaded_floor
+                    print("Valid tiles", floor.valid_tiles)
+                    all_enemies = loaded_all_enemies
+
                     hotbar = Hotbar(player.inventory, group_hotbar)
                     draw_map()
                     print("Class:", type(player).__name__)
@@ -705,6 +712,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                     create_gui(all_buttons, player, "Good luck!", floor_level)
                     create_overlay(all_buttons)
                     create_mouse_overlay(all_buttons)
+                    gamestate = 1
                     current_menu = MenuState.INGAME
                     pass
 
@@ -1342,10 +1350,9 @@ def on_draw():
                     pass
                 else:
                     player.techniqueitem = hotbar.get_selected_item()
-                    print("Moving player in direction", dirx, diry)
                     player.move(dirx, diry, floor)
-                    print("Player position:", player.x, player.y)
                     gamestate = 2
+                    print(gamestate, "gamestate")
                     all_anims = turn_logic.do_turns(all_enemies, player, floor)
             else:
                 if gamestate == 2 or keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D] or keys[pyglet.window.key.E] or keys[pyglet.window.key.TAB]:
