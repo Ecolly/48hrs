@@ -12,6 +12,7 @@ import turn_logic
 import image_handling
 from game_classes.id_shuffling import *
 from font import *
+#from animations import *
 
 class Player:
     def __init__(self, name, health, level, experience, spriteindex, animtype, x, y):
@@ -510,7 +511,7 @@ class Player:
 
 
 
-    def draw(self, animation_presets, group, group_bg, group_fg, held_item):
+    def draw(self, animation_presets, group, group_bg, group_fg, held_item, list_of_animations, floor):
         global batch
         sprite = self.sprite
 
@@ -523,6 +524,29 @@ class Player:
             paralyze_x = 0
 
         
+
+        # if random.randint(0, 8) == 1: 
+        #     item = floor.liquid_grid[floor.height-1-self.y][self.x]
+        #     #if splashing a flask...
+        #     if item == "W":
+        #         spr = 2*29 + 16
+        #     elif item == "D":
+        #         spr = 2*29 + 12
+        #     elif item == "A":
+        #         spr = 2*29 
+        #     elif item == "M":
+        #         spr = 2*29 + 24
+        #     elif item == "S":
+        #         spr = 2*29 + 4
+        #     elif item == "C":
+        #         spr = 2*29 + 8
+        #     elif item == "P":
+        #         spr = 2*29 + 20
+        #     elif item == "I":
+        #         spr = 2*29 + 20
+            
+        #     if item != "#":
+        #         list_of_animations.append(animations.Animation("", spr, 9, 5, (255, 255, 255, 0), 0, 8, self.x, self.y, sel.x, self.y, item, None, None, None, None, 0, None))
 
 
         base_x, base_y = 1152/2 -24 + (self.offsetx*16 + paralyze_x)*self.scale, 768/2-24 + self.offsety*16*self.scale #self.get_screen_position()

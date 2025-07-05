@@ -205,6 +205,26 @@ class Animation:
                     wipe_techniqueitem(obj)
 
 
+            elif self.animtype == 9: #splash anim and other anims that take place not in turn
+
+
+                self.proceed = True
+                self.color = (self.color[0], self.color[1], self.color[2], 128)          
+                base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
+                base_y =  768/2-24-(player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale #+768/2-24?
+                if frame > self.duration:
+                    self.should_be_deleted = True
+
+                #print(self.spriteindex)
+                tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 2)]
+                self.sprite.image.blit_into(tile, 0, 0, 0)
+
+                sprite = self.sprite
+                sprite.color = self.color
+                sprite.x = base_x
+                sprite.y = base_y
+                sprite.scale = self.scale
+
 
             elif self.animtype == 2: #point number
                 self.color = (self.color[0], self.color[1], self.color[2], 255)

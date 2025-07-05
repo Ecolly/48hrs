@@ -682,7 +682,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 # player.add_to_inventory(floor.create_item("Knife", grid_items))
                 # player.add_to_inventory(floor.create_item("Stick", grid_items))
                 # player.add_to_inventory(floor.create_item("Sun Shield", grid_items))
-                # player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
+                player.add_to_inventory(floor.create_item("Water Flask", grid_items))
 
                 # #player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
@@ -1473,10 +1473,10 @@ def on_draw():
 
 
 
-            player.draw(animation_presets, group_enemies, group_enemies_bg, group_enemies_fg, hotbar.get_selected_item())
+            player.draw(animation_presets, group_enemies, group_enemies_bg, group_enemies_fg, hotbar.get_selected_item(), all_anims, floor)
 
             for enemy in all_enemies:
-                enemy.draw(animation_presets, player, group_enemies, group_enemies_bg, group_enemies_fg)
+                enemy.draw(animation_presets, player, group_enemies, group_enemies_bg, group_enemies_fg, all_anims, floor)
 
             for item in floor.floor_items:
                 item.draw(player, group_items)

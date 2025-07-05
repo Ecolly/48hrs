@@ -9,6 +9,7 @@ from game_classes.projectiles import *
 from font import *
 from game_classes.item import *
 from game_classes.id_shuffling import *
+#from animations import *
 
 def enemy_grid_to_use(level):
     global grid_entities1 
@@ -521,7 +522,7 @@ class Enemy:
             return True
 
 
-    def draw(self, animation_presets, player, group, group_bg, group_fg):
+    def draw(self, animation_presets, player, group, group_bg, group_fg, list_of_animations, floor):
         sprite = self.sprite
         self.grid = enemy_grid_to_use(self.level_visual)
         if self.paralysis_visual > 0:
@@ -542,6 +543,30 @@ class Enemy:
             self.spriteindex_prev = frame_index
 
 
+        # if random.randint(0, 8) == 1: 
+        #     item = floor.liquid_grid[floor.height-1-self.y][self.x]
+        #     #if splashing a flask...
+        #     if item == "W":
+        #         spr = 2*29 + 16
+        #     elif item == "D":
+        #         spr = 2*29 + 12
+        #     elif item == "A":
+        #         spr = 2*29 
+        #     elif item == "M":
+        #         spr = 2*29 + 24
+        #     elif item == "S":
+        #         spr = 2*29 + 4
+        #     elif item == "C":
+        #         spr = 2*29 + 8
+        #     elif item == "P":
+        #         spr = 2*29 + 20
+        #     elif item == "I":
+        #         spr = 2*29 + 20
+            
+        #     if ((self.x > player.x + 13 or self.x < player.x - 13) or (self.y > player.y + 9 or self.y < player.y - 9)) or item == "#":
+        #         pass
+        #     else:
+        #         list_of_animations.append(animations.Animation("", spr, 9, 5, (255, 255, 255, 0), 0, 8, self.x, self.y, sel.x, self.y, item, None, None, None, None, 0, None))
 
 
         self.sprite_weapon.scale = self.scale

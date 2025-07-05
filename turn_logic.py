@@ -124,7 +124,7 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
         elif isinstance(item, Miscellanious) == True and item.name == "Rock":
             damage += 10
 
-        if target.equipment_shield != None and critflag = 0:
+        if target.equipment_shield != None and critflag == 0:
             damage -= (target.equipment_shield.defense + target.equipment_shield.bonus)
             if target.equipment_shield.name == "Mirror Shield" and random.uniform(0, 1) < 0.15:
                 target.equipment_shield.bonus += -1
