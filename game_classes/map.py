@@ -82,7 +82,7 @@ class Map:
         
         #self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "SCORPION"], ["SCORPION", "S'MORE", "CHROME DOME"], ["DRAGON", "S'MORE", "TETRAHEDRON"]]
         #self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 1], [2, 2, 2], [2, 3, 2]]
-        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Obsidian Edge", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Obsidian Edge", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Candy", "Starfruit", "Durian", "Dragonfruit"]
         
         
         self.floor_items = []  # List to hold items on the floor
@@ -248,7 +248,7 @@ class Map:
         
         
         elif name == "Greater Healing Staff":
-            return Staff(name, reverse="Staff of Division",sprite_locs = fakenames_staffs_key[0], damage=10, projectile=True, description="Multiplies the target's HP by 2.", charges=70, rarity=2) #multiplies enemy's hp by 2
+            return Staff(name, reverse="Staff of Division",sprite_locs = fakenames_staffs_key[0], damage=10, projectile=True, description="Multiplies the target's HP by 2.", charges=5, rarity=2) #multiplies enemy's hp by 2
         elif name == "Staff of Division":
             return Staff(name, reverse="Greater Healing Staff",sprite_locs = fakenames_staffs_key[1], damage=10, projectile=True, description="Divides the target's HP by 2.", charges=5, rarity=2) #divides enemy's hp by 2
         elif name == "Staff of Swapping":
@@ -412,19 +412,19 @@ class Map:
         
         
         elif name == "Water Flask":
-            return Flask(name,  reverse="Petroleum", evaporation_rate=0.05, product="Air", liquid="Water", sprite_locs = 17, description="A flask of water. Restores lost strength and defense and heals plant-type creatues.", price=10)
+            return Flask(name,  reverse="Petroleum", evaporation_rate=0.05, product="Air", liquid="Water", sprite_locs = 17, description="A flask of water. Restores lost strength and defense. Heals plants and hurts robots.", price=10)
         elif name == "Petroleum Flask":
-            return Flask(name,  reverse="Water", evaporation_rate=0.05, product="Air", liquid="Petroleum", sprite_locs = 25, description="A flask of thick petroleum that slows down anything inside. Heals robot-type creatures.", price=10)
+            return Flask(name,  reverse="Water", evaporation_rate=0.05, product="Air", liquid="Petroleum", sprite_locs = 25, description="A flask of thick petroleum that slows down anything inside. Heals robots and hurts plants.", price=10)
         elif name == "Syrup Flask":
-            return Flask(name,  reverse="Water", evaporation_rate=0.05, product="Air", liquid="Syrup", sprite_locs = 6, description="Sickeningly sweet syrup that slows creatures in it. Heals food-type creatures and boosts the healing effects of food eaten.", price=10)
+            return Flask(name,  reverse="Water", evaporation_rate=0.05, product="Air", liquid="Syrup", sprite_locs = 6, description="Sickeningly sweet syrup that slows creatures in it. Heals food-type creatures and boosts the healing effects of food eaten by 50%.", price=10)
         elif name == "Ink Flask":
             return Flask(name,  reverse="Detergent", evaporation_rate=0.5, product="Air", liquid="Ink", sprite_locs = 24, description="This dark black liquid renders tomes unusable. Heals abstract-type creatures.", price=10)
         elif name == "Detergent Flask":
             return Flask(name,  reverse="Ink", evaporation_rate=0.4, product="Water", liquid="Detergent", sprite_locs = 13, description="Floral-scented and foamy, this liquid can be used to cleanse tomes. Lethal to abstract-type creatures.", price=30)
         elif name == "Acid Flask":
-            return Flask(name,  reverse="Cureall Flask", evaporation_rate=0.4, product="Water", liquid="Acid", sprite_locs = 1, description="Bubbling acid, this liquid deals damage to any who step in it.", price=15)
+            return Flask(name,  reverse="Cureall Flask", evaporation_rate=0.4, product="Water", liquid="Acid", sprite_locs = 1, description="Bubbling acid, this liquid deals damage to most creatures.", price=15)
         elif name == "Cureall Flask":
-            return Flask(name,  reverse="Acid", evaporation_rate=0.4, product="Water", liquid="Cureall", sprite_locs = 10, description="This liquid heals creatures, but has paralyzing side effect.", price=50)
+            return Flask(name,  reverse="Acid", evaporation_rate=0.4, product="Water", liquid="Cureall", sprite_locs = 10, description="This liquid heals creatures, but has a paralytic side effect.", price=50)
         elif name == "Mercury Flask":
             return Flask(name,  reverse="Petroleum", evaporation_rate=0.05, product="Air", liquid="Mercury", sprite_locs = 27, description="Destroys all metal equipment. Lethal to robot-type creatures.", price=30)
         elif name == "Empty Flask":
@@ -513,7 +513,7 @@ class Map:
         elif name == "Poultry":
             return Consumable(name,  sprite_locs = 0, nutrition_value=50, description="Irregularly charred bird meat. Heals 50 HP.", price=20)
         elif name == "Mushrooms":
-            return Consumable(name,  sprite_locs = 1, nutrition_value=1, description="Nutritious brown mushrooms. Heals 1 HP and increases maximum HP.", price=8) #increases maximum hp
+            return Consumable(name,  sprite_locs = 1, nutrition_value=1, description="Nutritious brown mushrooms. Heals 1 HP and increases maximum HP.", price=2) #increases maximum hp
         elif name == "Leaves":
             return Consumable(name,  sprite_locs = 3, nutrition_value=0, description="Heals 5% of your maximum HP.", price=2)
         elif name == "Lettuce":
@@ -522,16 +522,16 @@ class Map:
             return Consumable(name,  sprite_locs = 9, nutrition_value=0, description="Heals 30% of your maximum HP.", price=13)
         elif name == "Apple":
             return Consumable(name,  sprite_locs = 4, nutrition_value=15, description="Crisp and crunchy. Heals 15 HP.", price=5)
-        elif name == "Cherry":
-            return Consumable(name,  sprite_locs = 5, nutrition_value=10, description="These would be more useful in a pie or pastry. Heals 10 HP.", price=4)
+        elif name == "Candy":
+            return Consumable(name,  sprite_locs = 5, nutrition_value=9, description="A small sugary treat. Heals 9 HP.", price=3)
         elif name == "Starfruit":
-            return Consumable(name,  sprite_locs = 6, nutrition_value=1000, description="Only grown under perfect conditions in a rare, faraway valley. Restores HP to full and increases speed to 2x.", price=50) #gain xp to get to next level
+            return Consumable(name,  sprite_locs = 6, nutrition_value=1000, description="A summery treat grown in a rare, faraway valley. Restores HP to full and increases speed to 2x.", price=20) #gain xp to get to next level
         elif name == "Durian":
             return Consumable(name,  sprite_locs = 7, nutrition_value=27, description="Repulsive, but this fruit can restore your HP above its normal amount.", price=40) #gives temporary hp beyond max
         elif name == "Dragonfruit":
             return Consumable(name,  sprite_locs = 8, nutrition_value=12, description="Immediately increases your level by 1.", price=30) #increase a random stat by 1
         elif name == "Beet":
-            return Consumable(name,  sprite_locs = 10, nutrition_value=5, description="Unappetizing but nutritious. Heals 5 HP and increases maximum HP.", price=30) #increase a random stat by 1
+            return Consumable(name,  sprite_locs = 10, nutrition_value=5, description="Unappetizing but nutritious. Heals 5 HP and increases maximum HP.", price=10) #increase a random stat by 1
         elif name == "Lemon":
             return Consumable(name,  sprite_locs = 11, nutrition_value=1, description="...You want me to eat this raw...?", price=2) #increase a random stat by 1
 

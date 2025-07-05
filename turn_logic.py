@@ -93,6 +93,7 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
     if target == None or target.should_be_deleted == True:
         return
     if damage_type == "physical" or damage_type == "recoil":
+        critflag = 0
         if attacker.name == "SCORPION":
             #strength_reduction = 1
             defense_reduction = 1
@@ -115,7 +116,7 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
                 damage += item.damage + item.bonus
                 if item.name == "Obsidian Edge":
                     if random.uniform(0, 1) < 0.25:
-                        damage += item.damage + item.bonus
+                        critflag = 1
                         list_of_animations.append(animations.Animation("The Obsidian Edge scored a critical hit!" ,0+24, 6, 4,  (255, 0, 0, 0), chronology+1, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction))
                     if random.uniform(0, 1) < 0.1:
                         attacker.equipment_weapon.bonus += -1
@@ -123,11 +124,12 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
         elif isinstance(item, Miscellanious) == True and item.name == "Rock":
             damage += 10
 
-        if target.equipment_shield != None:
+        if target.equipment_shield != None and critflag = 0:
             damage -= (target.equipment_shield.defense + target.equipment_shield.bonus)
             if target.equipment_shield.name == "Mirror Shield" and random.uniform(0, 1) < 0.15:
                 target.equipment_shield.bonus += -1
                 list_of_animations.append(animations.Animation("The Mirror Shield's defense dropped from the attack!" ,0+24, 6, 4, (255, 0, 0, 0), chronology+1, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction))
+        
         damage -= target.defense
         if damage_type == "recoil":
             damage = math.floor(damage / 8)
@@ -419,7 +421,10 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
         
         if entity.creaturetype == "Plant":
             inflict_healing(random.randint(1, 3), entity, player, list_of_animations, chronology)
-        
+        else:
+            if entity.creaturetype == "Robotic":
+                inflict_damage("Water", entity, player, chronology, list_of_animations, None, random.randint(2, 4), "chemical", floor)
+
         if entity.strength != entity.maxstrength:
             entity.strength = entity.maxstrength
             list_of_animations.append(animations.Animation(str(entity.name) + "'s strength was restored!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))  
@@ -444,14 +449,14 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
     elif liq == "A": #acid
         spr = 2*29 + 0
         evap = 0.33
-        if entity.name != "VITRIOLIVE":
+        if entity.name != "VITRIOLIVE" and entity.name != "SCORPION":
             inflict_damage("Acid", entity, player, chronology, list_of_animations, None, random.randint(1, 3), "chemical", floor)
         else:
             evap = 0
     elif liq == "M": #mercury (should slow creatures down)
         spr = 2*29 + 24
         evap = 0.05
-        if entity.creaturetype == "Robotic":
+        if entity.creaturetype == "Robotic" or entity.creaturetype == "Food":
             inflict_damage("Mercury", entity, player, chronology, list_of_animations, None, random.randint(35, 45), "chemical", floor)
     elif liq == "S": #syrup (should slow creatures down)
         spr = 2*29 + 4
@@ -475,6 +480,8 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
         if entity.creaturetype == "Robotic":
             inflict_healing(random.randint(1, 3), entity, player, list_of_animations, chronology)
         else:
+            if entity.creaturetype == "Plant":
+                inflict_damage("Petroleum", entity, player, chronology, list_of_animations, None, random.randint(2, 4), "chemical", floor)
             entity.speed = 1
             entity.speed_turns = 3
             list_of_animations.append(animations.Animation(str(entity.name) + " was slowed down.", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))  
@@ -775,7 +782,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
     elif entity.technique == Technique.CONSUME:
         if prevtechnique == Technique.MOVE or prevtechnique == Technique.STILL:
             chronology += check_if_entity_is_on_screen(entity, player, 1, 8)
-        entity.consume_item(entity.techniqueitem, list_of_animations)
+        entity.consume_item(entity.techniqueitem, list_of_animations, floor)
         chronology += 10
         do_liquid_effect(entity, player, chronology, list_of_animations, floor)
         return Technique.CONSUME, chronology

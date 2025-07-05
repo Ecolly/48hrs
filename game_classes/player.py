@@ -317,11 +317,17 @@ class Player:
 
     
 
-    def consume_item(self, item, list_of_animations):
+    def consume_item(self, item, list_of_animations, floor):
         self.del_item_from_inventory(item)
 
             
         health_to_restore = item.nutrition_value
+
+        if floor.liquid_grid[floor.height-1-self.y][self.x] == "S":
+            health_to_restore = math.ceil(item.nutrition_value*1.5)
+
+
+
 
         #print(health_to_restore, self.maxhealth, self.health, self.maxhealth_visual, self.health_visual)
         if item.name == "Mushrooms" or item.name == "Beet":

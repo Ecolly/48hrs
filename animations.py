@@ -97,10 +97,16 @@ class Animation:
         if (self.current_time == self.start_time or (self.current_time == 1 and self.start_time == 0)) and self.text != "":
             adventure_log.append(self.text)
             
-        
-        if self.current_time > self.start_time: #if the animation has started...
-            frame = self.current_time - self.start_time
+        if self.current_time <= self.start_time:
 
+            if hasattr(self, 'sprite') and isinstance(self.sprite, pyglet.sprite.Sprite):
+                if self.sprite.opacity != 0:
+                    self.sprite.opacity = 0
+
+        else: #if the animation has started...
+            frame = self.current_time - self.start_time
+            if hasattr(self, 'sprite') and isinstance(self.sprite, pyglet.sprite.Sprite) and frame == 1:
+                self.sprite.opacity = 1
                 #print(self.text)
 
             if self.animtype == 0: #movement
