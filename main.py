@@ -812,7 +812,7 @@ def on_mouse_release(x, y, button, modifiers):
                     player.technique = Technique.CONSUME 
                     player.techniqueitem = item_selected                        
                     gamestate = 2
-                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                    turn_logic.do_turns(all_enemies, player, floor, all_anims)
                 elif isinstance(item_selected, Weapon):
                     player.equip_weapon(item_selected)
                     #attack with weapon
@@ -821,7 +821,7 @@ def on_mouse_release(x, y, button, modifiers):
                     if (abs(mouse_x_tilemap - player.prevx) < 2 and abs(mouse_y_tilemap - player.prevy) < 2) or (abs(mouse_x_tilemap - player.prevx) < 3 and abs(mouse_y_tilemap - player.prevy) < 3 and player.equipment_weapon.name == "Rapier"):
                         player.hit(mouse_x_tilemap, mouse_y_tilemap)
                         gamestate = 2
-                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                        turn_logic.do_turns(all_enemies, player, floor, all_anims)
                 elif isinstance(item_selected, Shield):
                     if player.equipment_shield is None:
                         player.equip_shield(item_selected)
@@ -831,7 +831,7 @@ def on_mouse_release(x, y, button, modifiers):
                     player.techniqueitem = item_selected 
                     gamestate = 2
                     player.cast_static()
-                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                    turn_logic.do_turns(all_enemies, player, floor, all_anims)
                     if has_won == 0:
                         pass
                     else:
@@ -844,7 +844,7 @@ def on_mouse_release(x, y, button, modifiers):
                     player.techniquecharges = 0
                     player.splash(mouse_x_tilemap, mouse_y_tilemap)
                     gamestate = 2
-                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                    turn_logic.do_turns(all_enemies, player, floor, all_anims)
                 # elif isinstance(item_selected, Staff): #this never happens because pressing lclick with staff brings gamestate to 6
                 #     print("casting staff")
                 #     player.techniqueitem = item_selected
@@ -855,7 +855,7 @@ def on_mouse_release(x, y, button, modifiers):
                     if (abs(mouse_x_tilemap - player.prevx) < 2 and abs(mouse_y_tilemap - player.prevy) < 2):
                         player.hit(mouse_x_tilemap, mouse_y_tilemap)
                         gamestate = 2
-                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                        turn_logic.do_turns(all_enemies, player, floor, all_anims)
                       
                 delete_buttons_supertype(all_buttons, 'inventory')
 
@@ -921,7 +921,7 @@ def on_mouse_release(x, y, button, modifiers):
                     player.techniqueitem = item_selected
                     player.throw(mouse_x_tilemap, mouse_y_tilemap)
                     gamestate = 2
-                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                    turn_logic.do_turns(all_enemies, player, floor, all_anims)
                     
 @window.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
@@ -984,7 +984,7 @@ def on_key_press(symbol, modifiers):
             if item_selected is not None:
                 player.drop_item(item_selected, floor, adventure_log)
                 gamestate = 2
-                all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                turn_logic.do_turns(all_enemies, player, floor, all_anims)
         
         elif gamestate == 3: #kind of works but not really becasue the enemies dont take a turn after
             slot = 0 #theres probably a more pythonic way to do this, sowwy
@@ -996,7 +996,7 @@ def on_key_press(symbol, modifiers):
                         player.drop_item(item, floor, adventure_log)
 
                         gamestate = 2
-                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                        turn_logic.do_turns(all_enemies, player, floor, all_anims)
                         delete_buttons_supertype(all_buttons, 'inventory')
 
                         #gamestate = 2
@@ -1398,7 +1398,7 @@ def on_draw():
                     player.move(dirx, diry, floor)
                     gamestate = 2
                     print(gamestate, "gamestate")
-                    all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                    turn_logic.do_turns(all_enemies, player, floor, all_anims)
             else:
                 if gamestate == 2 or keys[pyglet.window.key.W] or keys[pyglet.window.key.S] or keys[pyglet.window.key.A] or keys[pyglet.window.key.D] or keys[pyglet.window.key.E] or keys[pyglet.window.key.TAB]:
                     pass
@@ -1446,7 +1446,7 @@ def on_draw():
                         create_win_lose_screen(all_buttons, "win")
                     elif player.paralysis_turns > 0 or player.flee_ai_turns > 0 or player.rage_ai_turns > 0: #if the player's AI is no longer controlled by player, just do another turn
                         gamestate = 2
-                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                        turn_logic.do_turns(all_enemies, player, floor, all_anims)
 
 
             bg.x = 1152/2 - (player.prevx*16 + 8)*player.scale
@@ -1648,7 +1648,7 @@ def on_draw():
                         button.should_be_deleted = True
                     if gamestate == 7 and button.animframe == 1:
                         
-                        all_anims = turn_logic.do_turns(all_enemies, player, floor)
+                        turn_logic.do_turns(all_enemies, player, floor, all_anims)
                         gamestate = 2
             lag_shortcut += 1
 

@@ -1517,8 +1517,7 @@ def refresh_entity_states(entity):
 
 
 
-def do_turns(all_enemies, player, floor):
-    list_of_animations = []
+def do_turns(all_enemies, player, floor, list_of_animations):
     chronology = 0
     
     prevtechnique = Technique.STILL
