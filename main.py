@@ -10,6 +10,7 @@ from game_classes.enemy import *
 from game_classes.map import *
 from game_classes.item import Weapon, Consumable
 from game_classes.item import Item
+from animations import *
 from actual_actual_button import Button
 from font import *
 import cProfile
@@ -682,7 +683,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 # player.add_to_inventory(floor.create_item("Knife", grid_items))
                 # player.add_to_inventory(floor.create_item("Stick", grid_items))
                 # player.add_to_inventory(floor.create_item("Sun Shield", grid_items))
-                player.add_to_inventory(floor.create_item("Water Flask", grid_items))
+                #player.add_to_inventory(floor.create_item("Water Flask", grid_items))
 
                 # #player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
@@ -1201,7 +1202,26 @@ fps_display.label.color = (0, 0, 0, 255)
 invhover = False
 fps = 60
 
-
+def get_liq_sprite(item):
+    if item == "W":
+        spr = 2*29 + 16
+    elif item == "D":
+        spr = 2*29 + 12
+    elif item == "A":
+        spr = 2*29 
+    elif item == "M":
+        spr = 2*29 + 24
+    elif item == "S":
+        spr = 2*29 + 4
+    elif item == "C":
+        spr = 2*29 + 8
+    elif item == "P":
+        spr = 2*29 + 20
+    elif item == "I":
+        spr = 2*29 + 20
+    else:
+        return False 
+    return spr
 
 @window.event
 def on_draw():
@@ -1471,6 +1491,18 @@ def on_draw():
             bg_deeper.x = 1152/2 - (player.prevx*16 + 8)*player.scale - 16*15*player.scale
             bg_deeper.y = 768/2 - (player.prevy*16 + 8)*player.scale - 16*15*player.scale
 
+            if bg_animframe % 12 == 0:
+                item = get_liq_sprite(floor.liquid_grid[floor.height-1-player.y][player.x]) 
+                if item != 0:
+
+                    all_anims.append(animations.Animation("", item, 9, 5, (255, 255, 255, 0), 0, 12, player.x, player.y, player.x, player.y, floor.liquid_grid[floor.height-1-player.y][player.x], None, None, None, None, 0, None))
+
+                for enemy in all_enemies:
+                    item = get_liq_sprite(floor.liquid_grid[floor.height-1-enemy.y][enemy.x]) 
+                    if ((enemy.x > player.x + 13 or enemy.x < player.x - 13) or (enemy.y > player.y + 9 or enemy.y < player.y - 9)) or item == 0:
+                        pass
+                    else:
+                        all_anims.append(animations.Animation("", item, 9, 5, (255, 255, 255, 0), 0, 12, enemy.x, enemy.y, enemy.x, enemy.y, floor.liquid_grid[floor.height-1-player.y][player.x], None, None, None, None, 0, None))
 
 
             player.draw(animation_presets, group_enemies, group_enemies_bg, group_enemies_fg, hotbar.get_selected_item(), all_anims, floor)
