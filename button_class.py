@@ -174,7 +174,7 @@ def create_power_bar(all_buttons, item, x, y):
     charges = item.charges
     maxcharges = item.maxcharges
     #power bar should be ~48 px wide. if a section is over 7 px width, set to 7 px width
-    width_per_bar = min(4, math.ceil(48/maxcharges))
+    width_per_bar = min(4, math.ceil(48/maxcharges)+1)
 
 
     tile = grid_font[112 + 8 - (width_per_bar-1)]

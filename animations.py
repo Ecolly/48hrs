@@ -113,8 +113,8 @@ class Animation:
                 obj.prevx = obj.prevx + round((abs(self.endx- obj.prevx)/(self.endx - obj.prevx+0.01)))/8
                 obj.prevy = obj.prevy + round((abs(self.endy - obj.prevy)/(self.endy - obj.prevy+0.01)))/8
                 if self.associated_object == player:
-                    print(obj.x, obj.y, self.startx, self.starty, self.endx, self.endy)
-                
+                    #print(obj.x, obj.y, self.startx, self.starty, self.endx, self.endy)
+                    pass
                 if frame > self.duration:
                     #print(self.endx, self.endy, obj.x, obj.y, obj.techniquex, obj.techniquey)
 

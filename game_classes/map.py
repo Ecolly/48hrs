@@ -82,7 +82,7 @@ class Map:
         
         #self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "SCORPION"], ["SCORPION", "S'MORE", "CHROME DOME"], ["DRAGON", "S'MORE", "TETRAHEDRON"]]
         #self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 1], [2, 2, 2], [2, 3, 2]]
-        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Fury Cutter", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
+        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Obsidian Edge", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Cherry", "Starfruit", "Durian", "Dragonfruit"]
         
         
         self.floor_items = []  # List to hold items on the floor
@@ -236,8 +236,8 @@ class Map:
             return Weapon(name, sprite_locs = 5, damage=3, durability=100, description="A thin, slender weapon that can reach two tiles in front.",price=40)
         elif name == "Stick":
             return Weapon(name, sprite_locs = 6, damage=2, durability=100, description="A thick tree branch that can be used as a crude weapon.",price=3)
-        elif name == "Fury Cutter":
-            return Weapon(name, sprite_locs = 9, damage=20, durability=100, description="Ominous energy seeps off the cutting edge. The weapon returns 1/4 of damage dealt to the bearer.",price=50) #deducts 1/4 of attack damage from your hp
+        elif name == "Obsidian Edge":
+            return Weapon(name, sprite_locs = 9, damage=13, durability=100, description="Ominous energy seeps off the cutting edge. The weapon has a chance to score a critical hit, but may also lose strength every time you use it.",price=50) #deducts 1/4 of attack damage from your hp
         elif name == "Windsword":
             return Weapon(name, sprite_locs = 10, damage=9, durability=100, description="Imbued with magical runes, this longsword is more powerful than the average weapon.",price=80)
         
@@ -248,7 +248,7 @@ class Map:
         
         
         elif name == "Greater Healing Staff":
-            return Staff(name, reverse="Staff of Division",sprite_locs = fakenames_staffs_key[0], damage=10, projectile=True, description="Multiplies the target's HP by 2.", charges=5, rarity=2) #multiplies enemy's hp by 2
+            return Staff(name, reverse="Staff of Division",sprite_locs = fakenames_staffs_key[0], damage=10, projectile=True, description="Multiplies the target's HP by 2.", charges=70, rarity=2) #multiplies enemy's hp by 2
         elif name == "Staff of Division":
             return Staff(name, reverse="Greater Healing Staff",sprite_locs = fakenames_staffs_key[1], damage=10, projectile=True, description="Divides the target's HP by 2.", charges=5, rarity=2) #divides enemy's hp by 2
         elif name == "Staff of Swapping":
@@ -280,9 +280,9 @@ class Map:
         elif name == "Staff of Metamorphosis":
             return Staff(name,  reverse="Staff of Metamorphosis", sprite_locs = fakenames_staffs_key[15], damage=10, projectile=True, description="Target is transformed into a random enemy at a random level.", charges=5, rarity=3) 
         elif name == "Staff of Primes":
-            return Staff(name,  reverse="Staff of Primes",sprite_locs = fakenames_staffs_key[16], damage=10, projectile=True, description="Damage depends on mana used. Will be a prime number.", charges=12, rarity=1)
+            return Staff(name,  reverse="Fibonnaci Staff",sprite_locs = fakenames_staffs_key[16], damage=10, projectile=True, description="Damage depends on mana used. Will be a prime number.", charges=12, rarity=1)
         elif name == "Fibonnaci Staff":
-            return Staff(name,  reverse="Fibonnaci Staff", sprite_locs = fakenames_staffs_key[17], damage=10, projectile=True, description="Damage depends on mana used; follows the fibonnaci sequence.", charges=8, rarity=2) 
+            return Staff(name,  reverse="Staff of Primes", sprite_locs = fakenames_staffs_key[17], damage=10, projectile=True, description="Damage depends on mana used; follows the fibonnaci sequence.", charges=8, rarity=2) 
         elif name == "Staff of Alchemy":
             return Staff(name,  reverse="Gardening Staff",sprite_locs = fakenames_staffs_key[18], damage=10, projectile=True, description="The projectile transmutes liquids it travels over randomly.", charges=5, rarity=3)
         elif name == "Gardening Staff":
@@ -439,7 +439,7 @@ class Map:
         elif name == "Blue Shield":
             return Shield(name,  sprite_locs=1, defense=5, description="A sturdy shield painted with the emblem of a government.", price=12)
         elif name == "Mirror Shield":
-            return Shield(name,  sprite_locs=2, defense=1, description="This shield is weak but will reflect projectiles.", price=60)
+            return Shield(name,  sprite_locs=2, defense=1, description="This shield will reflect projectiles, but is fragile and may lose defense after taking an attack.", price=60)
         elif name == "Wood Shield":
             return Shield(name,  sprite_locs=3, defense=3, description="A crude wooden shield usually used for training.", price=8)
         elif name == "Steel Shield":
@@ -468,7 +468,7 @@ class Map:
         elif name == "Predecessor's Scrawling":
             return Miscellanious(name,  sprite_locs = 1, description = "-Blank/ruined tomes are pre-IDd.ε-Staffs don't come in white/black.ε-staffs w/ 5 max = ones w/ an effect that doesn't depend on the mana used?", price=5)
         elif name == "Peer's Notes":
-            return Miscellanious(name,  sprite_locs = 1, description = "-Alchemy staff has no obvious effect when used on enemies; are these the only ones?ε-Coloring and Reversal preserves max mana on a staffε-Lethargy & Paralysis both reverse to make Energizing?", price=5)
+            return Miscellanious(name,  sprite_locs = 1, description = "-Violence staff has no obvious effect when used on enemies; is it the only one?ε-Coloring and Reversal preserves max mana on a staffε-Lethargy & Paralysis both reverse to make Energizing?", price=5)
         elif name == "Coworker's Thoughts":
             return Miscellanious(name,  sprite_locs = 1, description = "-CHLOROSPORE spores reduce strength at lv2, slow at lv3, ? at lv4?ε-CHROME DOME can hit from two spaces away due to its Rapierε-CULTISTs can cut HP in half- stay out of range of them", price=5)
         elif name == "Coworker's Thoughts 2":
@@ -480,7 +480,7 @@ class Map:
         elif name == "Scientist's Log 1":
             return Miscellanious(name,  sprite_locs = 1, description = "Test Subject: Staff of ManaεOutcome: Does 2 damage * the mana used to a target. This staff, alongside Staff of Primes and a few others, has the largest max mana (12).", price=5)
         elif name == "Scientist's Log 2":
-            return Miscellanious(name,  sprite_locs = 1, description = "Test Subect: Bankruptcy TomeεOutcome: Sets gold to 0. This destroys physical gold but also intangible forms such as debt. If you clear debt this way, creditors won't let you borrow from them anymore.", price=5)
+            return Miscellanious(name,  sprite_locs = 1, description = "Test Subect: Duplication TomeεOutcome: Duplicates an item. Seems to duplicate equipment bonuses, staff mana/max mana, and item price. The potential for this one might be high if you combined the same item multiple times...", price=5)
         elif name == "Scientist's Log 3":
             return Miscellanious(name,  sprite_locs = 1, description = "Test Subject: Execution StaffεOutcome: Does 3 damage to any target, but if the target dies it seems the experience yield is higher. The formula for scaling the experience yield appears to be exponential: exp = base exp^(1 + mana/10).", price=5)
         elif name == "Scientist's Log 4":

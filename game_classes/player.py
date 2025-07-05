@@ -115,7 +115,7 @@ class Player:
             self.gold += 15
             return True
         elif item.name == "60 Gold":
-            self.gold += 50
+            self.gold += 60
             return True
         
         for slot in range(len(self.inventory)):

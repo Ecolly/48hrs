@@ -113,13 +113,21 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
         if isinstance(item, Weapon) != False:
             if attacker.equipment_shield == None or attacker.equipment_shield.name != "Armor Plate":
                 damage += item.damage + item.bonus
-                if item.name == "Fury Cutter":
-                    attacker.health = attacker.health - math.floor(damage/4)
+                if item.name == "Obsidian Edge":
+                    if random.uniform(0, 1) < 0.25:
+                        damage += item.damage + item.bonus
+                        list_of_animations.append(animations.Animation("The Obsidian Edge scored a critical hit!" ,0+24, 6, 4,  (255, 0, 0, 0), chronology+1, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction))
+                    if random.uniform(0, 1) < 0.1:
+                        attacker.equipment_weapon.bonus += -1
+                        list_of_animations.append(animations.Animation("The Obsidian Edge's damage dropped from the attack!" ,0+24, 6, 4, (255, 0, 0, 0), chronology+2, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction))
         elif isinstance(item, Miscellanious) == True and item.name == "Rock":
             damage += 10
 
         if target.equipment_shield != None:
-            damage -= target.equipment_shield.defense
+            damage -= (target.equipment_shield.defense + target.equipment_shield.bonus)
+            if target.equipment_shield.name == "Mirror Shield" and random.uniform(0, 1) < 0.15:
+                target.equipment_shield.bonus += -1
+                list_of_animations.append(animations.Animation("The Mirror Shield's defense dropped from the attack!" ,0+24, 6, 4, (255, 0, 0, 0), chronology+1, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction))
         damage -= target.defense
         if damage_type == "recoil":
             damage = math.floor(damage / 8)
@@ -421,7 +429,7 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
 
     elif liq == "D": #detergent
         spr = 2*29 + 12
-        evap = 0.4
+        evap = 1.0
         if isinstance(entity.techniqueitem, Tome) == True:
             objlist = player.inventory
             i = 0
@@ -432,17 +440,19 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
                     objlist[i] = floor.create_item("Blank Tome", objlist[i].grid)
                 i = i + 1
         if entity.creaturetype == "Abstract":
-            inflict_damage("Detergent", entity, player, chronology, list_of_animations, None, random.randint(25, 45), "chemical", floor)
+            inflict_damage("Detergent", entity, player, chronology, list_of_animations, None, random.randint(35, 45), "chemical", floor)
     elif liq == "A": #acid
         spr = 2*29 + 0
         evap = 0.33
         if entity.name != "VITRIOLIVE":
-            inflict_damage("Acid", entity, player, chronology, list_of_animations, None, 1, "chemical", floor)
+            inflict_damage("Acid", entity, player, chronology, list_of_animations, None, random.randint(1, 3), "chemical", floor)
+        else:
+            evap = 0
     elif liq == "M": #mercury (should slow creatures down)
         spr = 2*29 + 24
         evap = 0.05
         if entity.creaturetype == "Robotic":
-            inflict_damage("Mercury", entity, player, chronology, list_of_animations, None, random.randint(25, 45), "chemical", floor)
+            inflict_damage("Mercury", entity, player, chronology, list_of_animations, None, random.randint(35, 45), "chemical", floor)
     elif liq == "S": #syrup (should slow creatures down)
         spr = 2*29 + 4
         evap = 0.05
@@ -1020,15 +1030,20 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         #             break
         #         i = i - 1
         if item.name == "Bankruptcy Tome":
-            if player.gold < 0:
-                player.credit_score = 0
+            #if player.gold < 0:
+                #player.credit_score = 0 
             player.gold = 0 
             deduct_charges(entity, 1, floor)
         elif item.name == "Tome of Pizzazz":
             i = 39 
             while i > -1:
                 if isinstance(player.inventory[i], Item) == True:
+
+                    name_desc = get_display_name(player.inventory[i])
+                    list_of_animations.append(animations.Animation(name_desc + " 's price was increased from " + str(player.inventory[i].price) + " to " + str(math.ceil(player.inventory[i].price*1.5)) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
                     player.inventory[i].price = math.ceil(player.inventory[i].price*1.5)
+
                     break
                 i = i - 1
             deduct_charges(entity, 1, floor)
@@ -1156,12 +1171,12 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             deduct_charges(entity, 1, floor)
             
         
-        elif item.name == "Tome of Obscuration":
-            while len(discovered_staffs) > 0:
-                discovered_staffs.pop(0)
-            while len(discovered_tomes) > 0:
-                discovered_tomes.pop(0)
-            list_of_animations.append(animations.Animation("All Staff and Tome names were cleared.", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        # elif item.name == "Tome of Obscuration":
+        #     while len(discovered_staffs) > 0:
+        #         discovered_staffs.pop(0)
+        #     while len(discovered_tomes) > 0:
+        #         discovered_tomes.pop(0)
+        #     list_of_animations.append(animations.Animation("All Staff and Tome names were cleared.", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
         
         elif item.name == "Tome of Identification":
             i = 39 
@@ -1176,43 +1191,76 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                 i = i - 1
             deduct_charges(entity, 1, floor)
         elif item.name == "Sharpening Tome":
+            successflag = False
             i = 39 
             while i > -1:
                 if isinstance(player.inventory[i], Weapon) == True:
                     player.inventory[i].bonus += 1
+                    
+                    name_desc = get_display_name(player.inventory[i])
+                    list_of_animations.append(animations.Animation(name_desc + "'s damage bonus was increased by 1!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+
+                    successflag = True
                     break
                 i = i - 1
-            deduct_charges(entity, 1, floor)
+            if successflag == False:
+                list_of_animations.append(animations.Animation("Could not find a shield to upgrade...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+            else:
+                deduct_charges(entity, 1, floor)
         elif item.name == "Fortifying Tome":
+            successflag = False
             i = 39 
             while i > -1:
                 if isinstance(player.inventory[i], Shield) == True:
                     player.inventory[i].bonus += 1
+
+                    name_desc = get_display_name(player.inventory[i])
+                    list_of_animations.append(animations.Animation(name_desc + "'s defense bonus was increased by 1!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+                    successflag = True
                     break
                 i = i - 1
-            deduct_charges(entity, 1, floor)
-        elif item.name == "Staffboost Tome":
-            i = 39 
-            while i > -1:
-                if isinstance(player.inventory[i], Staff) == True:
-                    player.inventory[i].charges += 1
-                    player.inventory[i].maxcharges += 1
-                    break
-                i = i - 1
-            deduct_charges(entity, 1, floor)
+            if successflag == False:
+                list_of_animations.append(animations.Animation("Could not find a shield to upgrade...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+            else:
+                deduct_charges(entity, 1, floor)
+        # elif item.name == "Staffboost Tome":
+        #     i = 39 
+        #     while i > -1:
+        #         if isinstance(player.inventory[i], Staff) == True:
+        #             player.inventory[i].charges += 1
+        #             player.inventory[i].maxcharges += 1
+        #             break
+        #         i = i - 1
+        #     deduct_charges(entity, 1, floor)
         elif item.name == "Tome of Reversal":
+            successflag = False
             i = 39 
             while i > -1:
                 if isinstance(player.inventory[i], Staff) == True or isinstance(player.inventory[i], Tome) == True:
+
+                    name_desc = get_display_name(player.inventory[i])
+
                     objlist = player.inventory
                     charges, maxcharges = objlist[i].charges, objlist[i].maxcharges
                     objlist[i].sprite.delete() 
                     objlist[i].hotbar_sprite.delete() 
                     objlist[i] = floor.create_item(objlist[i].reverse, objlist[i].grid)
                     objlist[i].charges, objlist[i].maxcharges = charges, maxcharges
+
+                    name_desc_2 = get_display_name(objlist[i])
+                    
+                    list_of_animations.append(animations.Animation(name_desc + " was converted into " + name_desc_2 + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+
+                    successflag = True
                     break
                 i = i - 1
-            deduct_charges(entity, 1, floor)
+            if successflag == False:
+                list_of_animations.append(animations.Animation("Item to reverse could not be found...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+            else:
+                deduct_charges(entity, 1, floor)
         elif item.name == "Blank Tome":
             blank_id = player.inventory.index(item)
 
@@ -1223,6 +1271,10 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                     objlist[blank_id].sprite.delete() 
                     objlist[blank_id].hotbar_sprite.delete() 
                     objlist[blank_id] = floor.create_item(objlist[i].name, objlist[i].grid)
+                    name_desc = get_display_name(player.inventory[i])
+                    list_of_animations.append(animations.Animation("Blank Tome was converted into " + name_desc + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+
                     break
                 i = i - 1
         elif item.name == "Duplication Tome":
@@ -1242,11 +1294,15 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         objlist[blank_id].bonus = objlist[i].bonus
                     objlist[blank_id].price = objlist[i].price
 
+                    name_desc = get_display_name(player.inventory[i])
+                    list_of_animations.append(animations.Animation("Duplication Tome was converted into " + name_desc + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
                     break
                 i = i - 1
         elif item.name == "Tome of Exchange":
             equip_1_2 = []
             staffs_1_2 = []
+            successflag = False
             i = 39
             while i > -1:
                 if isinstance(player.inventory[i], Staff) == True:
@@ -1260,6 +1316,14 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
                         player.inventory[staffs_1_2[1]].charges = tempcharges
                         player.inventory[staffs_1_2[1]].maxcharges = tempmax
+
+                        name_desc = get_display_name(player.inventory[staffs_1_2[0]])
+                        name_desc_2 = get_display_name(player.inventory[staffs_1_2[1]])
+
+                        list_of_animations.append(animations.Animation(str(name_desc) + " and " + str(name_desc_2) + " had their mana switched!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+
+                        successflag = True
                         break
                 if isinstance(player.inventory[i], Shield) == True or isinstance(player.inventory[i], Weapon) == True:
                     equip_1_2.append(i)
@@ -1267,13 +1331,25 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         tempbonus = player.inventory[equip_1_2[0]].bonus
                         player.inventory[equip_1_2[0]].bonus = player.inventory[equip_1_2[1]].bonus
                         player.inventory[equip_1_2[1]].bonus = tempbonus
+
+                        name_desc = get_display_name(player.inventory[equip_1_2[0]])
+                        name_desc_2 = get_display_name(player.inventory[equip_1_2[1]])
+
+                        list_of_animations.append(animations.Animation(str(name_desc) + " and " + str(name_desc_2) + " had their equipment bonuses switched!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+                        successflag = True
                         break
                 i = i - 1
-            deduct_charges(entity, 1, floor)
+
+            if successflag == False:
+                list_of_animations.append(animations.Animation("Two valid items to exchange stats could not be found...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+            else:
+                deduct_charges(entity, 1, floor)
         elif item.name == "Tome of Consolidation":
             weapons_1_2 = []
             shields_1_2 = []
             staffs_1_2 = []
+            successflag = False
             i = 39
             while i > -1:
                 if isinstance(player.inventory[i], Staff) == True:
@@ -1282,23 +1358,49 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         player.inventory[staffs_1_2[0]].charges += player.inventory[staffs_1_2[1]].charges
                         player.inventory[staffs_1_2[0]].maxcharges += player.inventory[staffs_1_2[1]].charges
                         player.inventory[staffs_1_2[1]].should_be_deleted = True
+
+                        name_desc = get_display_name(player.inventory[staffs_1_2[0]])
+                        name_desc_2 = get_display_name(player.inventory[staffs_1_2[1]])
+
+                        list_of_animations.append(animations.Animation(str(name_desc) + " and " + str(name_desc_2) + " were combined!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+                        successflag = True
                         break
                 if isinstance(player.inventory[i], Shield) == True:
                     shields_1_2.append(i)
                     if len(shields_1_2) == 2:
                         player.inventory[shields_1_2[0]].bonus += player.inventory[shields_1_2[1]].bonus
                         player.inventory[shields_1_2[1]].should_be_deleted = True
+
+                        name_desc = get_display_name(player.inventory[shields_1_2[0]])
+                        name_desc_2 = get_display_name(player.inventory[shields_1_2[1]])
+
+                        list_of_animations.append(animations.Animation(str(name_desc) + " and " + str(name_desc_2) + " were combined!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+                        successflag = True
                         break
                 if isinstance(player.inventory[i], Weapon) == True:
                     weapons_1_2.append(i)
                     if len(weapons_1_2) == 2:
                         player.inventory[weapons_1_2[0]].bonus += player.inventory[weapons_1_2[1]].bonus
                         player.inventory[weapons_1_2[1]].should_be_deleted = True
+
+                        name_desc = get_display_name(player.inventory[weapons_1_2[0]])
+                        name_desc_2 = get_display_name(player.inventory[weapons_1_2[1]])
+
+                        list_of_animations.append(animations.Animation(str(name_desc) + " and " + str(name_desc_2) + " were combined!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+                        successflag = True
                         break
                 i = i - 1
-            deduct_charges(entity, 1, floor)
+
+            if successflag == False:
+                list_of_animations.append(animations.Animation("Two valid items to consolidate could not be found...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+            else:
+                deduct_charges(entity, 1, floor)
         elif item.name == "Weaponsmithing Tome":
             weapons_1_2 = []
+            successflag = False
             i = 39
             while i > -1:
                 if isinstance(player.inventory[i], Weapon) == True:
@@ -1306,11 +1408,22 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                     if len(weapons_1_2) == 2:
                         player.inventory[weapons_1_2[0]].bonus += player.inventory[weapons_1_2[1]].bonus
                         player.inventory[weapons_1_2[1]].should_be_deleted = True
+
+                        name_desc = get_display_name(player.inventory[weapons_1_2[0]])
+                        name_desc_2 = get_display_name(player.inventory[weapons_1_2[1]])
+
+                        list_of_animations.append(animations.Animation(str(name_desc) + " and " + str(name_desc_2) + " were combined!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+                        successflag = True
                         break
                 i = i - 1
-            deduct_charges(entity, 1, floor)
+            if successflag == False:
+                list_of_animations.append(animations.Animation("Could not combine weapons; at least two weapons are required...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+            else:
+                deduct_charges(entity, 1, floor)
         elif item.name == "Shieldsmithing Tome":
             shields_1_2 = []
+            successflag = False
             i = 39
             while i > -1:
                 if isinstance(player.inventory[i], Shield) == True:
@@ -1318,11 +1431,23 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                     if len(shields_1_2) == 2:
                         player.inventory[shields_1_2[0]].bonus += player.inventory[shields_1_2[1]].bonus
                         player.inventory[shields_1_2[1]].should_be_deleted = True
+
+                        name_desc = get_display_name(player.inventory[shields_1_2[0]])
+                        name_desc_2 = get_display_name(player.inventory[shields_1_2[1]])
+
+                        list_of_animations.append(animations.Animation(str(name_desc) + " and " + str(name_desc_2) + " were combined!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+                        successflag = True
                         break
                 i = i - 1
-            deduct_charges(entity, 1, floor)
+
+            if successflag == False:
+                list_of_animations.append(animations.Animation("Could not combine shields; at least two shields are required...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+            else:
+                deduct_charges(entity, 1, floor)
         elif item.name == "Coloring Tome":
             items_1_2 = []
+            successflag = False
             i = 39
             while i > -1:
                 if isinstance(player.inventory[i], Staff) == True or (isinstance(player.inventory[i], Tome) == True and (len(items_1_2) != 1 or (player.inventory[i].name != "Blank Tome" and player.inventory[i].name != "Ruined Tome"))):
@@ -1339,15 +1464,26 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
 
                         objlist = player.inventory
+                        name_desc = get_display_name(objlist[items_1_2[0]])
                         charges, maxcharges = objlist[items_1_2[0]].charges, objlist[items_1_2[0]].maxcharges
                         objlist[items_1_2[0]].sprite.delete() 
                         objlist[items_1_2[0]].hotbar_sprite.delete() 
                         objlist[items_1_2[0]] = floor.create_item(name, objlist[items_1_2[0]].grid)
                         objlist[items_1_2[0]].charges, objlist[items_1_2[0]].maxcharges = charges, maxcharges
+                        name_desc_2 = get_display_name(objlist[items_1_2[0]])
+
+                        list_of_animations.append(animations.Animation(str(name_desc) + " was converted into " + str(name_desc_2) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        
+
+                        successflag = True
 
                         break
                 i = i - 1
-            deduct_charges(entity, 1, floor)
+
+            if successflag == False:
+                list_of_animations.append(animations.Animation("Could not color anything; at least two staffs or tomes are required...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+            else:
+                deduct_charges(entity, 1, floor)
 
         do_liquid_effect(entity, player, chronology, list_of_animations, floor)
         return Technique.CAST, chronology

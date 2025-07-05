@@ -20,9 +20,9 @@ class Projectile:
         self.num_of_pierces = 0
         self.friendly_fire = False
         self.text = text
-        if name == "Spores":
+        if name == "Spores" or name == "Spores 2" or name == "Spores 3" or name == "Spores 4":
             self.spriteindex = 29 + 8
-        elif name == "Dragon Fire":
+        elif name == "Dragon Fire" or name == "Dragon Fire 2" or name == "Dragon Fire 3" or name == "Dragon Fire 4":
             self.spriteindex = 2*29
             self.num_of_pierces = 4
         elif "Flask" in name:

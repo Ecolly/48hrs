@@ -65,15 +65,24 @@ def generate_enemy(name, level, x, y, grid, floor, player):
 
     global grid_items
     enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR", "VITRIOLIVE", "EXECUTIVE", "DODECAHEDRON", "MONITAUR"]
-    enemy_hps = [20, 9, 5, 8, 9, 12, 20, 30, 20, 10, 13, 6, 8, 24, 18, 100, 20, 20, 50, 30]
-    enemy_strength = [0, 8, 5, 9, 8, 12, 9, 15, 15, 18, 12, 1, 1, 1, 1, 70, 10, 5, 8, 5]
-    enemy_defense = [0, 2, 2, 1, 2, 1, 1, 5, 15, 3, 6, 30, 1, 1, 3, 70, 2, 5, 10, 2]
+    enemy_hps = [20, 9, 5, 8, 9, 12, 20, 30, 8, 10, 13, 6, 13, 24, 23, 100, 20, 20, 50, 25]
+    enemy_strength = [0, 8, 5, 9, 8, 12, 9, 15, 15, 16, 12, 1, 1, 1, 1, 70, 10, 5, 8, 6]
+    enemy_defense = [0, 2, 2, 1, 2, 1, 1, 4, 6, 3, 6, 30, 2, 1, 4, 70, 2, 1, 10, 3]
     enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64, 1*64, 14*64, 0, 13*64, 16*64]
     enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1]
     enemy_animmods = [1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/16, 1/8, 1/16]
-    enemy_exp = [0, 5, 15, 5, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40, 1, 45, 1, 90, 45]
+    enemy_exp = [0, 6, 7, 7, 10, 30, 1, 100, 60, 60, 30, 2, 60, 4, 40, 1, 45, 1, 90, 45]
     enemy_speeds = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 1, 2, 2, 1, 4, 2, 2, 2, 2] #1 - slow, 2 - default speed, 4 - fast (this should eventually be per-level)
-    enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold", "Leaves", None, None]
+    if level == 1:
+        enemy_drops = [None, "Leaves", "Mushrooms", "Poultry", None, None, "Apple", "15 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold", "Leaves", None, None]
+    elif level == 2:
+        enemy_drops = [None, "Lettuce", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold", "Lettuce", None, None]
+    elif level == 3:
+        enemy_drops = [None, "Kale", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold", "Kale", None, None]
+    else:
+        enemy_drops = [None, "Kale", "Mushrooms", "Poultry", None, None, "Apple", "60 Gold", "Rapier", None, None, None, "Staff of Mana", None, None, "60 Gold", "Kale", None, None]
+    
+    
     enemy_drop_odds = [0, 0.5, 0.5, 0.25, 0, 0, 0.1, 0.2, 1, 0, 0, 0, 0.2, 0, 0, 1, 0.1, 0, 0, 0]
     enemy_type = ["Human", "Plant", "Plant", None, None, "Food", None, None, "Robotic", "Abstract", None, None, "Abstract", "Food", "Robotic", "Human", "Food", "Human", "Abstract", "Robotic"]
     id = enemy_names.index(name)
@@ -367,13 +376,12 @@ class Enemy:
         elif self.name == "CULTIST":
 
             if abs(player.x-self.x) < 2 and abs(player.y-self.y) < 2:
-                if random.randint(0, 2) == 1 or self.defense < 0:
+                if random.randint(0, 3) != 1 or self.defense < 0:
                     if self.is_inked == True:
                         self.techniqueitem = game_map.create_item("Staff of Mana", grid_items) #suboptimal, this item is only being generated so the enemy looks like its holding something
                         name_desc = get_display_name(self.techniqueitem)
                         self.active_projectiles.append(Projectile("Staff of Mana", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
                         self.techniquecharges = 2*self.level
-                        print("inkprevent")
                         return Technique.THROW, player.x, player.y
                     
                     else:
@@ -395,15 +403,20 @@ class Enemy:
                     self.active_projectiles.append(Projectile("Staff of Mana", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
                     self.techniquecharges = 2*self.level
                     return Technique.THROW, player.x, player.y
-            elif abs(player.x-self.x) < 4 and abs(player.y-self.y) < 4 and random.randint(0, 3) == 1:
-                if self.level == 1 or self.level == 2:
+            elif abs(player.x-self.x) < 6 and abs(player.y-self.y) < 6 and random.randint(0, 3) == 1:
+                if self.level == 1:
                     self.techniqueitem = game_map.create_item("Staff of Swapping", grid_items)
                     name_desc = get_display_name(self.techniqueitem)
                     self.active_projectiles.append(Projectile("Staff of Swapping", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
                 else:
-                    self.techniqueitem = game_map.create_item("Staff of Division", grid_items)
-                    name_desc = get_display_name(self.techniqueitem)
-                    self.active_projectiles.append(Projectile("Staff of Division", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
+                    if random.randint(0, 3) == 1:
+                        self.techniqueitem = game_map.create_item("Staff of Lethargy", grid_items)
+                        name_desc = get_display_name(self.techniqueitem)
+                        self.active_projectiles.append(Projectile("Staff of Lethargy", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
+                    else:
+                        self.techniqueitem = game_map.create_item("Staff of Division", grid_items)
+                        name_desc = get_display_name(self.techniqueitem)
+                        self.active_projectiles.append(Projectile("Staff of Division", 2, self.x, self.y, player.x, player.y, self, str(self.name)+" swung the " + name_desc + "!"))
                 self.techniquecharges = 2
                 return Technique.THROW, player.x, player.y
             else:
