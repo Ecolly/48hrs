@@ -145,13 +145,6 @@ class Animation:
             elif self.animtype == 5: #spinning when casting a spell
                 obj = self.associated_object
                 obj.direction = FaceDirection((obj.direction.value + 1) % 8)
-                #obj.current_holding = self.item[0]
-                # if frame == 1:
-                #     name_desc = get_display_name(self.item)
-                #     adventure_log.append(str(obj.name) + " read a " + str(name_desc) + "!")
-                #     if obj == player:
-                #         discover_item(self.item, adventure_log)
-
 
                 if frame > self.duration:
                     if self.item[1] == "Tome of Demotion":

@@ -276,9 +276,9 @@ class Map:
         elif name == "Staff of Violence":
             return Staff(name,  reverse="Phobia Staff", sprite_locs = fakenames_staffs_key[13], damage=10, projectile=True, description="Target attempts to fight you using physical attacks only. Duration depends on mana used.", charges=8, rarity=1) 
         elif name == "Staff of Cloning":
-            return Staff(name,  reverse="Staff of Cloning",sprite_locs = fakenames_staffs_key[14], damage=10, projectile=True, description="A duplicate of the target is created.", charges=5, rarity=3)
+            return Staff(name,  reverse="Staff of Metamorphosis",sprite_locs = fakenames_staffs_key[14], damage=10, projectile=True, description="A duplicate of the target is created.", charges=5, rarity=3)
         elif name == "Staff of Metamorphosis":
-            return Staff(name,  reverse="Staff of Metamorphosis", sprite_locs = fakenames_staffs_key[15], damage=10, projectile=True, description="Target is transformed into a random enemy at a random level.", charges=5, rarity=3) 
+            return Staff(name,  reverse="Staff of Cloning", sprite_locs = fakenames_staffs_key[15], damage=10, projectile=True, description="Target is transformed into a random enemy at a random level.", charges=5, rarity=3) 
         elif name == "Staff of Primes":
             return Staff(name,  reverse="Fibonnaci Staff",sprite_locs = fakenames_staffs_key[16], damage=10, projectile=True, description="Damage depends on mana used. Will be a prime number.", charges=12, rarity=1)
         elif name == "Fibonnaci Staff":
@@ -347,7 +347,7 @@ class Map:
             return Tome(name,  reverse="Tome of Pizzazz",sprite_locs = fakenames_tomes_key[14], damage=10, projectile=False, description="Gold is set to 0.",price=20)
            
         elif name == "Tome of Identification":
-            return Tome(name,  reverse="Ruined Tome", sprite_locs = fakenames_tomes_key[15], damage=10, projectile=False, description="Find the last item in your inventory. Identify the item if not already identified.",price=30)
+            return Tome(name,  reverse="Ruined Tome", sprite_locs = fakenames_tomes_key[15], damage=10, projectile=False, description="Find the last item in your inventory. Identify the item if not already identified.",price=20)
            
         #elif name == "Tome of Obscuration":
         #    return Tome(name,  reverse="Tome of Identification",sprite_locs = fakenames_tomes_key[17], damage=10, projectile=False, description="Removes all identifications.",price=30)
@@ -468,7 +468,7 @@ class Map:
         elif name == "Predecessor's Scrawling":
             return Miscellanious(name,  sprite_locs = 1, description = "-Blank/ruined tomes are pre-IDd.ε-Staffs don't come in white/black.ε-staffs w/ 5 max = ones w/ an effect that doesn't depend on the mana used?", price=5)
         elif name == "Peer's Notes":
-            return Miscellanious(name,  sprite_locs = 1, description = "-Violence staff has no obvious effect when used on enemies; is it the only one?ε-Coloring and Reversal preserves max mana on a staffε-Lethargy & Paralysis both reverse to make Energizing?", price=5)
+            return Miscellanious(name,  sprite_locs = 1, description = "-Violence staff has no obvious effect when used on enemies; is it the only one?ε-Coloring and Reversal preserves max mana on a staffε-Using up a staff or tome IDs it", price=5)
         elif name == "Coworker's Thoughts":
             return Miscellanious(name,  sprite_locs = 1, description = "-CHLOROSPORE spores reduce strength at lv2, slow at lv3, ? at lv4?ε-CHROME DOME can hit from two spaces away due to its Rapierε-CULTISTs can cut HP in half- stay out of range of them", price=5)
         elif name == "Coworker's Thoughts 2":
@@ -525,7 +525,7 @@ class Map:
         elif name == "Candy":
             return Consumable(name,  sprite_locs = 5, nutrition_value=9, description="A small sugary treat. Heals 9 HP.", price=3)
         elif name == "Starfruit":
-            return Consumable(name,  sprite_locs = 6, nutrition_value=1000, description="A summery treat grown in a rare, faraway valley. Restores HP to full and increases speed to 2x.", price=20) #gain xp to get to next level
+            return Consumable(name,  sprite_locs = 6, nutrition_value=1000, description="A summery treat grown in a rare, faraway valley. Restores HP to full and increases speed to 2x.", price=40) #gain xp to get to next level
         elif name == "Durian":
             return Consumable(name,  sprite_locs = 7, nutrition_value=27, description="Repulsive, but this fruit can restore your HP above its normal amount.", price=40) #gives temporary hp beyond max
         elif name == "Dragonfruit":
@@ -560,6 +560,7 @@ class Map:
         enemy_Scale = min(floor_level // 3, len(enemy_list)-1)
         #enemies scale based on base stats
         # random_location = random.choice(self.valid_tiles)
+        #amount = amount * 4
         for _ in range(amount):
             random_location = random.choice(self.valid_entity_tiles)
             if (random_location in self.valid_tiles_noshop) == True:

@@ -173,6 +173,12 @@ def create_power_bar(all_buttons, item, x, y):
     global grid_font
     charges = item.charges
     maxcharges = item.maxcharges
+
+
+    if maxcharges > 48:
+        maxcharges = 48
+        charges = max(math.floor(48*(item.charges/item.maxcharges)), 1)
+
     #power bar should be ~48 px wide. if a section is over 7 px width, set to 7 px width
     width_per_bar = min(4, math.ceil(48/maxcharges)+1)
 

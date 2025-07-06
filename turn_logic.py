@@ -160,7 +160,8 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
             target.health = target.maxhealth 
             target.speed = 2 
             target.paralysis_turns = 0
-            target.has_been_resurrected = 1
+            if target.level < 4 or random.uniform(0, 1) < 0.75:
+                target.has_been_resurrected = 1
         else:
             target.should_be_deleted = True
             if player.extinction_state == 1 and (target.name in player.enemies_remaining): #if enemies previously went extinct, then the only remaining enemies should be enemies on this floor. if none remain, make them extinct again.
@@ -184,9 +185,9 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
                 attacker.increase_experience(target.experience*exp_multiplier)
                 if attacker.level != temp_level:
                     list_of_animations.append(animations.Animation(str(attacker.name) + " grew to level " + str(attacker.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
-                elif isinstance(attacker, Enemy):
-                    attacker.level_up()
-                    list_of_animations.append(animations.Animation(str(attacker.name) + " leveled up!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
+            elif isinstance(attacker, Enemy):
+                attacker.level_up()
+                list_of_animations.append(animations.Animation(str(attacker.name) + " leveled up!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(attacker, player, 1, 16), attacker.x, attacker.y, attacker.x, attacker.y, 0, None, None, None, None, None))
 
 
 
@@ -205,14 +206,27 @@ def inflict_healing(amount, entity, player, list_of_animations, chronology):
         anim = animations.Animation(str(entity.name) + " recovered " + str(amount) + " HP.", "+" + str(amount), 2, 0, (0, 189, 66, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 50), entity.x, entity.y+0.5, entity.x, entity.y, 0, None, None, entity, entity, -amount)
         list_of_animations.append(anim)
 
+def isprime(num):
+    i = 2
+    while i < num:
+        if num % i == 0:
+            return False
+        i = i + 1
+    return True
 
-
-def deduct_charges(entity, charges, floor):
+def deduct_charges(list_of_animations, chronology, entity, charges, floor):
     if entity.techniqueitem != None:
         entity.techniqueitem.charges -= charges
         entity.techniqueitem.price -= charges
         if entity.techniqueitem.charges < 1:
             if isinstance(entity.techniqueitem, Staff) and entity.name == "DAMIEN":
+
+
+                discoverstring = discover_item(entity.techniqueitem)
+                if discoverstring != False:
+                    list_of_animations.append(animations.Animation(discoverstring, 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, 1, 0, 0, 0, 0, 0, None, None, None, None, None))
+
+
                 blank_id = entity.inventory.index(entity.techniqueitem)
                 objlist = entity.inventory
                 objlist[blank_id].sprite.delete() 
@@ -240,7 +254,7 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
     if spellname == "Staff of Cloning":
         if enemy_hit != None:
             spawn_enemies_within_turn_execution(1, enemy_hit.name, enemy_hit.level, enemy_hit, floor, player, chronology, list_of_animations)
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
     if spellname == "Staff of Metamorphosis":
         if enemy_hit != None:
             enemy_hit.should_be_deleted = True 
@@ -249,21 +263,21 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
             spawn_enemies_within_turn_execution(1, name_to_spawn, level_to_spawn, enemy_hit, floor, player, chronology, list_of_animations)
             
             #spawn_enemies_within_turn_execution(1, enemy_hit.name, enemy_hit.level, enemy_hit, floor, player, chronology, list_of_animations)
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
     if spellname == "Greater Healing Staff":
         if enemy_hit != None:
             inflict_healing(enemy_hit.health/2, enemy_hit, player, list_of_animations, chronology)
             list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     if spellname == "Lesser Healing Staff":
         if enemy_hit != None:
             inflict_healing(charges*2, enemy_hit, player, list_of_animations, chronology)
             list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     if spellname == "Staff of Division":
         if enemy_hit != None:
             inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, math.floor(enemy_hit.health/2), "magic", floor)
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     if spellname == "Staff of Swapping":
         if enemy_hit != None:
             x, y = enemy_hit.x, enemy_hit.y
@@ -272,7 +286,7 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
             list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
             list_of_animations.append(animations.Animation(str(enemy_hit.name) + " swapped places with " + str(entity.name) + ".", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
 
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     if spellname == "Staff of Warping":
         if enemy_hit != None:
             i = 0
@@ -283,70 +297,101 @@ def do_spell(floor, entity, enemy_hit, player, spellname, charges, chronology, l
                     list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was teleported.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
                     break
                 i = i + 1
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Staff of Mana":
         if enemy_hit != None:
             inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges*2, "magic", floor) #random.randint(charges, charges*3)
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Staff of Primes":
         if enemy_hit != None:
-            primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271]
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, primes[charges-1], "magic", floor) #random.randint(charges, charges*3)
-        deduct_charges(entity, charges, floor)
+
+
+            primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
+            if charges-1 >= len(primes):
+                j = len(primes)-1
+                i = primes[len(primes)-1]+1
+
+                while j != charges-1:
+                    while isprime(i) == False:
+                        i = i + 1
+                    i = i + 1
+                    j += 1
+            else:
+                i = primes[charges-1]
+
+            
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, i, "magic", floor) #random.randint(charges, charges*3)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Fibonnaci Staff":
         if enemy_hit != None:
-            primes = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309, 3524578, 5702887, 9227465, 14930352, 24157817, 39088169, 63245986, 102334155]
-            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, primes[charges-1], "magic", floor) #random.randint(charges, charges*3)
-        deduct_charges(entity, charges, floor)
+            #primes = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309, 3524578, 5702887, 9227465, 14930352, 24157817, 39088169, 63245986, 102334155]
+            
+            fibs = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
+
+            if charges-1 >= len(fibs):
+                j = len(fibs)-1
+                i = fibs[len(fibs)-1]
+                k = fibs[len(fibs)-2]
+
+                while j != charges-1:
+                    i = i + k 
+                    k = i - k
+                    j += 1
+            else:
+                i = fibs[charges-1]
+            
+            
+            inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, i, "magic", floor) #random.randint(charges, charges*3)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Mirror Staff": #if mirror staff has nothing to copy, just copy player's strength
         if enemy_hit != None:
             inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, entity.strength, "magic", floor)
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Staff of Ricochet" or spellname == "Piercing Staff" or spellname == "Staff of Alchemy" or spellname == "Gardening Staff":
         if enemy_hit != None:
             inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 3, "magic", floor)
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Execution Staff":
         if enemy_hit != None:
             inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, charges, "execution", floor)
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Staff of Lethargy":
         if enemy_hit != None:
             enemy_hit.speed = 1
             enemy_hit.speed_turns = charges
             list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was slowed down.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Staff of Osteoporosis":
         if enemy_hit != None:
             enemy_hit.defense = 0
             list_of_animations.append(animations.Animation(str(enemy_hit.name) + "'s defense dropped to 0!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Staff of Fatigue":
         if enemy_hit != None:
             enemy_hit.strength = 0
             list_of_animations.append(animations.Animation(str(enemy_hit.name) + "'s strength dropped to 0!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Energizing Staff":
         if enemy_hit != None:
             enemy_hit.speed = 4
             enemy_hit.speed_turns = charges
             list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was sped up.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Staff of Paralysis": #paralysis
         if enemy_hit != None:
             enemy_hit.paralysis_turns = charges
             list_of_animations.append(animations.Animation(str(enemy_hit.name) + " was paralyzed.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Staff of Violence": #rage
         if enemy_hit != None:
             enemy_hit.rage_ai_turns = charges
             list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Phobia Staff": #fear
         if enemy_hit != None:
             enemy_hit.flee_ai_turns = charges
             list_of_animations.append(animations.Animation("", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy_hit, player, 1, 16), enemy_hit.x, enemy_hit.y, enemy_hit.x, enemy_hit.y, 0, None, None, None, None, None))
-        deduct_charges(entity, charges, floor)
+        deduct_charges(list_of_animations, chronology, entity, charges, floor)
     elif spellname == "Spores": #damage
         if enemy_hit != None:
             inflict_damage(entity, enemy_hit, player, chronology, list_of_animations, None, 1, "magic", floor)
@@ -460,7 +505,7 @@ def do_liquid_effect(entity, player, chronology, list_of_animations, floor):
             inflict_damage("Mercury", entity, player, chronology, list_of_animations, None, random.randint(35, 45), "chemical", floor)
     elif liq == "S": #syrup (should slow creatures down)
         spr = 2*29 + 4
-        evap = 0.05
+        evap = 0.2
         if entity.creaturetype == "Food":
             inflict_healing(random.randint(1, 3), entity, player, list_of_animations, chronology)
         else:
@@ -1023,10 +1068,10 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         chronology += 24
         #print(str(entity.name) + " read a " + str(name_desc) + "!")
 
-        if entity == player:
-            discoverstring = discover_item(item)
-            if discoverstring != False:
-                list_of_animations.append(animations.Animation(discoverstring, 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
+        # if entity == player:
+        #     discoverstring = discover_item(item)
+        #     if discoverstring != False:
+        #         list_of_animations.append(animations.Animation(discoverstring, 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
 
         
         # if item.name == "Blank Tome":
@@ -1040,7 +1085,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             #if player.gold < 0:
                 #player.credit_score = 0 
             player.gold = 0 
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Pizzazz":
             i = 39 
             while i > -1:
@@ -1053,17 +1098,17 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
 
                     break
                 i = i - 1
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Recovery":
             inflict_healing(15, player, player, list_of_animations, chronology)
             for enemy in floor.all_enemies:
                 inflict_healing(15, enemy, player, list_of_animations, chronology)
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Injury":
             inflict_damage(entity, player, player, chronology, list_of_animations, item, 15, "magic", floor)
             for enemy in floor.all_enemies:
                 inflict_damage(entity, enemy, player, chronology, list_of_animations, item, 15, "magic", floor)
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Extinction":
 
             #kill all nonhamsters
@@ -1100,10 +1145,13 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                 # if allenemiesdeadflag == True:
                 #     list_of_animations.append(animations.Animation("All enemies cleared! Victory!", 0*29 + 24, 8, 4, (255, 255, 255, 0), chronology+3, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Resurrection":
             
-            entity.has_been_resurrected = 1
+            if entity.level < 4:
+                entity.has_been_resurrected = 1
+            elif random.randint(0, 1) < 0.75:
+                entity.has_been_resurrected = 1
 
             chklist = ["LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "VITRIOLIVE", "DODECAHEDRON", "MONITAUR"]
             random.shuffle(chklist)
@@ -1119,35 +1167,35 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                 list_of_animations.append(animations.Animation("No effect- no species are currently extinct.", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
 
 
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Promotion":
             player.increase_experience(((player.level + 1)**3) - player.experience) 
             list_of_animations.append(animations.Animation(str(player.name) + " grew to level " + str(player.level) + "!", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(player, player, 1, 16), player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             for enemy in floor.all_enemies:
                 enemy.level_up()
                 list_of_animations.append(animations.Animation(str(enemy.name) + " leveled up!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Demotion":
             player.increase_experience(((player.level - 1)**3) - player.experience) 
             list_of_animations.append(animations.Animation(str(player.name) + "'s level was reduced to " + str(player.level) + "...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(player, player, 1, 16), player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             for enemy in floor.all_enemies:
                 enemy.level_down()
                 list_of_animations.append(animations.Animation(str(enemy.name) + " lost a level!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Immunity Tome":
             player.defense = 100
             list_of_animations.append(animations.Animation(str(player.name) + "'s defenses skyrocketed!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(player, player, 1, 16), player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             for enemy in floor.all_enemies:
                 enemy.defense = 100
                 list_of_animations.append(animations.Animation(str(enemy.name) + "'s defenses skyrocketed!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Paperskin Tome":
             player.defense = -100
             list_of_animations.append(animations.Animation(str(player.name) + "'s defenses plummeted!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(player, player, 1, 16), player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             for enemy in floor.all_enemies:
                 enemy.defense = -100
                 list_of_animations.append(animations.Animation(str(enemy.name) + "'s defenses plummeted!", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Banishing Tome":
             for enemy in floor.all_enemies:
                 if abs(enemy.x - entity.x) < 2 and abs(enemy.y - entity.y) < 2 and enemy != entity:
@@ -1160,11 +1208,11 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                             list_of_animations.append(animations.Animation(str(enemy.name) + " was teleported.", 1*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(enemy, player, 1, 16), enemy.x, enemy.y, enemy.x, enemy.y, 0, None, None, None, None, None))
                             break
                         i = i + 1
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Summoning Tome":
             enemies_to_summon = random.randint(3, 6)
             spawn_enemies_within_turn_execution(enemies_to_summon, None, None, entity, floor, player, chronology, list_of_animations)
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Ascendance":
             
             floor.upstairs = (player.x,player.y)
@@ -1172,10 +1220,10 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             if floor.level == -6:
                 list_of_animations.append(animations.Animation("Escaped Pandorium! Victory!", 0*29 + 24, 8, 4, (255, 255, 255, 0), chronology+3, 16, player.x, player.y, player.x, player.y, 0, None, None, None, None, None))
             
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Descendance":
             floor.stairs = (player.x,player.y)
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
             
         
         # elif item.name == "Tome of Obscuration":
@@ -1196,7 +1244,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         list_of_animations.append(animations.Animation("The " + str(player.inventory[i].name) + " was already identified...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
                     break
                 i = i - 1
-            deduct_charges(entity, 1, floor)
+            deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Sharpening Tome":
             successflag = False
             i = 39 
@@ -1214,7 +1262,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             if successflag == False:
                 list_of_animations.append(animations.Animation("Could not find a shield to upgrade...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
             else:
-                deduct_charges(entity, 1, floor)
+                deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Fortifying Tome":
             successflag = False
             i = 39 
@@ -1231,7 +1279,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             if successflag == False:
                 list_of_animations.append(animations.Animation("Could not find a shield to upgrade...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
             else:
-                deduct_charges(entity, 1, floor)
+                deduct_charges(list_of_animations, chronology, entity, 1, floor)
         # elif item.name == "Staffboost Tome":
         #     i = 39 
         #     while i > -1:
@@ -1240,7 +1288,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         #             player.inventory[i].maxcharges += 1
         #             break
         #         i = i - 1
-        #     deduct_charges(entity, 1, floor)
+        #     deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Reversal":
             successflag = False
             i = 39 
@@ -1267,7 +1315,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             if successflag == False:
                 list_of_animations.append(animations.Animation("Item to reverse could not be found...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
             else:
-                deduct_charges(entity, 1, floor)
+                deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Blank Tome":
             blank_id = player.inventory.index(item)
 
@@ -1351,7 +1399,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             if successflag == False:
                 list_of_animations.append(animations.Animation("Two valid items to exchange stats could not be found...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
             else:
-                deduct_charges(entity, 1, floor)
+                deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Tome of Consolidation":
             weapons_1_2 = []
             shields_1_2 = []
@@ -1363,7 +1411,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                     staffs_1_2.append(i)
                     if len(staffs_1_2) == 2 and player.inventory[staffs_1_2[0]].name == player.inventory[staffs_1_2[1]].name:
                         player.inventory[staffs_1_2[0]].charges += player.inventory[staffs_1_2[1]].charges
-                        player.inventory[staffs_1_2[0]].maxcharges += player.inventory[staffs_1_2[1]].charges
+                        player.inventory[staffs_1_2[0]].maxcharges += player.inventory[staffs_1_2[1]].maxcharges
                         player.inventory[staffs_1_2[1]].should_be_deleted = True
 
                         name_desc = get_display_name(player.inventory[staffs_1_2[0]])
@@ -1404,7 +1452,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             if successflag == False:
                 list_of_animations.append(animations.Animation("Two valid items to consolidate could not be found...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
             else:
-                deduct_charges(entity, 1, floor)
+                deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Weaponsmithing Tome":
             weapons_1_2 = []
             successflag = False
@@ -1427,7 +1475,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             if successflag == False:
                 list_of_animations.append(animations.Animation("Could not combine weapons; at least two weapons are required...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
             else:
-                deduct_charges(entity, 1, floor)
+                deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Shieldsmithing Tome":
             shields_1_2 = []
             successflag = False
@@ -1451,7 +1499,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             if successflag == False:
                 list_of_animations.append(animations.Animation("Could not combine shields; at least two shields are required...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
             else:
-                deduct_charges(entity, 1, floor)
+                deduct_charges(list_of_animations, chronology, entity, 1, floor)
         elif item.name == "Coloring Tome":
             items_1_2 = []
             successflag = False
@@ -1490,7 +1538,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
             if successflag == False:
                 list_of_animations.append(animations.Animation("Could not color anything; at least two staffs or tomes are required...", 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, check_if_entity_is_on_screen(entity, player, 1, 16), entity.x, entity.y, entity.x, entity.y, 0, None, None, None, None, None))
             else:
-                deduct_charges(entity, 1, floor)
+                deduct_charges(list_of_animations, chronology, entity, 1, floor)
 
         do_liquid_effect(entity, player, chronology, list_of_animations, floor)
         return Technique.CAST, chronology

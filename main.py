@@ -44,6 +44,8 @@ pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
 
 
 
+
+
 def disable_errcheck():
     for name in dir(pyglet.gl.lib):
         func = getattr(pyglet.gl.lib, name)
@@ -258,7 +260,9 @@ def go_to_next_level(amount):
     elif floor_level < 1:
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Exclusion Zone Outskirts", "Complex", (7,26,0,6,6,6,6,1), "Pits", ["HAMSTER", "DEBT COLLECTOR", "DEBT COLLECTOR"], [1, 1, 1], itemlist_beginner
     elif floor_level < 3: #Abandoned Woods
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Abandoned Woods", "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
+        #floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Infested Workshop", "Complex", (15, 22, 5, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid", ["SCORPION", "TETRAHEDRON", "DEMON CORE", "CHROME DOME", "DODECAHEDRON"], [4, 4, 4, 3, 2], itemlist_end         #multicolored porcelain
+    
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Abandoned Woods", "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "S'MORE"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #Silent Tributary
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silent Tributary", "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                    #river zone
     elif floor_level < 7: #Dense Woods
@@ -274,7 +278,7 @@ def go_to_next_level(amount):
     elif floor_level < 17: #Aquifer
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Aquifer", "Complex", (8,22,1,1,9,9,6,9), "Aquifer", ["CHLOROSPORE", "LEAFALOTTA", "CULTIST"], [3, 3, 2], itemlist_equal                        #aquifer
     elif floor_level < 19: #Subterranean Mudflow
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Subterraean Mudflow", "Complex", (6,30,1,6,6,6,6,0), "Mud", ["CHLOROSPORE", "MONITAUR", "CULTIST", "CHROME DOME"], [3, 2, 2, 1], itemlist_equal                            #mud zone
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Subterraean Mudflow", "Complex", (6,30,1,6,6,6,6,0), "Mud", ["CHLOROSPORE", "MONITAUR", "LEAFAOTTA", "CHROME DOME"], [3, 2, 3, 1], itemlist_equal                            #mud zone
     elif floor_level < 21: #Silt Stratum
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silt Stratum", "Complex", (18,30,1,1,0,0,6,9), "Solid", ["DEMON CORE", "TETRAHEDRON", "S'MORE", "MONITAUR"], [1, 2, 3, 2], itemlist_equal                          #teal & gold
     elif floor_level < 23: #Silt Stratum
@@ -289,7 +293,7 @@ def go_to_next_level(amount):
         if random.uniform(0, 1) < 0.5:
             floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Workshop Remnant", "Complex", (7, 22, 5,5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Pit", ["SCORPION", "CHROME DOME", "DRAGON", "CULTIST", "DODECAHEDRON"], [4, 2, 3, 3, 2], itemlist_end             #multicolored porcelain pits
         else: #Infested Workshop 
-            floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Infested Workshop", "Complex", (15, 22, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid", ["SCORPION", "TETRAHEDRON", "DEMON CORE", "CHROME DOME", "DODECAHEDRON"], [4, 4, 4, 3, 2], itemlist_end         #multicolored porcelain
+            floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Infested Workshop", "Complex", (15, 22, 5, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid", ["SCORPION", "TETRAHEDRON", "DEMON CORE", "CHROME DOME", "DODECAHEDRON"], [4, 4, 4, 3, 2], itemlist_end         #multicolored porcelain
     
     adventure_log.append("Progressed to floor " + str(floor_level) + " (" + str(floor_name) + ").")
 
@@ -352,10 +356,10 @@ def go_to_next_level(amount):
         wall_texture_value, floor_texture_base_value = floor.tileset#random.choice(simple_color_sets)
         bg_order = ["#", ".", "*", "~", '%', '<', '>', "@", "S", "U"] #Filler, #Walls, #Space, @Stairs
         if floor.map_type == "Simple 2":
-            bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 5, floor_texture_base_value*16+5+32, floor_texture_base_value*16+5+16, floor_texture_base_value*16+5+48, floor_texture_base_value*16+5+64, floor_texture_base_value*16+5+80, floor_texture_base_value*16+13, floor_texture_base_value*16+5-16, floor_texture_base_value*16+12]
+            bg_tilekey = [wall_texture_value*16 + 8, floor_texture_base_value*16 + 5, floor_texture_base_value*16+5+32, floor_texture_base_value*16+5+16, floor_texture_base_value*16+5+48, floor_texture_base_value*16+5+64, floor_texture_base_value*16+5+80, floor_texture_base_value*16+13, floor_texture_base_value*16+5-16, floor_texture_base_value*16+12]
             floor.map_type == "Simple"
         else:
-            bg_tilekey = [wall_texture_value*16 + 8, wall_texture_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13, floor_texture_base_value*16+5, floor_texture_base_value*16+12]
+            bg_tilekey = [wall_texture_value*16 + 8, floor_texture_base_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13, floor_texture_base_value*16+5, floor_texture_base_value*16+12]
        
         for s in floor.map_grid:
             for s2 in s:
@@ -685,8 +689,20 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 # player.add_to_inventory(floor.create_item("Sun Shield", grid_items))
                 #player.add_to_inventory(floor.create_item("Water Flask", grid_items))
 
-                # #player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
+                player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+                player.add_to_inventory(floor.create_item("Staff of Primes", grid_items))
+                player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
+                player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
+
+                # player.add_to_inventory(floor.create_item("Tome of Promotion", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Promotion", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Promotion", grid_items))
+
+                # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
+                # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
+                # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
+                # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
+
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
@@ -889,14 +905,24 @@ def on_mouse_release(x, y, button, modifiers):
                         #num of charges = func
                 
                 #print(func)
-                print(max(round(func), 1))
+
+
+
+
+
+                #print(max(round(func), 1))
+
                 player.techniqueitem = item_selected
-                #print(button.extra_1)
+                if player.techniqueitem.maxcharges > 48:
+                    #maxcharges = 48
+
+                    func = math.floor(func*(player.techniqueitem.maxcharges/48))
+                    #charges = math.floor(48*(item.charges/item.maxcharges))
                 if func > item_selected.charges: #if num of charges exceeds amount remaining, just choose a random amount
                     func = random.randint(1, item_selected.charges)
                 player.techniquecharges = max(round(func), 1)
-                print(func)
-                print(max(round(func), 1))
+                # print(func)
+                # print(max(round(func), 1))
 
                 mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                 mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
