@@ -1426,7 +1426,8 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                     if len(shields_1_2) == 2:
                         player.inventory[shields_1_2[0]].bonus += player.inventory[shields_1_2[1]].bonus
                         player.inventory[shields_1_2[1]].should_be_deleted = True
-
+                        if player.equipment_shield == player.inventory[shields_1_2[1]]:
+                            player.equipment_shield = None
                         name_desc = get_display_name(player.inventory[shields_1_2[0]])
                         name_desc_2 = get_display_name(player.inventory[shields_1_2[1]])
 
@@ -1486,7 +1487,9 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                     if len(shields_1_2) == 2:
                         player.inventory[shields_1_2[0]].bonus += player.inventory[shields_1_2[1]].bonus
                         player.inventory[shields_1_2[1]].should_be_deleted = True
-
+                        if player.equipment_shield == player.inventory[shields_1_2[1]]:
+                            player.equipment_shield = None
+                            
                         name_desc = get_display_name(player.inventory[shields_1_2[0]])
                         name_desc_2 = get_display_name(player.inventory[shields_1_2[1]])
 

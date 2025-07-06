@@ -161,50 +161,7 @@ window.push_handlers(keys)
 mouse_state = pyglet.window.mouse.MouseStateHandler()
 window.push_handlers(mouse_state)
 ######################################### Game Initialization IF NEW GAME #################################
-#DUMB DUMB DUMB DUMB DUMB DUMB DUMB DUIEWIFEWNOIGFEWNGOERINGIUREFOIW2Q398U4OIEWJKDS - THIS IS ACTUAL CANCER WHY IS IT IN MAIN yOU FUCK 
-def draw_description_but_in_main_because_main_is_cool(item, invslot, gamestate):
-    global batch
-    global bg_desc, bg_desc_text
-    spacing = 9
-    if gamestate == 3: #if in the inventory menu
-        #print(f"Drawing description: {self.description}")
-        # Draw the description text at the specified position
-        base_x = (invslot % 10)*(48+spacing) + int((1152)/48)*12 + 9 #1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
-        base_y = -(invslot // 10)*(48+spacing)+ spacing + int((768)/48)*32 -10#768/2-24 - (player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale
-        
-        description = get_display_name_and_description(item)
-        #description = draw_tiny_texts(item.description, base_x, base_y, group)
-        if isinstance(item, Weapon):
-            additional_info = f"εDamage: {item.damage} Bonus: {item.bonus}"
-        elif isinstance(item, Shield):
-            additional_info = f"εDefense: {item.defense} Bonus: {item.bonus}"
-        elif isinstance(item, Consumable):
-            additional_info = f"εNutrition: {item.nutrition_value}"
-        elif isinstance(item, Staff):
-            additional_info = f"εMana: {item.charges}/{item.maxcharges}"
-        elif isinstance(item, Flask) and item.name != "Empty Flask":
-            additional_info = f"εContents: {item.charges}/{item.maxcharges}"
-        else:
-            additional_info = "" #for tomes or Miscellanious?
 
-        
-        combine_tiles_efficient(tesselate(0, grid_tinyfont, 24, 12), 5, 8, 24, bg_desc_text)
-        row = combine_tiles_efficient(text_to_tiles_wrapped(description[0] + "ε" + description[1] + additional_info, grid_tinyfont, letter_order, 24, "left"), 5, 8, 24, bg_desc_text)
-        
-        combine_tiles_efficient(tesselate(0, grid_tinyfont, 24, 12), 5, 8, 24, bg_desc)
-        combine_tiles_efficient(tesselate(7*16, grid_tinyfont, 24, row+1), 5, 8, 24, bg_desc)
-
-        bg_desc.x = base_x + 16
-        bg_desc.y = base_y
-        bg_desc.batch = batch
-        bg_desc.scale = 3
-
-        bg_desc_text.x = base_x + 16
-        bg_desc_text.y = base_y
-        bg_desc_text.batch = batch 
-        bg_desc_text.scale = 3
-        
-    return None
 
 
 
@@ -262,7 +219,7 @@ def go_to_next_level(amount):
     elif floor_level < 3: #Abandoned Woods
         #floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Infested Workshop", "Complex", (15, 22, 5, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid", ["SCORPION", "TETRAHEDRON", "DEMON CORE", "CHROME DOME", "DODECAHEDRON"], [4, 4, 4, 3, 2], itemlist_end         #multicolored porcelain
     
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Abandoned Woods", "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "S'MORE"], [1, 1, 1], itemlist_beginner
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Abandoned Woods", "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #Silent Tributary
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silent Tributary", "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                    #river zone
     elif floor_level < 7: #Dense Woods
@@ -686,13 +643,15 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
 
                 # player.add_to_inventory(floor.create_item("Knife", grid_items))
                 # player.add_to_inventory(floor.create_item("Stick", grid_items))
-                # player.add_to_inventory(floor.create_item("Sun Shield", grid_items))
+                player.add_to_inventory(floor.create_item("Sun Shield", grid_items))
+                player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
+                player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
                 #player.add_to_inventory(floor.create_item("Water Flask", grid_items))
 
-                player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
-                player.add_to_inventory(floor.create_item("Staff of Primes", grid_items))
-                player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
-                player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
+                #player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+                #player.add_to_inventory(floor.create_item("Staff of Primes", grid_items))
+                player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
+                #player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
 
                 # player.add_to_inventory(floor.create_item("Tome of Promotion", grid_items))
                 # player.add_to_inventory(floor.create_item("Tome of Promotion", grid_items))
@@ -704,13 +663,13 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
 
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                # player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
+                player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                # player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
+                player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                # player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
+                player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Gardening Staff", grid_items))
                 # player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
                 # player.add_to_inventory(floor.create_item("Mirror Staff", grid_items))
@@ -987,12 +946,13 @@ def on_key_press(symbol, modifiers):
     global floor 
     global adventure_log
     global typed_text
+    global invhover
 
     if symbol == pyglet.window.key.BACKSPACE:
         typed_text = typed_text[:-1]
     global current_menu
 
-    if symbol == pyglet.window.key.M:
+    if symbol == pyglet.window.key.M and invhover == False:
         if current_menu == MenuState.INGAME:
             current_menu = MenuState.SIDE_MENU
             print("Opening in-game menu")
@@ -1441,7 +1401,7 @@ def on_draw():
                     refresh_all_visuals(player)
                     for enemy in all_enemies:
                         refresh_all_visuals(enemy)
-                    if keys[pyglet.window.key.RCTRL] == False:
+                    if keys[pyglet.window.key.Z] == False:
                         if(player.x, player.y) == floor.stairs:
                             go_to_next_level(1)
                         if(player.x, player.y) == floor.upstairs:
@@ -1555,20 +1515,30 @@ def on_draw():
                     #if mouse is hovering over that item, draw description
                     if item.test_hovering(mouse_x, mouse_y, slot, gamestate):
 
+                        flag2 = False
+                        if invhover != item:
+                            
+                            typed_text = get_display_name(item)
+                            #ttprev = typed_text
+                            invhover = item
+                            flag2 = True
+
                         #check keyboard 
                         if isinstance(item, Tome) or isinstance(item, Staff):
-                            if invhover != item:
 
-                                typed_text = get_display_name(item)
-                                invhover = item
                             if isinstance(item, Staff):
+                                if typed_text[:20] != fakenames_staffs_colornames[item.magic_color]:
+                                    flag2 = True
                                 fakenames_staffs_colornames[item.magic_color] = typed_text[:20]
                             else:
+                                if typed_text[:20] != fakenames_tomes_colornames[item.magic_color]:
+                                    flag2 = True
                                 fakenames_tomes_colornames[item.magic_color] = typed_text[:20]
                                 # fakenames_staffs_colornames = ["Mahogany Staff", "Red Staff", "Orange Staff", "Umber Staff", "Brown Staff", "Hazel Staff", "Dijon Staff", "Gold Staff", "Yellow Staff", "Broccoli Staff", "Green Staff", "Spring Staff", "Peacock Staff", "Cyan Staff", "Seafoam Staff", "Navy Staff", "Blue Staff", "Sky Blue Staff", "Blackberry Staff", "Violet Staff", "Lavender Staff", "Burgundy Staff", "Magenta Staff", "Pink Staff", "Black Staff", "Graphite Staff", "Grey Staff", "Ashen Staff", "White Staff"]
                                 # fakenames_tomes_colornames = ["Mahogany Tome", "Red Tome", "Orange Tome", "Umber Tome", "Brown Tome", "Hazel Tome", "Dijon Tome", "Gold Tome", "Yellow Tome", "Broccoli Tome", "Green Tome", "Spring Tome", "Peacock Tome", "Cyan Tome", "Seafoam Tome", "Navy Tome", "Blue Tome", "Sky Blue Tome", "Blackberry Tome", "Violet Tome", "Lavender Tome", "Burgundy Tome", "Magenta Tome", "Pink Tome", "Black Tome", "Graphite Tome", "Grey Tome", "Ashen Tome", "Blank Tome"]
 
-                        draw_description_but_in_main_because_main_is_cool(item, slot, gamestate)
+                        if flag2 == True:
+                            draw_description_but_in_main_because_main_is_cool(item, slot, gamestate)
                         flag = 1
 
 
@@ -1589,11 +1559,11 @@ def on_draw():
             if keys[pyglet.window.key.LSHIFT]:
                 while len(all_anims) > 0:
                     for anim in all_anims:
-                        anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.RCTRL])
+                        anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.Z])
                     delete_object.delobj(all_anims)
             else:
                 for anim in all_anims:
-                    anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.RCTRL])
+                    anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.Z])
                 delete_object.delobj(all_anims)
             
 
