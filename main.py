@@ -291,7 +291,6 @@ def go_to_next_level(amount):
 
     floor.name = floor_name
     
-
     player.x, player.y = floor.spawnpoint
     player.prevx, player.prevy = floor.spawnpoint
     player.initx, player.inity = floor.spawnpoint
@@ -301,161 +300,15 @@ def go_to_next_level(amount):
     floor.wall_type = walltype
     floor.tileset = tileset
 
+    draw_map()
 
-    # print(floor)
-    # print(floor.textured_map)
-    # print(1/0)
 
-    fl_string = ""
-    if floor.map_type == "Simple" or floor.map_type == "Simple 2":
-        #Simple Map Initiation
-        #simple_color_sets = [(26,26), (29,29), (27,27)]
-        wall_texture_value, floor_texture_base_value = floor.tileset#random.choice(simple_color_sets)
-        bg_order = ["#", ".", "*", "~", '%', '<', '>', "@", "S", "U"] #Filler, #Walls, #Space, @Stairs
-        if floor.map_type == "Simple 2":
-            bg_tilekey = [wall_texture_value*16 + 8, floor_texture_base_value*16 + 5, floor_texture_base_value*16+5+32, floor_texture_base_value*16+5+16, floor_texture_base_value*16+5+48, floor_texture_base_value*16+5+64, floor_texture_base_value*16+5+80, floor_texture_base_value*16+13, floor_texture_base_value*16+5-16, floor_texture_base_value*16+12]
-            floor.map_type == "Simple"
-        else:
-            bg_tilekey = [wall_texture_value*16 + 8, floor_texture_base_value*16 + 6, floor_texture_base_value*16+9, floor_texture_base_value*16+7, floor_texture_base_value*16, floor_texture_base_value*16, floor_texture_base_value*16+1, floor_texture_base_value*16+13, floor_texture_base_value*16+5, floor_texture_base_value*16+12]
-       
-        for s in floor.map_grid:
-            for s2 in s:
-                fl_string += s2
-    else:
-        #wall, floor, floorcodes,
-        #complex_wall_sets = [(12, 31, 4,4,4,4,4,4), (22,30,2,2,10,2,2,2), (21,31,1,9,10,11,0,3), (17, 24, 5,5+32,5+48,5+64,5+80,5+96)]
-        #Map Initiation
-        bg_order = [
-            "#",   #filler
-            '.',   #space
-            '*',   #space texture
-            '~',    #space texture
-            '%',
-            '<',
-            '>',
-            'S',    #shop
 
-        'a',   # 0: isolated
-        'b',   # 1: up
-        'c',   # 2: right
-        'd',   # 3: up + right
 
-        'e',   # 4: down
-        'f',   # 5: up + down
-        'g',  # 6: right + down
-        'h',   # 7: up + right + down
 
-        'i',   # 8: left
-        'j',   # 9: up + left
-        'k',   # 10: right + left
-        'l',   # 11: up + right + left
-        
-        'm',  # 12: down + left
-        'n',   # 13: up + down + left
-        'o',   # 14: right + down + left
-        'p',   # 15: all sides
-
-            "@", 
-            'U'    # stairs
-        ]
-
-        wall_texture_value, floor_texture_base_value, floor_texture_code_base, floor_texture_code1, floor_texture_code2, floor_texture_code3, floor_texture_code4, floor_texture_code5, = floor.tileset
-        bg_tilekey = [26*16 + 8, floor_texture_base_value*16+floor_texture_code_base, floor_texture_base_value*16+floor_texture_code1,floor_texture_base_value*16+floor_texture_code2,floor_texture_base_value*16+floor_texture_code3, floor_texture_base_value*16+floor_texture_code4, floor_texture_base_value*16+floor_texture_code5, floor_texture_base_value*16+5,
-                    
-                    wall_texture_value*16, wall_texture_value*16+15, wall_texture_value*16+13, wall_texture_value*16+9,
-                    wall_texture_value*16+12, wall_texture_value*16+8, wall_texture_value*16+6, wall_texture_value*16+2,
-                    wall_texture_value*16+14, wall_texture_value*16+11, wall_texture_value*16+10, wall_texture_value*16+5,
-                    wall_texture_value*16+7, wall_texture_value*16+4, wall_texture_value*16+1,wall_texture_value*16+3,
-                    floor_texture_base_value*16+13, floor_texture_base_value*16+12]
-        
-        for s in floor.textured_map:
-            for s2 in s:
-                fl_string += s2
-
-    #bg = pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
-    
-    i = 0
-    while i < 16:
-        combine_tiles_efficient(tesselate(0, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
-        combine_tiles_efficient(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1, bg_liqs_foreground[i]) #sprite_blank
-        i = i + 1
-        
-    #print(fl_string)
-    combine_tiles_efficient(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60, bg) #pyglet.sprite.Sprite(combine_tiles(text_to_floor(fl_string, grid_bg, bg_order, bg_tilekey, 60), 16, 16, 60))
-    bg.scale = 3
-    bg.color = (255, 255, 255, 255)
-    #bg_pits.image = grid_bg[0]
-    combine_tiles_efficient(tesselate(0, grid_liq, 12, 12), 128, 128, 12, bg_deeper)
-
-    frameindexes = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]#[4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3]
-
-        #bg_pits.image = combine_tiles(tesselate(4, grid_liq, 6, 6), 256, 256, 6)
-    
-    if floor.wall_type == "Solid":
-        if floor.map_type == "Complex":
-            combine_tiles_efficient(tesselate(wall_texture_value*16+3, grid_bg, 90, 90), 16, 16, 90, bg_deeper)
-        else:
-            combine_tiles_efficient(tesselate(wall_texture_value*16+8, grid_bg, 90, 90), 16, 16, 90, bg_deeper)
-    elif floor.wall_type == "Glowing":
-        combine_tiles_efficient(tesselate(2, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
-    elif floor.wall_type == "Water":
-        i = 0
-        while i < 16:
-            combine_tiles_efficient(tesselate(frameindexes[i] + 16*9, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
-            bg_liqs[i].scale = 3
-            i = i + 1
-        combine_tiles_efficient(tesselate(1, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
-    elif floor.wall_type == "Aquifer":
-        i = 0
-        while i < 16:
-            combine_tiles_efficient(tesselate(frameindexes[i] + 16*10, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
-            bg_liqs[i].scale = 3
-            i = i + 1
-        combine_tiles_efficient(tesselate(3, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
-    elif floor.wall_type == "Lava":
-        i = 0
-        while i < 16:
-            combine_tiles_efficient(tesselate(frameindexes[i] + 16*6, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
-            bg_liqs[i].scale = 3
-            i = i + 1
-    elif floor.wall_type == "Flowing Water":
-        i = 0
-        while i < 16:
-            combine_tiles_efficient(tesselate(frameindexes[i] + 16*7, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
-            bg_liqs[i].scale = 3
-            i = i + 1
-        combine_tiles_efficient(tesselate(0, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
-    elif floor.wall_type == "Mud":
-        i = 0
-        while i < 16:
-            combine_tiles_efficient(tesselate(frameindexes[i] + 16*5, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
-            bg_liqs[i].scale = 3
-            i = i + 1
-    elif floor.wall_type == "Petroleum":
-        i = 0
-        while i < 16:
-            combine_tiles_efficient(tesselate(frameindexes[i] + 16*3, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
-            bg_liqs[i].scale = 3
-            i = i + 1
-    elif floor.wall_type == "Pits":
-        combine_tiles_efficient(tesselate(3, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
-        pass
-    elif floor.wall_type == "Pits 2":
-        combine_tiles_efficient(tesselate(0, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
-        pass
 
 def draw_map():
-    global bg, bg_deeper, bg_liqs, bg_liqs_foreground, floor, grid_blank
-
-
-    # player.prevx, player.prevy = player.spawnpoint
-    # player.initx, player.inity = floor.spawnpoint
-    #floor_level +=1
-
-    
-    # print(floor)
-    # print(floor.textured_map)
-    # print(1/0)
+    global bg, bg_deeper, bg_liqs, bg_liqs_foreground, floor, grid_blank, grid_liqtile
 
     fl_string = ""
     if floor.map_type == "Simple" or floor.map_type == "Simple 2":
@@ -540,7 +393,34 @@ def draw_map():
 
     frameindexes = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]#[4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3]
 
-        #bg_pits.image = combine_tiles(tesselate(4, grid_liq, 6, 6), 256, 256, 6)
+    #for tile liquids:
+
+    liquid_char_to_index = ["E", "q", "q", "q", "q", "q", "q", "q", "M", "C", "A", "D", "I", "S", "P", "W"]
+    
+    x = 0
+    while x < floor.width:
+        y = 0
+        while y < floor.height:
+            
+
+            item = floor.liquid_grid[floor.height-1-y][x]
+
+            if item != "#":
+                i = 0
+                while i < 16:
+                    
+
+                    bg_liqs_foreground[i].image.blit_into(grid_liqtile[i + liquid_char_to_index.index(item)*16], x*16, y*16, 0)
+                    i = i + 1
+            y += 1
+        x += 1
+#self.height-1-y
+
+
+
+
+
+
     
     if floor.wall_type == "Solid":
         if floor.map_type == "Complex":
@@ -643,14 +523,14 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
 
                 # player.add_to_inventory(floor.create_item("Knife", grid_items))
                 # player.add_to_inventory(floor.create_item("Stick", grid_items))
-                player.add_to_inventory(floor.create_item("Sun Shield", grid_items))
-                player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
-                player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
-                #player.add_to_inventory(floor.create_item("Water Flask", grid_items))
+                #player.add_to_inventory(floor.create_item("Sun Shield", grid_items))
+                #player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
+                #player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
+                player.add_to_inventory(floor.create_item("Water Flask", grid_items))
 
                 #player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
                 #player.add_to_inventory(floor.create_item("Staff of Primes", grid_items))
-                player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
+                #player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
                 #player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
 
                 # player.add_to_inventory(floor.create_item("Tome of Promotion", grid_items))
@@ -663,13 +543,13 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
 
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
+                #player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
+                #player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
+                #player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Gardening Staff", grid_items))
                 # player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
                 # player.add_to_inventory(floor.create_item("Mirror Staff", grid_items))

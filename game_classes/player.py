@@ -269,7 +269,7 @@ class Player:
     def del_item_from_inventory(self, item):
         for i in range(len(self.inventory)):
             if self.inventory[i] == item:
-                if self.equipment_shield == self.item:
+                if self.equipment_shield == item:
                     self.equipment_shield = None
                 item.hotbar_sprite.visible = False
                 print(f"Deleting item {item.name} from inventory slot {i}")

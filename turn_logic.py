@@ -115,10 +115,10 @@ def inflict_damage(attacker, target, player, chronology, list_of_animations, ite
             if attacker.equipment_shield == None or attacker.equipment_shield.name != "Armor Plate":
                 damage += item.damage + item.bonus
                 if item.name == "Obsidian Edge":
-                    if random.uniform(0, 1) < 0.25:
+                    if random.uniform(0, 1) < 0.5:
                         critflag = 1
                         list_of_animations.append(animations.Animation("The Obsidian Edge scored a critical hit!" ,0+24, 6, 4,  (255, 0, 0, 0), chronology+1, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction))
-                    if random.uniform(0, 1) < 0.1:
+                    if random.uniform(0, 1) < 0.15:
                         attacker.equipment_weapon.bonus += -1
                         list_of_animations.append(animations.Animation("The Obsidian Edge's damage dropped from the attack!" ,0+24, 6, 4, (255, 0, 0, 0), chronology+2, check_if_entity_is_on_screen(target, player, 1, 50), target.x, target.y+0.5, target.x, target.y, 0, None, None, attacker, target, damage, defense_reduction=defense_reduction, strength_reduction=strength_reduction))
         elif isinstance(item, Miscellanious) == True and item.name == "Rock":
@@ -1489,7 +1489,7 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
                         player.inventory[shields_1_2[1]].should_be_deleted = True
                         if player.equipment_shield == player.inventory[shields_1_2[1]]:
                             player.equipment_shield = None
-                            
+
                         name_desc = get_display_name(player.inventory[shields_1_2[0]])
                         name_desc_2 = get_display_name(player.inventory[shields_1_2[1]])
 
