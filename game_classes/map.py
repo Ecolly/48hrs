@@ -106,18 +106,20 @@ class Map:
 
     def generate_pools(self):
 
-        if self.name == "Aquifer" or self.name == "Silent Tributary" or self.name == "Reservoir" or self.name == "Subterraean Mudflow":
-            liq_tile = "W"
-        elif self.name == "Petroleum Zone":
-            liq_tile = "P"
-        elif self.name == "Workshop Remnant" or self.name == "Infested Workshop":
-            liq_tile = random.choice(["W", "P", "I", "D", "C", "A", "M", "S"])
-        else:
-            return
+
 
 
         i = 0
         while i < 10:
+            if self.name == "Aquifer" or self.name == "Silent Tributary" or self.name == "Reservoir" or self.name == "Subterraean Mudflow":
+                liq_tile = "W"
+            elif self.name == "Petroleum Deposit":
+                liq_tile = "P"
+            elif self.name == "Workshop Remnant" or self.name == "Infested Workshop":
+                liq_tile = random.choice(["W", "P", "I", "I", "I", "D", "D", "D", "C", "A", "M", "S"])
+            else:
+                return
+        
             liq_xcenter = random.randint(0, self.width)
             liq_ycenter = random.randint(0, self.height)
             liq_radius = random.randint(2, 6)
@@ -259,21 +261,21 @@ class Map:
 
 
         if name == "Knife":
-            return Weapon(name, sprite_locs = 0, damage=4, durability=100, description="A common household chef's knife.", price=10)
+            return Weapon(name, sprite_locs = 0, damage=4, durability=100, description="A common household chef's knife.", price=8)
         elif name == "Machete":
-            return Weapon(name, sprite_locs = 1, damage=5, durability=100, description="A dull, long-bladed knife.", price=15)
+            return Weapon(name, sprite_locs = 1, damage=5, durability=100, description="A dull, long-bladed knife.", price=11)
         elif name == "Scimitar":
-            return Weapon(name, sprite_locs = 2, damage=7, durability=100, description="A sharp, curved blade.", price=25)
+            return Weapon(name, sprite_locs = 2, damage=7, durability=100, description="A sharp, curved blade.", price=17)
         elif name == "Sickle":
-            return Weapon(name, sprite_locs = 4, damage=3, durability=100, description="A crescent-shaped blade that can reach three adjacent enemies at once.", price=30)
+            return Weapon(name, sprite_locs = 4, damage=3, durability=100, description="A crescent-shaped blade that can reach three adjacent enemies at once.", price=20)
         elif name == "Rapier":
-            return Weapon(name, sprite_locs = 5, damage=3, durability=100, description="A thin, slender weapon that can reach two tiles in front.",price=40)
+            return Weapon(name, sprite_locs = 5, damage=3, durability=100, description="A thin, slender weapon that can reach two tiles in front.",price=20)
         elif name == "Stick":
             return Weapon(name, sprite_locs = 6, damage=2, durability=100, description="A thick tree branch that can be used as a crude weapon.",price=3)
         elif name == "Obsidian Edge":
-            return Weapon(name, sprite_locs = 9, damage=13, durability=100, description="Ominous energy seeps off the cutting edge. The weapon has a chance to score a critical hit, but may also lose strength every time you use it.",price=50) #deducts 1/4 of attack damage from your hp
+            return Weapon(name, sprite_locs = 9, damage=13, durability=100, description="Ominous energy seeps off the cutting edge. The weapon has a chance to score a critical hit, but may also lose strength every time you use it.",price=25) #deducts 1/4 of attack damage from your hp
         elif name == "Windsword":
-            return Weapon(name, sprite_locs = 10, damage=9, durability=100, description="Imbued with magical runes, this longsword is more powerful than the average weapon.",price=80)
+            return Weapon(name, sprite_locs = 10, damage=9, durability=100, description="Imbued with magical runes, this longsword is more powerful than the average weapon.",price=25)
         
         
         
