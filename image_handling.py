@@ -201,17 +201,20 @@ letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",
 
 
 
-# def initialize_text_sprite(grid_to_use, width, height, width_per_char, height_per_char):
-#     #returns a blank sprite at the specified width and height
-#     return pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_to_use, width, height), width_per_char, height_per_char, width))
+def initialize_text_sprite(grid_to_use, width, height, width_per_char, height_per_char):
+    #returns a blank sprite at the specified width and height. width_per_char and height_per_char are 8, 8 for grid_font, 5, 8 for grid_tinyfont
+    return pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_to_use, width, height), width_per_char, height_per_char, width))
 
 
 
 
-# def change_text_sprite(grid_to_use, width, height, width_per_char, height_per_char, sprite, text):
-#     combine_tiles_efficient(tesselate(0, grid_to_use, width, height), width_per_char, height_per_char, width, sprite)
+def change_text_sprite(grid_to_use, width, height, width_per_char, height_per_char, sprite, text, letter_order, justification):
+    #input a sprite made with initializE_text_sprite and this will change the text on it
+    #justification can be either "left", "center", or "right"
 
-#     combine_tiles_efficient(text_to_tiles_wrapped(text, grid_tinyfont, letter_order, width, "left"), 5, 8, width, bg_desc_text)
+    combine_tiles_efficient(tesselate(0, grid_to_use, width, height), width_per_char, height_per_char, width, sprite)
+
+    combine_tiles_efficient(text_to_tiles_wrapped(text, grid_to_use, letter_order, width, justification), width_per_char, height_per_char, width, sprite)
 
 
 
