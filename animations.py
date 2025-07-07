@@ -13,6 +13,37 @@ from game_classes.id_shuffling import *
 
 
 
+
+
+
+
+sound_hit = pyglet.media.load(r'audio\488225__plumaudio__playerhit.mp3', streaming=False)
+sound_eat = pyglet.media.load(r'audio\267531__djdust__eat-an-apple.mp3', streaming=False)
+
+
+sound_swing = pyglet.media.load(r'audio\367182__gaussthewizard__swing.mp3', streaming=False)
+sound_splash1 = pyglet.media.load(r'audio\221759__motion_s__water-splashing_1.mp3', streaming=False)
+sound_splash2 = pyglet.media.load(r'audio\221759__motion_s__water-splashing_2.mp3', streaming=False)
+sound_coin = pyglet.media.load(r'audio\174629__altfuture__coins.mp3', streaming=False)
+sound_magic = pyglet.media.load(r'audio\613163__sonically_sound__magic.mp3', streaming=False)
+sound_pickup = pyglet.media.load(r'audio\534357__defaultv__pickup_item.mp3', streaming=False)
+
+sound_steam = pyglet.media.load(r'audio\346778__diramus__steam-iron-used-on-board.mp3', streaming=False)
+
+
+sound_weird = pyglet.media.load(r'audio\455204__lilmati__magic-spell-03.wav', streaming=False)
+
+
+sound_magic2 = pyglet.media.load(r'audio\270396__littlerobotsoundfactory__spell_01.wav', streaming=False)
+
+# sound_hit = pyglet.media.load(r'audio\488225__plumaudio__playerhit.mp3', streaming=False)
+# sound_eat = pyglet.media.load(r'audio\267531__djdust__eat-an-apple.mp3', streaming=False)
+
+
+#sound_magic = pyglet.media.load(r'audio\magic.mp3', streaming=False)
+
+
+
 def wipe_techniqueitem(entity):
     if isinstance(entity, Enemy) and entity.techniqueitem != None:
         entity.techniqueitem.sprite.delete() 
@@ -90,6 +121,7 @@ class Animation:
 
     def draw(self, player, group, floor, adventure_log, bg_liqs_foreground, rctrl):
         global grid_liqtile
+        global sound_hit, sound_eat, sound_swing, sound_splash1, sound_splash2, sound_coin, sound_magic, sound_pickup, sound_steam, sound_weird, sound_magic2
         self.current_time += 1
 
         # if self.text != "":
@@ -137,7 +169,7 @@ class Animation:
                                 adventure_log.append(str(player.name) + " left the shop.")
                                 player.is_shopping = False
                         if rctrl == False:
-                            player.pick_up_item(floor.floor_items, adventure_log, floor)
+                            player.pick_up_item(floor.floor_items, adventure_log, floor, sound_coin, sound_pickup)
 
 
                     wipe_techniqueitem(obj)
@@ -145,6 +177,11 @@ class Animation:
             elif self.animtype == 5: #spinning when casting a spell
                 obj = self.associated_object
                 obj.direction = FaceDirection((obj.direction.value + 1) % 8)
+
+                if frame == 2:
+                    sfxplayer = sound_magic.play()
+                    sfxplayer.volume = 0.3
+
 
                 if frame > self.duration:
                     if self.item[1] == "Tome of Demotion":
@@ -167,6 +204,9 @@ class Animation:
                             enemy.level_visual += 1
                     elif self.item[1] == "Immunity Tome" or self.item[1] == "Paperskin Tome":
                         player.defense_visual = player.defense
+                    elif self.item[1] == "Bankruptcy Tome":
+                        sfxplayer = sound_weird.play()
+                        sfxplayer.volume = 0.25
 
 
 
@@ -181,6 +221,10 @@ class Animation:
 
             elif self.animtype == 1: #hit anim
                 obj = self.associated_object
+
+                if frame == 2:
+                    sfxplayer = sound_swing.play()
+                    sfxplayer.volume = 1.0
 
                 # if obj.speed == 4:
                 #     print("hit", self.current_time, self.start_time, self.duration)
@@ -200,6 +244,9 @@ class Animation:
 
             elif self.animtype == 9: #splash anim and other anims that take place not in turn
 
+                if frame == 2:
+                    sfxplayer = sound_splash2.play()
+                    sfxplayer.volume = 0.3
 
                 self.proceed = True
                 self.color = (self.color[0], self.color[1], self.color[2], 128)          
@@ -230,8 +277,17 @@ class Animation:
                 base_y =  768/2-24-(player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale #+768/2-24?
                 self.y += 1/32
                 if frame == 6:
+                    
+                    if "-" in self.spriteindex:
+                        sfxplayer = sound_hit.play()
+                        sfxplayer.volume = 0.6
+                    else:
+                        sfxplayer = sound_eat.play()
+                        sfxplayer.volume = 0.6
+                        
                     self.proceed = True
                     if self.attacker != None:
+                        
                         #check if a death was caused
                         is_dead = 0
                         if self.target.should_be_deleted == True:
@@ -258,6 +314,7 @@ class Animation:
                         self.target.health_visual = self.target.health_visual - self.damage
                         self.target.strength_visual = max(self.target.strength_visual - self.strength_reduction, 1)
                         self.target.defense_visual = max(self.target.defense_visual - self.defense_reduction, 1)
+
                 elif frame > 20:
                     self.color = (self.color[0], self.color[1], self.color[2], random.choice([0, 255]))
 
@@ -272,6 +329,17 @@ class Animation:
                 sprite.scale = self.scale
                 
             elif self.animtype == 6: #nonmoving graphical effect (e.g. smoke)
+
+                if frame == 2:
+                    if self.spriteindex // 29 == 2:
+
+                        sfxplayer = sound_splash1.play()
+                        sfxplayer.volume = 0.6
+
+
+                    elif self.spriteindex // 29 == 1:
+                        sfxplayer = sound_steam.play()
+                        sfxplayer.volume = 0.3
 
                 self.color = (self.color[0], self.color[1], self.color[2], 255)          
                 base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
@@ -293,6 +361,12 @@ class Animation:
                     self.should_be_deleted = True
                     player.haswon = True
             elif self.animtype == 7: #liquids
+
+                if frame == 2:
+
+                    sfxplayer = sound_splash1.play()
+                    sfxplayer.volume = 0.6
+
 
                 self.color = (self.color[0], self.color[1], self.color[2], 255)          
                 base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
@@ -321,7 +395,7 @@ class Animation:
                 sprite.scale = self.scale
             elif self.animtype == 3 or self.animtype == 4: #thrown item, casted projectile
 
-
+                
                 self.color = (self.color[0], self.color[1], self.color[2], 255)          
                 base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale
                 base_y =  768/2-24-(player.prevy*16 + 8)*player.scale + (self.y*16 + 8)*self.scale #+768/2-24?
@@ -399,6 +473,9 @@ class Animation:
                 if self.animtype == 4:
                     tile = self.grid[self.spriteindex+(math.floor(self.current_time/self.animspeed) % 4)]
                     self.sprite.image.blit_into(tile, 0, 0, 0)
+                    if frame == 2:
+                        sfxplayer = sound_magic2.play()
+                        sfxplayer.volume = 0.2
                     # if frame == 1:
                     #     if ("Staff" in item.name)  == True:
                     #         name_desc = get_display_name(self.item)

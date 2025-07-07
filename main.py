@@ -523,18 +523,28 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
 
                 # player.add_to_inventory(floor.create_item("Knife", grid_items))
                 # player.add_to_inventory(floor.create_item("Stick", grid_items))
-                #player.add_to_inventory(floor.create_item("Sun Shield", grid_items))
+                player.add_to_inventory(floor.create_item("Apple", grid_items), 0, 0)
+
+                player.add_to_inventory(floor.create_item("Water Flask", grid_items), 0, 0)
                 #player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
                 #player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
-                player.add_to_inventory(floor.create_item("Water Flask", grid_items))
+                #player.add_to_inventory(floor.create_item("Water Flask", grid_items))
 
-                #player.add_to_inventory(floor.create_item("Fibonnaci Staff", grid_items))
+                player.add_to_inventory(floor.create_item("Phobia Staff", grid_items), 0, 0)
+                player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items), 0, 0)
                 #player.add_to_inventory(floor.create_item("Staff of Primes", grid_items))
                 #player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
                 #player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
 
-                # player.add_to_inventory(floor.create_item("Tome of Promotion", grid_items))
-                # player.add_to_inventory(floor.create_item("Tome of Promotion", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Extinction", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
+                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
                 # player.add_to_inventory(floor.create_item("Tome of Promotion", grid_items))
 
                 # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
@@ -1031,22 +1041,39 @@ def draw_description_but_in_main_because_main_is_cool(item, invslot, gamestate):
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
 music = pyglet.media.load(r'audio\Cyber-Dream-Loop.mp3')  # Replace with your actual file path
+music2 = pyglet.media.load(r'audio\to-the-death-159171.mp3')   # Replace with your actual file path
+music3 = pyglet.media.load(r'audio\birds-chirping-75156.mp3')   # Replace with your actual file path
+music4 = pyglet.media.load(r'audio\solid-state-drive-161358.mp3')   # Replace with your actual file path
+
+
+
+
+
 
 # Create a player and queue the music
 mplayer = pyglet.media.Player()
 mplayer.queue(music)
-mplayer.volume = 0#.25  
-
-# Set to loop if desired
+mplayer.volume = 0.25  
 mplayer.loop = True
+
+
+mstate = 1
 
 # Play the music
 mplayer.play()
 
 
+#most sfx are loaded in animations.py
 
-sound_hit = pyglet.media.load(r'audio\hit.mp3', streaming=False)
-sound_magic = pyglet.media.load(r'audio\magic.mp3', streaming=False)
+sound_stairs = pyglet.media.load(r'audio\69298__abel_k__stairs-reg-c-down-ak.mp3', streaming=False)
+
+
+
+
+
+
+
+
 
 global keypress_chk
 keypress_chk = 0
@@ -1093,9 +1120,7 @@ def get_liq_sprite(item):
 def on_draw():
     global bg_animframe
     global fps
-    
-    # if bg_animframe == 10:
-    #     profiler.enable()
+    global music, music2, music3, music4, mplayer, mstate, sound_stairs
     start = time.perf_counter()
     global fps_display
     global color_templates
@@ -1121,6 +1146,7 @@ def on_draw():
     global batch
     global bg_desc, bg_desc_text
     global invhover
+
 
 
     # framebuffer.get_texture().bind()
@@ -1157,6 +1183,36 @@ def on_draw():
             side_bar_batch.draw()
             return
         elif current_menu == MenuState.INGAME:
+
+            if floor.level < -5: #birds chirping
+                if mstate != 3:
+                    mplayer.pause()
+                    mplayer.next_source()  # skip remaining if any
+                    mplayer.queue(music3)
+                    mplayer.play()
+                    mstate = 3
+            elif (player.extinction_state == 1 or floor.level < 1): #boss music
+                if mstate != 2:
+                    mplayer.pause()
+                    mplayer.next_source()  # skip remaining if any
+                    mplayer.queue(music2)
+                    mplayer.play()
+                    mstate = 2
+            elif floor.map_grid[floor.height-1-player.y][player.x] == "S":
+                if mstate != 4: #shopping
+                    mplayer.pause()
+                    mplayer.next_source()  # skip remaining if any
+                    mplayer.queue(music4)
+                    mplayer.play()
+                    mstate = 4
+            elif mstate != 1:
+                mplayer.pause()
+                mplayer.next_source()  # skip remaining if any
+                mplayer.queue(music)
+                mplayer.play()
+                mstate = 1
+                # Toggle track state
+                #track_state['current'] = 2 if track_state['current'] == 1 else 1
             # print("player position", player.x, player.y)
             # print("player prev position", player.prevx, player.prevy)
             # print("map stairs", floor.stairs)
@@ -1283,8 +1339,12 @@ def on_draw():
                         refresh_all_visuals(enemy)
                     if keys[pyglet.window.key.Z] == False:
                         if(player.x, player.y) == floor.stairs:
+                            sfxplayer = sound_stairs.play()
+                            sfxplayer.volume = 0.3
                             go_to_next_level(1)
                         if(player.x, player.y) == floor.upstairs:
+                            sfxplayer = sound_stairs.play()
+                            sfxplayer.volume = 0.3
                             go_to_next_level(-1)
                         #print("test")
 

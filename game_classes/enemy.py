@@ -254,10 +254,13 @@ class Enemy:
 
 
     def technique_filter_for_sanctuaries(self, technique, x, y, floor):
-        if floor.map_grid[floor.height-1-y][x] == "S":
+        try:
+            if floor.map_grid[floor.height-1-y][x] == "S":
+                return Technique.STILL, x, y
+            else:
+                return technique, x, y
+        except:
             return Technique.STILL, x, y
-        else:
-            return technique, x, y
 
     def do_AI(self, all_enemies, player, game_map):
         global grid_items

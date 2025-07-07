@@ -108,21 +108,29 @@ class Player:
         self.haswon = False
         
     
-    def add_to_inventory(self, item):
+    def add_to_inventory(self, item, sound_coin, sound_pickup):
         if item.name == "3 Gold":
             self.gold += 3
+            if sound_coin != 0:
+                sound_coin.play()
             return True 
         elif item.name == "15 Gold":
             self.gold += 15
+            if sound_coin != 0:
+                sound_coin.play()
             return True
         elif item.name == "60 Gold":
             self.gold += 60
+            if sound_coin != 0:
+                sound_coin.play()
             return True
         
         for slot in range(len(self.inventory)):
             #print(f"Checking slot {slot} for item {item.name}")
             if self.inventory[slot] is None:
                 self.inventory[slot] = item
+                if sound_coin != 0:
+                    sound_pickup.play()
                 return True  # Success
         #print("Inventory full. Cannot pick up item.")
         return False  # Inventory was full
@@ -391,7 +399,7 @@ class Player:
         return False
     
     # Pick up an item and add it to the player's inventory if there's room
-    def pick_up_item(self, floor_item_list, adventure_log, floor):
+    def pick_up_item(self, floor_item_list, adventure_log, floor, sound_coin, sound_pickup):
         """Pick up an item and add it to the player's inventory."""
         for item in floor_item_list:
             if item.x == self.x and item.y == self.y and item is not None:
@@ -400,7 +408,7 @@ class Player:
                 if floor.map_grid[floor.height-1-self.y][self.x] == "S" and self.gold-item.price < 0 and self.credit_score == 0:
                     adventure_log.append(str(self.name) + " can't afford the item.")
                 else: 
-                    if self.add_to_inventory(item) == True:
+                    if self.add_to_inventory(item, sound_coin, sound_pickup) == True:
                         
                         floor_item_list.remove(item)  # Remove item from the map 
 
