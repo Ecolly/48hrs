@@ -530,8 +530,8 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 #player.add_to_inventory(floor.create_item("Water Flask", grid_items), 0, 0)
                 #player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
                 #player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
-                player.add_to_inventory(floor.create_item("Water Flask", grid_items), 0, 0)
-                player.add_to_inventory(floor.create_item("Acid Flask", grid_items), 0, 0)
+                #player.add_to_inventory(floor.create_item("Water Flask", grid_items), 0, 0)
+                #player.add_to_inventory(floor.create_item("Acid Flask", grid_items), 0, 0)
 
                 #player.add_to_inventory(floor.create_item("Phobia Staff", grid_items), 0, 0)
                 # player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items), 0, 0)
