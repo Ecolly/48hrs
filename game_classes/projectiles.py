@@ -26,6 +26,7 @@ class Projectile:
             self.spriteindex = 2*29
             self.num_of_pierces = 4
         elif "Flask" in name:
+            self.num_of_pierces = 4
             if "Water" in name:
                 self.spriteindex = 2*29 + 16
             elif "Detergent" in name:

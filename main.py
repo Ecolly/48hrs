@@ -183,6 +183,9 @@ def go_to_next_level(amount):
 
     itemlist_equal = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Obsidian Edge", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Sun Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Descendance", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Candy", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale", "Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Coworker's Thoughts 2", "Peer's Notes", "Compatriot's Ideas", "Scientist's Log 1", "Scientist's Log 2", "Scientist's Log 3", "Duplication Tome", "Tome of Exchange", "Mirror Staff", "Volatile Staff", "Weaponsmithing Tome", "Shieldsmithing Tome", "Staff of Osteoporosis", "Staff of Fatigue"]
 
+    itemlist_chasm = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","15 Gold", "Rock", "Rock", "Rock", "Rock", "Rock", "Rock", "Rock", "Rock","Rock", "Rock", "Rock", "Rock","Rock", "Rock", "Rock", "Rock","Knife", "Scimitar", "Rapier", "Obsidian Edge", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Sun Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Descendance", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Candy", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale", "Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Coworker's Thoughts 2", "Peer's Notes", "Compatriot's Ideas", "Scientist's Log 1", "Scientist's Log 2", "Scientist's Log 3", "Duplication Tome", "Tome of Exchange", "Mirror Staff", "Volatile Staff", "Weaponsmithing Tome", "Shieldsmithing Tome", "Staff of Osteoporosis", "Staff of Fatigue"]
+
+
     itemlist_end = ["Stick", "Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","Stick","3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","15 Gold","Knife", "Scimitar", "Rapier", "Obsidian Edge", "Windsword", "Machete", "Sickle", "Stick", "Water Flask", "Petroleum Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Wood Shield", "Leaf Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Sun Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Descendance", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Candy", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Kale", "Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Coworker's Thoughts 3", "Compatriot's Ideas", "Scientist's Log 4", "Scientist's Log 5", "Scientist's Log 6", "Duplication Tome", "Tome of Exchange", "Mirror Staff", "Volatile Staff", "Weaponsmithing Tome", "Shieldsmithing Tome", "Staff of Osteoporosis", "Staff of Fatigue"]
 
     itemlist_boss = ["Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Cloning", "Staff of Metamorphosis", "Staff of Primes", "Fibonnaci Staff", "Staff of Alchemy", "Gardening Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Tome of Ascendance", "Tome of Descendance", "Tome of Extinction", "Tome of Resurrection", "Blank Tome", "Ruined Tome", "Duplication Tome", "Tome of Exchange", "Mirror Staff", "Volatile Staff", "Weaponsmithing Tome", "Shieldsmithing Tome", "Staff of Osteoporosis", "Staff of Fatigue"]
@@ -218,7 +221,6 @@ def go_to_next_level(amount):
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Exclusion Zone Outskirts", "Complex", (7,26,0,6,6,6,6,1), "Pits", ["HAMSTER", "DEBT COLLECTOR", "DEBT COLLECTOR"], [1, 1, 1], itemlist_beginner
     elif floor_level < 3: #Abandoned Woods
         #floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Infested Workshop", "Complex", (15, 22, 5, 5+4*16,5+5*16,5+6*16,5+7*16,5+8*16), "Solid", ["SCORPION", "TETRAHEDRON", "DEMON CORE", "CHROME DOME", "DODECAHEDRON"], [4, 4, 4, 3, 2], itemlist_end         #multicolored porcelain
-    
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list= "Abandoned Woods", "Simple", (26, 26), "Solid", ["LEAFALOTTA", "GOOSE", "HAMSTER"], [1, 1, 1], itemlist_beginner
     elif floor_level < 5: #Silent Tributary
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silent Tributary", "Complex", (6,27,0,6,6,6,6,1), "Flowing Water", ["GOOSE", "CHLOROSPORE", "TURTLE"], [1, 2, 1], itemlist_beginner2                    #river zone
@@ -230,21 +232,21 @@ def go_to_next_level(amount):
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Topsoil Cavern", "Complex", (19,31,1,1,10,1,1,1), "Solid", ["S'MORE", "SCORPION", "VITRIOLIVE"], [2, 1, 1], itemlist_beginner2                           #brown basalt
     elif floor_level < 13: #Coal Vein
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Coal Vein", "Complex", (17,31,1,1,0,0,6,9), "Solid", ["SCORPION", "JUJUBE", "VITRIOLIVE"], [2, 1, 1], itemlist_beginner2                          #coal vein
-    elif floor_level < 15: #Petroleum Deposit
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Petroleum Deposit", "Complex", (8,29,1,1,0,0,6,9), "Petroleum", ["DRAGON", "JUJUBE", "CULTIST"], [1, 2, 2], itemlist_equal                         #petroleum zone
-    elif floor_level < 17: #Aquifer
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Aquifer", "Complex", (8,22,1,1,9,9,6,9), "Aquifer", ["CHLOROSPORE", "LEAFALOTTA", "CULTIST"], [3, 3, 2], itemlist_equal                        #aquifer
-    elif floor_level < 19: #Subterranean Mudflow
-        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Subterraean Mudflow", "Complex", (6,30,1,6,6,6,6,0), "Mud", ["CHLOROSPORE", "MONITAUR", "LEAFAOTTA", "CHROME DOME"], [3, 2, 3, 1], itemlist_equal                            #mud zone
-    elif floor_level < 21: #Silt Stratum
+    elif floor_level < 16: #Petroleum Deposit
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Petroleum Deposit", "Complex", (8,29,1,1,0,0,6,9), "Petroleum", ["DRAGON", "CHROME DOME", "MONITAUR"], [1, 1, 1], itemlist_equal                         #petroleum zone
+    elif floor_level < 19: #Aquifer
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Aquifer", "Complex", (8,22,1,1,9,9,6,9), "Aquifer", ["CHLOROSPORE", "LEAFALOTTA", "JUJUBE", "CULTIST"], [3, 3, 2, 2], itemlist_equal                        #aquifer
+    elif floor_level < 22: #Subterranean Mudflow
+        floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Subterraean Mudflow", "Complex", (6,30,1,6,6,6,6,0), "Mud", ["CHLOROSPORE", "MONITAUR", "LEAFAOTTA", "CULTIST"], [3, 2, 3, 2], itemlist_equal                            #mud zone
+    elif floor_level < 24: #Silt Stratum
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silt Stratum", "Complex", (18,30,1,1,0,0,6,9), "Solid", ["DEMON CORE", "TETRAHEDRON", "S'MORE", "MONITAUR"], [1, 2, 3, 2], itemlist_equal                          #teal & gold
-    elif floor_level < 23: #Silt Stratum
+    elif floor_level < 26: #Silt Stratum
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Silt Stratum", "Complex", (20,30,2,9,10,11,0,3), "Solid", ["DEMON CORE", "VITRIOLIVE", "FOX", "S'MORE"], [1, 2, 3, 3], itemlist_equal                         #purple & gold
-    elif floor_level < 25: #Ash Pits
+    elif floor_level < 28: #Ash Pits
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Pits", ["DRAGON", "DEMON CORE", "JUJUBE", "FOX"], [2, 2, 3, 3], itemlist_equal                             #grey pits
-    elif floor_level < 27: #Ash Pits
+    elif floor_level < 30: #Ash Pits
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm", "Complex", (7,23,1,6,6,6,6,0), "Glowing", ["DRAGON", "DODECAHEDRON", "CHLOROSPORE", "MONITAUR"], [2, 2, 4, 3], itemlist_equal                             #grey pits
-    elif floor_level < 29: #Magma Chamber
+    elif floor_level < 32: #Magma Chamber
         floor_name, sc, tileset, walltype, enemy_list, level_list, item_list = "Chasm Bottom", "Complex", (8,23,2,2,2,2,2,2), "Lava", ["DRAGON", "DODECAHEDRON", "TETRAHEDRON", "CULTIST"], [3, 2, 3, 3], itemlist_end                             #wavy lava
     else: #Workshop Remnants
         if random.uniform(0, 1) < 0.5:
@@ -273,7 +275,7 @@ def go_to_next_level(amount):
 
 
     #Triggered after Detects stairs
-    floor = make_floor(sc, item_list, enemy_list, level_list, shop_equal, floor_level)
+    floor = make_floor(sc, item_list, enemy_list, level_list, shop_equal, floor_level, floor_name)
     #print(floor.valid_tiles)
 
     enemy_amount = random.randint(5, 8)
@@ -289,7 +291,7 @@ def go_to_next_level(amount):
     floor.random_create_item(item_list)
     floor.generate_enemies(floor_level, enemy_list, level_list, enemy_amount, player)
 
-    floor.name = floor_name
+    
     
     player.x, player.y = floor.spawnpoint
     player.prevx, player.prevy = floor.spawnpoint
@@ -523,15 +525,18 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
 
                 # player.add_to_inventory(floor.create_item("Knife", grid_items))
                 # player.add_to_inventory(floor.create_item("Stick", grid_items))
-                player.add_to_inventory(floor.create_item("Apple", grid_items), 0, 0)
+                #player.add_to_inventory(floor.create_item("Apple", grid_items), 0, 0)
 
-                player.add_to_inventory(floor.create_item("Water Flask", grid_items), 0, 0)
+                #player.add_to_inventory(floor.create_item("Water Flask", grid_items), 0, 0)
                 #player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
                 #player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
-                #player.add_to_inventory(floor.create_item("Water Flask", grid_items))
+                player.add_to_inventory(floor.create_item("Water Flask", grid_items), 0, 0)
+                player.add_to_inventory(floor.create_item("Acid Flask", grid_items), 0, 0)
 
-                player.add_to_inventory(floor.create_item("Phobia Staff", grid_items), 0, 0)
-                player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items), 0, 0)
+                #player.add_to_inventory(floor.create_item("Phobia Staff", grid_items), 0, 0)
+                # player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items), 0, 0)
+                # player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items), 0, 0)
+                # player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items), 0, 0)
                 #player.add_to_inventory(floor.create_item("Staff of Primes", grid_items))
                 #player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
                 #player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
@@ -683,7 +688,7 @@ def on_mouse_release(x, y, button, modifiers):
                     #attack with weapon
                     mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                     mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
-                    if (abs(mouse_x_tilemap - player.prevx) < 2 and abs(mouse_y_tilemap - player.prevy) < 2) or (abs(mouse_x_tilemap - player.prevx) < 3 and abs(mouse_y_tilemap - player.prevy) < 3 and player.equipment_weapon.name == "Rapier"):
+                    if (mouse_x_tilemap != player.prevx or mouse_y_tilemap != player.prevy) and ((abs(mouse_x_tilemap - player.prevx) < 2 and abs(mouse_y_tilemap - player.prevy) < 2) or (abs(mouse_x_tilemap - player.prevx) < 3 and abs(mouse_y_tilemap - player.prevy) < 3 and player.equipment_weapon.name == "Rapier")):
                         player.hit(mouse_x_tilemap, mouse_y_tilemap)
                         gamestate = 2
                         turn_logic.do_turns(all_enemies, player, floor, all_anims)
@@ -717,7 +722,7 @@ def on_mouse_release(x, y, button, modifiers):
                 else: #unarmed attack
                     mouse_x_tilemap = math.floor(mouse_x/48 - (1152/2)/48 + (player.x + 0.5))
                     mouse_y_tilemap = math.floor(mouse_y/48 - (768/2)/48 + (player.y + 0.5))
-                    if (abs(mouse_x_tilemap - player.prevx) < 2 and abs(mouse_y_tilemap - player.prevy) < 2):
+                    if (mouse_x_tilemap != player.prevx or mouse_y_tilemap != player.prevy) and (abs(mouse_x_tilemap - player.prevx) < 2 and abs(mouse_y_tilemap - player.prevy) < 2):
                         player.hit(mouse_x_tilemap, mouse_y_tilemap)
                         gamestate = 2
                         turn_logic.do_turns(all_enemies, player, floor, all_anims)
@@ -989,7 +994,13 @@ def draw_description_but_in_main_because_main_is_cool(item, invslot, gamestate):
         #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Obsidian Edge", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Candy", "Starfruit", "Durian", "Dragonfruit"]
         
 
+# bg_desc_text = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_tinyfont, 24, 12), 5, 8, 24))
 
+# combine_tiles_efficient(tesselate(0, grid_tinyfont, 24, 12), 5, 8, 24, bg_desc_text)
+
+
+# combine_tiles_efficient(text_to_tiles_wrapped(text, grid_tinyfont, letter_order, width, "left"), 5, 8, width, bg_desc_text)
+        
 
 
 # player.add_to_inventory(floor.create_item("Rock", grid_items))
@@ -1053,7 +1064,7 @@ music4 = pyglet.media.load(r'audio\solid-state-drive-161358.mp3')   # Replace wi
 # Create a player and queue the music
 mplayer = pyglet.media.Player()
 mplayer.queue(music)
-mplayer.volume = 0.25  
+mplayer.volume = 0.15  
 mplayer.loop = True
 
 
@@ -1196,6 +1207,7 @@ def on_draw():
                     mplayer.pause()
                     mplayer.next_source()  # skip remaining if any
                     mplayer.queue(music2)
+                    mplayer.volume = 0.15
                     mplayer.play()
                     mstate = 2
             elif floor.map_grid[floor.height-1-player.y][player.x] == "S":
@@ -1203,12 +1215,14 @@ def on_draw():
                     mplayer.pause()
                     mplayer.next_source()  # skip remaining if any
                     mplayer.queue(music4)
+                    mplayer.volume = 0.08
                     mplayer.play()
                     mstate = 4
             elif mstate != 1:
                 mplayer.pause()
                 mplayer.next_source()  # skip remaining if any
                 mplayer.queue(music)
+                mplayer.volume = 0.15
                 mplayer.play()
                 mstate = 1
                 # Toggle track state
@@ -1312,7 +1326,7 @@ def on_draw():
 
             
             if diry != 0 or dirx != 0:
-                if keys[pyglet.window.key.LCTRL] and (diry == 0 or dirx == 0):
+                if keys[pyglet.window.key.F] and (diry == 0 or dirx == 0):
                     #if holding ctrl, pass if the direction isnt diagonal
                     pass
                 else:
@@ -1337,7 +1351,7 @@ def on_draw():
                     refresh_all_visuals(player)
                     for enemy in all_enemies:
                         refresh_all_visuals(enemy)
-                    if keys[pyglet.window.key.Z] == False:
+                    if keys[pyglet.window.key.LCTRL] == False:
                         if(player.x, player.y) == floor.stairs:
                             sfxplayer = sound_stairs.play()
                             sfxplayer.volume = 0.3
@@ -1428,7 +1442,7 @@ def on_draw():
                     if ((enemy.x > player.x + 13 or enemy.x < player.x - 13) or (enemy.y > player.y + 9 or enemy.y < player.y - 9)) or item == 0:
                         pass
                     else:
-                        all_anims.append(animations.Animation("", item, 9, 5, (255, 255, 255, 0), 0, 12, enemy.x, enemy.y, enemy.x, enemy.y, floor.liquid_grid[floor.height-1-player.y][player.x], None, None, None, None, 0, None))
+                        all_anims.append(animations.Animation("", item, 9, 5, (255, 255, 255, 0), 0, check_if_entity_is_on_screen(enemy, player, 1, 12), enemy.x, enemy.y, enemy.x, enemy.y, floor.liquid_grid[floor.height-1-player.y][player.x], None, None, None, None, 0, None))
 
 
             player.draw(animation_presets, group_enemies, group_enemies_bg, group_enemies_fg, hotbar.get_selected_item(), all_anims, floor)
@@ -1499,11 +1513,11 @@ def on_draw():
             if keys[pyglet.window.key.LSHIFT]:
                 while len(all_anims) > 0:
                     for anim in all_anims:
-                        anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.Z])
+                        anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.LCTRL])
                     delete_object.delobj(all_anims)
             else:
                 for anim in all_anims:
-                    anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.Z])
+                    anim.draw(player, group_effects, floor, adventure_log, bg_liqs_foreground, keys[pyglet.window.key.LCTRL])
                 delete_object.delobj(all_anims)
             
 

@@ -199,6 +199,39 @@ def combine_tiles_efficient(tiles, tile_width, tile_height, total_width, sprite)
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "ä"];
 
+
+
+# def initialize_text_sprite(grid_to_use, width, height, width_per_char, height_per_char):
+#     #returns a blank sprite at the specified width and height
+#     return pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_to_use, width, height), width_per_char, height_per_char, width))
+
+
+
+
+# def change_text_sprite(grid_to_use, width, height, width_per_char, height_per_char, sprite, text):
+#     combine_tiles_efficient(tesselate(0, grid_to_use, width, height), width_per_char, height_per_char, width, sprite)
+
+#     combine_tiles_efficient(text_to_tiles_wrapped(text, grid_tinyfont, letter_order, width, "left"), 5, 8, width, bg_desc_text)
+
+
+
+
+
+
+
+    # return pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_to_use, width, height), width_per_char, height_per_char, width))
+
+
+
+
+
+
+
+
+
+
+
+
 def create_sprite_text_simple(image_grid, txt):
     global letter_order
     tex = combine_tiles(text_to_tiles(txt, image_grid, letter_order), 8, 8, 200)

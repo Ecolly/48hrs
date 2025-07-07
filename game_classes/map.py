@@ -16,7 +16,7 @@ def round_up_to_nearest_odd(n):
     return rounded + 1
 
 
-def make_floor(type, item_list, enemy_list, level_list, shop_list, level):
+def make_floor(type, item_list, enemy_list, level_list, shop_list, level, name):
 
     number_of_rooms = random.randint(5, 9)  # Random number of rooms between 5 and 10
 
@@ -24,7 +24,7 @@ def make_floor(type, item_list, enemy_list, level_list, shop_list, level):
 
     if level < -4:
         test_map = Map(60, 60, number_of_rooms, default_tile='#')
-
+        test_map.name = name
         test_map.enemy_list = enemy_list 
         test_map.level_list = level_list 
         test_map.item_list = item_list 
@@ -34,7 +34,7 @@ def make_floor(type, item_list, enemy_list, level_list, shop_list, level):
         test_map.connect_rooms()
     else:
         test_map = Map(60, 60, number_of_rooms, default_tile='#')
-
+        test_map.name = name
         test_map.enemy_list = enemy_list 
         test_map.level_list = level_list 
         test_map.item_list = item_list 
@@ -42,7 +42,7 @@ def make_floor(type, item_list, enemy_list, level_list, shop_list, level):
         test_map.level = level
         test_map.check_generate_room(test_map.rooms, shop_list)
         test_map.connect_rooms()
-    
+    test_map.generate_pools()
     test_map.check_valid_tile()
     test_map.create_stairs() # Populate valid tiles after room generation
     test_map.assign_spawnpoint()
@@ -103,8 +103,42 @@ class Map:
                     tile = random.choices(textures, weights=weights)[0]
                     self.map_grid[i][j] = tile
 
+
+    def generate_pools(self):
+
+        if self.name == "Aquifer" or self.name == "Silent Tributary" or self.name == "Reservoir" or self.name == "Subterraean Mudflow":
+            liq_tile = "W"
+        elif self.name == "Petroleum Zone":
+            liq_tile = "P"
+        elif self.name == "Workshop Remnant" or self.name == "Infested Workshop":
+            liq_tile = random.choice(["W", "P", "I", "D", "C", "A", "M", "S"])
+        else:
+            return
+
+
+        i = 0
+        while i < 10:
+            liq_xcenter = random.randint(0, self.width)
+            liq_ycenter = random.randint(0, self.height)
+            liq_radius = random.randint(2, 6)
+            x = max(liq_xcenter - liq_radius, 0)
+            while x < liq_xcenter + liq_radius and x < self.width:
+                y = max(liq_ycenter - liq_radius, 0)
+                while y < liq_ycenter + liq_radius and y < self.height:
+                    liq_dist = math.sqrt((liq_ycenter - y)**2 + (liq_xcenter - x)**2)
+                    if liq_dist <= liq_radius and self.map_grid[y][x] != "#" and self.map_grid[y][x] != "S":
+                        self.liquid_grid[y][x] = liq_tile
+                    y = y + 1
+                x = x + 1
+
+            i = i + 1
+
     def generate_room(self, x, y, room_width, room_height, shop, item_list):
         global grid_items
+
+        
+
+
         for i in range(y, y + room_height):
             for j in range(x, x + room_width):
                 if 0 <= i < self.height and 0 <= j < self.width:
@@ -126,10 +160,10 @@ class Map:
                             item.y = -i + self.height - 1
                             self.floor_items.append(item)
 
-
-
                     else:
                         self.map_grid[i][j] = '.'  # Set the room area to empty space
+                        
+
 
 
 
@@ -329,7 +363,7 @@ class Map:
             return Tome(name,  reverse="Coloring Tome", sprite_locs = fakenames_tomes_key[8], damage=10, projectile=False, description="Finds the last two staffs, shields, or weapons in your inventory. For shields and weapons, last item gains the bonus of the first item. For staffs, combine mana if staffs are the same kind. First item is destroyed.", price=40)
             
         elif name == "Tome of Reversal":
-            return Tome(name,  reverse="Blank Tome", sprite_locs = fakenames_tomes_key[9], damage=10, projectile=False, description="Finds the last staff or tome in your inventory. Item effect is reversed or altered.", price=40)
+            return Tome(name,  reverse="Blank Tome", sprite_locs = fakenames_tomes_key[9], damage=10, projectile=False, description="Finds the last staff or tome in your inventory (other than this one). Item effect is reversed or altered.", price=40)
            
         elif name == "Coloring Tome":
             return Tome(name,  reverse="Tome of Exchange",sprite_locs = fakenames_tomes_key[10], damage=10, projectile=False, description="Finds the last two staffs or tomes in your inventory. Last item gains the color of the first item.", price=30)
@@ -341,13 +375,13 @@ class Map:
             return Tome(name,  reverse="Summoning Tome",sprite_locs = fakenames_tomes_key[12], damage=10, projectile=False, description="All enemies directly adjacent to you are teleported to a random location on the floor.",price=30)
           
         elif name == "Tome of Pizzazz":
-            return Tome(name,  reverse="Bankruptcy Tome", sprite_locs = fakenames_tomes_key[13], damage=10, projectile=False, description="Find the last item in your inventory. Sell price is boosted by 50%.",price=40)
+            return Tome(name,  reverse="Bankruptcy Tome", sprite_locs = fakenames_tomes_key[13], damage=10, projectile=False, description="Find the last item in your inventory (other than this one). Sell price is boosted by 50%.",price=40)
            
         elif name == "Bankruptcy Tome":
             return Tome(name,  reverse="Tome of Pizzazz",sprite_locs = fakenames_tomes_key[14], damage=10, projectile=False, description="Gold is set to 0.",price=20)
            
         elif name == "Tome of Identification":
-            return Tome(name,  reverse="Ruined Tome", sprite_locs = fakenames_tomes_key[15], damage=10, projectile=False, description="Find the last item in your inventory. Identify the item if not already identified.",price=20)
+            return Tome(name,  reverse="Ruined Tome", sprite_locs = fakenames_tomes_key[15], damage=10, projectile=False, description="Find the last unidentified item in your inventory (other than this one) and identify it.",price=20)
            
         #elif name == "Tome of Obscuration":
         #    return Tome(name,  reverse="Tome of Identification",sprite_locs = fakenames_tomes_key[17], damage=10, projectile=False, description="Removes all identifications.",price=30)
@@ -412,21 +446,21 @@ class Map:
         
         
         elif name == "Water Flask":
-            return Flask(name,  reverse="Petroleum", evaporation_rate=0.05, product="Air", liquid="Water", sprite_locs = 17, description="A flask of water. Restores lost strength and defense. Heals plants and hurts robots.", price=10)
+            return Flask(name,  reverse="Petroleum", evaporation_rate=0.05, product="Air", liquid="Water", sprite_locs = 17, description="A flask of water. Restores lost strength and defense. Heals plants and hurts robots for 3-5 HP.", price=10)
         elif name == "Petroleum Flask":
-            return Flask(name,  reverse="Water", evaporation_rate=0.05, product="Air", liquid="Petroleum", sprite_locs = 25, description="A flask of thick petroleum that slows down anything inside. Heals robots and hurts plants.", price=10)
+            return Flask(name,  reverse="Water", evaporation_rate=0.05, product="Air", liquid="Petroleum", sprite_locs = 25, description="A flask of thick petroleum that slows down anything inside. Heals robots and hurts plants for 3-5 HP.", price=10)
         elif name == "Syrup Flask":
-            return Flask(name,  reverse="Water", evaporation_rate=0.05, product="Air", liquid="Syrup", sprite_locs = 6, description="Sickeningly sweet syrup that slows creatures in it. Heals food-type creatures and boosts the healing effects of food eaten by 50%.", price=10)
+            return Flask(name,  reverse="Water", evaporation_rate=0.05, product="Air", liquid="Syrup", sprite_locs = 6, description="Sickeningly sweet syrup that slows creatures in it. Heals food-type creatures for 3-5 HP and boosts the healing effects of food eaten by 50%.", price=20)
         elif name == "Ink Flask":
-            return Flask(name,  reverse="Detergent", evaporation_rate=0.5, product="Air", liquid="Ink", sprite_locs = 24, description="This dark black liquid renders tomes unusable. Heals abstract-type creatures.", price=10)
+            return Flask(name,  reverse="Detergent", evaporation_rate=0.5, product="Air", liquid="Ink", sprite_locs = 24, description="This dark black liquid renders tomes unusable. Heals abstract-type creatures for 3-5 HP.", price=10)
         elif name == "Detergent Flask":
-            return Flask(name,  reverse="Ink", evaporation_rate=0.4, product="Water", liquid="Detergent", sprite_locs = 13, description="Floral-scented and foamy, this liquid can be used to cleanse tomes. Lethal to abstract-type creatures.", price=30)
+            return Flask(name,  reverse="Ink", evaporation_rate=0.4, product="Water", liquid="Detergent", sprite_locs = 13, description="Floral-scented and foamy, this liquid can be used to cleanse tomes. Deals massive damage to abstract-type creatures.", price=50)
         elif name == "Acid Flask":
-            return Flask(name,  reverse="Cureall Flask", evaporation_rate=0.4, product="Water", liquid="Acid", sprite_locs = 1, description="Bubbling acid, this liquid deals damage to most creatures.", price=15)
+            return Flask(name,  reverse="Cureall Flask", evaporation_rate=0.4, product="Water", liquid="Acid", sprite_locs = 1, description="Bubbling acid, this liquid deals 2-4 HP of damage to most creatures.", price=15)
         elif name == "Cureall Flask":
-            return Flask(name,  reverse="Acid", evaporation_rate=0.4, product="Water", liquid="Cureall", sprite_locs = 10, description="This liquid heals creatures, but has a paralytic side effect.", price=50)
+            return Flask(name,  reverse="Acid", evaporation_rate=0.4, product="Water", liquid="Cureall", sprite_locs = 10, description="This liquid heals creatures for 2-4 HP, but has a paralytic side effect.", price=40)
         elif name == "Mercury Flask":
-            return Flask(name,  reverse="Petroleum", evaporation_rate=0.05, product="Air", liquid="Mercury", sprite_locs = 27, description="Destroys all metal equipment. Lethal to robot-type creatures.", price=30)
+            return Flask(name,  reverse="Petroleum", evaporation_rate=0.05, product="Air", liquid="Mercury", sprite_locs = 27, description="Deals massive damage to robot-type creatures.", price=30)
         elif name == "Empty Flask":
             return Flask(name,  reverse="None", evaporation_rate=0.05, product="Air", liquid="Air", sprite_locs = 28, description="An empty flask. Walk over liquids while holding it to pick them up.",price=5)
 
@@ -439,7 +473,7 @@ class Map:
         elif name == "Blue Shield":
             return Shield(name,  sprite_locs=1, defense=5, description="A sturdy shield painted with the emblem of a government.", price=12)
         elif name == "Mirror Shield":
-            return Shield(name,  sprite_locs=2, defense=1, description="This shield will reflect projectiles, but is fragile and may lose defense after taking an attack.", price=60)
+            return Shield(name,  sprite_locs=2, defense=1, description="This shield will reflect projectiles, but is fragile and may lose defense after taking an attack.", price=50)
         elif name == "Wood Shield":
             return Shield(name,  sprite_locs=3, defense=3, description="A crude wooden shield usually used for training.", price=8)
         elif name == "Steel Shield":
@@ -449,9 +483,9 @@ class Map:
         elif name == "Leaf Shield":
             return Shield(name,  sprite_locs=6, defense=1, description="A large, rubbery leaf.", price=2)
         elif name == "Spiked Shield":
-            return Shield(name,  sprite_locs=0, defense=3, description="Studded with thorns, this shield will return damage back to any attackers.", price=20)
+            return Shield(name,  sprite_locs=0, defense=3, description="Studded with thorns, this shield will return damage back to attackers.", price=25)
         elif name == "Sun Shield":
-            return Shield(name,  sprite_locs=8, defense=4, description="The fractaiized networks of arcane fiber lining this shield provides resistance to magical damage.", price=60)
+            return Shield(name,  sprite_locs=8, defense=4, description="The fractaiized networks of arcane fiber lining this shield provides resistance to magical damage.", price=50)
         elif name == "Balance Shield":
             return Shield(name,  sprite_locs=7, defense=4, description="Shares damage between you and your attacker.", price=100)
 

@@ -170,6 +170,18 @@ class Animation:
                                 player.is_shopping = False
                         if rctrl == False:
                             player.pick_up_item(floor.floor_items, adventure_log, floor, sound_coin, sound_pickup)
+                        else:
+                            for item in floor.floor_items:
+                                if item.x == player.x and item.y == player.y and item is not None:
+                                    name_desc = get_display_name(item)
+                                    
+                                    if floor.map_grid[floor.height-1-player.y][player.x] == "S":
+                                        adventure_log.append("Passed over the " + name_desc + " (" + str(item.price) + " GOLD).")
+                                    else: 
+                                        adventure_log.append("Passed over the " + name_desc + ".")
+
+
+                            
 
 
                     wipe_techniqueitem(obj)

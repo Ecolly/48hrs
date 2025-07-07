@@ -66,8 +66,8 @@ def generate_enemy(name, level, x, y, grid, floor, player):
 
     global grid_items
     enemy_names = ["DAMIEN", "LEAFALOTTA", "CHLOROSPORE", "GOOSE", "FOX", "S'MORE", "HAMSTER", "DRAGON", "CHROME DOME", "TETRAHEDRON", "SCORPION", "TURTLE", "CULTIST", "JUJUBE", "DEMON CORE", "DEBT COLLECTOR", "VITRIOLIVE", "EXECUTIVE", "DODECAHEDRON", "MONITAUR"]
-    enemy_hps = [20, 9, 5, 8, 9, 12, 20, 30, 18, 10, 12, 6, 12, 24, 23, 100, 20, 20, 50, 25]
-    enemy_strength = [0, 8, 5, 9, 8, 12, 9, 18, 17, 15, 12, 1, 1, 1, 1, 70, 10, 5, 8, 8]
+    enemy_hps = [20, 9, 5, 8, 9, 9, 20, 30, 18, 10, 12, 6, 12, 24, 23, 100, 20, 20, 50, 25]
+    enemy_strength = [0, 8, 5, 9, 8, 9, 100, 18, 17, 15, 12, 1, 1, 1, 1, 70, 10, 5, 8, 8]
     enemy_defense = [0, 2, 2, 1, 2, 1, 1, 4, 8, 3, 6, 30, 2, 1, 4, 70, 2, 1, 10, 3]
     enemy_sprites = [23*64, 21*64, 20*64, 19*64, 18*64, 17*64, 9*64, 11*64, 6*64, 12*64, 15*64, 10*64, 2*64, 5*64, 8*64, 1*64, 14*64, 0, 13*64, 16*64]
     enemy_animtypes = [1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1]
