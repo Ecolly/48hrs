@@ -60,6 +60,19 @@ def get_display_name(item):
     else:
         return item.name
     
+def update_discovered_items(loaded_staffs, loaded_tomes):
+    """Update the global discovered items lists"""
+    global discovered_staffs, discovered_tomes
+    
+    discovered_staffs.clear()
+    discovered_staffs.extend(loaded_staffs)
+    
+    discovered_tomes.clear()
+    discovered_tomes.extend(loaded_tomes)
+    
+    print(f"Updated discovered_staffs: {discovered_staffs}")
+    print(f"Updated discovered_tomes: {discovered_tomes}")
+    
 def discover_item(item):
 
     global discovered_staffs 
