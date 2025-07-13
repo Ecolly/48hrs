@@ -1353,6 +1353,10 @@ def do_individual_turn(entity, floor, player, list_of_animations, chronology, pr
         elif item.name == "Duplication Tome":
             blank_id = player.inventory.index(item)
 
+            discoverstring = discover_item(item)
+            if discoverstring != False:
+                list_of_animations.append(animations.Animation(discoverstring, 0*29 + 24, 6, 4, (255, 255, 255, 0), chronology, 1, 0, 0, 0, 0, 0, None, None, None, None, None))
+                
             i = 39 
             while i > -1:
                 if isinstance(player.inventory[i], Item) == True: #and player.inventory[i].name != "Blank Tome":

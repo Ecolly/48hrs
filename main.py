@@ -168,8 +168,8 @@ window.push_handlers(mouse_state)
 def go_to_next_level(amount):
     global floor, all_enemies, player, bg, bg_liqs, bg_deeper, bg_liqs_foreground, floor_level, adventure_log, grid_blank
 
-    #itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Lettuce", "Candy", "Rock", "Rock", "Rock", "Rock", "Rock", "Rock", "Staff of Mana", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
-    itemlist_beginner = ["Staff of Mana", "Staff of Mana", "Staff of Mana","Staff of Mana","Staff of Mana","Staff of Mana","Staff of Mana"]
+    itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Lettuce", "Candy", "Rock", "Rock", "Rock", "Rock", "Rock", "Rock", "Staff of Mana", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
+    #itemlist_beginner = ["Staff of Mana", "Staff of Mana", "Staff of Mana","Staff of Mana","Staff of Mana","Staff of Mana","Staff of Mana"]
     #"Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Predecessor's Scrawling", "Peer's Notes", "Coworker's Thoughts", "Coworker's Thoughts 2", "Coworker's Thoughts 3", "Compatriot's Ideas", "Scientist's Log 1", "Scientist's Log 2", "Scientist's Log 3", "Scientist's Log 4", "Scientist's Log 5", "Scientist's Log 6"
 
     #itemlist_outside = ["3 Gold", "Mushrooms", "Leaves", "Apple", "Mushrooms", "Leaves", "Apple", "Stick", "Rock", "Stick", "Rock", "Leaf Shield", "Shopping List 4"]
