@@ -40,7 +40,22 @@ def get_display_name_and_description(item):
             return fakenames_staffs_colornames[item.magic_color], "This item hasn't been identified. (Type to give it a label)."
     else:
         return item.name, item.description
+    
 
+
+def update_discovered_items(loaded_staffs, loaded_tomes):
+    """Update the global discovered items lists"""
+    global discovered_staffs, discovered_tomes
+    
+    discovered_staffs.clear()
+    discovered_staffs.extend(loaded_staffs)
+    
+    discovered_tomes.clear()
+    discovered_tomes.extend(loaded_tomes)
+    
+    print(f"Updated discovered_staffs: {discovered_staffs}")
+    print(f"Updated discovered_tomes: {discovered_tomes}")
+    
 def get_display_name(item):
     
     global discovered_staffs 

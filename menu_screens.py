@@ -8,7 +8,8 @@ from enum import Enum
 import os
 from config import*
 from actual_actual_button import Button
-
+from image_handling import*
+from font import *
 menu_batch = pyglet.graphics.Batch()
 
 class MenuState(Enum):
@@ -19,6 +20,8 @@ class MenuState(Enum):
     INGAME = 5
     SIDE_MENU = 6
 
+#def initialize_text_sprite(grid_to_use, width, height, width_per_char, height_per_char):
+
 
 def create_main_menu_labels(batch, group):
     background = pyglet.shapes.Rectangle(
@@ -27,29 +30,31 @@ def create_main_menu_labels(batch, group):
         batch=batch,
         group=group
     )
+    
+    sprite = initialize_text_sprite(grid_font, 200, 50, 8, 8)
+    sprite.scale = 6
+    sprite.x = (WINDOW_WIDTH - sprite.width) // 2  # Center horizontally
+    sprite.y = WINDOW_HEIGHT - 250  # Position near the top
+    change_text_sprite(grid_font, 200, 50, 8, 8, sprite, "PANDORIUM", letter_order, "center")
+    sprite.batch = batch
+    sprite.group = group
+    
+    
 
-    menu_label = pyglet.text.Label(
-        "PANDORIUM",
-        font_name="Arial",
-        font_size=48,
-        x=WINDOW_WIDTH // 2, y=WINDOW_HEIGHT - 100,
-        anchor_x="center", anchor_y="center",
-        color=(255, 255, 255, 255),
-        batch=batch,
-        group=group
-    )
-    menu_stats = pyglet.text.Label(
-        "Press ENTER to Start\nPress L to Load",
-        font_name="Arial",
-        font_size=18,
-        x=WINDOW_WIDTH // 2, y=WINDOW_HEIGHT // 2,
-        anchor_x="center", anchor_y="center",
-        color=(200, 200, 200, 255),
-        batch=batch,
-        group=group
-    )
-    return background, menu_label, menu_stats
 
+
+    # menu_label = pyglet.text.Label(
+    #     "PANDORIUM",
+    #     font_name="Arial",
+    #     font_size=48,
+    #     x=WINDOW_WIDTH // 2, y=WINDOW_HEIGHT - 100,
+    #     anchor_x="center", anchor_y="center",
+    #     color=(255, 255, 255, 255),
+    #     batch=batch,
+    #     group=group
+    # )
+
+    return background, sprite
 
 
 def create_save_menu_labels(batch, group):

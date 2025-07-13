@@ -377,7 +377,7 @@ def map_from_dict(data):
 
 
 def item_to_dict(item):
-    return {
+    base_data ={
         "class": item.__class__.__name__,
         "name": item.name,
         "sprite_locs": item.sprite_locs,  # Assuming sprite_locs is an index or identifier
@@ -414,6 +414,58 @@ def item_to_dict(item):
         "color": list(item.color) if item.color else None,
         # "grid": ... # Only if you have a serializable version
     }
+    if isinstance(item, Weapon):
+        base_data.update({
+            "damage": item.damage,
+            "durability": item.durability,
+            "damage_type": getattr(item, 'damage_type', 'slashing'),
+            "bonus": getattr(item, 'bonus', 0)
+        })
+    
+    elif isinstance(item, Staff):
+        base_data.update({
+            "damage": item.damage,
+            "charges": item.charges,
+            "maxcharges": item.maxcharges,
+            "damage_type": getattr(item, 'damage_type', 'slashing'),
+            "is_castable_projectile": getattr(item, 'is_castable_projectile', False)
+        })
+    
+    elif isinstance(item, Tome):
+        base_data.update({
+            "damage": item.damage,
+            "charges": item.charges,
+            "maxcharges": item.maxcharges,
+            "damage_type": getattr(item, 'damage_type', 'slashing'),
+            "is_castable_projectile": getattr(item, 'is_castable_projectile', False),
+            "to_be_converted": getattr(item, 'to_be_converted', None)
+        })
+    
+    # elif isinstance(item, Flask):
+    #     base_data.update({
+    #         "damage": getattr(item, 'damage', 0),
+    #         "evaporation_rate": item.evaporation_rate,
+    #         "liquid": item.liquid,
+    #         "product": item.product,
+    #         "charges": getattr(item, 'charges', 15),
+    #         "maxcharges": getattr(item, 'maxcharges', 15),
+    #         "damage_type": getattr(item, 'damage_type', 'slashing'),
+    #         "to_be_converted": getattr(item, 'to_be_converted', None)
+    #     })
+    
+    elif isinstance(item, Consumable):
+        base_data.update({
+            "nutrition_value": item.nutrition_value
+        })
+    
+    elif isinstance(item, Shield):
+        base_data.update({
+            "defense": item.defense,
+            "bonus": getattr(item, 'bonus', 0)
+        })
+    return base_data
+
+
 def item_from_dict(data):
     cls = data.get("class", "Item")
     # Default arguments for all items

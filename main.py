@@ -141,9 +141,9 @@ save_menu_batch = pyglet.graphics.Batch()
 
 current_menu = MenuState.MAIN_MENU
 main_menu = create_main_menu_labels(batch=menu_batch, group=group_ui_menu)
-start_button = Button(300, 350, 200, 60, "Start Game", menu_batch, group_ui_menu)
-exit_button = Button(300, 250, 200, 60, "Exit", menu_batch, group_ui_menu)
-load_button = Button(300, 450, 200, 60, "Load Game", menu_batch, group_ui_menu)
+start_button = Button(150, 350, 200, 60, "Start Game", menu_batch, group_ui_menu)
+exit_button = Button(150, 250, 200, 60, "Exit", menu_batch, group_ui_menu)
+load_button = Button(150, 450, 200, 60, "Load Game", menu_batch, group_ui_menu)
 
 game_side_menu = create_ingame_menu_labels(batch=side_bar_batch, group=group_ui_menu)
 save_button = Button(300, 350, 200, 60, "Save Game", side_bar_batch, group_ui_menu)
@@ -592,8 +592,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
         elif current_menu == MenuState.LOAD_MENU:
             for btn in load_game_buttons:
                 if btn.hit_test(mouse_x, mouse_y):
-                    print(f"Load button clicked for {btn.label.text}")
-                    loaded_player, loaded_floor, loaded_all_enemies, loaded_floor_level, loaded_discovered_staffs, loaded_discovered_tomes = load_game(btn.label.text)
+                    loaded_player, loaded_floor, loaded_all_enemies, loaded_floor_level, loaded_discovered_staffs, loaded_discovered_tomes = load_game(btn.text)
                     player = loaded_player
                     floor= loaded_floor
                     print("Valid tiles", floor.valid_tiles)
@@ -612,48 +611,48 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                     gamestate = 1
                     current_menu = MenuState.INGAME
                     pass
+        if current_menu == MenuState.INGAME:
+            item_selected = hotbar.get_selected_item()
+            if gamestate == 1 and isinstance(item_selected, Staff):
+                gamestate = 6 #6 means power bar mode
+                create_power_bar(all_buttons, item_selected, mouse_x, mouse_y)
+            if gamestate == 3:  # Inventory state
+            # Check if an item is clicked in the inventor
 
-        item_selected = hotbar.get_selected_item()
-        if gamestate == 1 and isinstance(item_selected, Staff):
-            gamestate = 6 #6 means power bar mode
-            create_power_bar(all_buttons, item_selected, mouse_x, mouse_y)
-        if gamestate == 3:  # Inventory state
-        # Check if an item is clicked in the inventor
+                inventory_x = math.floor((mouse_x - int((1152)/48)*12)/(48+9)) 
+                inventory_y = math.floor((-mouse_y + int((768)/48)*32)/(48+9)) + 1
 
-            inventory_x = math.floor((mouse_x - int((1152)/48)*12)/(48+9)) 
-            inventory_y = math.floor((-mouse_y + int((768)/48)*32)/(48+9)) + 1
+                # Calculate the inventory slot based on x and y coordinates
+                inventory_slot = inventory_y*10 + inventory_x
+                
 
-            # Calculate the inventory slot based on x and y coordinates
-            inventory_slot = inventory_y*10 + inventory_x
-            
-
-            if 0 <= inventory_x < 10 and 0 <= inventory_y < 4:
-                if inventory_slot > -1 and len(player.inventory) > inventory_slot:
-                    # Check if the clicked position corresponds to an inventory slot
-                    if dragging_item is None:
-                        item_to_eval = player.inventory[inventory_slot]
-
-                        if item_to_eval:
-                            dragging_item = item_to_eval
-                            dragging_item.hotbar_sprite.visible = False
-                            # Set the sprite position to the mouse position
-                            drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
-                            #remove the item from the inventory slot
-                            player.inventory[inventory_slot] = None
-                            #print("Dragging item:", dragging_item.name)
-                    else: 
-                        #if there is an item being dragged
-                        #place it in the moused over inventory slot if there are no items in that slot
-                        if player.inventory[inventory_slot] is None:
-                            player.inventory[inventory_slot] = dragging_item
-                            dragging_item = None
-                        else: #if there is an item in the slot, swap them
+                if 0 <= inventory_x < 10 and 0 <= inventory_y < 4:
+                    if inventory_slot > -1 and len(player.inventory) > inventory_slot:
+                        # Check if the clicked position corresponds to an inventory slot
+                        if dragging_item is None:
                             item_to_eval = player.inventory[inventory_slot]
-                            player.inventory[inventory_slot] = dragging_item #swap items
-                            dragging_item = item_to_eval #set dragging item to the one that was in the slot
-                            dragging_item.hotbar_sprite.visible = False
-                            drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
-                        
+
+                            if item_to_eval:
+                                dragging_item = item_to_eval
+                                dragging_item.hotbar_sprite.visible = False
+                                # Set the sprite position to the mouse position
+                                drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
+                                #remove the item from the inventory slot
+                                player.inventory[inventory_slot] = None
+                                #print("Dragging item:", dragging_item.name)
+                        else: 
+                            #if there is an item being dragged
+                            #place it in the moused over inventory slot if there are no items in that slot
+                            if player.inventory[inventory_slot] is None:
+                                player.inventory[inventory_slot] = dragging_item
+                                dragging_item = None
+                            else: #if there is an item in the slot, swap them
+                                item_to_eval = player.inventory[inventory_slot]
+                                player.inventory[inventory_slot] = dragging_item #swap items
+                                dragging_item = item_to_eval #set dragging item to the one that was in the slot
+                                dragging_item.hotbar_sprite.visible = False
+                                drag_offset = (mouse_x - item_to_eval.sprite.x, mouse_y - item_to_eval.sprite.y)
+                            
 @window.event
 def on_mouse_release(x, y, button, modifiers):
     global all_anims
@@ -669,7 +668,7 @@ def on_mouse_release(x, y, button, modifiers):
     global item_selected
     global adventure_log
     
-    if current_menu == MenuState.INGAME or gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6: #this stuff can only happen between turns or in inventory
+    if current_menu == MenuState.INGAME and (gamestate == 1 or gamestate == 3 or gamestate == 4 or gamestate == 5 or gamestate == 6): #this stuff can only happen between turns or in inventory
         ###################### LEFT CLICK ##############################
         if button == pyglet.window.mouse.LEFT:
             # print("length of inventory")
@@ -850,6 +849,9 @@ def on_key_press(symbol, modifiers):
     if symbol == pyglet.window.key.BACKSPACE:
         typed_text = typed_text[:-1]
     global current_menu
+
+    if current_menu == MenuState.MAIN_MENU:
+        return
 
     if symbol == pyglet.window.key.M and invhover == False:
         if current_menu == MenuState.INGAME:
