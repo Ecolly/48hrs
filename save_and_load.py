@@ -8,8 +8,11 @@ from game_classes.item import Item, Weapon, Staff, Tome, Flask, Consumable, Shie
 from game_classes.enemy import Enemy
 from font import*
 from game_classes.face_direction import FaceDirection
+from game_classes.id_shuffling import discovered_staffs, discovered_tomes
 
 def save_game_data(game_data):
+    game_data["discovered_staffs"] = discovered_staffs
+    game_data["discovered_tomes"] = discovered_tomes
     directory = "game_saves/"
     filename = time.strftime("save_%Y%m%d_%H%M%S.json")
     print(f"Saving game data to {directory + filename}")
@@ -29,9 +32,12 @@ def load_game(filename):
         player = player_from_dict(player_data)
         map = map_from_dict(game_data["map"])
         floor_enemies = [enemy_from_dict(e) for e in game_data["floor_enemies"]]
+        floor_level = game_data.get("floor_level", 1)
+        discovered_staffs = game_data.get("discovered_staffs", [])
+        discovered_tomes = game_data.get("discovered_tomes", [])
     
     
-    return player, map, floor_enemies
+    return player, map, floor_enemies, floor_level, discovered_staffs, discovered_tomes
 
     
 
@@ -266,7 +272,7 @@ def enemy_from_dict(data):
     enemy.loot = item_from_dict(data["loot"]) if data.get("loot") else None
 
     # Set other attributes
-    enemy.maxhealth=data.get("maxhealth", data["health"]),
+    enemy.maxhealth=data.get("maxhealth", data["health"])
     enemy.maxhealth_visual = data.get("maxhealth_visual", 0)
     
     enemy.maxstrength = data.get("maxstrength", 0)

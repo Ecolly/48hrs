@@ -90,14 +90,11 @@ has_won = 0
 has_lost = 0
 item_selected = None
 #extinct_creatures = [] 
-discovered_staffs, discovered_tomes = [], []
 player, floor = None, None
 all_enemies = None
 floor_level = 0
 all_buttons = []
 all_anims = []
-floor_level = 0
-
         
 
 animation_presets = [
@@ -171,12 +168,12 @@ window.push_handlers(mouse_state)
 def go_to_next_level(amount):
     global floor, all_enemies, player, bg, bg_liqs, bg_deeper, bg_liqs_foreground, floor_level, adventure_log, grid_blank
 
-    itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Lettuce", "Candy", "Rock", "Rock", "Rock", "Rock", "Rock", "Rock", "Staff of Mana", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
-    
+    #itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Lettuce", "Candy", "Rock", "Rock", "Rock", "Rock", "Rock", "Rock", "Staff of Mana", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
+    itemlist_beginner = ["Staff of Mana", "Staff of Mana", "Staff of Mana","Staff of Mana","Staff of Mana","Staff of Mana","Staff of Mana"]
     #"Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Predecessor's Scrawling", "Peer's Notes", "Coworker's Thoughts", "Coworker's Thoughts 2", "Coworker's Thoughts 3", "Compatriot's Ideas", "Scientist's Log 1", "Scientist's Log 2", "Scientist's Log 3", "Scientist's Log 4", "Scientist's Log 5", "Scientist's Log 6"
 
-    itemlist_outside = ["3 Gold", "Mushrooms", "Leaves", "Apple", "Mushrooms", "Leaves", "Apple", "Stick", "Rock", "Stick", "Rock", "Leaf Shield", "Shopping List 4"]
-
+    #itemlist_outside = ["3 Gold", "Mushrooms", "Leaves", "Apple", "Mushrooms", "Leaves", "Apple", "Stick", "Rock", "Stick", "Rock", "Leaf Shield", "Shopping List 4"]
+    itemlist_outside = ["Staff of Mana", "Staff of Mana", "Staff of Mana","Staff of Mana","Staff of Mana","Staff of Mana","Staff of Mana"]
     itemlist_sarcophagus = ["15 Gold", "60 Gold", "60 Gold", "60 Gold", "60 Gold", "Scientist's Log 1", "Scientist's Log 2", "Scientist's Log 3", "Scientist's Log 4", "Scientist's Log 5", "Scientist's Log 6"]
 
     itemlist_beginner2 = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","15 Gold","15 Gold","Knife", "Knife", "Knife", "Scimitar", "Rapier", "Obsidian Edge", "Windsword", "Machete", "Machete", "Sickle", "Stick", "Stick", "Water Flask", "Water Flask", "Petroleum Flask", "Empty Flask", "Empty Flask", "Empty Flask", "Cureall Flask", "Syrup Flask", "Mercury Flask", "Ink Flask", "Detergent Flask", "Acid Flask", "Rock", "Rock", "Wood Shield", "Wood Shield", "Leaf Shield", "Blue Shield", "Blue Shield", "Armor Plate", "Steel Shield", "Spiked Shield", "Mirror Shield", "Greater Healing Staff", "Staff of Division", "Staff of Swapping", "Lesser Healing Staff", "Energizing Staff", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Phobia Staff", "Staff of Violence", "Staff of Primes", "Fibonnaci Staff", "Tome of Recovery", "Tome of Injury", "Tome of Promotion", "Tome of Demotion", "Immunity Tome", "Paperskin Tome", "Sharpening Tome", "Fortifying Tome", "Tome of Consolidation", "Tome of Reversal", "Coloring Tome", "Summoning Tome", "Banishing Tome", "Tome of Pizzazz", "Bankruptcy Tome", "Tome of Identification", "Blank Tome", "Ruined Tome", "Poultry", "Mushrooms", "Leaves", "Apple", "Apple", "Candy", "Starfruit", "Durian", "Dragonfruit", "Beet", "Lemon", "Lettuce", "Lettuce", "Kale", "Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Peer's Notes", "Predecessor's Scrawling", "Coworker's Thoughts"]
@@ -492,8 +489,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global item_selected
     global discovered_staffs, discovered_tomes
     global current_menu
-    global player, floor, all_enemies, hotbar #oh hell no this is bad
-     
+    global player, floor, all_enemies, hotbar, floor_level
     if button == pyglet.window.mouse.LEFT:
         #Main menu
         if current_menu == MenuState.MAIN_MENU:
@@ -501,7 +497,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 print("Start button clicked")
                 player = Player(
                     name = "DAMIEN",
-                    health = 20,
+                    health = 20000,
                     level = 1,
                     experience = 0,
                     x = 30,
@@ -515,13 +511,13 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 create_gui(all_buttons, player, "Good luck!", floor_level)
                 create_overlay(all_buttons)
                 create_mouse_overlay(all_buttons)
-                current_menu = MenuState.INGAME
+                
                 #player.health = 2000000
 
                 # player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
                 # player.add_to_inventory(floor.create_item("Obsidian Edge", grid_items))
-                # #player.add_to_inventory(floor.create_item("Staff of Osteoporosis", grid_items))
-                # player.add_to_inventory(floor.create_item("Greater Healing Staff", grid_items))
+                player.add_to_inventory(floor.create_item("Staff of Osteoporosis", grid_items),0,0)
+                player.add_to_inventory(floor.create_item("Greater Healing Staff", grid_items), 0,0)
 
                 # player.add_to_inventory(floor.create_item("Knife", grid_items))
                 # player.add_to_inventory(floor.create_item("Stick", grid_items))
@@ -567,11 +563,13 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 #player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
                 # player.add_to_inventory(floor.create_item("Gardening Staff", grid_items))
                 # player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
-                # player.add_to_inventory(floor.create_item("Mirror Staff", grid_items))
+                
+                player.add_to_inventory(floor.create_item("Mirror Staff", grid_items),0,0)
                 # player.add_to_inventory(floor.create_item("Tome of Exchange", grid_items))
                 # player.add_to_inventory(floor.create_item("Lemon", grid_items))
 
                 #player.add_to_inventory(floor.create_item("Water Flask", grid_items))
+                current_menu = MenuState.INGAME
                 return
             if load_button.hit_test(mouse_x, mouse_y):
                 print("Load button clicked")
@@ -579,11 +577,13 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 return
         #Side menu of the game
         elif current_menu == MenuState.SIDE_MENU:
+            print(discovered_staffs)
             if save_button.hit_test(mouse_x, mouse_y):
                 game_data = {
                     "player": player_to_dict(player),
                     "map": map_to_dict(floor),
                     "floor_enemies": [enemy_to_dict(enemy) for enemy in floor.all_enemies],
+                    "floor_level": floor_level, 
                 }
                 save_game_data(game_data)
                 
@@ -593,13 +593,15 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
             for btn in load_game_buttons:
                 if btn.hit_test(mouse_x, mouse_y):
                     print(f"Load button clicked for {btn.label.text}")
-                    loaded_player, loaded_floor, loaded_all_enemies = load_game(btn.label.text)
+                    loaded_player, loaded_floor, loaded_all_enemies, loaded_floor_level, loaded_discovered_staffs, loaded_discovered_tomes = load_game(btn.label.text)
                     player = loaded_player
                     floor= loaded_floor
                     print("Valid tiles", floor.valid_tiles)
                     all_enemies = loaded_all_enemies
-
+                    floor.all_enemies = all_enemies
+                    floor_level = loaded_floor_level
                     hotbar = Hotbar(player.inventory, group_hotbar)
+                    update_discovered_items(loaded_discovered_staffs, loaded_discovered_tomes)
                     draw_map()
                     print("Class:", type(player).__name__)
                     for key, value in vars(player).items():
@@ -675,6 +677,8 @@ def on_mouse_release(x, y, button, modifiers):
             item_selected = hotbar.get_selected_item()
             right_click_menu_enabled = False
             was_button_clicked = 0
+            for i, enemy in enumerate(all_enemies):
+                print(f"Enemy {i}: {enemy.name} at ({enemy.x}, {enemy.y}) - Health: {enemy.health}/{enemy.maxhealth}")
             if gamestate == 1: #if the button is hovered, and the gamestate is 1, then it was clicked
                 if not isinstance(item_selected, Weapon):
                     player.unequip_weapon()
@@ -1292,8 +1296,11 @@ def on_draw():
                 if gamestate == 1:
                     keypress_chk = 1
                     print("Entering inventory")
+                    
                     create_inventory_menu(all_buttons)
                     gamestate = 3
+                    print("All enemies:")
+                    
 
                     #enter inventory
                 elif gamestate == 3:
