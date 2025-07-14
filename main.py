@@ -592,7 +592,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
         elif current_menu == MenuState.LOAD_MENU:
             for btn in load_game_buttons:
                 if btn.hit_test(mouse_x, mouse_y):
-                    loaded_player, loaded_floor, loaded_all_enemies, loaded_floor_level, loaded_discovered_staffs, loaded_discovered_tomes = load_game(btn.text)
+                    loaded_player, loaded_floor, loaded_all_enemies, loaded_floor_level, loaded_discovered_staffs, loaded_discovered_tomes, loaded_fakenames_staffs_colorname, loaded_fakenames_tomes_colorname, loaded_fakenames_staffs_key, loaded_fakenames_tomes_key = load_game(btn.text)
                     player = loaded_player
                     floor= loaded_floor
                     print("Valid tiles", floor.valid_tiles)
@@ -600,7 +600,8 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                     floor.all_enemies = all_enemies
                     floor_level = loaded_floor_level
                     hotbar = Hotbar(player.inventory, group_hotbar)
-                    update_discovered_items(loaded_discovered_staffs, loaded_discovered_tomes)
+                    update_discovered_items(loaded_discovered_staffs, loaded_discovered_tomes, loaded_fakenames_staffs_colorname, loaded_fakenames_tomes_colorname, loaded_fakenames_staffs_key, loaded_fakenames_tomes_key)
+                    
                     draw_map()
                     print("Class:", type(player).__name__)
                     for key, value in vars(player).items():
@@ -1460,7 +1461,7 @@ def on_draw():
                 enemy.draw(animation_presets, player, group_enemies, group_enemies_bg, group_enemies_fg, all_anims, floor)
 
             for item in floor.floor_items:
-                item.draw(player, group_items)
+                 item.draw(player, group_items)
 
             bg_desc.color = (128, 128, 128,0)
 
@@ -1480,7 +1481,7 @@ def on_draw():
 
                         flag2 = False
                         if invhover != item:
-                            
+                            print("Fakenames_staffs_colormnames", fakenames_staffs_colornames)
                             typed_text = get_display_name(item)
                             #ttprev = typed_text
                             invhover = item

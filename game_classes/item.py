@@ -50,7 +50,7 @@ class Item:
         #self.equppedsprite
         
         self.color = (255, 255, 255, 255)
-        self.magic_color = sprite_locs #for tome and spell color mechanics
+        # self.magic_color = sprite_locs #for tome and spell color mechanics
         self.x = x
         self.y = y
         self.prevx = x #previous x and y coordanites, for animating

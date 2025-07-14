@@ -8,11 +8,15 @@ from game_classes.item import Item, Weapon, Staff, Tome, Flask, Consumable, Shie
 from game_classes.enemy import Enemy
 from font import*
 from game_classes.face_direction import FaceDirection
-from game_classes.id_shuffling import discovered_staffs, discovered_tomes
+from game_classes.id_shuffling import discovered_staffs, discovered_tomes, fakenames_staffs_colornames, fakenames_tomes_colornames, fakenames_staffs_key, fakenames_tomes_key
 
 def save_game_data(game_data):
     game_data["discovered_staffs"] = discovered_staffs
     game_data["discovered_tomes"] = discovered_tomes
+    game_data["fakenames_staffs_colornames"] = fakenames_staffs_colornames
+    game_data["fakenames_tomes_colornames"] = fakenames_tomes_colornames
+    game_data["fakenames_staffs_key"]= fakenames_staffs_key
+    game_data["fakenames_tomes_key"] = fakenames_tomes_key
     directory = "game_saves/"
     filename = time.strftime("save_%Y%m%d_%H%M%S.json")
     print(f"Saving game data to {directory + filename}")
@@ -35,9 +39,13 @@ def load_game(filename):
         floor_level = game_data.get("floor_level", 1)
         discovered_staffs = game_data.get("discovered_staffs", [])
         discovered_tomes = game_data.get("discovered_tomes", [])
+        fakenames_staffs_colornames = game_data.get("fakenames_staffs_colornames", {})
+        fakenames_tomes_colornames = game_data.get("fakenames_tomes_colornames", {})
+        fakenames_staffs_key = game_data.get("fakenames_staffs_key", [])
+        fakenames_tomes_key = game_data.get("fakenames_tomes_key", [])
     
     
-    return player, map, floor_enemies, floor_level, discovered_staffs, discovered_tomes
+    return player, map, floor_enemies, floor_level, discovered_staffs, discovered_tomes, fakenames_staffs_colornames, fakenames_tomes_colornames, fakenames_staffs_key, fakenames_tomes_key
 
     
 
@@ -382,7 +390,6 @@ def item_to_dict(item):
         "name": item.name,
         "sprite_locs": item.sprite_locs,  # Assuming sprite_locs is an index or identifier
         "spriteindex": item.spriteindex,
-        "magic_color": item.magic_color,
         "x": item.x,
         "y": item.y,
         "prevx": item.prevx,
@@ -428,7 +435,8 @@ def item_to_dict(item):
             "charges": item.charges,
             "maxcharges": item.maxcharges,
             "damage_type": getattr(item, 'damage_type', 'slashing'),
-            "is_castable_projectile": getattr(item, 'is_castable_projectile', False)
+            "is_castable_projectile": getattr(item, 'is_castable_projectile', False),
+            "magic_color": item.magic_color
         })
     
     elif isinstance(item, Tome):
@@ -438,20 +446,21 @@ def item_to_dict(item):
             "maxcharges": item.maxcharges,
             "damage_type": getattr(item, 'damage_type', 'slashing'),
             "is_castable_projectile": getattr(item, 'is_castable_projectile', False),
-            "to_be_converted": getattr(item, 'to_be_converted', None)
+            "to_be_converted": getattr(item, 'to_be_converted', None),
+            "magic_color": item.magic_color
         })
     
-    # elif isinstance(item, Flask):
-    #     base_data.update({
-    #         "damage": getattr(item, 'damage', 0),
-    #         "evaporation_rate": item.evaporation_rate,
-    #         "liquid": item.liquid,
-    #         "product": item.product,
-    #         "charges": getattr(item, 'charges', 15),
-    #         "maxcharges": getattr(item, 'maxcharges', 15),
-    #         "damage_type": getattr(item, 'damage_type', 'slashing'),
-    #         "to_be_converted": getattr(item, 'to_be_converted', None)
-    #     })
+    elif isinstance(item, Flask):
+        base_data.update({
+            "damage": getattr(item, 'damage', 0),
+            "evaporation_rate": item.evaporation_rate,
+            "liquid": item.liquid,
+            "product": item.product,
+            "charges": getattr(item, 'charges', 15),
+            "maxcharges": getattr(item, 'maxcharges', 15),
+            "damage_type": getattr(item, 'damage_type', 'slashing'),
+            "to_be_converted": getattr(item, 'to_be_converted', None)
+        })
     
     elif isinstance(item, Consumable):
         base_data.update({
@@ -520,7 +529,9 @@ def item_from_dict(data):
             charges=data.get("charges", 1),
             description=description,
             price=data.get("price", 0)
+            
         )
+        item.magic_color = data.get("magic_color", item.magic_color)
         item.maxcharges = data.get("maxcharges", item.charges)
         item.damage_type = data.get("damage_type", "slashing")
         item.to_be_converted = data.get("to_be_converted", None)
@@ -587,7 +598,6 @@ def item_from_dict(data):
 
     # Set common fields
     item.spriteindex = data.get("spriteindex", item.spriteindex)
-    item.magic_color = data.get("magic_color", item.magic_color)
     item.prevx = data.get("prevx", item.x)
     item.prevy = data.get("prevy", item.y)
     item.xinit = data.get("xinit", item.x)

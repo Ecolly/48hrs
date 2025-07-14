@@ -41,20 +41,6 @@ def get_display_name_and_description(item):
     else:
         return item.name, item.description
     
-
-
-def update_discovered_items(loaded_staffs, loaded_tomes):
-    """Update the global discovered items lists"""
-    global discovered_staffs, discovered_tomes
-    
-    discovered_staffs.clear()
-    discovered_staffs.extend(loaded_staffs)
-    
-    discovered_tomes.clear()
-    discovered_tomes.extend(loaded_tomes)
-    
-    print(f"Updated discovered_staffs: {discovered_staffs}")
-    print(f"Updated discovered_tomes: {discovered_tomes}")
     
 def get_display_name(item):
     
@@ -62,8 +48,10 @@ def get_display_name(item):
     global discovered_tomes 
     global fakenames_staffs_colornames
     global fakenames_tomes_colornames
+    
     if (isinstance(item, Tome)) or (isinstance(item, list) and "Tome" in item[1]):
         if (item.magic_color in discovered_tomes) == True:
+            print("The item number is", item.magic_color)
             return item.name
         else:
             return fakenames_tomes_colornames[item.magic_color]
@@ -75,18 +63,7 @@ def get_display_name(item):
     else:
         return item.name
     
-def update_discovered_items(loaded_staffs, loaded_tomes):
-    """Update the global discovered items lists"""
-    global discovered_staffs, discovered_tomes
-    
-    discovered_staffs.clear()
-    discovered_staffs.extend(loaded_staffs)
-    
-    discovered_tomes.clear()
-    discovered_tomes.extend(loaded_tomes)
-    
-    print(f"Updated discovered_staffs: {discovered_staffs}")
-    print(f"Updated discovered_tomes: {discovered_tomes}")
+
     
 def discover_item(item):
 
@@ -104,6 +81,33 @@ def discover_item(item):
             return "The " + str(fakenames_staffs_colornames[item.magic_color]) + " was a " + str(item.name) + "!"
     return False
 
+def update_discovered_items(loaded_staffs, loaded_tomes, loaded_fakenames_staffs_colornames, loaded_fakenames_tomes_colornames, loaded_fakenames_staffs_key, loaded_fakenames_tomes_key):
+    """Update the global discovered items lists"""
+    global discovered_staffs, discovered_tomes, fakenames_staffs_colornames, fakenames_tomes_colornames, fakenames_staffs_key, fakenames_tomes_key
+    
+    discovered_staffs.clear()
+    discovered_staffs.extend(loaded_staffs)
+    
+    discovered_tomes.clear()
+    discovered_tomes.extend(loaded_tomes)
+
+    fakenames_staffs_colornames.clear()
+    fakenames_staffs_colornames.extend(loaded_fakenames_staffs_colornames)
+    
+    fakenames_tomes_colornames.clear()
+    fakenames_tomes_colornames.extend(loaded_fakenames_tomes_colornames)
+
+    fakenames_staffs_key.clear()
+    fakenames_staffs_key.extend(loaded_fakenames_staffs_key)
+
+    fakenames_tomes_key.clear()
+    fakenames_tomes_key.extend(loaded_fakenames_tomes_key)
+    
+
+
+    
+    print(f"Updated discovered_staffs: {discovered_staffs}")
+    print(f"Updated discovered_tomes: {discovered_tomes}")
 
 
 
