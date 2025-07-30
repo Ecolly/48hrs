@@ -19,22 +19,20 @@ from game_classes.id_shuffling import *
 
 sound_hit = pyglet.media.load(r'audio\488225__plumaudio__playerhit.mp3', streaming=False)
 sound_eat = pyglet.media.load(r'audio\267531__djdust__eat-an-apple.mp3', streaming=False)
-
-
 sound_swing = pyglet.media.load(r'audio\367182__gaussthewizard__swing.mp3', streaming=False)
 sound_splash1 = pyglet.media.load(r'audio\221759__motion_s__water-splashing_1.mp3', streaming=False)
 sound_splash2 = pyglet.media.load(r'audio\221759__motion_s__water-splashing_2.mp3', streaming=False)
 sound_coin = pyglet.media.load(r'audio\174629__altfuture__coins.mp3', streaming=False)
 sound_magic = pyglet.media.load(r'audio\613163__sonically_sound__magic.mp3', streaming=False)
 sound_pickup = pyglet.media.load(r'audio\534357__defaultv__pickup_item.mp3', streaming=False)
-
 sound_steam = pyglet.media.load(r'audio\346778__diramus__steam-iron-used-on-board.mp3', streaming=False)
-
-
 sound_weird = pyglet.media.load(r'audio\455204__lilmati__magic-spell-03.wav', streaming=False)
-
-
 sound_magic2 = pyglet.media.load(r'audio\270396__littlerobotsoundfactory__spell_01.wav', streaming=False)
+
+
+
+
+
 
 # sound_hit = pyglet.media.load(r'audio\488225__plumaudio__playerhit.mp3', streaming=False)
 # sound_eat = pyglet.media.load(r'audio\267531__djdust__eat-an-apple.mp3', streaming=False)
@@ -192,7 +190,7 @@ class Animation:
 
                 if frame == 2:
                     sfxplayer = sound_magic.play()
-                    sfxplayer.volume = 0.3
+                    sfxplayer.volume = 0.2
 
 
                 if frame > self.duration:
@@ -258,7 +256,8 @@ class Animation:
 
                 if frame == 2:
                     sfxplayer = sound_splash2.play()
-                    sfxplayer.volume = 0.3
+                    dist = max(math.sqrt((self.x-player.x)**2 + (self.y-player.y)**2), 1)
+                    sfxplayer.volume = 0.1/dist
 
                 self.proceed = True
                 self.color = (self.color[0], self.color[1], self.color[2], 128)          
@@ -292,10 +291,10 @@ class Animation:
                     
                     if "-" in self.spriteindex:
                         sfxplayer = sound_hit.play()
-                        sfxplayer.volume = 0.6
+                        sfxplayer.volume = 0.3
                     else:
                         sfxplayer = sound_eat.play()
-                        sfxplayer.volume = 0.6
+                        sfxplayer.volume = 0.3
                         
                     self.proceed = True
                     if self.attacker != None:
@@ -346,12 +345,12 @@ class Animation:
                     if self.spriteindex // 29 == 2:
 
                         sfxplayer = sound_splash1.play()
-                        sfxplayer.volume = 0.6
+                        sfxplayer.volume = 0.3
 
 
                     elif self.spriteindex // 29 == 1:
                         sfxplayer = sound_steam.play()
-                        sfxplayer.volume = 0.3
+                        sfxplayer.volume = 0.25
 
                 self.color = (self.color[0], self.color[1], self.color[2], 255)          
                 base_x = 1152/2 -24 - (player.prevx*16 + 8)*player.scale + (self.x*16 + 8)*self.scale

@@ -168,7 +168,7 @@ window.push_handlers(mouse_state)
 def go_to_next_level(amount):
     global floor, all_enemies, player, bg, bg_liqs, bg_deeper, bg_liqs_foreground, floor_level, adventure_log, grid_blank
 
-    itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Lettuce", "Candy", "Rock", "Rock", "Rock", "Rock", "Rock", "Rock", "Staff of Mana", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
+    itemlist_beginner = ["3 Gold", "3 Gold", "3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","3 Gold","15 Gold","Knife", "Machete", "Sickle", "Stick", "Stick", "Stick", "Apple", "Apple", "Apple", "Mushrooms", "Mushrooms", "Leaves", "Leaves", "Lettuce", "Candy", "Rock", "Rock", "Rock", "Rock", "Staff of Mana", "Staff of Mana", "Staff of Mana", "Staff of Mana", "Staff of Mana", "Tome of Recovery", "Tome of Recovery", "Tome of Recovery", "Tome of Recovery", "Wood Shield", "Wood Shield", "Wood Shield", "Wood Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Leaf Shield", "Blue Shield", "Blue Shield"]     
     #itemlist_beginner = ["Staff of Mana", "Staff of Mana", "Staff of Mana","Staff of Mana","Staff of Mana","Staff of Mana","Staff of Mana"]
     #"Shopping List 1", "Shopping List 2", "Shopping List 3", "Shopping List 4", "Predecessor's Scrawling", "Peer's Notes", "Coworker's Thoughts", "Coworker's Thoughts 2", "Coworker's Thoughts 3", "Compatriot's Ideas", "Scientist's Log 1", "Scientist's Log 2", "Scientist's Log 3", "Scientist's Log 4", "Scientist's Log 5", "Scientist's Log 6"
 
@@ -497,7 +497,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 print("Start button clicked")
                 player = Player(
                     name = "DAMIEN",
-                    health = 20000,
+                    health = 20,
                     level = 1,
                     experience = 0,
                     x = 30,
@@ -516,8 +516,8 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
 
                 # player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
                 # player.add_to_inventory(floor.create_item("Obsidian Edge", grid_items))
-                player.add_to_inventory(floor.create_item("Staff of Osteoporosis", grid_items),0,0)
-                player.add_to_inventory(floor.create_item("Greater Healing Staff", grid_items), 0,0)
+                player.add_to_inventory(floor.create_item("Your Task", grid_items),0,0)
+                #player.add_to_inventory(floor.create_item("Greater Healing Staff", grid_items), 0,0)
 
                 # player.add_to_inventory(floor.create_item("Knife", grid_items))
                 # player.add_to_inventory(floor.create_item("Stick", grid_items))
@@ -564,7 +564,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 # player.add_to_inventory(floor.create_item("Gardening Staff", grid_items))
                 # player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
                 
-                player.add_to_inventory(floor.create_item("Mirror Staff", grid_items),0,0)
+                #player.add_to_inventory(floor.create_item("Mirror Staff", grid_items),0,0)
                 # player.add_to_inventory(floor.create_item("Tome of Exchange", grid_items))
                 # player.add_to_inventory(floor.create_item("Lemon", grid_items))
 
@@ -1071,7 +1071,7 @@ music4 = pyglet.media.load(r'audio\solid-state-drive-161358.mp3')   # Replace wi
 # Create a player and queue the music
 mplayer = pyglet.media.Player()
 mplayer.queue(music)
-mplayer.volume = 0.15  
+mplayer.volume = 0.30  
 mplayer.loop = True
 
 
@@ -1214,7 +1214,7 @@ def on_draw():
                     mplayer.pause()
                     mplayer.next_source()  # skip remaining if any
                     mplayer.queue(music2)
-                    mplayer.volume = 0.15
+                    mplayer.volume = 0.30
                     mplayer.play()
                     mstate = 2
             elif floor.map_grid[floor.height-1-player.y][player.x] == "S":
@@ -1222,14 +1222,14 @@ def on_draw():
                     mplayer.pause()
                     mplayer.next_source()  # skip remaining if any
                     mplayer.queue(music4)
-                    mplayer.volume = 0.08
+                    mplayer.volume = 0.16
                     mplayer.play()
                     mstate = 4
             elif mstate != 1:
                 mplayer.pause()
                 mplayer.next_source()  # skip remaining if any
                 mplayer.queue(music)
-                mplayer.volume = 0.15
+                mplayer.volume = 0.30
                 mplayer.play()
                 mstate = 1
                 # Toggle track state

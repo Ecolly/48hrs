@@ -529,6 +529,9 @@ class Map:
 
 
 
+        elif name == "Your Task":
+            return Miscellanious(name,  sprite_locs = 1, description = "Read Tomes to use them; the next time you find it, it will be identified. Using up all charges in a Staff will identify it. Find the Tome of Extinction and banish the monsters!", price=5)
+
 
 
 
