@@ -262,6 +262,7 @@ sprite_inv = pyglet.image.load('inventory.png')
 
 def create_inventory_menu(all_buttons):
     global grid_font
+    global grid_tinyfont
     global letter_order
     global sprite_inv
     color = (255, 255, 255)
@@ -333,6 +334,30 @@ def create_inventory_menu(all_buttons):
         alignment_y='top',
         depth=1,
         obj_type="equip shield",
+        draggable=False,
+        supertype = "inventory",
+        extra_1 = 0,
+        extra_2 = 0
+    )
+    all_buttons.append(obj)
+
+
+
+    spr5 = pyglet.sprite.Sprite(image_handling.combine_tiles(image_handling.text_to_tiles_wrapped("WASD to moveεLCLICK to attack or use itemεRCLICK to throw itemεQ to drop itemεE to open inventory, M to open menuεSHIFT (hold) to speed upεF (hold) to restrict movement to diagonalsεLCTRL (hold) to pass over objects", grid_tinyfont, letter_order, 50, "center"), 5, 8, 50))    #pyglet.sprite.Sprite(grid_font[32+5])
+    obj = InteractiveObject(
+        x=48 + 256, #- (player.prevx*16 + 8)*player.scale + (x*16 + 8)*3,
+        y=48*6 - 92, #- (player.prevy*16 + 8)*player.scale + (y*16 + 8)*3,
+        width=spr5.width,
+        height=spr5.height,
+        sprites=[spr5],
+        colors=[[color, color, color]],
+        animtype = [0],
+        animmod = [None],
+        text = [None],
+        alignment_x='center',
+        alignment_y='top',
+        depth=1,
+        obj_type="controls list",
         draggable=False,
         supertype = "inventory",
         extra_1 = 0,

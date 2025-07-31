@@ -12,6 +12,8 @@ from image_handling import*
 from font import *
 menu_batch = pyglet.graphics.Batch()
 
+sprite_title = pyglet.image.load('title.png')
+
 class MenuState(Enum):
     MAIN_MENU = 1
     LOAD_MENU = 2
@@ -24,25 +26,27 @@ class MenuState(Enum):
 
 
 def create_main_menu_labels(batch, group):
-    background = pyglet.shapes.Rectangle(
-        0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
-        color=(100, 100, 200),
-        batch=batch,
-        group=group
-    )
+    # background = pyglet.shapes.Rectangle(
+    #     0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
+    #     color=(100, 100, 200),
+    #     batch=batch,
+    #     group=group
+    # )
+    global sprite_title
+    # sprite = initialize_text_sprite(grid_font, 200, 50, 8, 8)
+    # sprite.scale = 6
+    # sprite.x = (WINDOW_WIDTH - sprite.width) // 2  # Center horizontally
+    # sprite.y = WINDOW_HEIGHT - 250  # Position near the top
+    # change_text_sprite(grid_font, 200, 50, 8, 8, sprite, "PANDORIUM", letter_order, "center")
+    # sprite.batch = batch
+    # sprite.group = group
     
-    sprite = initialize_text_sprite(grid_font, 200, 50, 8, 8)
-    sprite.scale = 6
-    sprite.x = (WINDOW_WIDTH - sprite.width) // 2  # Center horizontally
-    sprite.y = WINDOW_HEIGHT - 250  # Position near the top
-    change_text_sprite(grid_font, 200, 50, 8, 8, sprite, "PANDORIUM", letter_order, "center")
+    sprite = pyglet.sprite.Sprite(sprite_title)
+    sprite.scale = 3
+    sprite.x = (WINDOW_WIDTH - sprite.width) // 2
+    sprite.y = WINDOW_HEIGHT - 200
     sprite.batch = batch
     sprite.group = group
-    
-    
-
-
-
     # menu_label = pyglet.text.Label(
     #     "PANDORIUM",
     #     font_name="Arial",
@@ -54,7 +58,7 @@ def create_main_menu_labels(batch, group):
     #     group=group
     # )
 
-    return background, sprite
+    return sprite
 
 
 def create_save_menu_labels(batch, group):
@@ -114,13 +118,13 @@ def create_load_game_buttons(batch, group, directory="game_saves"):
     files = [f for f in os.listdir(directory) if f.endswith(".json")]
     files.sort(reverse=True)  # newest first, optional
 
-    start_y = 400
+    start_y = 600
     for i, filename in enumerate(files):
         btn = Button(
-            x=300,
+            x=(384*3)/2 - (len(filename)*8*3/2),
             y=start_y - i*70,
-            width=400,
-            height=60,
+            width=len(filename),
+            height=1,
             text=filename,
             batch=batch,
             group=group

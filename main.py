@@ -141,14 +141,14 @@ save_menu_batch = pyglet.graphics.Batch()
 
 current_menu = MenuState.MAIN_MENU
 main_menu = create_main_menu_labels(batch=menu_batch, group=group_ui_menu)
-start_button = Button(150, 350, 200, 60, "Start Game", menu_batch, group_ui_menu)
-exit_button = Button(150, 250, 200, 60, "Exit", menu_batch, group_ui_menu)
-load_button = Button(150, 450, 200, 60, "Load Game", menu_batch, group_ui_menu)
+start_button = Button((384*3)/2 - (10*8*3/2), 350, 10, 1, "Start Game", menu_batch, group_ui_menu)
+exit_button = Button((384*3)/2 - (4*8*3/2), 250, 4, 1, "Exit", menu_batch, group_ui_menu)
+load_button = Button((384*3)/2 - (9*8*3/2), 450, 9, 1, "Load Game", menu_batch, group_ui_menu)
 
 game_side_menu = create_ingame_menu_labels(batch=side_bar_batch, group=group_ui_menu)
-save_button = Button(300, 350, 200, 60, "Save Game", side_bar_batch, group_ui_menu)
+save_button = Button(300, 350, 9, 1, "Save Game", side_bar_batch, group_ui_menu)
 
-load_menu = create_load_menu(batch=load_menu_batch, group=group_ui_menu)
+#load_menu = create_load_menu(batch=load_menu_batch, group=group_ui_menu)
 load_game_buttons = create_load_game_buttons(batch=load_menu_batch, group=group_ui_menu)
 
 
@@ -160,11 +160,52 @@ window.push_handlers(mouse_state)
 ######################################### Game Initialization IF NEW GAME #################################
 
 
+#FLOOR STUFF 
+
+bg = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1))
+bg.scale = 3
+bg.group = group_bg
+bg.batch = batch
+# bg_pits = pyglet.sprite.Sprite(grid_bg[0])
+# bg_pits.scale = 3
+
+bg_liqs = []    
+bg_liqs_foreground = []
+typed_text = ""
+
+i = 0
+while i < 16:
+    bg_liqs.append(pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_liq, 12, 12), 128, 128, 12)))
+    bg_liqs[i].scale = 3
+    bg_liqs[i].group = group_bg_pits
+    bg_liqs[i].batch = menu_batch
+
+    bg_liqs_foreground.append(pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1)))
+    bg_liqs_foreground[i].scale = 3
+    bg_liqs_foreground[i].group = group_bg_liqs
+    bg_liqs_foreground[i].batch = batch
+    bg_liqs_foreground[i].color = color_templates[200]
+    i = i + 1
+
+bg_deeper = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_liq, 12, 12), 128, 128, 12))
+bg_deeper.scale = 3
+bg_deeper.group = group_deeper
+bg_deeper.batch = menu_batch
 
 
-        #self.list_of_all_enemies = [["LEAFALOTTA", "HAMSTER", "GOOSE"], ["LEAFALOTTA", "CHLOROSPORE", "FOX"], ["S'MORE", "CHLOROSPORE", "SCORPION"], ["SCORPION", "S'MORE", "CHROME DOME"], ["DRAGON", "S'MORE", "TETRAHEDRON"]]
-        #self.list_of_all_levels = [[1, 1, 1], [1, 2, 2], [1, 2, 1], [2, 2, 2], [2, 3, 2]]
-        #self.list_of_all_item_names = ["Knife", "Machete", "Scimitar", "Sickle", "Rapier", "Stick", "Obsidian Edge", "Windsword", "Staff of Division", "Staff of Swapping", "Staff of Mana", "Staff of Ricochet", "Staff of Lethargy", "Staff of Paralysis", "Staff of Warping", "Piercing Staff", "Execution Staff", "Blue Shield", "Wood Shield", "Steel Shield", "Armor Plate", "Rock", "Note", "Poultry", "Mushrooms", "Leaves", "Apple", "Candy", "Starfruit", "Durian", "Dragonfruit"]
+
+
+
+
+frameindexes = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]#[4, 5, 6, 6, 7, 7, 7, 6, 6, 5, 4, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3]
+
+i = 0
+while i < 16:
+    combine_tiles_efficient(tesselate(frameindexes[i] + 16*9, grid_liq, 12, 12), 128, 128, 12, bg_liqs[i])
+    bg_liqs[i].scale = 3
+    i = i + 1
+combine_tiles_efficient(tesselate(1, grid_deeper, 12, 12), 128, 128, 12, bg_deeper)
+
 def go_to_next_level(amount):
     global floor, all_enemies, player, bg, bg_liqs, bg_deeper, bg_liqs_foreground, floor_level, adventure_log, grid_blank
 
@@ -490,6 +531,7 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
     global discovered_staffs, discovered_tomes
     global current_menu
     global player, floor, all_enemies, hotbar, floor_level
+    global bg_liqs, bg_deeper, batch, menu_batch, load_menu_batch 
     if button == pyglet.window.mouse.LEFT:
         #Main menu
         if current_menu == MenuState.MAIN_MENU:
@@ -517,62 +559,17 @@ def on_mouse_press(mouse_x, mouse_y, button, modifiers):
                 # player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
                 # player.add_to_inventory(floor.create_item("Obsidian Edge", grid_items))
                 player.add_to_inventory(floor.create_item("Your Task", grid_items),0,0)
-                #player.add_to_inventory(floor.create_item("Greater Healing Staff", grid_items), 0,0)
+                for bg in bg_liqs:
+                    bg.batch = batch
+                bg_deeper.batch = batch
 
-                # player.add_to_inventory(floor.create_item("Knife", grid_items))
-                # player.add_to_inventory(floor.create_item("Stick", grid_items))
-                #player.add_to_inventory(floor.create_item("Apple", grid_items), 0, 0)
-
-                #player.add_to_inventory(floor.create_item("Water Flask", grid_items), 0, 0)
-                #player.add_to_inventory(floor.create_item("Blue Shield", grid_items))
-                #player.add_to_inventory(floor.create_item("Mirror Shield", grid_items))
-                #player.add_to_inventory(floor.create_item("Water Flask", grid_items), 0, 0)
-                #player.add_to_inventory(floor.create_item("Acid Flask", grid_items), 0, 0)
-
-                #player.add_to_inventory(floor.create_item("Phobia Staff", grid_items), 0, 0)
-                # player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items), 0, 0)
-                # player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items), 0, 0)
-                # player.add_to_inventory(floor.create_item("Bankruptcy Tome", grid_items), 0, 0)
-                #player.add_to_inventory(floor.create_item("Staff of Primes", grid_items))
-                #player.add_to_inventory(floor.create_item("Tome of Consolidation", grid_items))
-                #player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
-
-                # player.add_to_inventory(floor.create_item("Tome of Extinction", grid_items))
-                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
-                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
-                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
-                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
-                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
-                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
-                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
-                # player.add_to_inventory(floor.create_item("Tome of Ascendance", grid_items))
-                # player.add_to_inventory(floor.create_item("Tome of Promotion", grid_items))
-
-                # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
-                # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
-                # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
-                # player.add_to_inventory(floor.create_item("Dragonfruit", grid_items))
-
-                # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                #player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
-                # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                #player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
-                # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                # player.add_to_inventory(floor.create_item("Sharpening Tome", grid_items))
-                #player.add_to_inventory(floor.create_item("Fortifying Tome", grid_items))
-                # player.add_to_inventory(floor.create_item("Gardening Staff", grid_items))
-                # player.add_to_inventory(floor.create_item("Staff of Division", grid_items))
-                
-                #player.add_to_inventory(floor.create_item("Mirror Staff", grid_items),0,0)
-                # player.add_to_inventory(floor.create_item("Tome of Exchange", grid_items))
-                # player.add_to_inventory(floor.create_item("Lemon", grid_items))
-
-                #player.add_to_inventory(floor.create_item("Water Flask", grid_items))
                 current_menu = MenuState.INGAME
                 return
             if load_button.hit_test(mouse_x, mouse_y):
                 print("Load button clicked")
+                for bg in bg_liqs:
+                    bg.batch = load_menu_batch 
+                bg_deeper.batch = load_menu_batch
                 current_menu = MenuState.LOAD_MENU
                 return
         #Side menu of the game
@@ -912,37 +909,6 @@ def on_key_press(symbol, modifiers):
 mouse_x = 0
 mouse_y = 0
 
-#FLOOR STUFF 
-
-bg = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1))
-bg.scale = 3
-bg.group = group_bg
-bg.batch = batch
-# bg_pits = pyglet.sprite.Sprite(grid_bg[0])
-# bg_pits.scale = 3
-
-bg_liqs = []    
-bg_liqs_foreground = []
-typed_text = ""
-
-i = 0
-while i < 16:
-    bg_liqs.append(pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_liq, 12, 12), 128, 128, 12)))
-    bg_liqs[i].scale = 3
-    bg_liqs[i].group = group_bg_pits
-    bg_liqs[i].batch = batch
-
-    bg_liqs_foreground.append(pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_blank, 1, 1), 60*16, 60*16, 1)))
-    bg_liqs_foreground[i].scale = 3
-    bg_liqs_foreground[i].group = group_bg_liqs
-    bg_liqs_foreground[i].batch = batch
-    bg_liqs_foreground[i].color = color_templates[200]
-    i = i + 1
-
-bg_deeper = pyglet.sprite.Sprite(combine_tiles(tesselate(0, grid_liq, 12, 12), 128, 128, 12))
-bg_deeper.scale = 3
-bg_deeper.group = group_deeper
-bg_deeper.batch = batch
 
 adventure_log = ["PANDORIUM - A game by zeroBound and Econic", "Good luck!"]
 
@@ -1188,7 +1154,29 @@ def on_draw():
         if lag_shortcut == lag_shortcut_target-1:
             window.clear()
 
+        if current_menu != MenuState.INGAME:
+            bg_animframe += 1
+
+            bgdp_col = color_templates[200]
+            liqcolor = 200
+            bg_deeper.color = bgdp_col
+
+            i = 0
+            while i < 16:
+                if bg_liqs[i].color != color_templates[liqcolor]:
+                    bg_liqs[i].color = color_templates[liqcolor]
+                bg_liqs[i].x = 50 + (int(bg_animframe/2) % 16 - i)*10000
+                bg_liqs[i].y = 50
+                i = i + 1
+
+            bg_deeper.x = 50
+            bg_deeper.y = 50
+            
+
+
+
         if current_menu == MenuState.MAIN_MENU:
+            
             menu_batch.draw()
             return 
         elif current_menu == MenuState.SAVE_MENU:

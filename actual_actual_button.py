@@ -9,11 +9,13 @@ class Button:
 #         start_button = Button(150, 350, 200, 50, "Start Game", menu_batch, group_ui_menu)
 # exit_button = Button(150, 250, 200, 60, "Exit", menu_batch, group_ui_menu)
         self.sprite = initialize_text_sprite(grid_font, width, height, 8, 8)
-        change_text_sprite(grid_font, 30, 5, 8, 8, self.sprite, text, letter_order, "center")
+        change_text_sprite(grid_font, width, height, 8, 8, self.sprite, text, letter_order, "center")
         self.sprite.x = x  # Center horizontally
         self.sprite.y = y # Position near the top
         self.sprite.batch = batch
         self.sprite.group = group
+        self.sprite.scale = 3
+        self.sprite.color = (0, 0, 0, 255)
 
         self.x = x
         self.y = y
@@ -25,5 +27,5 @@ class Button:
         self.rect.draw()
 
     def hit_test(self, x, y):
-        print(f"Hit test at ({x}, {y}) against {self.text} button at ({self.x}, {self.y}) with size ({self.width}, {self.height})")
-        return self.x <= x <= self.x + self.width and self.y <= y <= self.y + self.height
+        #print(f"Hit test at ({x}, {y}) against {self.text} button at ({self.x}, {self.y}) with size ({self.width}, {self.height})")
+        return self.x <= x <= self.x + self.width*8*3 and self.y <= y <= self.y + self.height*3*8
