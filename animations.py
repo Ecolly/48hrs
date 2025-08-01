@@ -10,24 +10,24 @@ from game_classes.item import *
 from game_classes.enemy import *
 from font import *
 from game_classes.id_shuffling import *
+from rspath import *
 
 
 
 
 
 
-
-sound_hit = pyglet.media.load(r'audio\488225__plumaudio__playerhit.mp3', streaming=False)
-sound_eat = pyglet.media.load(r'audio\267531__djdust__eat-an-apple.mp3', streaming=False)
-sound_swing = pyglet.media.load(r'audio\367182__gaussthewizard__swing.mp3', streaming=False)
-sound_splash1 = pyglet.media.load(r'audio\221759__motion_s__water-splashing_1.mp3', streaming=False)
-sound_splash2 = pyglet.media.load(r'audio\221759__motion_s__water-splashing_2.mp3', streaming=False)
-sound_coin = pyglet.media.load(r'audio\174629__altfuture__coins.mp3', streaming=False)
-sound_magic = pyglet.media.load(r'audio\613163__sonically_sound__magic.mp3', streaming=False)
-sound_pickup = pyglet.media.load(r'audio\534357__defaultv__pickup_item.mp3', streaming=False)
-sound_steam = pyglet.media.load(r'audio\346778__diramus__steam-iron-used-on-board.mp3', streaming=False)
-sound_weird = pyglet.media.load(r'audio\455204__lilmati__magic-spell-03.wav', streaming=False)
-sound_magic2 = pyglet.media.load(r'audio\270396__littlerobotsoundfactory__spell_01.wav', streaming=False)
+sound_hit = pyglet.media.load(resource_path(os.path.join("audio", "488225__plumaudio__playerhit.mp3")), streaming=False)
+sound_eat = pyglet.media.load(resource_path(os.path.join("audio", "267531__djdust__eat-an-apple.mp3")), streaming=False)
+sound_swing = pyglet.media.load(resource_path(os.path.join("audio", "367182__gaussthewizard__swing.mp3")), streaming=False)
+sound_splash1 = pyglet.media.load(resource_path(os.path.join("audio", "221759__motion_s__water-splashing_1.mp3")), streaming=False)
+sound_splash2 = pyglet.media.load(resource_path(os.path.join("audio", "221759__motion_s__water-splashing_2.mp3")), streaming=False)
+sound_coin = pyglet.media.load(resource_path(os.path.join("audio", "174629__altfuture__coins.mp3")), streaming=False)
+sound_magic = pyglet.media.load(resource_path(os.path.join("audio", "613163__sonically_sound__magic.mp3")), streaming=False)
+sound_pickup = pyglet.media.load(resource_path(os.path.join("audio", "534357__defaultv__pickup_item.mp3")), streaming=False)
+sound_steam = pyglet.media.load(resource_path(os.path.join("audio", "346778__diramus__steam-iron-used-on-board.mp3")), streaming=False)
+sound_weird = pyglet.media.load(resource_path(os.path.join("audio", "455204__lilmati__magic-spell-03.wav")), streaming=False)
+sound_magic2 = pyglet.media.load(resource_path(os.path.join("audio", "270396__littlerobotsoundfactory__spell_01.wav")), streaming=False)
 
 
 

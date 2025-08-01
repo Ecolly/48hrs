@@ -10,9 +10,10 @@ from config import*
 from actual_actual_button import Button
 from image_handling import*
 from font import *
+from rspath import *
 menu_batch = pyglet.graphics.Batch()
 
-sprite_title = pyglet.image.load('title.png')
+sprite_title = pyglet.image.load(resource_path('title.png'))
 
 class MenuState(Enum):
     MAIN_MENU = 1

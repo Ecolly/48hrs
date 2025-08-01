@@ -1,5 +1,6 @@
 import pyglet
 from image_handling import*
+from rspath import *
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "", "", "", "", "", "", "", "", "ä"]
 
@@ -7,72 +8,72 @@ letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",
 pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
 pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
 
-sprite_font = pyglet.image.load('font.png')
+sprite_font = pyglet.image.load(resource_path('font.png'))
 columns_font = sprite_font.width // 8
 rows_font = sprite_font.height // 8
 grid_font = pyglet.image.ImageGrid(sprite_font, rows_font, columns_font)
 
 
-sprite_tinyfont = pyglet.image.load('tinyfont.png')
+sprite_tinyfont = pyglet.image.load(resource_path('tinyfont.png'))
 columns_tinyfont = sprite_tinyfont.width // 5
 rows_tinyfont = sprite_tinyfont.height // 8
 grid_tinyfont = pyglet.image.ImageGrid(sprite_tinyfont, rows_tinyfont, columns_tinyfont)
 
 
-sprite_entities1 = pyglet.image.load('entities_level1.png')
+sprite_entities1 = pyglet.image.load(resource_path('entities_level1.png'))
 columns_entities1 = sprite_entities1.width // 16
 rows_entities1 = sprite_entities1.height // 16
 grid_entities1 = pyglet.image.ImageGrid(sprite_entities1, rows_entities1, columns_entities1)
 
 
-sprite_entities2 = pyglet.image.load('entities_level2.png')
+sprite_entities2 = pyglet.image.load(resource_path('entities_level2.png'))
 columns_entities2 = sprite_entities2.width // 16
 rows_entities2 = sprite_entities2.height // 16
 grid_entities2 = pyglet.image.ImageGrid(sprite_entities2, rows_entities2, columns_entities2)
 
 
-sprite_entities3 = pyglet.image.load('entities_level3.png')
+sprite_entities3 = pyglet.image.load(resource_path('entities_level3.png'))
 columns_entities3 = sprite_entities3.width // 16
 rows_entities3 = sprite_entities3.height // 16
 grid_entities3 = pyglet.image.ImageGrid(sprite_entities3, rows_entities3, columns_entities3)
 
 
-sprite_entities4 = pyglet.image.load('entities_level4.png')
+sprite_entities4 = pyglet.image.load(resource_path('entities_level4.png'))
 columns_entities4 = sprite_entities4.width // 16
 rows_entities4 = sprite_entities4.height // 16
 grid_entities4 = pyglet.image.ImageGrid(sprite_entities4, rows_entities4, columns_entities4)
 
 
-sprite_items = pyglet.image.load('items_and_fx.png')
+sprite_items = pyglet.image.load(resource_path('items_and_fx.png'))
 columns_items = sprite_items.width // 16
 rows_items = sprite_items.height // 16
 grid_items = pyglet.image.ImageGrid(sprite_items, rows_items, columns_items)
 
 
-sprite_bg = pyglet.image.load('bgtiles.png')
+sprite_bg = pyglet.image.load(resource_path('bgtiles.png'))
 columns_bg = sprite_bg.width // 16
 rows_bg = sprite_bg.height // 16
 grid_bg = pyglet.image.ImageGrid(sprite_bg, rows_bg, columns_bg)
 
 
-sprite_liq = pyglet.image.load('all_liquid_animations.png')
+sprite_liq = pyglet.image.load(resource_path('all_liquid_animations.png'))
 columns_liq = sprite_liq.width // 128
 rows_liq = sprite_liq.height // 128
 grid_liq = pyglet.image.ImageGrid(sprite_liq, rows_liq, columns_liq)
 
 
-sprite_liqtile = pyglet.image.load('tile_liquid_animations.png')
+sprite_liqtile = pyglet.image.load(resource_path('tile_liquid_animations.png'))
 columns_liqtile = sprite_liqtile.width // 16
 rows_liqtile = sprite_liqtile.height // 16
 grid_liqtile = pyglet.image.ImageGrid(sprite_liqtile, rows_liqtile, columns_liqtile)
 
-sprite_deeper = pyglet.image.load('deeper_bgs.png')
+sprite_deeper = pyglet.image.load(resource_path('deeper_bgs.png'))
 columns_deeper = sprite_deeper.width // 128
 rows_deeper = sprite_deeper.height // 128
 grid_deeper = pyglet.image.ImageGrid(sprite_deeper, rows_deeper, columns_deeper)
 
 
-sprite_blank = pyglet.image.load('blank.png')
+sprite_blank = pyglet.image.load(resource_path('blank.png'))
 columns_blank = sprite_blank.width // (16*60)
 rows_blank = sprite_blank.height // (16*60)
 grid_blank = pyglet.image.ImageGrid(sprite_blank, rows_blank, columns_blank)

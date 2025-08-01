@@ -1,8 +1,9 @@
 import pyglet
 from game_classes.item import Item  # Assuming Item class is defined in item.py
 from font import *
-hotbar_image = pyglet.image.load("hotbar.png")
-hotbar_selected_image = pyglet.image.load("hot_bar_selector.png")  
+from rspath import *
+hotbar_image = pyglet.image.load(resource_path("hotbar.png"))
+hotbar_selected_image = pyglet.image.load(resource_path("hot_bar_selector.png"))  
 
 
 class Hotbar:

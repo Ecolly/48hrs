@@ -1,3 +1,23 @@
+
+
+# import sys, os
+# def resource_path(relative_path):
+#     """ Get the absolute path to the resource, works for dev and for PyInstaller """
+#     try:
+#         # PyInstaller creates a temp folder and stores path in _MEIPASS
+#         base_path = sys._MEIPASS
+#     except Exception:
+#         base_path = os.path.abspath(".")
+
+#     return base_path
+#     return os.path.join(base_path, relative_path)
+
+
+from rspath import *
+
+
+# print(resource_path(2))
+# exit()
 import pyglet
 import math
 from image_handling import *
@@ -16,10 +36,8 @@ from font import *
 import cProfile
 import tracemalloc
 import gc
-import sys 
-import psutil
-import os
-import objgraph
+
+
 from game_classes.hotbar import Hotbar
 #from memory_profiler import profile
 import turn_logic
@@ -31,8 +49,7 @@ from font import *
 
 #import xdot
 import time
-process = psutil.Process(os.getpid())
-mem_info = process.memory_info()
+
 
 from config import WINDOW_HEIGHT, WINDOW_WIDTH, INVENTORY_SLOT_SIZE, INVENTORY_SPACING
 
@@ -844,6 +861,9 @@ def on_key_press(symbol, modifiers):
     global typed_text
     global invhover
 
+    if symbol == pyglet.window.key.ESCAPE:
+        return pyglet.event.EVENT_HANDLED
+    
     if symbol == pyglet.window.key.BACKSPACE:
         typed_text = typed_text[:-1]
     global current_menu
@@ -1024,10 +1044,10 @@ def draw_description_but_in_main_because_main_is_cool(item, invslot, gamestate):
 
 
 # Load the music file (supports .mp3, .wav, .ogg, etc.)
-music = pyglet.media.load(r'audio\Cyber-Dream-Loop.mp3')  # Replace with your actual file path
-music2 = pyglet.media.load(r'audio\to-the-death-159171.mp3')   # Replace with your actual file path
-music3 = pyglet.media.load(r'audio\birds-chirping-75156.mp3')   # Replace with your actual file path
-music4 = pyglet.media.load(r'audio\solid-state-drive-161358.mp3')   # Replace with your actual file path
+music = pyglet.media.load(resource_path(os.path.join("audio", "Cyber-Dream-Loop.mp3")))  # Replace with your actual file path
+music2 = pyglet.media.load(resource_path(os.path.join("audio", "to-the-death-159171.mp3")))   # Replace with your actual file path
+music3 = pyglet.media.load(resource_path(os.path.join("audio", "birds-chirping-75156.mp3")))   # Replace with your actual file path
+music4 = pyglet.media.load(resource_path(os.path.join("audio", "solid-state-drive-161358.mp3")))   # Replace with your actual file path
 
 
 
@@ -1049,7 +1069,7 @@ mplayer.play()
 
 #most sfx are loaded in animations.py
 
-sound_stairs = pyglet.media.load(r'audio\69298__abel_k__stairs-reg-c-down-ak.mp3', streaming=False)
+sound_stairs = pyglet.media.load(resource_path(os.path.join("audio", "69298__abel_k__stairs-reg-c-down-ak.mp3")), streaming=False)
 
 
 
@@ -1165,12 +1185,12 @@ def on_draw():
             while i < 16:
                 if bg_liqs[i].color != color_templates[liqcolor]:
                     bg_liqs[i].color = color_templates[liqcolor]
-                bg_liqs[i].x = 50 + (int(bg_animframe/2) % 16 - i)*10000
-                bg_liqs[i].y = 50
+                bg_liqs[i].x = 0 + (int(bg_animframe/2) % 16 - i)*10000
+                bg_liqs[i].y = 0
                 i = i + 1
 
-            bg_deeper.x = 50
-            bg_deeper.y = 50
+            bg_deeper.x = 0
+            bg_deeper.y = 0
             
 
 

@@ -4,7 +4,7 @@ import math
 import image_handling
 import game_classes.map
 from font import *
-
+import rspath
 
 
 letter_order = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "◯", "─", "│", "┌", "┐", "└", "┘", "α", "β", "╦", "╣", "╔", "╗", "╚", "╝", "╩", "╠", "╬", "", "", "", "", "", "", "", "", "ä"]
@@ -256,8 +256,8 @@ def create_power_bar(all_buttons, item, x, y):
 
 
 
-
-sprite_inv = pyglet.image.load('inventory.png')
+from rspath import *
+sprite_inv = pyglet.image.load(resource_path('inventory.png'))
 
 
 def create_inventory_menu(all_buttons):
